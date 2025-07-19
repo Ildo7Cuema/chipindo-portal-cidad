@@ -1,5 +1,6 @@
 import { Navigation } from "@/components/ui/navigation";
 import { Badge } from "@/components/ui/badge";
+import insigniaAngola from "@/assets/insignia-angola.png";
 
 export const Header = () => {
   return (
@@ -9,8 +10,12 @@ export const Header = () => {
           {/* Logo and Title */}
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-gradient-primary rounded-lg flex items-center justify-center shadow-elegant">
-                <span className="text-primary-foreground font-bold text-xl">C</span>
+              <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-elegant border border-border p-1">
+                <img 
+                  src={insigniaAngola} 
+                  alt="Insígnia da República de Angola" 
+                  className="w-full h-full object-contain"
+                />
               </div>
               <div>
                 <h1 className="text-xl font-bold text-foreground">Portal de Chipindo</h1>

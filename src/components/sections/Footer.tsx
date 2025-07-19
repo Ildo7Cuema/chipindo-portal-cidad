@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import insigniaAngola from "@/assets/insignia-angola.png";
 import { 
   MapPinIcon, 
   PhoneIcon, 
@@ -19,8 +20,12 @@ export const Footer = () => {
           {/* About */}
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold">C</span>
+              <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-elegant border border-border p-1">
+                <img 
+                  src={insigniaAngola} 
+                  alt="Insígnia da República de Angola" 
+                  className="w-full h-full object-contain"
+                />
               </div>
               <div>
                 <h3 className="font-bold text-foreground">Portal de Chipindo</h3>
