@@ -11,11 +11,12 @@ export const Navigation = ({ className }: NavigationProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navItems = [
-    { label: "Início", href: "#inicio", icon: BuildingIcon },
-    { label: "Notícias", href: "#noticias", icon: FileTextIcon },
-    { label: "Concursos", href: "#concursos", icon: CalendarIcon },
-    { label: "Acervo Digital", href: "#acervo", icon: ImageIcon },
-    { label: "Contactos", href: "#contactos", icon: UserIcon },
+    { label: "Início", href: "/", icon: BuildingIcon },
+    { label: "Notícias", href: "/noticias", icon: FileTextIcon },
+    { label: "Concursos", href: "/concursos", icon: CalendarIcon },
+    { label: "Acervo Digital", href: "/acervo", icon: ImageIcon },
+    { label: "Serviços", href: "/servicos", icon: UserIcon },
+    { label: "Contactos", href: "/contactos", icon: UserIcon },
   ];
 
   return (
