@@ -309,18 +309,18 @@ export default function AcervoDigital() {
                             <>
                               <div className="flex items-center gap-1">
                                 <EyeIcon className="w-3 h-3" />
-                                {item.views}
+                                {'views' in item ? item.views : 0}
                               </div>
-                              <span>{item.duration}</span>
+                              <span>{'duration' in item ? item.duration : 'N/A'}</span>
                             </>
                           )}
                           {item.type === 'imagem' && (
                             <>
                               <div className="flex items-center gap-1">
                                 <EyeIcon className="w-3 h-3" />
-                                {item.views}
+                                {'views' in item ? item.views : 0}
                               </div>
-                              <span>{item.count} fotos</span>
+                              <span>{'count' in item ? item.count : 0} fotos</span>
                             </>
                           )}
                         </div>
