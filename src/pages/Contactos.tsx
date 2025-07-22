@@ -16,7 +16,7 @@ import {
   MessageSquareIcon,
   SendIcon
 } from "lucide-react";
-import { GoogleMap } from "@/components/GoogleMap";
+import { OpenStreetMap } from "@/components/OpenStreetMap";
 
 const contactosData = [
   {
@@ -203,7 +203,7 @@ export default function Contactos() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <GoogleMap height="400px" className="w-full" />
+                <OpenStreetMap height="400px" className="w-full" />
               </CardContent>
             </Card>
           </div>
