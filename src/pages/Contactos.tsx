@@ -16,6 +16,7 @@ import {
   MessageSquareIcon,
   SendIcon
 } from "lucide-react";
+import { GoogleMap } from "@/components/GoogleMap";
 
 const contactosData = [
   {
@@ -202,13 +203,7 @@ export default function Contactos() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="bg-muted rounded-lg h-64 flex items-center justify-center">
-                  <div className="text-center">
-                    <MapPinIcon className="w-12 h-12 text-muted-foreground mx-auto mb-2" />
-                    <p className="text-muted-foreground">Mapa de Localização</p>
-                    <p className="text-sm text-muted-foreground">Chipindo, Angola</p>
-                  </div>
-                </div>
+                <GoogleMap height="400px" className="w-full" />
               </CardContent>
             </Card>
           </div>
