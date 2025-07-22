@@ -1,21 +1,76 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRightIcon, MapPinIcon, UsersIcon, BuildingIcon } from "lucide-react";
+import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
+import { useRef } from "react";
+import agriculturaImage from "@/assets/agricultura-chipindo.jpg";
+import turismoImage from "@/assets/turismo-chipindo.jpg";
+import ouroImage from "@/assets/ouro-chipindo.jpg";
 import heroImage from "@/assets/hero-chipindo.jpg";
 
 export const Hero = () => {
+  const plugin = useRef(
+    Autoplay({ delay: 4000, stopOnInteraction: true })
+  );
+
+  const potentialityImages = [
+    { 
+      src: agriculturaImage, 
+      title: "Agricultura",
+      description: "Vastos campos cultivados com milho, feijão e outras culturas"
+    },
+    { 
+      src: turismoImage, 
+      title: "Turismo",
+      description: "Paisagens naturais deslumbrantes e cachoeiras"
+    },
+    { 
+      src: ouroImage, 
+      title: "Mineração",
+      description: "Recursos minerais valiosos incluindo ouro"
+    },
+    { 
+      src: heroImage, 
+      title: "Chipindo",
+      description: "O coração da província de Huíla"
+    }
+  ];
+
   return (
     <section className="relative min-h-[600px] bg-gradient-hero overflow-hidden">
-      {/* Background Image */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center opacity-20"
-        style={{
-          backgroundImage: `url(${heroImage})`
-        }}
-      />
-      
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/90 via-primary/80 to-primary/70" />
+      {/* Automatic Background Carousel */}
+      <div className="absolute inset-0">
+        <Carousel
+          plugins={[plugin.current]}
+          className="w-full h-full"
+          opts={{
+            align: "start",
+            loop: true,
+          }}
+        >
+          <CarouselContent className="h-full -ml-0">
+            {potentialityImages.map((image, index) => (
+              <CarouselItem key={index} className="pl-0 h-full">
+                <div 
+                  className="absolute inset-0 bg-cover bg-center transition-opacity duration-1000"
+                  style={{
+                    backgroundImage: `url(${image.src})`
+                  }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/90 via-primary/80 to-primary/70" />
+                
+                {/* Potentiality Badge */}
+                <div className="absolute top-8 right-8 z-10">
+                  <Badge variant="secondary" className="bg-background/20 text-primary-foreground border-primary-foreground/30 backdrop-blur-sm">
+                    {image.title}
+                  </Badge>
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+        </Carousel>
+      </div>
       
       {/* Content */}
       <div className="relative container mx-auto px-4 py-20 md:py-32">
