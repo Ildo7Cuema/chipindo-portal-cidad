@@ -79,8 +79,24 @@ const Auth = () => {
       setUser(session?.user ?? null);
       
       if (session?.user && !justRegistered) {
-        console.log('Existing session found, redirecting to admin...');
-        navigate("/admin");
+        console.log('Existing session found, but checking if user still exists in profiles...');
+        // Check if the user profile still exists before redirecting
+        supabase
+          .from('profiles')
+          .select('id')
+          .eq('user_id', session.user.id)
+          .maybeSingle()
+          .then(({ data, error }) => {
+            if (error || !data) {
+              console.log('User profile not found, signing out...');
+              supabase.auth.signOut();
+              setSession(null);
+              setUser(null);
+            } else {
+              console.log('User profile exists, redirecting to admin...');
+              navigate("/admin");
+            }
+          });
       }
     });
 
