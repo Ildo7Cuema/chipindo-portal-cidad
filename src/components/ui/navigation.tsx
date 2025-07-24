@@ -15,6 +15,7 @@ export const Navigation = ({ className }: NavigationProps) => {
     { label: "Notícias", href: "/noticias", icon: FileTextIcon },
     { label: "Concursos", href: "/concursos", icon: CalendarIcon },
     { label: "Acervo Digital", href: "/acervo", icon: ImageIcon },
+    { label: "Organigrama", href: "/organigrama", icon: UserIcon },
     { label: "Serviços", href: "/servicos", icon: UserIcon },
     { label: "Contactos", href: "/contactos", icon: UserIcon },
   ];

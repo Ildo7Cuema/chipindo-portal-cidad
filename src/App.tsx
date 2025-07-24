@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import Noticias from "./pages/Noticias";
 import Concursos from "./pages/Concursos";
 import AcervoDigital from "./pages/AcervoDigital";
+import Organigrama from "./pages/Organigrama";
 import Servicos from "./pages/Servicos";
 import Contactos from "./pages/Contactos";
 import Auth from "./pages/Auth";
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/noticias" element={<Noticias />} />
           <Route path="/concursos" element={<Concursos />} />
           <Route path="/acervo" element={<AcervoDigital />} />
+          <Route path="/organigrama" element={<Organigrama />} />
           <Route path="/servicos" element={<Servicos />} />
           <Route path="/contactos" element={<Contactos />} />
           <Route path="/auth" element={<Auth />} />

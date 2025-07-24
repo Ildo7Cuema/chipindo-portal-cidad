@@ -12,6 +12,7 @@ import { LogOut, Plus, Edit, Eye, Users } from "lucide-react";
 import { NewsManager } from "@/components/admin/NewsManager";
 import { ConcursosManager } from "@/components/admin/ConcursosManager";
 import AcervoDigitalManager from "@/components/admin/AcervoDigitalManager";
+import { OrganigramaManager } from "@/components/admin/OrganigramaManager";
 import { UserManager } from "@/components/admin/UserManager";
 import { DashboardStats } from "@/components/admin/DashboardStats";
 import { SystemSettings } from "@/components/admin/SystemSettings";
@@ -150,11 +151,12 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="dashboard" className="space-y-6">
-          <TabsList className={`grid w-full ${isAdmin ? 'grid-cols-7' : 'grid-cols-5'}`}>
+          <TabsList className={`grid w-full ${isAdmin ? 'grid-cols-8' : 'grid-cols-6'}`}>
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
             <TabsTrigger value="news">Notícias</TabsTrigger>
             <TabsTrigger value="concursos">Concursos</TabsTrigger>
             <TabsTrigger value="acervo">Acervo Digital</TabsTrigger>
+            <TabsTrigger value="organigrama">Organigrama</TabsTrigger>
             <TabsTrigger value="content">Conteúdo</TabsTrigger>
             {isAdmin && <TabsTrigger value="users">Usuários</TabsTrigger>}
             {isAdmin && <TabsTrigger value="settings">Configurações</TabsTrigger>}
@@ -174,6 +176,10 @@ const Admin = () => {
 
           <TabsContent value="acervo">
             <AcervoDigitalManager />
+          </TabsContent>
+
+          <TabsContent value="organigrama">
+            <OrganigramaManager />
           </TabsContent>
 
           <TabsContent value="content">

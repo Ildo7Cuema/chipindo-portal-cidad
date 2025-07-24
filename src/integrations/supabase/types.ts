@@ -140,6 +140,62 @@ export type Database = {
         }
         Relationships: []
       }
+      organigrama: {
+        Row: {
+          ativo: boolean | null
+          cargo: string
+          created_at: string
+          departamento: string
+          descricao: string | null
+          email: string | null
+          foto_url: string | null
+          id: string
+          nome: string
+          ordem: number | null
+          superior_id: string | null
+          telefone: string | null
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean | null
+          cargo: string
+          created_at?: string
+          departamento: string
+          descricao?: string | null
+          email?: string | null
+          foto_url?: string | null
+          id?: string
+          nome: string
+          ordem?: number | null
+          superior_id?: string | null
+          telefone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean | null
+          cargo?: string
+          created_at?: string
+          departamento?: string
+          descricao?: string | null
+          email?: string | null
+          foto_url?: string | null
+          id?: string
+          nome?: string
+          ordem?: number | null
+          superior_id?: string | null
+          telefone?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organigrama_superior_id_fkey"
+            columns: ["superior_id"]
+            isOneToOne: false
+            referencedRelation: "organigrama"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
