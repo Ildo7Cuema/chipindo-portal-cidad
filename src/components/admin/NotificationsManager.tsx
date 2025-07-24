@@ -264,52 +264,70 @@ const NotificationsManager = () => {
                               Informações completas da pessoa que registou interesse
                             </DialogDescription>
                           </DialogHeader>
-                          <div className="space-y-4 mt-4">
-                            <div className="grid grid-cols-2 gap-4">
-                              <div>
-                                <h4 className="font-medium text-sm text-muted-foreground">Nome Completo</h4>
-                                <p className="text-sm">{notification.data.full_name}</p>
+                          <div className="space-y-6 mt-4">
+                            {/* Informações Pessoais */}
+                            <div>
+                              <h3 className="font-semibold text-base mb-3 text-foreground border-b pb-2">Informações Pessoais</h3>
+                              <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                  <h4 className="font-medium text-sm text-muted-foreground">Nome Completo</h4>
+                                  <p className="text-sm">{notification.data.full_name}</p>
+                                </div>
                               </div>
-                              <div>
-                                <h4 className="font-medium text-sm text-muted-foreground">Email</h4>
-                                <p className="text-sm">{notification.data.email}</p>
-                              </div>
-                              {notification.data.phone && (
+                            </div>
+
+                            {/* Informações de Contacto */}
+                            <div>
+                              <h3 className="font-semibold text-base mb-3 text-foreground border-b pb-2">Informações de Contacto</h3>
+                              <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                  <h4 className="font-medium text-sm text-muted-foreground">Email</h4>
+                                  <p className="text-sm">{notification.data.email}</p>
+                                </div>
                                 <div>
                                   <h4 className="font-medium text-sm text-muted-foreground">Telefone</h4>
-                                  <p className="text-sm">{notification.data.phone}</p>
+                                  <p className="text-sm">{notification.data.phone || 'Não informado'}</p>
                                 </div>
-                              )}
-                              {notification.data.profession && (
+                              </div>
+                            </div>
+
+                            {/* Informações Profissionais */}
+                            <div>
+                              <h3 className="font-semibold text-base mb-3 text-foreground border-b pb-2">Informações Profissionais</h3>
+                              <div className="grid grid-cols-2 gap-4">
                                 <div>
                                   <h4 className="font-medium text-sm text-muted-foreground">Profissão</h4>
-                                  <p className="text-sm">{notification.data.profession}</p>
+                                  <p className="text-sm">{notification.data.profession || 'Não informado'}</p>
                                 </div>
-                              )}
-                              {notification.data.experience_years && (
                                 <div>
                                   <h4 className="font-medium text-sm text-muted-foreground">Anos de Experiência</h4>
-                                  <p className="text-sm">{notification.data.experience_years} anos</p>
+                                  <p className="text-sm">{notification.data.experience_years ? `${notification.data.experience_years} anos` : 'Não informado'}</p>
                                 </div>
-                              )}
+                              </div>
                             </div>
+
+                            {/* Áreas de Interesse */}
                             <div>
-                              <h4 className="font-medium text-sm text-muted-foreground">Áreas de Interesse</h4>
-                              <div className="flex flex-wrap gap-2 mt-2">
+                              <h3 className="font-semibold text-base mb-3 text-foreground border-b pb-2">Áreas de Interesse</h3>
+                              <div className="flex flex-wrap gap-2">
                                 {notification.data.areas_of_interest?.map((area: string, index: number) => (
                                   <Badge key={index} variant="secondary">{area}</Badge>
                                 ))}
                               </div>
                             </div>
+
+                            {/* Informações Adicionais */}
                             {notification.data.additional_info && (
                               <div>
-                                <h4 className="font-medium text-sm text-muted-foreground">Informações Adicionais</h4>
-                                <p className="text-sm mt-1 p-3 bg-muted rounded">{notification.data.additional_info}</p>
+                                <h3 className="font-semibold text-base mb-3 text-foreground border-b pb-2">Informações Adicionais</h3>
+                                <p className="text-sm p-3 bg-muted rounded">{notification.data.additional_info}</p>
                               </div>
                             )}
-                            <div className="pt-2 border-t">
+
+                            {/* Data de Registo */}
+                            <div className="pt-4 border-t">
                               <p className="text-xs text-muted-foreground">
-                                Registado em: {new Date(notification.created_at).toLocaleString('pt-BR')}
+                                <strong>Registado em:</strong> {new Date(notification.created_at).toLocaleString('pt-BR')}
                               </p>
                             </div>
                           </div>
