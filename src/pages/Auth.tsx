@@ -19,6 +19,7 @@ const Auth = () => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [allowRegistration, setAllowRegistration] = useState(false);
+  const [justRegistered, setJustRegistered] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -52,8 +53,8 @@ const Auth = () => {
         setSession(session);
         setUser(session?.user ?? null);
         
-        // Redirect authenticated users to admin page
-        if (session?.user) {
+        // Only redirect if user didn't just register and is signing in
+        if (session?.user && !justRegistered) {
           setTimeout(() => {
             navigate("/admin");
           }, 100);
@@ -132,10 +133,20 @@ const Auth = () => {
           variant: "destructive",
         });
       } else {
+        setJustRegistered(true);
+        // Sign out immediately after registration to prevent auto-login
+        await supabase.auth.signOut();
         toast({
           title: "Conta criada com sucesso",
-          description: "Verifique seu email para confirmar a conta.",
+          description: "Agora você pode fazer login com suas credenciais.",
         });
+        // Clear the form and reset to login tab
+        setEmail("");
+        setPassword("");
+        setFullName("");
+        setTimeout(() => {
+          setJustRegistered(false);
+        }, 1000);
       }
     } catch (error) {
       toast({
