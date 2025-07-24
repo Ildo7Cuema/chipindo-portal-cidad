@@ -197,10 +197,20 @@ export const ConcursosSection = () => {
             sobre novos concursos na sua área de interesse.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button variant="secondary" size="lg">
+            <Button 
+              variant="secondary" 
+              size="lg"
+              className="hover:shadow-glow transition-all duration-300"
+              onClick={() => window.location.href = '/register-interest'}
+            >
               Cadastrar interesse
             </Button>
-            <Button variant="outline" size="lg" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 hover:shadow-elegant transition-all duration-300"
+              onClick={() => window.location.href = '/concursos-history'}
+            >
               Ver histórico de concursos
             </Button>
           </div>

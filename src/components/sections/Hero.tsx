@@ -95,11 +95,21 @@ export const Hero = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 mb-12 animate-slide-up">
-            <Button size="lg" variant="secondary" className="shadow-elegant">
+            <Button 
+              size="lg" 
+              variant="secondary" 
+              className="shadow-elegant hover:shadow-glow transition-all duration-300"
+              onClick={() => window.location.href = '/services'}
+            >
               Explorar Serviços
               <ArrowRightIcon className="w-5 h-5" />
             </Button>
-            <Button size="lg" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">
+            <Button 
+              size="lg" 
+              variant="outline" 
+              className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 hover:shadow-elegant transition-all duration-300"
+              onClick={() => window.location.href = '/concursos'}
+            >
               Concursos Públicos
             </Button>
           </div>

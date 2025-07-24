@@ -182,7 +182,12 @@ export const NewsSection = () => {
         </div>
 
         <div className="text-center mt-12">
-          <Button variant="outline" size="lg">
+          <Button 
+            variant="outline" 
+            size="lg"
+            className="hover:shadow-elegant transition-all duration-300"
+            onClick={() => window.location.href = '/all-news'}
+          >
             Ver todas as notícias
             <ArrowRightIcon className="w-5 h-5" />
           </Button>

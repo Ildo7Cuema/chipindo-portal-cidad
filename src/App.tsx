@@ -13,6 +13,10 @@ import Contactos from "./pages/Contactos";
 import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
+import AllNews from "./pages/AllNews";
+import Services from "./pages/Services";
+import ConcursosHistory from "./pages/ConcursosHistory";
+import RegisterInterest from "./pages/RegisterInterest";
 
 const queryClient = new QueryClient();
 
@@ -25,10 +29,14 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/noticias" element={<Noticias />} />
+          <Route path="/all-news" element={<AllNews />} />
           <Route path="/concursos" element={<Concursos />} />
+          <Route path="/concursos-history" element={<ConcursosHistory />} />
+          <Route path="/register-interest" element={<RegisterInterest />} />
           <Route path="/acervo" element={<AcervoDigital />} />
           <Route path="/organigrama" element={<Organigrama />} />
           <Route path="/servicos" element={<Servicos />} />
+          <Route path="/services" element={<Services />} />
           <Route path="/contactos" element={<Contactos />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/admin" element={<Admin />} />
