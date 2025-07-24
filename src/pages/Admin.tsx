@@ -100,9 +100,14 @@ const Admin = () => {
             <p className="text-muted-foreground mb-6">
               Você não tem permissões para acessar esta área.
             </p>
-            <Button onClick={() => navigate("/")} variant="outline">
-              Voltar ao Início
-            </Button>
+            <div className="flex gap-4 justify-center">
+              <Button onClick={() => navigate("/")} variant="outline">
+                Voltar ao Início
+              </Button>
+              <Button onClick={() => navigate("/auth")} variant="default">
+                Fazer Login
+              </Button>
+            </div>
           </div>
         </main>
         <Footer />
