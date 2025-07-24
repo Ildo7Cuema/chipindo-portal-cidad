@@ -21,6 +21,15 @@ interface OrganigramaMember {
   ativo: boolean;
 }
 
+interface Departamento {
+  id: string;
+  nome: string;
+  descricao: string | null;
+  codigo: string | null;
+  ativo: boolean;
+  ordem: number;
+}
+
 const departments = [
   'Gabinete do Administrador',
   'Secretaria Geral', 
@@ -38,13 +47,30 @@ const departments = [
 
 export default function Organigrama() {
   const [members, setMembers] = useState<OrganigramaMember[]>([]);
+  const [departamentos, setDepartamentos] = useState<Departamento[]>([]);
   const [selectedDepartment, setSelectedDepartment] = useState<string>('all');
   const [expandedDepartments, setExpandedDepartments] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchMembers();
+    fetchDepartamentos();
   }, []);
+
+  const fetchDepartamentos = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('departamentos')
+        .select('*')
+        .eq('ativo', true)
+        .order('ordem', { ascending: true });
+
+      if (error) throw error;
+      setDepartamentos(data || []);
+    } catch (error) {
+      console.error('Error fetching departamentos:', error);
+    }
+  };
 
   const fetchMembers = async () => {
     try {
@@ -125,9 +151,9 @@ export default function Organigrama() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todos os Departamentos</SelectItem>
-                {departments.map((dept) => (
-                  <SelectItem key={dept} value={dept}>
-                    {dept}
+                {departamentos.map((dept) => (
+                  <SelectItem key={dept.id} value={dept.nome}>
+                    {dept.nome}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -137,21 +163,21 @@ export default function Organigrama() {
 
         {/* Organigrama */}
         <div className="space-y-6">
-          {departments.map((dept) => {
-            const deptMembers = filteredMembers.filter(member => member.departamento === dept);
+          {departamentos.map((dept) => {
+            const deptMembers = filteredMembers.filter(member => member.departamento === dept.nome);
             if (deptMembers.length === 0) return null;
 
-            const isExpanded = expandedDepartments.has(dept);
+            const isExpanded = expandedDepartments.has(dept.nome);
 
             return (
-              <Card key={dept} className="overflow-hidden">
+              <Card key={dept.id} className="overflow-hidden">
                 <div 
                   className="p-6 bg-primary/5 border-b cursor-pointer hover:bg-primary/10 transition-colors"
-                  onClick={() => toggleDepartment(dept)}
+                  onClick={() => toggleDepartment(dept.nome)}
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <h2 className="text-xl font-semibold text-foreground">{dept}</h2>
+                      <h2 className="text-xl font-semibold text-foreground">{dept.nome}</h2>
                       <p className="text-sm text-muted-foreground">
                         {deptMembers.length} {deptMembers.length === 1 ? 'membro' : 'membros'}
                       </p>
