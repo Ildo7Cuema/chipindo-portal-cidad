@@ -17,6 +17,7 @@ import {
   SendIcon
 } from "lucide-react";
 import { MapboxMap } from "@/components/MapboxMap";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 const contactosData = [
   {
@@ -82,6 +83,7 @@ const contactosData = [
 ];
 
 export default function Contactos() {
+  const { settings } = useSiteSettings();
   const [formData, setFormData] = useState({
     nome: "",
     email: "",
@@ -222,28 +224,37 @@ export default function Contactos() {
                   <MapPinIcon className="w-5 h-5 text-muted-foreground mt-1" />
                   <div>
                     <p className="font-medium">Endereço</p>
-                    <p className="text-sm text-muted-foreground">Rua Principal, nº 123<br />Chipindo, Angola</p>
+                    <p className="text-sm text-muted-foreground">
+                      {settings?.contact_address || 'Carregando...'}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <PhoneIcon className="w-5 h-5 text-muted-foreground mt-1" />
                   <div>
                     <p className="font-medium">Telefone Geral</p>
-                    <p className="text-sm text-muted-foreground">+244 923 456 789</p>
+                    <p className="text-sm text-muted-foreground">
+                      {settings?.contact_phone || 'Carregando...'}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <MailIcon className="w-5 h-5 text-muted-foreground mt-1" />
                   <div>
                     <p className="font-medium">Email Geral</p>
-                    <p className="text-sm text-muted-foreground">geral@chipindo.gov.ao</p>
+                    <p className="text-sm text-muted-foreground">
+                      {settings?.contact_email || 'Carregando...'}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <ClockIcon className="w-5 h-5 text-muted-foreground mt-1" />
                   <div>
                     <p className="font-medium">Horário de Funcionamento</p>
-                    <p className="text-sm text-muted-foreground">Segunda a Sexta<br />08:00 - 16:00</p>
+                    <p className="text-sm text-muted-foreground">
+                      {settings?.opening_hours_weekdays || 'Carregando...'}<br />
+                      {settings?.opening_hours_saturday || ''}
+                    </p>
                   </div>
                 </div>
               </CardContent>

@@ -19,6 +19,7 @@ import { DashboardStats } from "@/components/admin/DashboardStats";
 import { SystemSettings } from "@/components/admin/SystemSettings";
 import { SiteContentManager } from "@/components/admin/SiteContentManager";
 import { HeroCarouselManager } from "@/components/admin/HeroCarouselManager";
+import { LocationsManager } from "@/components/admin/LocationsManager";
 import { useUserRole } from "@/hooks/useUserRole";
 import NotificationsManager from "@/components/admin/NotificationsManager";
 
@@ -154,7 +155,7 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="dashboard" className="space-y-6">
-          <TabsList className={`grid w-full ${isAdmin ? 'grid-cols-11' : 'grid-cols-9'}`}>
+          <TabsList className={`grid w-full ${isAdmin ? 'grid-cols-12' : 'grid-cols-10'}`}>
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
             <TabsTrigger value="notifications">Notificações</TabsTrigger>
             <TabsTrigger value="news">Notícias</TabsTrigger>
@@ -164,6 +165,7 @@ const Admin = () => {
             <TabsTrigger value="departamentos">Direcções</TabsTrigger>
             <TabsTrigger value="content">Conteúdo</TabsTrigger>
             <TabsTrigger value="carousel">Carrossel</TabsTrigger>
+            <TabsTrigger value="locations">Localizações</TabsTrigger>
             {isAdmin && <TabsTrigger value="users">Usuários</TabsTrigger>}
             {isAdmin && <TabsTrigger value="settings">Configurações</TabsTrigger>}
           </TabsList>
@@ -200,9 +202,13 @@ const Admin = () => {
             <SiteContentManager />
           </TabsContent>
 
-          <TabsContent value="carousel">
-            <HeroCarouselManager />
-          </TabsContent>
+            <TabsContent value="carousel">
+              <HeroCarouselManager />
+            </TabsContent>
+            
+            <TabsContent value="locations">
+              <LocationsManager />
+            </TabsContent>
 
           {isAdmin && (
             <TabsContent value="users">

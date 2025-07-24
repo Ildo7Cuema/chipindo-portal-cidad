@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { AlertCircle, Layers, Mountain, Map as MapIcon } from 'lucide-react';
+import { useMunicipalityLocations } from '@/hooks/useMunicipalityLocations';
+import { useSiteSettings } from '@/hooks/useSiteSettings';
 
 interface MapboxMapProps {
   height?: string;
@@ -19,9 +21,113 @@ export const MapboxMap = ({ height = "400px", className = "" }: MapboxMapProps) 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [currentStyle, setCurrentStyle] = useState<string>('streets');
   const [is3D, setIs3D] = useState<boolean>(false);
+  const { locations } = useMunicipalityLocations();
+  const { settings } = useSiteSettings();
+  const markersRef = useRef<mapboxgl.Marker[]>([]);
 
   // Coordenadas de Chipindo, Huíla, Angola
   const chipindoLocation: [number, number] = [12.9167, -15.1167]; // lng, lat para Mapbox
+
+  const clearMarkers = () => {
+    markersRef.current.forEach(marker => marker.remove());
+    markersRef.current = [];
+  };
+
+  const addLocationMarkers = () => {
+    if (!map.current) return;
+
+    clearMarkers();
+
+    // Adicionar marcadores das localizações cadastradas
+    locations.forEach((location) => {
+      const el = document.createElement('div');
+      el.className = 'location-marker';
+      el.style.cssText = `
+        background-color: #dc2626;
+        color: white;
+        border-radius: 50%;
+        width: 35px;
+        height: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 14px;
+        border: 3px solid white;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+        cursor: pointer;
+      `;
+      
+      // Ícone baseado no tipo de localização
+      const getLocationIcon = (type: string) => {
+        switch (type) {
+          case 'office': return '🏛️';
+          case 'school': return '🏫';
+          case 'hospital': return '🏥';
+          case 'park': return '🌳';
+          case 'market': return '🏪';
+          case 'cultural': return '🎭';
+          case 'sports': return '⚽';
+          default: return '📍';
+        }
+      };
+
+      el.innerHTML = getLocationIcon(location.type);
+
+      // Criar popup para a localização
+      const popupContent = `
+        <div style="max-width: 280px; font-family: system-ui;">
+          <h3 style="margin: 0 0 10px 0; color: #1f2937; font-size: 18px; font-weight: 600;">
+            ${getLocationIcon(location.type)} ${location.name}
+          </h3>
+          ${location.description ? `
+            <p style="margin: 0 0 10px 0; color: #6b7280; font-size: 14px;">
+              ${location.description}
+            </p>
+          ` : ''}
+          <div style="margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #e5e7eb;">
+            <p style="margin: 3px 0; color: #6b7280; font-size: 14px;">
+              🌍 <strong>Coordenadas:</strong> ${location.latitude}°S, ${location.longitude}°E
+            </p>
+          </div>
+          <div style="margin-bottom: 10px;">
+            ${location.address ? `
+              <p style="margin: 3px 0; color: #374151; font-size: 14px;">
+                📍 ${location.address}
+              </p>
+            ` : ''}
+            ${location.phone ? `
+              <p style="margin: 3px 0; color: #374151; font-size: 14px;">
+                📞 ${location.phone}
+              </p>
+            ` : ''}
+            ${location.email ? `
+              <p style="margin: 3px 0; color: #374151; font-size: 14px;">
+                📧 ${location.email}
+              </p>
+            ` : ''}
+          </div>
+          ${location.opening_hours ? `
+            <div style="background: #f3f4f6; padding: 8px; border-radius: 6px; margin-top: 10px;">
+              <p style="margin: 0; color: #6b7280; font-size: 13px;">
+                🕐 <strong>Horário de Funcionamento:</strong><br>
+                ${location.opening_hours}
+              </p>
+            </div>
+          ` : ''}
+        </div>
+      `;
+
+      const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(popupContent);
+
+      const marker = new mapboxgl.Marker(el)
+        .setLngLat([location.longitude, location.latitude])
+        .setPopup(popup)
+        .addTo(map.current!);
+
+      markersRef.current.push(marker);
+    });
+  };
 
   const mapStyles = {
     streets: 'mapbox://styles/mapbox/streets-v12',
@@ -87,7 +193,7 @@ export const MapboxMap = ({ height = "400px", className = "" }: MapboxMapProps) 
         `;
         el.innerHTML = '🏛️';
 
-        // Criar popup
+        // Criar popup usando dados reais das configurações
         const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`
           <div style="max-width: 280px; font-family: system-ui;">
             <h3 style="margin: 0 0 10px 0; color: #1f2937; font-size: 18px; font-weight: 600;">
@@ -103,19 +209,20 @@ export const MapboxMap = ({ height = "400px", className = "" }: MapboxMapProps) 
             </div>
             <div style="margin-bottom: 10px;">
               <p style="margin: 3px 0; color: #374151; font-size: 14px;">
-                📧 geral@chipindo.gov.ao
+                📧 ${settings?.contact_email || 'geral@chipindo.gov.ao'}
               </p>
               <p style="margin: 3px 0; color: #374151; font-size: 14px;">
-                📞 +244 923 456 789
+                📞 ${settings?.contact_phone || '+244 926 123 456'}
               </p>
               <p style="margin: 3px 0; color: #374151; font-size: 14px;">
-                📍 Rua Principal, nº 123, Chipindo
+                📍 ${settings?.contact_address || 'Administração Municipal de Chipindo, Chipindo, Província de Huíla, Angola'}
               </p>
             </div>
             <div style="background: #f3f4f6; padding: 8px; border-radius: 6px; margin-top: 10px;">
               <p style="margin: 0; color: #6b7280; font-size: 13px;">
                 🕐 <strong>Horário de Funcionamento:</strong><br>
-                Segunda a Sexta: 08:00 - 16:00
+                ${settings?.opening_hours_weekdays || 'Segunda a Sexta: 08:00 - 16:00'}<br>
+                ${settings?.opening_hours_saturday || 'Sábado: 08:00 - 12:00'}
               </p>
             </div>
           </div>
@@ -127,8 +234,8 @@ export const MapboxMap = ({ height = "400px", className = "" }: MapboxMapProps) 
           .setPopup(popup)
           .addTo(mapInstance);
 
-        // Abrir popup por padrão
-        popup.addTo(mapInstance);
+        // Adicionar marcadores das localizações quando o mapa carregar
+        addLocationMarkers();
 
         setIsLoading(false);
       });
@@ -151,6 +258,11 @@ export const MapboxMap = ({ height = "400px", className = "" }: MapboxMapProps) 
     
     map.current.setStyle(mapStyles[style as keyof typeof mapStyles]);
     setCurrentStyle(style);
+    
+    // Re-adicionar marcadores após mudança de estilo
+    map.current.once('styledata', () => {
+      addLocationMarkers();
+    });
   };
 
   const toggle3D = () => {
@@ -177,11 +289,19 @@ export const MapboxMap = ({ height = "400px", className = "" }: MapboxMapProps) 
     }
 
     return () => {
+      clearMarkers();
       if (map.current) {
         map.current.remove();
       }
     };
   }, []);
+
+  // Atualizar marcadores quando as localizações mudarem
+  useEffect(() => {
+    if (map.current) {
+      addLocationMarkers();
+    }
+  }, [locations]);
 
   const handleApiKeySubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -194,6 +314,7 @@ export const MapboxMap = ({ height = "400px", className = "" }: MapboxMapProps) 
     localStorage.removeItem('mapbox_api_key');
     setApiKey('');
     setShowApiKeyInput(true);
+    clearMarkers();
     if (map.current) {
       map.current.remove();
       map.current = null;

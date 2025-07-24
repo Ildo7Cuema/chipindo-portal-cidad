@@ -242,6 +242,54 @@ export type Database = {
         }
         Relationships: []
       }
+      municipality_locations: {
+        Row: {
+          active: boolean
+          address: string | null
+          created_at: string
+          description: string | null
+          email: string | null
+          id: string
+          latitude: number
+          longitude: number
+          name: string
+          opening_hours: string | null
+          phone: string | null
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          address?: string | null
+          created_at?: string
+          description?: string | null
+          email?: string | null
+          id?: string
+          latitude: number
+          longitude: number
+          name: string
+          opening_hours?: string | null
+          phone?: string | null
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          address?: string | null
+          created_at?: string
+          description?: string | null
+          email?: string | null
+          id?: string
+          latitude?: number
+          longitude?: number
+          name?: string
+          opening_hours?: string | null
+          phone?: string | null
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       news: {
         Row: {
           author_id: string
