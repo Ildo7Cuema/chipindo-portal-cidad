@@ -23,6 +23,8 @@ const Auth = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log('Auth page mounted, justRegistered:', justRegistered);
+    
     // Check if registration should be allowed (no existing users)
     const checkExistingUsers = async () => {
       try {
@@ -50,30 +52,36 @@ const Auth = () => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
+        console.log('Auth state change - event:', event, 'session:', !!session, 'justRegistered:', justRegistered);
         setSession(session);
         setUser(session?.user ?? null);
         
         // Only redirect if user didn't just register and is signing in
         if (session?.user && !justRegistered) {
+          console.log('Redirecting to admin...');
           setTimeout(() => {
             navigate("/admin");
           }, 100);
+        } else if (session?.user && justRegistered) {
+          console.log('User just registered, not redirecting');
         }
       }
     );
 
     // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('Initial session check:', !!session, 'justRegistered:', justRegistered);
       setSession(session);
       setUser(session?.user ?? null);
       
-      if (session?.user) {
+      if (session?.user && !justRegistered) {
+        console.log('Existing session found, redirecting to admin...');
         navigate("/admin");
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, justRegistered]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -111,6 +119,7 @@ const Auth = () => {
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    console.log('Starting sign up process...');
 
     try {
       const redirectUrl = `${window.location.origin}/`;
@@ -127,15 +136,19 @@ const Auth = () => {
       });
 
       if (error) {
+        console.error('Sign up error:', error);
         toast({
           title: "Erro ao criar conta",
           description: error.message,
           variant: "destructive",
         });
       } else {
+        console.log('Sign up successful, setting justRegistered to true');
         setJustRegistered(true);
+        console.log('Signing out user...');
         // Sign out immediately after registration to prevent auto-login
         await supabase.auth.signOut();
+        console.log('User signed out successfully');
         toast({
           title: "Conta criada com sucesso",
           description: "Agora você pode fazer login com suas credenciais.",
@@ -144,11 +157,14 @@ const Auth = () => {
         setEmail("");
         setPassword("");
         setFullName("");
+        console.log('Form cleared, setting timeout to reset justRegistered');
         setTimeout(() => {
+          console.log('Resetting justRegistered to false');
           setJustRegistered(false);
         }, 1000);
       }
     } catch (error) {
+      console.error('Unexpected sign up error:', error);
       toast({
         title: "Erro inesperado",
         description: "Ocorreu um erro durante o registro. Tente novamente.",
