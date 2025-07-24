@@ -65,6 +65,39 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_notifications: {
+        Row: {
+          created_at: string
+          data: Json | null
+          id: string
+          message: string
+          read: boolean
+          title: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json | null
+          id?: string
+          message: string
+          read?: boolean
+          title: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json | null
+          id?: string
+          message?: string
+          read?: boolean
+          title?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       concursos: {
         Row: {
           contact_info: string | null
@@ -130,6 +163,48 @@ export type Database = {
           id?: string
           nome?: string
           ordem?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      interest_registrations: {
+        Row: {
+          additional_info: string | null
+          areas_of_interest: string[]
+          created_at: string
+          email: string
+          experience_years: number | null
+          full_name: string
+          id: string
+          phone: string | null
+          profession: string | null
+          terms_accepted: boolean
+          updated_at: string
+        }
+        Insert: {
+          additional_info?: string | null
+          areas_of_interest: string[]
+          created_at?: string
+          email: string
+          experience_years?: number | null
+          full_name: string
+          id?: string
+          phone?: string | null
+          profession?: string | null
+          terms_accepted?: boolean
+          updated_at?: string
+        }
+        Update: {
+          additional_info?: string | null
+          areas_of_interest?: string[]
+          created_at?: string
+          email?: string
+          experience_years?: number | null
+          full_name?: string
+          id?: string
+          phone?: string | null
+          profession?: string | null
+          terms_accepted?: boolean
           updated_at?: string
         }
         Relationships: []

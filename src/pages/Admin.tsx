@@ -19,6 +19,7 @@ import { DashboardStats } from "@/components/admin/DashboardStats";
 import { SystemSettings } from "@/components/admin/SystemSettings";
 import { SiteContentManager } from "@/components/admin/SiteContentManager";
 import { useUserRole } from "@/hooks/useUserRole";
+import NotificationsManager from "@/components/admin/NotificationsManager";
 
 const Admin = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -152,8 +153,9 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="dashboard" className="space-y-6">
-          <TabsList className={`grid w-full ${isAdmin ? 'grid-cols-9' : 'grid-cols-7'}`}>
+          <TabsList className={`grid w-full ${isAdmin ? 'grid-cols-10' : 'grid-cols-8'}`}>
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+            <TabsTrigger value="notifications">Notificações</TabsTrigger>
             <TabsTrigger value="news">Notícias</TabsTrigger>
             <TabsTrigger value="concursos">Concursos</TabsTrigger>
             <TabsTrigger value="acervo">Acervo Digital</TabsTrigger>
@@ -164,9 +166,13 @@ const Admin = () => {
             {isAdmin && <TabsTrigger value="settings">Configurações</TabsTrigger>}
           </TabsList>
 
-          <TabsContent value="dashboard">
-            <DashboardStats />
-          </TabsContent>
+              <TabsContent value="dashboard">
+                <DashboardStats />
+              </TabsContent>
+
+              <TabsContent value="notifications">
+                <NotificationsManager />
+              </TabsContent>
 
           <TabsContent value="news">
             <NewsManager />

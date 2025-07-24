@@ -10,9 +10,11 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { UserIcon, BriefcaseIcon, GraduationCapIcon, PhoneIcon, MailIcon } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const RegisterInterest = () => {
   const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -48,7 +50,7 @@ const RegisterInterest = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.acceptTerms) {
@@ -69,23 +71,50 @@ const RegisterInterest = () => {
       return;
     }
 
-    // Simulate form submission
-    toast({
-      title: "Sucesso!",
-      description: "O seu registo de interesse foi enviado com sucesso. Entraremos em contacto quando surgirem oportunidades nas suas áreas de interesse."
-    });
+    setLoading(true);
 
-    // Reset form
-    setFormData({
-      fullName: "",
-      email: "",
-      phone: "",
-      education: "",
-      experience: "",
-      areasOfInterest: [],
-      additionalInfo: "",
-      acceptTerms: false
-    });
+    try {
+      const { error } = await supabase
+        .from('interest_registrations')
+        .insert({
+          full_name: formData.fullName,
+          email: formData.email,
+          phone: formData.phone || null,
+          profession: formData.experience || null,
+          areas_of_interest: formData.areasOfInterest,
+          additional_info: formData.additionalInfo || null,
+          terms_accepted: formData.acceptTerms
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Sucesso!",
+        description: "O seu registo de interesse foi enviado com sucesso. Entraremos em contacto quando surgirem oportunidades nas suas áreas de interesse."
+      });
+
+      // Reset form
+      setFormData({
+        fullName: "",
+        email: "",
+        phone: "",
+        education: "",
+        experience: "",
+        areasOfInterest: [],
+        additionalInfo: "",
+        acceptTerms: false
+      });
+
+    } catch (error: any) {
+      console.error('Erro ao registrar interesse:', error);
+      toast({
+        title: "Erro",
+        description: "Ocorreu um erro ao enviar o registo. Tente novamente.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -278,8 +307,8 @@ const RegisterInterest = () => {
                   </Label>
                 </div>
 
-                <Button type="submit" className="w-full" size="lg">
-                  Registar Interesse
+                <Button type="submit" className="w-full" size="lg" disabled={loading}>
+                  {loading ? "A processar..." : "Registar Interesse"}
                 </Button>
               </form>
             </CardContent>
