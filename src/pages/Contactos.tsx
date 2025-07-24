@@ -18,72 +18,14 @@ import {
 } from "lucide-react";
 import { MapboxMap } from "@/components/MapboxMap";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { useEmergencyContacts } from "@/hooks/useEmergencyContacts";
+import { useDepartamentos } from "@/hooks/useDepartamentos";
 
-const contactosData = [
-  {
-    id: 1,
-    title: "Administração Municipal",
-    endereco: "Rua Principal, nº 123, Chipindo",
-    telefone: "+244 923 456 789",
-    email: "geral@chipindo.gov.ao",
-    horario: "Segunda a Sexta: 08:00 - 16:00",
-    responsavel: "Administrador Municipal",
-    icon: BuildingIcon
-  },
-  {
-    id: 2,
-    title: "Direção de Educação",
-    endereco: "Rua da Educação, nº 45, Chipindo",
-    telefone: "+244 923 456 790",
-    email: "educacao@chipindo.gov.ao",
-    horario: "Segunda a Sexta: 07:30 - 15:30",
-    responsavel: "Diretor de Educação",
-    icon: BuildingIcon
-  },
-  {
-    id: 3,
-    title: "Direção de Saúde",
-    endereco: "Hospital Municipal, Chipindo",
-    telefone: "+244 923 456 791",
-    email: "saude@chipindo.gov.ao",
-    horario: "24 horas (Urgências)",
-    responsavel: "Diretor de Saúde",
-    icon: BuildingIcon
-  },
-  {
-    id: 4,
-    title: "Direção de Obras Públicas",
-    endereco: "Rua das Obras, nº 67, Chipindo",
-    telefone: "+244 923 456 792",
-    email: "obras@chipindo.gov.ao",
-    horario: "Segunda a Sexta: 08:00 - 16:00",
-    responsavel: "Diretor de Obras",
-    icon: BuildingIcon
-  },
-  {
-    id: 5,
-    title: "Direção de Agricultura",
-    endereco: "Campos de Demonstração, Chipindo",
-    telefone: "+244 923 456 793",
-    email: "agricultura@chipindo.gov.ao",
-    horario: "Segunda a Sexta: 07:00 - 15:00",
-    responsavel: "Diretor de Agricultura",
-    icon: BuildingIcon
-  },
-  {
-    id: 6,
-    title: "Registo Civil",
-    endereco: "Rua Principal, nº 123, Chipindo",
-    telefone: "+244 923 456 794",
-    email: "registo@chipindo.gov.ao",
-    horario: "Segunda a Sexta: 08:00 - 16:00",
-    responsavel: "Conservador do Registo",
-    icon: BuildingIcon
-  }
-];
 
 export default function Contactos() {
   const { settings } = useSiteSettings();
+  const { contacts: emergencyContacts } = useEmergencyContacts();
+  const { departamentos } = useDepartamentos();
   const [formData, setFormData] = useState({
     nome: "",
     email: "",
@@ -266,18 +208,15 @@ export default function Contactos() {
                 <CardTitle className="text-red-600">Contactos de Emergência</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="font-medium">Bombeiros</span>
-                  <span className="text-red-600 font-bold">115</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="font-medium">Polícia</span>
-                  <span className="text-red-600 font-bold">113</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="font-medium">Hospital Municipal</span>
-                  <span className="text-red-600 font-bold">+244 923 456 791</span>
-                </div>
+                {emergencyContacts.map((contact) => (
+                  <div key={contact.id} className="flex items-center justify-between">
+                    <span className="font-medium">{contact.name}</span>
+                    <span className="text-red-600 font-bold">{contact.phone}</span>
+                  </div>
+                ))}
+                {emergencyContacts.length === 0 && (
+                  <p className="text-muted-foreground text-sm">Nenhum contacto de emergência cadastrado.</p>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -287,43 +226,43 @@ export default function Contactos() {
         <div className="mt-12">
           <h2 className="text-2xl font-bold text-foreground mb-6">Contactos por Direção</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {contactosData.map(contacto => {
-              const IconComponent = contacto.icon;
-              return (
-                <Card key={contacto.id} className="hover:shadow-elegant transition-all duration-300">
-                  <CardHeader>
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="p-2 rounded-lg bg-primary/10">
-                        <IconComponent className="w-5 h-5 text-primary" />
-                      </div>
-                      <CardTitle className="text-lg">{contacto.title}</CardTitle>
+            {departamentos.map(departamento => (
+              <Card key={departamento.id} className="hover:shadow-elegant transition-all duration-300">
+                <CardHeader>
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="p-2 rounded-lg bg-primary/10">
+                      <BuildingIcon className="w-5 h-5 text-primary" />
                     </div>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
+                    <CardTitle className="text-lg">{departamento.nome}</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {departamento.descricao && (
                     <div className="flex items-start gap-2">
-                      <MapPinIcon className="w-4 h-4 text-muted-foreground mt-1" />
-                      <p className="text-sm text-muted-foreground">{contacto.endereco}</p>
+                      <MessageSquareIcon className="w-4 h-4 text-muted-foreground mt-1" />
+                      <p className="text-sm text-muted-foreground">{departamento.descricao}</p>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <PhoneIcon className="w-4 h-4 text-muted-foreground" />
-                      <p className="text-sm">{contacto.telefone}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <MailIcon className="w-4 h-4 text-muted-foreground" />
-                      <p className="text-sm">{contacto.email}</p>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <ClockIcon className="w-4 h-4 text-muted-foreground mt-1" />
-                      <p className="text-sm text-muted-foreground">{contacto.horario}</p>
-                    </div>
+                  )}
+                  {departamento.codigo && (
                     <div className="flex items-center gap-2">
                       <UserIcon className="w-4 h-4 text-muted-foreground" />
-                      <p className="text-sm font-medium">{contacto.responsavel}</p>
+                      <p className="text-sm font-medium">Código: {departamento.codigo}</p>
                     </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
+                  )}
+                  <div className="flex items-start gap-2">
+                    <ClockIcon className="w-4 h-4 text-muted-foreground mt-1" />
+                    <p className="text-sm text-muted-foreground">
+                      {settings?.opening_hours_weekdays || 'Horário não definido'}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+            {departamentos.length === 0 && (
+              <div className="col-span-full text-center py-8">
+                <p className="text-muted-foreground">Nenhum departamento cadastrado.</p>
+              </div>
+            )}
           </div>
         </div>
       </main>

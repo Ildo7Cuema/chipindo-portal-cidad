@@ -20,6 +20,7 @@ import { SystemSettings } from "@/components/admin/SystemSettings";
 import { SiteContentManager } from "@/components/admin/SiteContentManager";
 import { HeroCarouselManager } from "@/components/admin/HeroCarouselManager";
 import { LocationsManager } from "@/components/admin/LocationsManager";
+import { EmergencyContactsManager } from "@/components/admin/EmergencyContactsManager";
 import { useUserRole } from "@/hooks/useUserRole";
 import NotificationsManager from "@/components/admin/NotificationsManager";
 
@@ -165,7 +166,8 @@ const Admin = () => {
             <TabsTrigger value="departamentos">Direcções</TabsTrigger>
             <TabsTrigger value="content">Conteúdo</TabsTrigger>
             <TabsTrigger value="carousel">Carrossel</TabsTrigger>
-            <TabsTrigger value="locations">Localizações</TabsTrigger>
+          <TabsTrigger value="locations">Localizações</TabsTrigger>
+          <TabsTrigger value="emergency-contacts">Emergências</TabsTrigger>
             {isAdmin && <TabsTrigger value="users">Usuários</TabsTrigger>}
             {isAdmin && <TabsTrigger value="settings">Configurações</TabsTrigger>}
           </TabsList>
@@ -206,9 +208,13 @@ const Admin = () => {
               <HeroCarouselManager />
             </TabsContent>
             
-            <TabsContent value="locations">
-              <LocationsManager />
-            </TabsContent>
+        <TabsContent value="locations">
+          <LocationsManager />
+        </TabsContent>
+        
+        <TabsContent value="emergency-contacts">
+          <EmergencyContactsManager />
+        </TabsContent>
 
           {isAdmin && (
             <TabsContent value="users">
