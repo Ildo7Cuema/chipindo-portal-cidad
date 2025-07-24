@@ -25,8 +25,24 @@ export const MapboxMap = ({ height = "400px", className = "" }: MapboxMapProps) 
   const { settings } = useSiteSettings();
   const markersRef = useRef<mapboxgl.Marker[]>([]);
 
-  // Coordenadas de Chipindo, Huíla, Angola
-  const chipindoLocation: [number, number] = [12.9167, -15.1167]; // lng, lat para Mapbox
+  // Função para obter coordenadas do centro baseado nas localizações cadastradas
+  const getMapCenter = (): [number, number] => {
+    if (locations.length === 0) {
+      return [12.9167, -15.1167]; // Default Chipindo coordinates
+    }
+    
+    // Use a primeira localização como centro, ou calcule a média se múltiplas localizações
+    if (locations.length === 1) {
+      return [Number(locations[0].longitude), Number(locations[0].latitude)];
+    }
+    
+    // Calcule coordenadas médias para múltiplas localizações
+    const avgLng = locations.reduce((sum, loc) => sum + Number(loc.longitude), 0) / locations.length;
+    const avgLat = locations.reduce((sum, loc) => sum + Number(loc.latitude), 0) / locations.length;
+    return [avgLng, avgLat];
+  };
+
+  const chipindoLocation = getMapCenter();
 
   const clearMarkers = () => {
     markersRef.current.forEach(marker => marker.remove());
@@ -146,8 +162,8 @@ export const MapboxMap = ({ height = "400px", className = "" }: MapboxMapProps) 
       const mapInstance = new mapboxgl.Map({
         container: mapContainer.current,
         style: mapStyles.streets,
-        center: chipindoLocation,
-        zoom: 12,
+        center: getMapCenter(),
+        zoom: locations.length > 1 ? 10 : 12, // Zoom out if multiple locations
         pitch: 0,
         bearing: 0,
         antialias: true
