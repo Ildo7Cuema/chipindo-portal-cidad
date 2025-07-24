@@ -20,7 +20,9 @@ const RegisterInterest = () => {
     email: "",
     phone: "",
     education: "",
-    experience: "",
+    profession: "",
+    experienceYears: "",
+    professionalDetails: "",
     areasOfInterest: [] as string[],
     additionalInfo: "",
     acceptTerms: false
@@ -80,9 +82,12 @@ const RegisterInterest = () => {
           full_name: formData.fullName,
           email: formData.email,
           phone: formData.phone || null,
-          profession: formData.experience || null,
+          profession: formData.profession || null,
+          experience_years: formData.experienceYears ? parseInt(formData.experienceYears) : null,
           areas_of_interest: formData.areasOfInterest,
-          additional_info: formData.additionalInfo || null,
+          additional_info: [formData.professionalDetails, formData.additionalInfo]
+            .filter(info => info && info.trim())
+            .join('\n\nInformações Adicionais:\n') || null,
           terms_accepted: formData.acceptTerms
         });
 
@@ -99,7 +104,9 @@ const RegisterInterest = () => {
         email: "",
         phone: "",
         education: "",
-        experience: "",
+        profession: "",
+        experienceYears: "",
+        professionalDetails: "",
         areasOfInterest: [],
         additionalInfo: "",
         acceptTerms: false
@@ -249,13 +256,38 @@ const RegisterInterest = () => {
                     </Select>
                   </div>
                   
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="profession">Profissão</Label>
+                      <Input
+                        id="profession"
+                        value={formData.profession}
+                        onChange={(e) => setFormData(prev => ({ ...prev, profession: e.target.value }))}
+                        placeholder="Digite a sua profissão"
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="experienceYears">Anos de Experiência</Label>
+                      <Input
+                        id="experienceYears"
+                        type="number"
+                        min="0"
+                        max="50"
+                        value={formData.experienceYears}
+                        onChange={(e) => setFormData(prev => ({ ...prev, experienceYears: e.target.value }))}
+                        placeholder="Ex: 5"
+                      />
+                    </div>
+                  </div>
+                  
                   <div>
-                    <Label htmlFor="experience">Experiência Profissional</Label>
+                    <Label htmlFor="additionalProfessionalInfo">Experiência Profissional Detalhada</Label>
                     <Textarea
-                      id="experience"
-                      value={formData.experience}
-                      onChange={(e) => setFormData(prev => ({ ...prev, experience: e.target.value }))}
-                      placeholder="Descreva brevemente a sua experiência profissional..."
+                      id="additionalProfessionalInfo"
+                      value={formData.professionalDetails}
+                      onChange={(e) => setFormData(prev => ({ ...prev, professionalDetails: e.target.value }))}
+                      placeholder="Descreva brevemente a sua experiência profissional, competências e qualificações relevantes..."
                       rows={3}
                     />
                   </div>
