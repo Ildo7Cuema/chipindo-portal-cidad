@@ -59,12 +59,18 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
 
   const updateUserRole = async (userId: string, newRole: UserRole) => {
     try {
+      console.log('Updating user role:', { userId, newRole });
+      
       const { error } = await supabase
         .from('profiles')
-        .update({ role: newRole })
+        .update({ 
+          role: newRole,
+          updated_at: new Date().toISOString()
+        })
         .eq('user_id', userId);
 
       if (error) {
+        console.error('Supabase error:', error);
         toast({
           title: "Erro ao atualizar usuário",
           description: error.message,
@@ -78,6 +84,7 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
         fetchUsers();
       }
     } catch (error) {
+      console.error('Unexpected error:', error);
       toast({
         title: "Erro inesperado",
         description: "Ocorreu um erro ao atualizar o usuário.",
