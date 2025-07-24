@@ -2,57 +2,53 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CalendarIcon, EyeIcon, ArrowRightIcon } from "lucide-react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface NewsItem {
   id: string;
   title: string;
   excerpt: string;
-  date: string;
-  views: number;
+  created_at: string;
   category: string;
-  image?: string;
+  image_url?: string;
   featured?: boolean;
 }
 
-const mockNews: NewsItem[] = [
-  {
-    id: "1",
-    title: "Nova Escola Primária inaugurada no Bairro Central",
-    excerpt: "A Administração Municipal inaugurou uma moderna escola primária com capacidade para 500 alunos, equipada com biblioteca e laboratório de informática.",
-    date: "2024-01-15",
-    views: 1250,
-    category: "Educação",
-    featured: true
-  },
-  {
-    id: "2", 
-    title: "Centro de Saúde de Chipindo recebe novos equipamentos",
-    excerpt: "Investimento em equipamentos médicos modernos fortalece os serviços de saúde oferecidos aos cidadãos do município.",
-    date: "2024-01-12",
-    views: 892,
-    category: "Saúde"
-  },
-  {
-    id: "3",
-    title: "Obras de pavimentação da Rua Principal concluídas",
-    excerpt: "Concluídas as obras de pavimentação de 5km da Rua Principal, melhorando a mobilidade urbana e o acesso ao centro da cidade.",
-    date: "2024-01-10",
-    views: 756,
-    category: "Obras Públicas"
-  },
-  {
-    id: "4",
-    title: "Programa de capacitação para jovens empreendedores",
-    excerpt: "Iniciativa visa formar jovens em técnicas de gestão e empreendedorismo, promovendo o desenvolvimento económico local.",
-    date: "2024-01-08",
-    views: 643,
-    category: "Desenvolvimento"
-  }
-];
-
 export const NewsSection = () => {
-  const featuredNews = mockNews.find(news => news.featured);
-  const regularNews = mockNews.filter(news => !news.featured);
+  const [news, setNews] = useState<NewsItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchNews();
+  }, []);
+
+  const fetchNews = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('news')
+        .select('id, title, excerpt, created_at, image_url, featured')
+        .eq('published', true)
+        .order('created_at', { ascending: false })
+        .limit(6);
+
+      if (error) throw error;
+
+      const newsWithCategories = data?.map(item => ({
+        ...item,
+        category: 'Notícias' // Default category since we don't have categories in DB yet
+      })) || [];
+
+      setNews(newsWithCategories);
+    } catch (error) {
+      console.error('Error fetching news:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const featuredNews = news.find(newsItem => newsItem.featured);
+  const regularNews = news.filter(newsItem => !newsItem.featured).slice(0, 3);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('pt-AO', {
@@ -61,6 +57,34 @@ export const NewsSection = () => {
       year: 'numeric'
     });
   };
+
+  if (loading) {
+    return (
+      <section id="noticias" className="py-20 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              Últimas Notícias
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Mantenha-se informado sobre os principais acontecimentos e 
+              desenvolvimentos do município de Chipindo
+            </p>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2">
+              <div className="animate-pulse bg-muted rounded-lg h-96" />
+            </div>
+            <div className="space-y-6">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="animate-pulse bg-muted rounded-lg h-32" />
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   const getCategoryColor = (category: string) => {
     const colors = {
@@ -102,11 +126,7 @@ export const NewsSection = () => {
                       <div className="flex items-center gap-4 text-white/80 text-sm">
                         <div className="flex items-center gap-1">
                           <CalendarIcon className="w-4 h-4" />
-                          {formatDate(featuredNews.date)}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <EyeIcon className="w-4 h-4" />
-                          {featuredNews.views.toLocaleString()} visualizações
+                          {formatDate(featuredNews.created_at)}
                         </div>
                       </div>
                     </div>
@@ -134,10 +154,9 @@ export const NewsSection = () => {
                     <Badge variant="outline" className={getCategoryColor(news.category)}>
                       {news.category}
                     </Badge>
-                    <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                      <EyeIcon className="w-3 h-3" />
-                      {news.views}
-                    </div>
+                    <span className="text-sm text-muted-foreground">
+                      {formatDate(news.created_at)}
+                    </span>
                   </div>
                   <CardTitle className="text-lg leading-tight hover:text-primary transition-colors cursor-pointer">
                     {news.title}
@@ -150,7 +169,7 @@ export const NewsSection = () => {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1 text-xs text-muted-foreground">
                       <CalendarIcon className="w-3 h-3" />
-                      {formatDate(news.date)}
+                      {formatDate(news.created_at)}
                     </div>
                     <Button variant="ghost" size="sm" className="text-primary">
                       Ler mais

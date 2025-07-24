@@ -2,56 +2,45 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CalendarIcon, UsersIcon, MapPinIcon, ClockIcon, FileTextIcon } from "lucide-react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Concurso {
   id: string;
   title: string;
-  department: string;
-  category: string;
-  openDate: string;
-  closeDate: string;
-  vacancies: number;
-  requirements: string[];
-  status: 'open' | 'closing-soon' | 'closed';
+  description: string;
+  created_at: string;
+  deadline?: string;
+  requirements?: string;
+  contact_info?: string;
+  published: boolean;
 }
 
-const mockConcursos: Concurso[] = [
-  {
-    id: "1",
-    title: "Professor de Ensino Primário",
-    department: "Direção de Educação",
-    category: "Técnico Superior",
-    openDate: "2024-01-15",
-    closeDate: "2024-02-15",
-    vacancies: 15,
-    requirements: ["Licenciatura em Ciências da Educação", "Experiência mínima de 2 anos"],
-    status: "open"
-  },
-  {
-    id: "2",
-    title: "Enfermeiro Especialista", 
-    department: "Direção de Saúde",
-    category: "Técnico Superior",
-    openDate: "2024-01-10",
-    closeDate: "2024-02-10",
-    vacancies: 8,
-    requirements: ["Licenciatura em Enfermagem", "Especialização em área específica"],
-    status: "closing-soon"
-  },
-  {
-    id: "3",
-    title: "Engenheiro Civil",
-    department: "Direção de Obras Públicas", 
-    category: "Técnico Superior",
-    openDate: "2024-01-20",
-    closeDate: "2024-02-20",
-    vacancies: 5,
-    requirements: ["Licenciatura em Engenharia Civil", "Experiência em obras públicas"],
-    status: "open"
-  }
-];
-
 export const ConcursosSection = () => {
+  const [concursos, setConcursos] = useState<Concurso[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchConcursos();
+  }, []);
+
+  const fetchConcursos = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('concursos')
+        .select('*')
+        .eq('published', true)
+        .order('created_at', { ascending: false })
+        .limit(6);
+
+      if (error) throw error;
+      setConcursos(data || []);
+    } catch (error) {
+      console.error('Error fetching concursos:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('pt-AO', {
       day: 'numeric',
@@ -60,26 +49,55 @@ export const ConcursosSection = () => {
     });
   };
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'open':
-        return <Badge className="bg-green-100 text-green-800">Aberto</Badge>;
-      case 'closing-soon':
-        return <Badge className="bg-yellow-100 text-yellow-800">Termina em breve</Badge>;
-      case 'closed':
-        return <Badge variant="secondary">Encerrado</Badge>;
-      default:
-        return <Badge variant="outline">Status desconhecido</Badge>;
+  const getStatusBadge = (concurso: Concurso) => {
+    if (!concurso.deadline) {
+      return <Badge className="bg-blue-100 text-blue-800">Disponível</Badge>;
+    }
+    
+    const today = new Date();
+    const deadline = new Date(concurso.deadline);
+    const daysRemaining = Math.ceil((deadline.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    
+    if (daysRemaining < 0) {
+      return <Badge variant="secondary">Encerrado</Badge>;
+    } else if (daysRemaining <= 7) {
+      return <Badge className="bg-yellow-100 text-yellow-800">Termina em breve</Badge>;
+    } else {
+      return <Badge className="bg-green-100 text-green-800">Aberto</Badge>;
     }
   };
 
-  const getDaysRemaining = (closeDate: string) => {
+  const getDaysRemaining = (deadline?: string) => {
+    if (!deadline) return null;
     const today = new Date();
-    const close = new Date(closeDate);
+    const close = new Date(deadline);
     const diffTime = close.getTime() - today.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays;
+    return diffDays > 0 ? diffDays : 0;
   };
+
+  if (loading) {
+    return (
+      <section id="concursos" className="py-20 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              Concursos Públicos
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Oportunidades de carreira na Administração Municipal de Chipindo. 
+              Inscreva-se online e faça parte da nossa equipa.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3].map(i => (
+              <div key={i} className="animate-pulse bg-muted rounded-lg h-64" />
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="concursos" className="py-20 bg-muted/30">
@@ -95,80 +113,78 @@ export const ConcursosSection = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {mockConcursos.map((concurso) => {
-            const daysRemaining = getDaysRemaining(concurso.closeDate);
-            
-            return (
-              <Card key={concurso.id} className="overflow-hidden hover:shadow-elegant transition-all duration-300">
-                <CardHeader>
-                  <div className="flex items-center justify-between mb-2">
-                    {getStatusBadge(concurso.status)}
-                    <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                      <UsersIcon className="w-4 h-4" />
-                      {concurso.vacancies} vagas
-                    </div>
-                  </div>
-                  <CardTitle className="text-lg leading-tight">
-                    {concurso.title}
-                  </CardTitle>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <MapPinIcon className="w-4 h-4" />
-                    {concurso.department}
-                  </div>
-                </CardHeader>
-                
-                <CardContent className="space-y-4">
-                  <div className="bg-muted/50 rounded-lg p-3 space-y-2">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Categoria:</span>
-                      <span className="font-medium">{concurso.category}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Abertura:</span>
-                      <span>{formatDate(concurso.openDate)}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Encerramento:</span>
-                      <span className="font-medium text-primary">
-                        {formatDate(concurso.closeDate)}
+          {concursos.length === 0 ? (
+            <div className="col-span-full text-center py-12">
+              <p className="text-muted-foreground">Nenhum concurso público disponível no momento.</p>
+            </div>
+          ) : (
+            concursos.map((concurso) => {
+              const daysRemaining = getDaysRemaining(concurso.deadline);
+              
+              return (
+                <Card key={concurso.id} className="overflow-hidden hover:shadow-elegant transition-all duration-300">
+                  <CardHeader>
+                    <div className="flex items-center justify-between mb-2">
+                      {getStatusBadge(concurso)}
+                      <span className="text-sm text-muted-foreground">
+                        {formatDate(concurso.created_at)}
                       </span>
                     </div>
-                  </div>
+                    <CardTitle className="text-lg leading-tight">
+                      {concurso.title}
+                    </CardTitle>
+                  </CardHeader>
+                  
+                  <CardContent className="space-y-4">
+                    <p className="text-sm text-muted-foreground line-clamp-3">
+                      {concurso.description}
+                    </p>
 
-                  {daysRemaining > 0 && (
-                    <div className="flex items-center gap-2 text-sm text-accent">
-                      <ClockIcon className="w-4 h-4" />
-                      <span className="font-medium">
-                        {daysRemaining} dias restantes
-                      </span>
+                    {concurso.deadline && (
+                      <div className="bg-muted/50 rounded-lg p-3 space-y-2">
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-muted-foreground">Prazo:</span>
+                          <span className="font-medium text-primary">
+                            {formatDate(concurso.deadline)}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    {daysRemaining && daysRemaining > 0 && (
+                      <div className="flex items-center gap-2 text-sm text-accent">
+                        <ClockIcon className="w-4 h-4" />
+                        <span className="font-medium">
+                          {daysRemaining} dias restantes
+                        </span>
+                      </div>
+                    )}
+
+                    {concurso.requirements && (
+                      <div className="space-y-2">
+                        <h4 className="text-sm font-medium">Requisitos:</h4>
+                        <p className="text-sm text-muted-foreground line-clamp-3">
+                          {concurso.requirements}
+                        </p>
+                      </div>
+                    )}
+
+                    <div className="flex gap-2">
+                      <Button variant="institutional" size="sm" className="flex-1">
+                        <FileTextIcon className="w-4 h-4" />
+                        Ver detalhes
+                      </Button>
+                      {concurso.contact_info && (
+                        <Button variant="outline" size="sm">
+                          Contacto
+                        </Button>
+                      )}
                     </div>
-                  )}
-
-                  <div className="space-y-2">
-                    <h4 className="text-sm font-medium">Requisitos principais:</h4>
-                    <ul className="text-sm text-muted-foreground space-y-1">
-                      {concurso.requirements.map((req, index) => (
-                        <li key={index} className="flex items-start gap-2">
-                          <div className="w-1.5 h-1.5 bg-primary rounded-full mt-2 flex-shrink-0" />
-                          {req}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className="flex gap-2">
-                    <Button variant="institutional" size="sm" className="flex-1">
-                      <FileTextIcon className="w-4 h-4" />
-                      Inscrever-se
-                    </Button>
-                    <Button variant="outline" size="sm">
-                      Detalhes
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
+                  </CardContent>
+                </Card>
+              );
+            })
+          )}
         </div>
 
         {/* Call to Action */}
