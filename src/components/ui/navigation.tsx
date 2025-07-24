@@ -33,7 +33,11 @@ export const Navigation = ({ className }: NavigationProps) => {
             {item.label}
           </a>
         ))}
-        <Button variant="institutional" size="sm">
+        <Button 
+          variant="institutional" 
+          size="sm"
+          onClick={() => window.location.href = '/auth'}
+        >
           Área Administrativa
         </Button>
       </div>
@@ -66,7 +70,12 @@ export const Navigation = ({ className }: NavigationProps) => {
               </a>
             ))}
             <div className="pt-3 border-t border-border">
-              <Button variant="institutional" size="sm" className="w-full">
+              <Button 
+                variant="institutional" 
+                size="sm" 
+                className="w-full"
+                onClick={() => window.location.href = '/auth'}
+              >
                 Área Administrativa
               </Button>
             </div>

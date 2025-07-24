@@ -9,6 +9,8 @@ import Concursos from "./pages/Concursos";
 import AcervoDigital from "./pages/AcervoDigital";
 import Servicos from "./pages/Servicos";
 import Contactos from "./pages/Contactos";
+import Auth from "./pages/Auth";
+import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +28,8 @@ const App = () => (
           <Route path="/acervo" element={<AcervoDigital />} />
           <Route path="/servicos" element={<Servicos />} />
           <Route path="/contactos" element={<Contactos />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/admin" element={<Admin />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
