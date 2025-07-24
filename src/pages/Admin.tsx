@@ -12,6 +12,8 @@ import { LogOut, Plus, Edit, Eye, Users } from "lucide-react";
 import { NewsManager } from "@/components/admin/NewsManager";
 import { ConcursosManager } from "@/components/admin/ConcursosManager";
 import { UserManager } from "@/components/admin/UserManager";
+import { DashboardStats } from "@/components/admin/DashboardStats";
+import { SystemSettings } from "@/components/admin/SystemSettings";
 import { useUserRole } from "@/hooks/useUserRole";
 
 const Admin = () => {
@@ -150,67 +152,7 @@ const Admin = () => {
           </TabsList>
 
           <TabsContent value="dashboard">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Eye className="w-5 h-5" />
-                    Estatísticas
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">
-                    Visualize as estatísticas do portal
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Plus className="w-5 h-5" />
-                    Gestão de Conteúdo
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">
-                    Gerencie notícias, concursos e outros conteúdos
-                  </p>
-                </CardContent>
-              </Card>
-
-              {isAdmin && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Users className="w-5 h-5" />
-                      Gestão de Usuários
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground">
-                      Gerencie usuários e suas permissões
-                    </p>
-                  </CardContent>
-                </Card>
-              )}
-
-              {isAdmin && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Edit className="w-5 h-5" />
-                      Configurações
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground">
-                      Configure as opções do portal
-                    </p>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
+            <DashboardStats />
           </TabsContent>
 
           <TabsContent value="news">
@@ -229,16 +171,7 @@ const Admin = () => {
 
           {isAdmin && (
             <TabsContent value="settings">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Configurações do Sistema</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">
-                    Configurações do sistema serão implementadas aqui.
-                  </p>
-                </CardContent>
-              </Card>
+              <SystemSettings />
             </TabsContent>
           )}
         </Tabs>
