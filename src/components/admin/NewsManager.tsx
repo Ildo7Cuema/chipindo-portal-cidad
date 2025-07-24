@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, Edit, Trash2, Eye } from "lucide-react";
+import { Plus, Edit, Trash2, Eye, Upload, X } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 interface NewsItem {
@@ -27,6 +27,10 @@ export const NewsManager = () => {
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingNews, setEditingNews] = useState<NewsItem | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>("");
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     title: "",
     content: "",
@@ -67,6 +71,59 @@ export const NewsManager = () => {
     }
   };
 
+  const handleImageUpload = async (file: File): Promise<string | null> => {
+    try {
+      setUploading(true);
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('news-images')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      const { data } = supabase.storage
+        .from('news-images')
+        .getPublicUrl(filePath);
+
+      return data.publicUrl;
+    } catch (error) {
+      toast({
+        title: "Erro no upload",
+        description: "Não foi possível fazer upload da imagem.",
+        variant: "destructive",
+      });
+      return null;
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeImage = () => {
+    setImageFile(null);
+    setImagePreview("");
+    setFormData({ ...formData, image_url: "" });
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -83,8 +140,22 @@ export const NewsManager = () => {
         return;
       }
 
+      let imageUrl = formData.image_url;
+
+      // Upload da imagem se houver um arquivo selecionado
+      if (imageFile) {
+        const uploadedUrl = await handleImageUpload(imageFile);
+        if (uploadedUrl) {
+          imageUrl = uploadedUrl;
+        } else {
+          setLoading(false);
+          return;
+        }
+      }
+
       const newsData = {
         ...formData,
+        image_url: imageUrl,
         author_id: user.id,
       };
 
@@ -117,6 +188,8 @@ export const NewsManager = () => {
         
         setIsDialogOpen(false);
         setEditingNews(null);
+        setImageFile(null);
+        setImagePreview("");
         setFormData({
           title: "",
           content: "",
@@ -140,6 +213,8 @@ export const NewsManager = () => {
 
   const handleEdit = (newsItem: NewsItem) => {
     setEditingNews(newsItem);
+    setImageFile(null);
+    setImagePreview("");
     setFormData({
       title: newsItem.title,
       content: newsItem.content,
@@ -197,6 +272,8 @@ export const NewsManager = () => {
             <Button 
               onClick={() => {
                 setEditingNews(null);
+                setImageFile(null);
+                setImagePreview("");
                 setFormData({
                   title: "",
                   content: "",
@@ -255,13 +332,47 @@ export const NewsManager = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="image_url">URL da Imagem</Label>
-                <Input
-                  id="image_url"
-                  type="url"
-                  value={formData.image_url}
-                  onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                />
+                <Label>Imagem da Notícia</Label>
+                <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6">
+                  {imagePreview || (editingNews?.image_url && !imageFile) ? (
+                    <div className="relative">
+                      <img
+                        src={imagePreview || editingNews?.image_url}
+                        alt="Preview"
+                        className="w-full h-48 object-cover rounded-lg"
+                      />
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        className="absolute top-2 right-2"
+                        onClick={removeImage}
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="text-center">
+                      <Upload className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Clique para selecionar uma imagem ou arraste aqui
+                      </p>
+                      <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
+                        Selecionar Imagem
+                      </Button>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileSelect}
+                        className="hidden"
+                      />
+                    </div>
+                  )}
+                </div>
+                {uploading && (
+                  <p className="text-sm text-muted-foreground">Fazendo upload da imagem...</p>
+                )}
               </div>
               
               <div className="flex items-center space-x-4">
