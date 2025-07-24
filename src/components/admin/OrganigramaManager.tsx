@@ -44,7 +44,7 @@ const departments = [
   'Departamento de Assuntos Sociais'
 ];
 
-interface Departamento {
+interface Direccao {
   id: string;
   nome: string;
   descricao: string | null;
@@ -55,7 +55,7 @@ interface Departamento {
 
 export function OrganigramaManager() {
   const [members, setMembers] = useState<OrganigramaMember[]>([]);
-  const [departamentos, setDepartamentos] = useState<Departamento[]>([]);
+  const [direcoes, setDirecoes] = useState<Direccao[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingMember, setEditingMember] = useState<OrganigramaMember | null>(null);
   const [loading, setLoading] = useState(true);
@@ -77,10 +77,10 @@ export function OrganigramaManager() {
 
   useEffect(() => {
     fetchMembers();
-    fetchDepartamentos();
+    fetchDirecoes();
   }, []);
 
-  const fetchDepartamentos = async () => {
+  const fetchDirecoes = async () => {
     try {
       const { data, error } = await supabase
         .from('departamentos')
@@ -89,9 +89,9 @@ export function OrganigramaManager() {
         .order('ordem', { ascending: true });
 
       if (error) throw error;
-      setDepartamentos(data || []);
+      setDirecoes(data || []);
     } catch (error) {
-      console.error('Error fetching departamentos:', error);
+      console.error('Error fetching direcoes:', error);
     }
   };
 
@@ -320,18 +320,18 @@ export function OrganigramaManager() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="departamento">Departamento *</Label>
+                  <Label htmlFor="departamento">Direcção *</Label>
                   <Select
                     value={formData.departamento}
                     onValueChange={(value) => setFormData({ ...formData, departamento: value })}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Selecione o departamento" />
+                      <SelectValue placeholder="Selecione a direcção" />
                     </SelectTrigger>
                     <SelectContent>
-                      {departamentos.map((dept) => (
-                        <SelectItem key={dept.id} value={dept.nome}>
-                          {dept.nome}
+                      {direcoes.map((direccao) => (
+                        <SelectItem key={direccao.id} value={direccao.nome}>
+                          {direccao.nome}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -459,14 +459,14 @@ export function OrganigramaManager() {
       </div>
 
       <div className="grid gap-4">
-        {departamentos.map((dept) => {
-          const deptMembers = members.filter(member => member.departamento === dept.nome);
+        {direcoes.map((direccao) => {
+          const deptMembers = members.filter(member => member.departamento === direccao.nome);
           if (deptMembers.length === 0) return null;
 
           return (
-            <Card key={dept.id}>
+            <Card key={direccao.id}>
               <CardHeader>
-                <CardTitle className="text-lg">{dept.nome}</CardTitle>
+                <CardTitle className="text-lg">{direccao.nome}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

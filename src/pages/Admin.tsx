@@ -13,7 +13,7 @@ import { NewsManager } from "@/components/admin/NewsManager";
 import { ConcursosManager } from "@/components/admin/ConcursosManager";
 import AcervoDigitalManager from "@/components/admin/AcervoDigitalManager";
 import { OrganigramaManager } from "@/components/admin/OrganigramaManager";
-import { DepartamentosManager } from "@/components/admin/DepartamentosManager";
+import { DirecoesManager } from "@/components/admin/DepartamentosManager";
 import { UserManager } from "@/components/admin/UserManager";
 import { DashboardStats } from "@/components/admin/DashboardStats";
 import { SystemSettings } from "@/components/admin/SystemSettings";
@@ -158,7 +158,7 @@ const Admin = () => {
             <TabsTrigger value="concursos">Concursos</TabsTrigger>
             <TabsTrigger value="acervo">Acervo Digital</TabsTrigger>
             <TabsTrigger value="organigrama">Organigrama</TabsTrigger>
-            <TabsTrigger value="departamentos">Departamentos</TabsTrigger>
+            <TabsTrigger value="departamentos">Direcções</TabsTrigger>
             <TabsTrigger value="content">Conteúdo</TabsTrigger>
             {isAdmin && <TabsTrigger value="users">Usuários</TabsTrigger>}
             {isAdmin && <TabsTrigger value="settings">Configurações</TabsTrigger>}
@@ -185,7 +185,7 @@ const Admin = () => {
           </TabsContent>
 
           <TabsContent value="departamentos">
-            <DepartamentosManager />
+            <DirecoesManager />
           </TabsContent>
 
           <TabsContent value="content">

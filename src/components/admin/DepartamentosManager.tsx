@@ -11,7 +11,7 @@ import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
 import { Pencil, Trash2, Plus, Building2 } from 'lucide-react';
 
-interface Departamento {
+interface Direccao {
   id: string;
   nome: string;
   descricao: string | null;
@@ -22,10 +22,10 @@ interface Departamento {
   updated_at: string;
 }
 
-export function DepartamentosManager() {
-  const [departamentos, setDepartamentos] = useState<Departamento[]>([]);
+export function DirecoesManager() {
+  const [direcoes, setDirecoes] = useState<Direccao[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingDepartamento, setEditingDepartamento] = useState<Departamento | null>(null);
+  const [editingDirecao, setEditingDirecao] = useState<Direccao | null>(null);
   const [loading, setLoading] = useState(true);
 
   const [formData, setFormData] = useState({
@@ -37,10 +37,10 @@ export function DepartamentosManager() {
   });
 
   useEffect(() => {
-    fetchDepartamentos();
+    fetchDirecoes();
   }, []);
 
-  const fetchDepartamentos = async () => {
+  const fetchDirecoes = async () => {
     try {
       const { data, error } = await supabase
         .from('departamentos')
@@ -48,10 +48,10 @@ export function DepartamentosManager() {
         .order('ordem', { ascending: true });
 
       if (error) throw error;
-      setDepartamentos(data || []);
+      setDirecoes(data || []);
     } catch (error) {
-      console.error('Error fetching departamentos:', error);
-      toast.error('Erro ao carregar departamentos');
+      console.error('Error fetching direcoes:', error);
+      toast.error('Erro ao carregar direcções');
     } finally {
       setLoading(false);
     }
@@ -62,49 +62,49 @@ export function DepartamentosManager() {
     setLoading(true);
 
     try {
-      if (editingDepartamento) {
+      if (editingDirecao) {
         const { error } = await supabase
           .from('departamentos')
           .update(formData)
-          .eq('id', editingDepartamento.id);
+          .eq('id', editingDirecao.id);
 
         if (error) throw error;
-        toast.success('Departamento atualizado com sucesso!');
+        toast.success('Direcção atualizada com sucesso!');
       } else {
         const { error } = await supabase
           .from('departamentos')
           .insert([formData]);
 
         if (error) throw error;
-        toast.success('Departamento adicionado com sucesso!');
+        toast.success('Direcção adicionada com sucesso!');
       }
 
       setIsDialogOpen(false);
-      setEditingDepartamento(null);
+      setEditingDirecao(null);
       resetForm();
-      fetchDepartamentos();
+      fetchDirecoes();
     } catch (error) {
       console.error('Error saving departamento:', error);
-      toast.error('Erro ao salvar departamento');
+      toast.error('Erro ao salvar direcção');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleEdit = (departamento: Departamento) => {
-    setEditingDepartamento(departamento);
+  const handleEdit = (direccao: Direccao) => {
+    setEditingDirecao(direccao);
     setFormData({
-      nome: departamento.nome,
-      descricao: departamento.descricao || '',
-      codigo: departamento.codigo || '',
-      ordem: departamento.ordem,
-      ativo: departamento.ativo
+      nome: direccao.nome,
+      descricao: direccao.descricao || '',
+      codigo: direccao.codigo || '',
+      ordem: direccao.ordem,
+      ativo: direccao.ativo
     });
     setIsDialogOpen(true);
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Tem certeza que deseja excluir este departamento?')) return;
+    if (!confirm('Tem certeza que deseja excluir esta direcção?')) return;
 
     try {
       const { error } = await supabase
@@ -113,11 +113,11 @@ export function DepartamentosManager() {
         .eq('id', id);
 
       if (error) throw error;
-      toast.success('Departamento excluído com sucesso!');
-      fetchDepartamentos();
+      toast.success('Direcção excluída com sucesso!');
+      fetchDirecoes();
     } catch (error) {
       console.error('Error deleting departamento:', error);
-      toast.error('Erro ao excluir departamento');
+      toast.error('Erro ao excluir direcção');
     }
   };
 
@@ -133,12 +133,12 @@ export function DepartamentosManager() {
 
   const openDialog = () => {
     resetForm();
-    setEditingDepartamento(null);
+    setEditingDirecao(null);
     setIsDialogOpen(true);
   };
 
-  if (loading && departamentos.length === 0) {
-    return <div className="p-6">Carregando departamentos...</div>;
+  if (loading && direcoes.length === 0) {
+    return <div className="p-6">Carregando direcções...</div>;
   }
 
   return (
@@ -146,25 +146,25 @@ export function DepartamentosManager() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Building2 className="h-6 w-6" />
-          <h2 className="text-2xl font-bold">Gestão de Departamentos</h2>
+          <h2 className="text-2xl font-bold">Gestão de Direcções</h2>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button onClick={openDialog}>
               <Plus className="h-4 w-4 mr-2" />
-              Adicionar Departamento
+              Adicionar Direcção
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>
-                {editingDepartamento ? 'Editar Departamento' : 'Adicionar Departamento'}
+                {editingDirecao ? 'Editar Direcção' : 'Adicionar Direcção'}
               </DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="nome">Nome do Departamento *</Label>
+                  <Label htmlFor="nome">Nome da Direcção *</Label>
                   <Input
                     id="nome"
                     value={formData.nome}
@@ -191,7 +191,7 @@ export function DepartamentosManager() {
                   value={formData.descricao}
                   onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
                   rows={3}
-                  placeholder="Descrição das atividades e responsabilidades do departamento"
+                  placeholder="Descrição das atividades e responsabilidades da direcção"
                 />
               </div>
 
@@ -224,7 +224,7 @@ export function DepartamentosManager() {
                   Cancelar
                 </Button>
                 <Button type="submit" disabled={loading}>
-                  {loading ? 'Salvando...' : editingDepartamento ? 'Atualizar' : 'Adicionar'}
+                  {loading ? 'Salvando...' : editingDirecao ? 'Atualizar' : 'Adicionar'}
                 </Button>
               </div>
             </form>
@@ -233,15 +233,15 @@ export function DepartamentosManager() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {departamentos.map((departamento) => (
-          <Card key={departamento.id} className="hover:shadow-lg transition-shadow">
+        {direcoes.map((direccao) => (
+          <Card key={direccao.id} className="hover:shadow-lg transition-shadow">
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between">
                 <div className="flex-1 min-w-0">
-                  <CardTitle className="text-lg truncate">{departamento.nome}</CardTitle>
-                  {departamento.codigo && (
+                  <CardTitle className="text-lg truncate">{direccao.nome}</CardTitle>
+                  {direccao.codigo && (
                     <Badge variant="outline" className="mt-1">
-                      {departamento.codigo}
+                      {direccao.codigo}
                     </Badge>
                   )}
                 </div>
@@ -249,14 +249,14 @@ export function DepartamentosManager() {
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => handleEdit(departamento)}
+                    onClick={() => handleEdit(direccao)}
                   >
                     <Pencil className="h-3 w-3" />
                   </Button>
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => handleDelete(departamento.id)}
+                    onClick={() => handleDelete(direccao.id)}
                   >
                     <Trash2 className="h-3 w-3" />
                   </Button>
@@ -265,15 +265,15 @@ export function DepartamentosManager() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {departamento.descricao && (
+                {direccao.descricao && (
                   <p className="text-sm text-muted-foreground">
-                    {departamento.descricao}
+                    {direccao.descricao}
                   </p>
                 )}
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <span>Ordem: {departamento.ordem}</span>
-                  <Badge variant={departamento.ativo ? "default" : "secondary"}>
-                    {departamento.ativo ? 'Ativo' : 'Inativo'}
+                  <span>Ordem: {direccao.ordem}</span>
+                  <Badge variant={direccao.ativo ? "default" : "secondary"}>
+                    {direccao.ativo ? 'Ativo' : 'Inativo'}
                   </Badge>
                 </div>
               </div>
@@ -282,14 +282,14 @@ export function DepartamentosManager() {
         ))}
       </div>
 
-      {departamentos.length === 0 && !loading && (
+      {direcoes.length === 0 && !loading && (
         <div className="text-center py-12">
           <Building2 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
           <h3 className="text-lg font-medium text-foreground mb-2">
-            Nenhum departamento encontrado
+            Nenhuma direcção encontrada
           </h3>
           <p className="text-muted-foreground">
-            Comece adicionando o primeiro departamento.
+            Comece adicionando a primeira direcção.
           </p>
         </div>
       )}

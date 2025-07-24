@@ -21,7 +21,7 @@ interface OrganigramaMember {
   ativo: boolean;
 }
 
-interface Departamento {
+interface Direccao {
   id: string;
   nome: string;
   descricao: string | null;
@@ -47,17 +47,17 @@ const departments = [
 
 export default function Organigrama() {
   const [members, setMembers] = useState<OrganigramaMember[]>([]);
-  const [departamentos, setDepartamentos] = useState<Departamento[]>([]);
+  const [direcoes, setDirecoes] = useState<Direccao[]>([]);
   const [selectedDepartment, setSelectedDepartment] = useState<string>('all');
   const [expandedDepartments, setExpandedDepartments] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchMembers();
-    fetchDepartamentos();
+    fetchDirecoes();
   }, []);
 
-  const fetchDepartamentos = async () => {
+  const fetchDirecoes = async () => {
     try {
       const { data, error } = await supabase
         .from('departamentos')
@@ -66,9 +66,9 @@ export default function Organigrama() {
         .order('ordem', { ascending: true });
 
       if (error) throw error;
-      setDepartamentos(data || []);
+      setDirecoes(data || []);
     } catch (error) {
-      console.error('Error fetching departamentos:', error);
+      console.error('Error fetching direcoes:', error);
     }
   };
 
@@ -150,10 +150,10 @@ export default function Organigrama() {
                 <SelectValue placeholder="Filtrar por departamento" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos os Departamentos</SelectItem>
-                {departamentos.map((dept) => (
-                  <SelectItem key={dept.id} value={dept.nome}>
-                    {dept.nome}
+                <SelectItem value="all">Todas as Direcções</SelectItem>
+                {direcoes.map((direccao) => (
+                  <SelectItem key={direccao.id} value={direccao.nome}>
+                    {direccao.nome}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -163,21 +163,21 @@ export default function Organigrama() {
 
         {/* Organigrama */}
         <div className="space-y-6">
-          {departamentos.map((dept) => {
-            const deptMembers = filteredMembers.filter(member => member.departamento === dept.nome);
+          {direcoes.map((direccao) => {
+            const deptMembers = filteredMembers.filter(member => member.departamento === direccao.nome);
             if (deptMembers.length === 0) return null;
 
-            const isExpanded = expandedDepartments.has(dept.nome);
+            const isExpanded = expandedDepartments.has(direccao.nome);
 
             return (
-              <Card key={dept.id} className="overflow-hidden">
+              <Card key={direccao.id} className="overflow-hidden">
                 <div 
                   className="p-6 bg-primary/5 border-b cursor-pointer hover:bg-primary/10 transition-colors"
-                  onClick={() => toggleDepartment(dept.nome)}
+                  onClick={() => toggleDepartment(direccao.nome)}
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <h2 className="text-xl font-semibold text-foreground">{dept.nome}</h2>
+                      <h2 className="text-xl font-semibold text-foreground">{direccao.nome}</h2>
                       <p className="text-sm text-muted-foreground">
                         {deptMembers.length} {deptMembers.length === 1 ? 'membro' : 'membros'}
                       </p>
@@ -279,7 +279,7 @@ export default function Organigrama() {
             <p className="text-muted-foreground">
               {selectedDepartment === 'all' 
                 ? 'Não há membros cadastrados no organigrama.'
-                : 'Nenhum membro encontrado para o departamento selecionado.'
+                : 'Nenhum membro encontrado para a direcção selecionada.'
               }
             </p>
           </div>
