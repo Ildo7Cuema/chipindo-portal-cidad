@@ -6,6 +6,7 @@ import Autoplay from "embla-carousel-autoplay";
 import { useRef, useEffect, useState } from "react";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useRealTimeStats } from "@/hooks/useRealTimeStats";
+import { useHeroCarousel } from "@/hooks/useHeroCarousel";
 import agriculturaImage from "@/assets/agricultura-chipindo.jpg";
 import turismoImage from "@/assets/turismo-chipindo.jpg";
 import ouroImage from "@/assets/ouro-chipindo.jpg";
@@ -17,8 +18,10 @@ export const Hero = () => {
   );
   const { settings } = useSiteSettings();
   const { stats } = useRealTimeStats();
+  const { images: carouselImages, loading: carouselLoading } = useHeroCarousel();
 
-  const potentialityImages = [
+  // Fallback images if no custom images are configured
+  const fallbackImages = [
     { 
       src: agriculturaImage, 
       title: "Agricultura",
@@ -41,6 +44,13 @@ export const Hero = () => {
     }
   ];
 
+  // Use custom images if available, otherwise use fallback
+  const imagesToDisplay = carouselImages.length > 0 ? carouselImages.map(img => ({
+    src: img.image_url,
+    title: img.title,
+    description: img.description || ""
+  })) : fallbackImages;
+
   return (
     <section className="relative min-h-[600px] bg-gradient-hero overflow-hidden">
       {/* Automatic Background Carousel */}
@@ -54,7 +64,7 @@ export const Hero = () => {
           }}
         >
           <CarouselContent className="h-full -ml-0">
-            {potentialityImages.map((image, index) => (
+            {imagesToDisplay.map((image, index) => (
               <CarouselItem key={index} className="pl-0 h-full">
                 <div 
                   className="absolute inset-0 bg-cover bg-center transition-opacity duration-1000"
