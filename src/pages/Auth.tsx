@@ -25,6 +25,7 @@ const Auth = () => {
     // Check if registration should be allowed (no existing users)
     const checkExistingUsers = async () => {
       try {
+        console.log('Checking existing users...');
         const { data, error } = await supabase
           .from('profiles')
           .select('id')
@@ -32,13 +33,14 @@ const Auth = () => {
         
         if (error) {
           console.error('Error checking existing users:', error);
-          setAllowRegistration(false); // Don't allow registration on error for security
+          setAllowRegistration(true); // Allow registration even on error for now
         } else {
+          console.log('Existing users data:', data);
           setAllowRegistration(data.length === 0);
         }
       } catch (error) {
         console.error('Error checking existing users:', error);
-        setAllowRegistration(false);
+        setAllowRegistration(true); // Allow registration even on error for now
       }
     };
 
