@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Bell, CheckCircle, Clock, User, FileText, Trophy } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Bell, CheckCircle, Clock, User, FileText, Trophy, Eye } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { formatDistanceToNow } from 'date-fns';
@@ -244,9 +245,76 @@ const NotificationsManager = () => {
                   </p>
                   
                   {notification.data && notification.type === 'interest_registration' && (
-                    <div className="mt-2 p-2 bg-muted rounded text-xs">
-                      <p><strong>Email:</strong> {notification.data.email}</p>
-                      <p><strong>Áreas:</strong> {notification.data.areas_of_interest?.join(', ')}</p>
+                    <div className="mt-2 space-y-2">
+                      <div className="p-2 bg-muted rounded text-xs">
+                        <p><strong>Email:</strong> {notification.data.email}</p>
+                        <p><strong>Áreas:</strong> {notification.data.areas_of_interest?.join(', ')}</p>
+                      </div>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button variant="outline" size="sm" className="h-8">
+                            <Eye className="w-3 h-3 mr-1" />
+                            Ver Detalhes
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-2xl">
+                          <DialogHeader>
+                            <DialogTitle>Detalhes do Registo de Interesse</DialogTitle>
+                            <DialogDescription>
+                              Informações completas da pessoa que registou interesse
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="space-y-4 mt-4">
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <h4 className="font-medium text-sm text-muted-foreground">Nome Completo</h4>
+                                <p className="text-sm">{notification.data.full_name}</p>
+                              </div>
+                              <div>
+                                <h4 className="font-medium text-sm text-muted-foreground">Email</h4>
+                                <p className="text-sm">{notification.data.email}</p>
+                              </div>
+                              {notification.data.phone && (
+                                <div>
+                                  <h4 className="font-medium text-sm text-muted-foreground">Telefone</h4>
+                                  <p className="text-sm">{notification.data.phone}</p>
+                                </div>
+                              )}
+                              {notification.data.profession && (
+                                <div>
+                                  <h4 className="font-medium text-sm text-muted-foreground">Profissão</h4>
+                                  <p className="text-sm">{notification.data.profession}</p>
+                                </div>
+                              )}
+                              {notification.data.experience_years && (
+                                <div>
+                                  <h4 className="font-medium text-sm text-muted-foreground">Anos de Experiência</h4>
+                                  <p className="text-sm">{notification.data.experience_years} anos</p>
+                                </div>
+                              )}
+                            </div>
+                            <div>
+                              <h4 className="font-medium text-sm text-muted-foreground">Áreas de Interesse</h4>
+                              <div className="flex flex-wrap gap-2 mt-2">
+                                {notification.data.areas_of_interest?.map((area: string, index: number) => (
+                                  <Badge key={index} variant="secondary">{area}</Badge>
+                                ))}
+                              </div>
+                            </div>
+                            {notification.data.additional_info && (
+                              <div>
+                                <h4 className="font-medium text-sm text-muted-foreground">Informações Adicionais</h4>
+                                <p className="text-sm mt-1 p-3 bg-muted rounded">{notification.data.additional_info}</p>
+                              </div>
+                            )}
+                            <div className="pt-2 border-t">
+                              <p className="text-xs text-muted-foreground">
+                                Registado em: {new Date(notification.created_at).toLocaleString('pt-BR')}
+                              </p>
+                            </div>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
                     </div>
                   )}
                 </div>
