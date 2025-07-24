@@ -36,13 +36,17 @@ const Auth = () => {
         
         if (error) {
           console.error('Error checking existing users:', error);
+          console.log('Setting allowRegistration to true due to error');
           setAllowRegistration(true); // Allow registration even on error for now
         } else {
           console.log('Existing users data:', data);
-          setAllowRegistration(data.length === 0);
+          const shouldAllowRegistration = !data || data.length === 0;
+          console.log('Should allow registration:', shouldAllowRegistration);
+          setAllowRegistration(shouldAllowRegistration);
         }
       } catch (error) {
         console.error('Error checking existing users:', error);
+        console.log('Setting allowRegistration to true due to catch error');
         setAllowRegistration(true); // Allow registration even on error for now
       }
     };
