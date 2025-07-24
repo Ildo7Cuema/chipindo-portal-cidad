@@ -38,18 +38,74 @@ export const Footer = () => {
               {settings?.footer_about_description || 'Conectando a Administração Municipal aos cidadãos através de informação transparente, serviços digitais e oportunidades de crescimento.'}
             </p>
             <div className="flex space-x-3">
-              <Button variant="ghost" size="sm" className="p-2">
-                <FacebookIcon className="w-4 h-4" />
-              </Button>
-              <Button variant="ghost" size="sm" className="p-2">
-                <InstagramIcon className="w-4 h-4" />
-              </Button>
-              <Button variant="ghost" size="sm" className="p-2">
-                <TwitterIcon className="w-4 h-4" />
-              </Button>
-              <Button variant="ghost" size="sm" className="p-2">
-                <YoutubeIcon className="w-4 h-4" />
-              </Button>
+              {settings?.social_facebook && (
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="p-2"
+                  asChild
+                >
+                  <a 
+                    href={settings.social_facebook} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    aria-label="Facebook"
+                  >
+                    <FacebookIcon className="w-4 h-4" />
+                  </a>
+                </Button>
+              )}
+              {settings?.social_instagram && (
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="p-2"
+                  asChild
+                >
+                  <a 
+                    href={settings.social_instagram} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    aria-label="Instagram"
+                  >
+                    <InstagramIcon className="w-4 h-4" />
+                  </a>
+                </Button>
+              )}
+              {settings?.social_twitter && (
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="p-2"
+                  asChild
+                >
+                  <a 
+                    href={settings.social_twitter} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    aria-label="Twitter"
+                  >
+                    <TwitterIcon className="w-4 h-4" />
+                  </a>
+                </Button>
+              )}
+              {settings?.social_youtube && (
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="p-2"
+                  asChild
+                >
+                  <a 
+                    href={settings.social_youtube} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    aria-label="YouTube"
+                  >
+                    <YoutubeIcon className="w-4 h-4" />
+                  </a>
+                </Button>
+              )}
             </div>
           </div>
 

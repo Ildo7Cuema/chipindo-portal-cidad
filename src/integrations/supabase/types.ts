@@ -357,6 +357,10 @@ export type Database = {
           population_description: string | null
           services_count: string | null
           services_description: string | null
+          social_facebook: string | null
+          social_instagram: string | null
+          social_twitter: string | null
+          social_youtube: string | null
           updated_at: string
         }
         Insert: {
@@ -381,6 +385,10 @@ export type Database = {
           population_description?: string | null
           services_count?: string | null
           services_description?: string | null
+          social_facebook?: string | null
+          social_instagram?: string | null
+          social_twitter?: string | null
+          social_youtube?: string | null
           updated_at?: string
         }
         Update: {
@@ -405,6 +413,10 @@ export type Database = {
           population_description?: string | null
           services_count?: string | null
           services_description?: string | null
+          social_facebook?: string | null
+          social_instagram?: string | null
+          social_twitter?: string | null
+          social_youtube?: string | null
           updated_at?: string
         }
         Relationships: []

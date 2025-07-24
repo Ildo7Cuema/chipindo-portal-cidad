@@ -22,6 +22,10 @@ export interface SiteSettings {
   opening_hours_saturday: string;
   opening_hours_sunday: string;
   copyright_text: string;
+  social_facebook: string | null;
+  social_instagram: string | null;
+  social_twitter: string | null;
+  social_youtube: string | null;
 }
 
 export function useSiteSettings() {

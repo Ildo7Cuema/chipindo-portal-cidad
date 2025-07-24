@@ -69,10 +69,11 @@ export const SiteContentManager = () => {
       </div>
 
       <Tabs defaultValue="hero" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="hero">Página Inicial</TabsTrigger>
           <TabsTrigger value="footer">Rodapé</TabsTrigger>
           <TabsTrigger value="contact">Contactos</TabsTrigger>
+          <TabsTrigger value="social">Redes Sociais</TabsTrigger>
         </TabsList>
 
         <TabsContent value="hero" className="space-y-6">
@@ -322,6 +323,58 @@ export const SiteContentManager = () => {
                   value={formData.contact_email || ''}
                   onChange={(e) => handleInputChange('contact_email', e.target.value)}
                   placeholder="admin@chipindo.gov.ao"
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="social" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Redes Sociais</CardTitle>
+              <CardDescription>
+                Configure os links das redes sociais. Deixe em branco para ocultar o ícone no rodapé.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="social_facebook">Facebook</Label>
+                <Input
+                  id="social_facebook"
+                  value={formData.social_facebook || ''}
+                  onChange={(e) => handleInputChange('social_facebook', e.target.value)}
+                  placeholder="https://facebook.com/chipindo"
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="social_instagram">Instagram</Label>
+                <Input
+                  id="social_instagram"
+                  value={formData.social_instagram || ''}
+                  onChange={(e) => handleInputChange('social_instagram', e.target.value)}
+                  placeholder="https://instagram.com/chipindo"
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="social_twitter">Twitter</Label>
+                <Input
+                  id="social_twitter"
+                  value={formData.social_twitter || ''}
+                  onChange={(e) => handleInputChange('social_twitter', e.target.value)}
+                  placeholder="https://twitter.com/chipindo"
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="social_youtube">YouTube</Label>
+                <Input
+                  id="social_youtube"
+                  value={formData.social_youtube || ''}
+                  onChange={(e) => handleInputChange('social_youtube', e.target.value)}
+                  placeholder="https://youtube.com/@chipindo"
                 />
               </div>
             </CardContent>
