@@ -32,13 +32,13 @@ const Auth = () => {
         
         if (error) {
           console.error('Error checking existing users:', error);
-          setAllowRegistration(true); // Allow registration on error to be safe
+          setAllowRegistration(false); // Don't allow registration on error for security
         } else {
           setAllowRegistration(data.length === 0);
         }
       } catch (error) {
         console.error('Error checking existing users:', error);
-        setAllowRegistration(true);
+        setAllowRegistration(false);
       }
     };
 
