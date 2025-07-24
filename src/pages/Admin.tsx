@@ -11,6 +11,7 @@ import { User, Session } from '@supabase/supabase-js';
 import { LogOut, Plus, Edit, Eye, Users } from "lucide-react";
 import { NewsManager } from "@/components/admin/NewsManager";
 import { ConcursosManager } from "@/components/admin/ConcursosManager";
+import AcervoDigitalManager from "@/components/admin/AcervoDigitalManager";
 import { UserManager } from "@/components/admin/UserManager";
 import { DashboardStats } from "@/components/admin/DashboardStats";
 import { SystemSettings } from "@/components/admin/SystemSettings";
@@ -149,10 +150,11 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="dashboard" className="space-y-6">
-          <TabsList className={`grid w-full ${isAdmin ? 'grid-cols-6' : 'grid-cols-4'}`}>
+          <TabsList className={`grid w-full ${isAdmin ? 'grid-cols-7' : 'grid-cols-5'}`}>
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
             <TabsTrigger value="news">Notícias</TabsTrigger>
             <TabsTrigger value="concursos">Concursos</TabsTrigger>
+            <TabsTrigger value="acervo">Acervo Digital</TabsTrigger>
             <TabsTrigger value="content">Conteúdo</TabsTrigger>
             {isAdmin && <TabsTrigger value="users">Usuários</TabsTrigger>}
             {isAdmin && <TabsTrigger value="settings">Configurações</TabsTrigger>}
@@ -168,6 +170,10 @@ const Admin = () => {
 
           <TabsContent value="concursos">
             <ConcursosManager />
+          </TabsContent>
+
+          <TabsContent value="acervo">
+            <AcervoDigitalManager />
           </TabsContent>
 
           <TabsContent value="content">
