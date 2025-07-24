@@ -90,10 +90,15 @@ export function OrganigramaManager() {
     setLoading(true);
 
     try {
+      // Convert "none" back to null for superior_id
+      const submitData = {
+        ...formData,
+        superior_id: formData.superior_id === 'none' ? null : formData.superior_id || null
+      };
       if (editingMember) {
         const { error } = await supabase
           .from('organigrama')
-          .update(formData)
+          .update(submitData)
           .eq('id', editingMember.id);
 
         if (error) throw error;
@@ -101,7 +106,7 @@ export function OrganigramaManager() {
       } else {
         const { error } = await supabase
           .from('organigrama')
-          .insert([formData]);
+          .insert([submitData]);
 
         if (error) throw error;
         toast.success('Membro adicionado com sucesso!');
@@ -125,7 +130,7 @@ export function OrganigramaManager() {
       nome: member.nome,
       cargo: member.cargo,
       departamento: member.departamento,
-      superior_id: member.superior_id || '',
+      superior_id: member.superior_id || 'none',
       email: member.email || '',
       telefone: member.telefone || '',
       descricao: member.descricao || '',
@@ -195,7 +200,7 @@ export function OrganigramaManager() {
       nome: '',
       cargo: '',
       departamento: '',
-      superior_id: '',
+      superior_id: 'none',
       email: '',
       telefone: '',
       descricao: '',
@@ -292,7 +297,7 @@ export function OrganigramaManager() {
                       <SelectValue placeholder="Selecione o superior" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Nenhum</SelectItem>
+                      <SelectItem value="none">Nenhum</SelectItem>
                       {getAvailableSuperiors().map((member) => (
                         <SelectItem key={member.id} value={member.id}>
                           {member.nome} - {member.cargo}
