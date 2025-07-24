@@ -14,6 +14,7 @@ import { ConcursosManager } from "@/components/admin/ConcursosManager";
 import { UserManager } from "@/components/admin/UserManager";
 import { DashboardStats } from "@/components/admin/DashboardStats";
 import { SystemSettings } from "@/components/admin/SystemSettings";
+import { SiteContentManager } from "@/components/admin/SiteContentManager";
 import { useUserRole } from "@/hooks/useUserRole";
 
 const Admin = () => {
@@ -143,10 +144,11 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="dashboard" className="space-y-6">
-          <TabsList className={`grid w-full ${isAdmin ? 'grid-cols-5' : 'grid-cols-3'}`}>
+          <TabsList className={`grid w-full ${isAdmin ? 'grid-cols-6' : 'grid-cols-4'}`}>
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
             <TabsTrigger value="news">Notícias</TabsTrigger>
             <TabsTrigger value="concursos">Concursos</TabsTrigger>
+            <TabsTrigger value="content">Conteúdo</TabsTrigger>
             {isAdmin && <TabsTrigger value="users">Usuários</TabsTrigger>}
             {isAdmin && <TabsTrigger value="settings">Configurações</TabsTrigger>}
           </TabsList>
@@ -161,6 +163,10 @@ const Admin = () => {
 
           <TabsContent value="concursos">
             <ConcursosManager />
+          </TabsContent>
+
+          <TabsContent value="content">
+            <SiteContentManager />
           </TabsContent>
 
           {isAdmin && (

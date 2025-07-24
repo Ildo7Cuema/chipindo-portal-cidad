@@ -119,6 +119,81 @@ export type Database = {
         }
         Relationships: []
       }
+      site_settings: {
+        Row: {
+          contact_address: string | null
+          contact_email: string | null
+          contact_phone: string | null
+          copyright_text: string | null
+          created_at: string
+          departments_count: string | null
+          departments_description: string | null
+          footer_about_description: string | null
+          footer_about_subtitle: string | null
+          footer_about_title: string | null
+          hero_location_badge: string | null
+          hero_subtitle: string | null
+          hero_title: string | null
+          id: string
+          opening_hours_saturday: string | null
+          opening_hours_sunday: string | null
+          opening_hours_weekdays: string | null
+          population_count: string | null
+          population_description: string | null
+          services_count: string | null
+          services_description: string | null
+          updated_at: string
+        }
+        Insert: {
+          contact_address?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          copyright_text?: string | null
+          created_at?: string
+          departments_count?: string | null
+          departments_description?: string | null
+          footer_about_description?: string | null
+          footer_about_subtitle?: string | null
+          footer_about_title?: string | null
+          hero_location_badge?: string | null
+          hero_subtitle?: string | null
+          hero_title?: string | null
+          id?: string
+          opening_hours_saturday?: string | null
+          opening_hours_sunday?: string | null
+          opening_hours_weekdays?: string | null
+          population_count?: string | null
+          population_description?: string | null
+          services_count?: string | null
+          services_description?: string | null
+          updated_at?: string
+        }
+        Update: {
+          contact_address?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          copyright_text?: string | null
+          created_at?: string
+          departments_count?: string | null
+          departments_description?: string | null
+          footer_about_description?: string | null
+          footer_about_subtitle?: string | null
+          footer_about_title?: string | null
+          hero_location_badge?: string | null
+          hero_subtitle?: string | null
+          hero_title?: string | null
+          id?: string
+          opening_hours_saturday?: string | null
+          opening_hours_sunday?: string | null
+          opening_hours_weekdays?: string | null
+          population_count?: string | null
+          population_description?: string | null
+          services_count?: string | null
+          services_description?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
