@@ -159,11 +159,18 @@ export const MapboxMap = ({ height = "400px", className = "" }: MapboxMapProps) 
     try {
       mapboxgl.accessToken = mapboxApiKey;
       
+      // Calcular centro baseado nas localizações disponíveis
+      const mapCenter = getMapCenter();
+      const mapZoom = locations.length > 1 ? 10 : 12;
+      
+      console.log('Initializing map with center:', mapCenter, 'and zoom:', mapZoom);
+      console.log('Available locations:', locations);
+      
       const mapInstance = new mapboxgl.Map({
         container: mapContainer.current,
         style: mapStyles.streets,
-        center: getMapCenter(),
-        zoom: locations.length > 1 ? 10 : 12, // Zoom out if multiple locations
+        center: mapCenter,
+        zoom: mapZoom,
         pitch: 0,
         bearing: 0,
         antialias: true
@@ -299,7 +306,7 @@ export const MapboxMap = ({ height = "400px", className = "" }: MapboxMapProps) 
   useEffect(() => {
     // Verificar se já existe uma API key salva
     const savedApiKey = localStorage.getItem('mapbox_api_key');
-    if (savedApiKey) {
+    if (savedApiKey && locations.length > 0) {
       setApiKey(savedApiKey);
       initializeMap(savedApiKey);
     }
@@ -310,11 +317,20 @@ export const MapboxMap = ({ height = "400px", className = "" }: MapboxMapProps) 
         map.current.remove();
       }
     };
-  }, []);
+  }, [locations]); // Incluir locations como dependência
+
+  // Re-inicializar mapa quando API key é salva e localizações estão disponíveis
+  useEffect(() => {
+    const savedApiKey = localStorage.getItem('mapbox_api_key');
+    if (savedApiKey && !map.current && locations.length > 0 && !showApiKeyInput) {
+      setApiKey(savedApiKey);
+      initializeMap(savedApiKey);
+    }
+  }, [locations, showApiKeyInput]);
 
   // Atualizar marcadores quando as localizações mudarem
   useEffect(() => {
-    if (map.current) {
+    if (map.current && locations.length > 0) {
       addLocationMarkers();
     }
   }, [locations]);
