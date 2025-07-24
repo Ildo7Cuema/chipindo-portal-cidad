@@ -50,6 +50,8 @@ export function OrganigramaManager() {
   const [editingMember, setEditingMember] = useState<OrganigramaMember | null>(null);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     nome: '',
@@ -91,10 +93,13 @@ export function OrganigramaManager() {
 
     try {
       // Convert "none" back to null for superior_id
-      const submitData = {
+      let submitData = {
         ...formData,
         superior_id: formData.superior_id === 'none' ? null : formData.superior_id || null
       };
+
+      let memberId = editingMember?.id;
+
       if (editingMember) {
         const { error } = await supabase
           .from('organigrama')
@@ -102,16 +107,23 @@ export function OrganigramaManager() {
           .eq('id', editingMember.id);
 
         if (error) throw error;
-        toast.success('Membro atualizado com sucesso!');
       } else {
-        const { error } = await supabase
+        const { data, error } = await supabase
           .from('organigrama')
-          .insert([submitData]);
+          .insert([submitData])
+          .select()
+          .single();
 
         if (error) throw error;
-        toast.success('Membro adicionado com sucesso!');
+        memberId = data.id;
       }
 
+      // Upload image if selected
+      if (selectedImage && memberId) {
+        await uploadMemberImage(selectedImage, memberId);
+      }
+
+      toast.success(editingMember ? 'Membro atualizado com sucesso!' : 'Membro adicionado com sucesso!');
       setIsDialogOpen(false);
       setEditingMember(null);
       resetForm();
@@ -137,6 +149,8 @@ export function OrganigramaManager() {
       ordem: member.ordem,
       ativo: member.ativo
     });
+    setSelectedImage(null);
+    setImagePreview(member.foto_url);
     setIsDialogOpen(true);
   };
 
@@ -158,10 +172,7 @@ export function OrganigramaManager() {
     }
   };
 
-  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>, memberId: string) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
+  const uploadMemberImage = async (file: File, memberId: string) => {
     setUploading(true);
     try {
       const fileExt = file.name.split('.').pop();
@@ -184,15 +195,26 @@ export function OrganigramaManager() {
         .eq('id', memberId);
 
       if (updateError) throw updateError;
-
-      toast.success('Foto atualizada com sucesso!');
-      fetchMembers();
     } catch (error) {
       console.error('Error uploading photo:', error);
-      toast.error('Erro ao enviar foto');
+      throw error;
     } finally {
       setUploading(false);
     }
+  };
+
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setSelectedImage(file);
+    
+    // Create preview
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setImagePreview(e.target?.result as string);
+    };
+    reader.readAsDataURL(file);
   };
 
   const resetForm = () => {
@@ -207,6 +229,8 @@ export function OrganigramaManager() {
       ordem: 0,
       ativo: true
     });
+    setSelectedImage(null);
+    setImagePreview(null);
   };
 
   const openDialog = () => {
@@ -329,6 +353,39 @@ export function OrganigramaManager() {
               </div>
 
               <div>
+                <Label htmlFor="foto">Foto do Membro</Label>
+                <div className="space-y-3">
+                  {imagePreview && (
+                    <div className="flex justify-center">
+                      <Avatar className="h-20 w-20">
+                        <AvatarImage src={imagePreview} alt="Preview" />
+                        <AvatarFallback>
+                          {formData.nome.split(' ').map(n => n[0]).join('').toUpperCase() || 'IMG'}
+                        </AvatarFallback>
+                      </Avatar>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-2">
+                    <Input
+                      id="foto"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageSelect}
+                      disabled={uploading}
+                    />
+                    {selectedImage && (
+                      <Badge variant="secondary">
+                        {selectedImage.name}
+                      </Badge>
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Formatos aceitos: JPG, PNG, GIF (máx. 5MB)
+                  </p>
+                </div>
+              </div>
+
+              <div>
                 <Label htmlFor="descricao">Descrição/Responsabilidades</Label>
                 <Textarea
                   id="descricao"
@@ -390,26 +447,12 @@ export function OrganigramaManager() {
                   {deptMembers.map((member) => (
                     <Card key={member.id} className="p-4">
                       <div className="flex items-start gap-3">
-                        <div className="relative">
-                          <Avatar className="h-12 w-12">
-                            <AvatarImage src={member.foto_url || ''} alt={member.nome} />
-                            <AvatarFallback>
-                              {member.nome.split(' ').map(n => n[0]).join('').toUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
-                          <label className="absolute -bottom-1 -right-1 cursor-pointer">
-                            <input
-                              type="file"
-                              accept="image/*"
-                              className="hidden"
-                              onChange={(e) => handlePhotoUpload(e, member.id)}
-                              disabled={uploading}
-                            />
-                            <div className="bg-primary text-primary-foreground rounded-full p-1 hover:bg-primary/80">
-                              <Upload className="h-3 w-3" />
-                            </div>
-                          </label>
-                        </div>
+                        <Avatar className="h-12 w-12">
+                          <AvatarImage src={member.foto_url || ''} alt={member.nome} />
+                          <AvatarFallback>
+                            {member.nome.split(' ').map(n => n[0]).join('').toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
                         <div className="flex-1 min-w-0">
                           <h4 className="font-medium truncate">{member.nome}</h4>
                           <p className="text-sm text-muted-foreground">{member.cargo}</p>
