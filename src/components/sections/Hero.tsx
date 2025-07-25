@@ -1,60 +1,175 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRightIcon, MapPinIcon, UsersIcon, BuildingIcon, FileTextIcon } from "lucide-react";
+import { StatCard } from "@/components/ui/stat-card";
+import { Section, SectionContent } from "@/components/ui/section";
+import { ArrowRightIcon, MapPinIcon, UsersIcon, BuildingIcon, FileTextIcon, SparklesIcon, TrendingUpIcon, PlayCircleIcon, StarIcon } from "lucide-react";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
 import { useRef, useEffect, useState } from "react";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useRealTimeStats } from "@/hooks/useRealTimeStats";
 import { useHeroCarousel } from "@/hooks/useHeroCarousel";
-import agriculturaImage from "@/assets/agricultura-chipindo.jpg";
-import turismoImage from "@/assets/turismo-chipindo.jpg";
-import ouroImage from "@/assets/ouro-chipindo.jpg";
-import heroImage from "@/assets/hero-chipindo.jpg";
+import { cn } from "@/lib/utils";
 
 export const Hero = () => {
   const plugin = useRef(
-    Autoplay({ delay: 4000, stopOnInteraction: true })
+    Autoplay({ delay: 7000, stopOnInteraction: true })
   );
   const { settings } = useSiteSettings();
   const { stats } = useRealTimeStats();
   const { images: carouselImages, loading: carouselLoading } = useHeroCarousel();
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isVisible, setIsVisible] = useState(false);
 
-  // Fallback images if no custom images are configured
-  const fallbackImages = [
+  // High-quality 4K images from Unsplash - Angola/Africa focused
+  const highQualityImages = [
     { 
-      src: agriculturaImage, 
-      title: "Agricultura",
-      description: "Vastos campos cultivados com milho, feijão e outras culturas"
+      src: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=85", 
+      title: "Agricultura Sustentável",
+      description: "Terras férteis de Chipindo produzindo culturas diversificadas com técnicas modernas e sustentáveis para alimentar a comunidade e gerar prosperidade econômica",
+      category: "Agricultura",
+      overlay: "from-green-900/90 via-green-800/70 to-emerald-900/80",
+      accent: "emerald"
     },
     { 
-      src: turismoImage, 
-      title: "Turismo",
-      description: "Paisagens naturais deslumbrantes e cachoeiras"
+      src: "https://images.unsplash.com/photo-1544216717-3bbf52512659?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=85", 
+      title: "Cultura Angolana Vibrante",
+      description: "Celebrando a rica herança cultural de Angola através de tradições, música, dança e artesanato que conectam gerações e fortalecem nossa identidade",
+      category: "Cultura",
+      overlay: "from-orange-900/90 via-red-800/70 to-yellow-900/80",
+      accent: "orange"
     },
     { 
-      src: ouroImage, 
-      title: "Mineração",
-      description: "Recursos minerais valiosos incluindo ouro"
+      src: "https://images.unsplash.com/photo-1519904981063-b0cf448d479e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=85", 
+      title: "Recursos Hídricos Abundantes",
+      description: "Rios cristalinos e recursos hídricos naturais de Chipindo proporcionando água pura, energia hidroelétrica e oportunidades de desenvolvimento sustentável",
+      category: "Recursos Hídricos",
+      overlay: "from-blue-900/90 via-cyan-800/70 to-teal-900/80",
+      accent: "blue"
     },
     { 
-      src: heroImage, 
-      title: "Chipindo",
-      description: "O coração da província de Huíla"
+      src: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=85", 
+      title: "Riqueza Mineral - Ouro",
+      description: "Depósitos auríferos e recursos minerais preciosos que impulsionam a economia local através da mineração responsável e desenvolvimento tecnológico",
+      category: "Recursos Minerais",
+      overlay: "from-yellow-900/90 via-amber-800/70 to-orange-900/80",
+      accent: "gold"
+    },
+    { 
+      src: "https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=85", 
+      title: "Turismo Natural Exuberante",
+      description: "Paisagens deslumbrantes da savana africana e biodiversidade única criando oportunidades de ecoturismo e preservação ambiental",
+      category: "Turismo",
+      overlay: "from-purple-900/90 via-indigo-800/70 to-blue-900/80",
+      accent: "purple"
+    },
+    { 
+      src: "https://images.unsplash.com/photo-1580500550469-4e3ad1f36eff?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=85", 
+      title: "Desenvolvimento Urbano Moderno",
+      description: "Infraestrutura moderna e planejamento urbano inteligente transformando Chipindo em uma cidade modelo de crescimento equilibrado e qualidade de vida",
+      category: "Desenvolvimento",
+      overlay: "from-slate-900/90 via-gray-800/70 to-zinc-900/80",
+      accent: "slate"
+    },
+    { 
+      src: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=85", 
+      title: "Comunidade e Tradição",
+      description: "O povo de Chipindo mantendo vivas as tradições ancestrais enquanto abraça o progresso e constrói um futuro próspero para as novas gerações",
+      category: "Comunidade",
+      overlay: "from-rose-900/90 via-pink-800/70 to-red-900/80",
+      accent: "rose"
     }
   ];
 
-  // Use custom images if available, otherwise use fallback
-  const imagesToDisplay = carouselImages.length > 0 ? carouselImages.map(img => ({
+  // Use custom images if available and not loading, otherwise use high-quality fallback
+  const imagesToDisplay = !carouselLoading && carouselImages.length > 0 
+    ? carouselImages.map(img => ({
     src: img.image_url,
     title: img.title,
-    description: img.description || ""
-  })) : fallbackImages;
+        description: img.description || "",
+        category: "Personalizado",
+        overlay: "from-primary/90 via-primary/70 to-primary/80",
+        accent: "gold"
+      }))
+    : highQualityImages;
+
+  // Parallax mouse effect
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({
+        x: (e.clientX / window.innerWidth) * 100,
+        y: (e.clientY / window.innerHeight) * 100
+      });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % imagesToDisplay.length);
+    }, 7000);
+    return () => clearInterval(interval);
+  }, [imagesToDisplay.length]);
+
+  // Reset slide when images change
+  useEffect(() => {
+    setCurrentSlide(0);
+  }, [carouselImages.length]);
+
+  // Intersection observer for entrance animation
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
+
+  // Preload images for better performance
+  useEffect(() => {
+    highQualityImages.forEach(image => {
+      const img = new Image();
+      img.src = image.src;
+    });
+  }, []);
+
+  const getCategoryIcon = (category: string) => {
+    const icons = {
+      'Agricultura': '🌾',
+      'Cultura': '🎭',
+      'Recursos Hídricos': '💧',
+      'Recursos Minerais': '⚡',
+      'Turismo': '🏞️',
+      'Desenvolvimento': '🏗️',
+      'Comunidade': '👥',
+      'Personalizado': '✨'
+    };
+    return icons[category as keyof typeof icons] || '✨';
+  };
+
+  const currentImage = imagesToDisplay[currentSlide];
 
   return (
-    <section className="relative min-h-[600px] bg-gradient-hero overflow-hidden">
-      {/* Automatic Background Carousel */}
-      <div className="absolute inset-0">
+    <Section variant="primary" size="xl" className="relative min-h-screen overflow-hidden">
+      {/* Animated Background Particles */}
+      <div className="absolute inset-0 z-5">
+        <div className="absolute inset-0 opacity-30">
+          {[...Array(20)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute w-1 h-1 bg-yellow-400 rounded-full animate-pulse"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 3}s`,
+                animationDuration: `${2 + Math.random() * 3}s`
+              }}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Dynamic Background Carousel with Parallax Effect */}
+      <div className="absolute inset-0 z-0">
         <Carousel
           plugins={[plugin.current]}
           className="w-full h-full"
@@ -65,20 +180,62 @@ export const Hero = () => {
         >
           <CarouselContent className="h-full -ml-0">
             {imagesToDisplay.map((image, index) => (
-              <CarouselItem key={index} className="pl-0 h-full">
+              <CarouselItem key={`${image.src}-${index}`} className="pl-0 h-full">
+                {/* High-Resolution Background Image with Parallax */}
                 <div 
-                  className="absolute inset-0 bg-cover bg-center transition-opacity duration-1000"
+                  className="absolute inset-0 bg-cover bg-center transition-all duration-3000 scale-110"
                   style={{
-                    backgroundImage: `url(${image.src})`
+                    backgroundImage: `url(${image.src})`,
+                    filter: 'brightness(0.4) contrast(1.2) saturate(1.3)',
+                    transform: `scale(1.1) translate(${(mousePosition.x - 50) * 0.02}px, ${(mousePosition.y - 50) * 0.02}px)`
+                  }}
+                  onError={(e) => {
+                    const target = e.currentTarget as HTMLElement;
+                    if (target.style.backgroundImage.includes('w=2340')) {
+                      target.style.backgroundImage = target.style.backgroundImage.replace('w=2340', 'w=1920');
+                    } else if (target.style.backgroundImage.includes('w=1920')) {
+                      target.style.backgroundImage = target.style.backgroundImage.replace('w=1920', 'w=1200');
+                    } else {
+                      target.style.backgroundImage = 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%)';
+                    }
                   }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/90 via-primary/80 to-primary/70" />
                 
-                {/* Potentiality Badge */}
-                <div className="absolute top-8 right-8 z-10">
-                  <Badge variant="secondary" className="bg-background/20 text-primary-foreground border-primary-foreground/30 backdrop-blur-sm">
-                    {image.title}
+                {/* Enhanced gradient overlays with shimmer effect */}
+                <div className={`absolute inset-0 bg-gradient-to-br ${image.overlay || 'from-primary/90 via-primary/70 to-primary/80'}`} />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/30" />
+                <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40" />
+                
+                {/* Animated shimmer overlay */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-pulse opacity-50" />
+                
+                {/* Enhanced Category Badge with Glow */}
+                <div className="absolute top-8 right-8 z-20 animate-fade-in-up">
+                  <Badge 
+                    variant="secondary" 
+                    className={cn(
+                      "bg-background/15 text-primary-foreground border-primary-foreground/40 backdrop-blur-xl font-semibold px-4 py-2 text-sm",
+                      "shadow-2xl hover:shadow-yellow-500/20 transition-all duration-500 hover:scale-110",
+                      "ring-1 ring-white/20"
+                    )}
+                  >
+                    <span className="mr-2 text-xl animate-bounce">{getCategoryIcon(image.category)}</span>
+                    {image.category}
+                    <StarIcon className="w-3 h-3 ml-2 text-yellow-400 animate-pulse" />
                   </Badge>
+                </div>
+
+                {/* Enhanced Image Title Overlay with Animation */}
+                <div className="absolute bottom-8 left-8 right-8 z-20 animate-slide-up">
+                  <div className="bg-background/5 backdrop-blur-2xl rounded-2xl p-6 border border-primary-foreground/30 shadow-2xl hover:shadow-yellow-500/10 transition-all duration-500 hover:scale-[1.02]">
+                    <h3 className="text-xl font-bold text-primary-foreground mb-3 flex items-center gap-2">
+                      <div className="w-1 h-6 bg-gradient-to-b from-yellow-400 to-orange-500 rounded-full" />
+                      {image.title}
+                    </h3>
+                    <p className="text-sm text-primary-foreground/95 line-clamp-2 leading-relaxed">
+                      {image.description}
+                    </p>
+                  </div>
                 </div>
               </CarouselItem>
             ))}
@@ -86,79 +243,245 @@ export const Hero = () => {
         </Carousel>
       </div>
       
-      {/* Content */}
-      <div className="relative container mx-auto px-4 py-20 md:py-32">
-        <div className="max-w-4xl">
-          <div className="flex items-center gap-2 mb-6">
-            <Badge variant="secondary" className="bg-primary-foreground/20 text-primary-foreground border-primary-foreground/30">
-              <MapPinIcon className="w-3 h-3 mr-1" />
+      {/* Enhanced Geometric Pattern Overlay */}
+      <div className="absolute inset-0 z-10 opacity-[0.06]">
+        <div className="absolute inset-0" style={{
+          backgroundImage: `radial-gradient(circle at 25% 25%, currentColor 3px, transparent 3px), 
+                           radial-gradient(circle at 75% 75%, currentColor 2px, transparent 2px)`,
+          backgroundSize: '80px 80px, 60px 60px',
+          backgroundPosition: '0 0, 40px 40px'
+        }} />
+      </div>
+      
+      <SectionContent className="relative z-20 flex items-center min-h-screen">
+        <div className="grid lg:grid-cols-2 gap-16 lg:gap-20 items-center w-full">
+          {/* Left Column - Enhanced Hero Content */}
+          <div className={cn("space-y-10", isVisible && "animate-fade-in-up")}>
+            {/* Premium Location Badges */}
+            <div className="flex items-center gap-3 animate-fade-in-up">
+              <Badge 
+                variant="secondary" 
+                className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 text-primary-foreground border-yellow-400/40 backdrop-blur-xl px-4 py-2 shadow-lg hover:shadow-yellow-500/25 transition-all duration-300"
+              >
+                <MapPinIcon className="w-4 h-4 mr-2 text-yellow-400" />
               {settings?.hero_location_badge || 'Província de Huíla, Angola'}
             </Badge>
+              <Badge 
+                variant="secondary" 
+                className="bg-gradient-to-r from-emerald-500/20 to-green-500/20 text-primary-foreground border-emerald-400/40 backdrop-blur-xl px-4 py-2 shadow-lg hover:shadow-emerald-500/25 transition-all duration-300"
+              >
+                <TrendingUpIcon className="w-4 h-4 mr-2 text-emerald-400 animate-pulse" />
+                Rica em Potencialidades
+              </Badge>
           </div>
           
-          <h1 className="text-4xl md:text-6xl font-bold text-primary-foreground mb-6 animate-slide-up">
-            {settings?.hero_title || 'Bem-vindos ao Portal de Chipindo'}
+            {/* Golden Title with Professional Typography */}
+            <div className="space-y-8 animate-slide-up">
+              <div className="relative">
+                <h1 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold leading-tight">
+                  {settings?.hero_title || (
+                    <>
+                      <span className="block text-primary-foreground/95 mb-2">Bem-vindos ao</span>
+                      <span className="block bg-gradient-to-r from-yellow-400 via-yellow-300 to-yellow-500 bg-clip-text text-transparent drop-shadow-2xl">
+                        Portal de
+                      </span>
+                      <span className="block bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-500 bg-clip-text text-transparent drop-shadow-2xl">
+                        Chipindo
+                      </span>
+                    </>
+                  )}
           </h1>
           
-          <p className="text-xl md:text-2xl text-primary-foreground/90 mb-8 max-w-2xl animate-fade-in">
-            {settings?.hero_subtitle || 'Conectando a Administração Municipal aos cidadãos através de informação transparente, serviços digitais e oportunidades de crescimento.'}
-          </p>
-          
-          <div className="flex flex-col sm:flex-row gap-4 mb-12 animate-slide-up">
+                {/* Golden accent line */}
+                <div className="absolute -bottom-4 left-0 w-32 h-1 bg-gradient-to-r from-yellow-400 via-orange-400 to-yellow-500 rounded-full shadow-lg shadow-yellow-500/50 animate-pulse" />
+              </div>
+              
+              <p className="text-xl md:text-2xl xl:text-3xl text-primary-foreground/95 max-w-3xl leading-relaxed font-light">
+                {settings?.hero_subtitle || (
+                  <>
+                    Descobra as{' '}
+                    <span className="font-semibold bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">
+                      riquezas naturais
+                    </span>
+                    , culturais e econômicas que fazem de Chipindo um{' '}
+                    <span className="font-semibold bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">
+                      tesouro de potencialidades
+                    </span>{' '}
+                    no coração de Angola.
+                  </>
+                )}
+              </p>
+            </div>
+            
+            {/* Simplified Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 animate-fade-in-up">
             <Button 
               size="lg" 
-              variant="secondary" 
-              className="shadow-elegant hover:shadow-glow transition-all duration-300"
-              onClick={() => window.location.href = '/services'}
+                className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-white shadow-2xl hover:shadow-yellow-500/40 transition-all duration-500 hover:scale-105 px-8 py-4 text-lg font-semibold group"
+                onClick={() => window.location.href = '/servicos'}
             >
+                <SparklesIcon className="w-5 h-5 mr-2 group-hover:rotate-12 transition-transform duration-300" />
               Explorar Serviços
-              <ArrowRightIcon className="w-5 h-5" />
+                <ArrowRightIcon className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
             </Button>
+              
             <Button 
               size="lg" 
-              variant="outline" 
-              className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 hover:shadow-elegant transition-all duration-300"
-              onClick={() => window.location.href = '/concursos'}
+                className="bg-white/90 hover:bg-white text-gray-900 border-2 border-white/50 hover:border-white backdrop-blur-xl shadow-2xl hover:shadow-white/30 transition-all duration-500 hover:scale-105 px-8 py-4 text-lg font-semibold"
+                onClick={() => window.location.href = '/noticias'}
             >
-              Concursos Públicos
+                Ver Notícias
             </Button>
           </div>
           
-          {/* Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-primary-foreground/10 backdrop-blur-sm rounded-lg p-6 border border-primary-foreground/20">
-              <div className="flex items-center gap-3 mb-2">
-                <UsersIcon className="w-6 h-6 text-accent" />
-                <span className="text-primary-foreground text-sm font-medium">População</span>
+            {/* Interactive Achievement Showcase */}
+            <div className="flex items-center gap-6 pt-4 animate-fade-in-up">
+              <div className="flex items-center gap-2">
+                <div className="flex -space-x-2">
+                  {[...Array(3)].map((_, i) => (
+                    <div key={i} className="w-8 h-8 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 border-2 border-white shadow-lg" />
+                  ))}
+                </div>
+                <span className="text-sm text-primary-foreground/80 font-medium ml-2">
+                  +150.000 cidadãos prósperos
+                </span>
               </div>
-              <p className="text-2xl font-bold text-primary-foreground">{settings?.population_count || '150.000+'}</p>
-              <p className="text-primary-foreground/70 text-sm">{settings?.population_description || 'Cidadãos servidos'}</p>
+              <div className="flex items-center gap-2">
+                <StarIcon className="w-5 h-5 text-yellow-400 fill-current" />
+                <span className="text-sm text-primary-foreground/80 font-medium">
+                  Excelência Municipal
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column - Enhanced Interactive Statistics */}
+          <div className={cn("space-y-8", isVisible && "animate-slide-in-right")}>
+            <div className="grid gap-6">
+              {/* Featured Stat Cards with Hover Effects */}
+              <div className="grid grid-cols-2 gap-6">
+                <StatCard
+                  icon={UsersIcon}
+                  label="População"
+                  value={settings?.population_count || '150.000+'}
+                  description={settings?.population_description || 'Habitantes prósperos'}
+                  variant="glass"
+                  size="lg"
+                  className="hover:scale-105 transition-all duration-500 hover:shadow-2xl hover:shadow-yellow-500/10"
+                  trend={{
+                    value: 2.5,
+                    isPositive: true
+                  }}
+                />
+                
+                <StatCard
+                  icon={BuildingIcon}
+                  label="Setores"
+                  value={stats.loading ? '...' : '7+'}
+                  description="Áreas de potencial"
+                  variant="glass"
+                  size="lg"
+                  className="hover:scale-105 transition-all duration-500 hover:shadow-2xl hover:shadow-emerald-500/10"
+                  loading={stats.loading}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-6">
+                <StatCard
+                  icon={FileTextIcon}
+                  label="Projetos"
+                  value={stats.loading ? '...' : '25+'}
+                  description="Iniciativas ativas"
+                  variant="glass"
+                  size="lg"
+                  className="hover:scale-105 transition-all duration-500 hover:shadow-2xl hover:shadow-blue-500/10"
+                  loading={stats.loading}
+                  trend={{
+                    value: 15,
+                    isPositive: true
+                  }}
+                />
+
+                <StatCard
+                  icon={SparklesIcon}
+                  label="Oportunidades"
+                  value="∞"
+                  description="Potencial ilimitado"
+                  variant="glass"
+                  size="lg"
+                  className="hover:scale-105 transition-all duration-500 hover:shadow-2xl hover:shadow-purple-500/10"
+                />
+              </div>
             </div>
             
-            <div className="bg-primary-foreground/10 backdrop-blur-sm rounded-lg p-6 border border-primary-foreground/20">
-              <div className="flex items-center gap-3 mb-2">
-                <BuildingIcon className="w-6 h-6 text-accent" />
-                <span className="text-primary-foreground text-sm font-medium">Direcções</span>
+            {/* Dynamic Info Card with Current Image Context */}
+            <div className="relative group">
+              <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500" />
+              <div className="relative bg-primary-foreground/10 backdrop-blur-2xl rounded-2xl p-8 border border-primary-foreground/30 shadow-2xl hover:shadow-yellow-500/10 transition-all duration-500 hover:scale-[1.02]">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="relative">
+                    <div className="w-4 h-4 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full animate-pulse" />
+                    <div className="absolute inset-0 w-4 h-4 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full animate-ping opacity-75" />
+                  </div>
+                  <span className="text-primary-foreground/95 font-bold text-lg">
+                    {currentImage?.category || 'Portal Atualizado'}
+                  </span>
+                  <Badge className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 text-yellow-200 border-yellow-400/30">
+                    Ao Vivo
+                  </Badge>
+                </div>
+                <p className="text-primary-foreground/85 leading-relaxed text-base">
+                  {currentImage?.description || 'Informações em tempo real sobre as potencialidades e oportunidades de Chipindo.'}
+                </p>
               </div>
-              <p className="text-2xl font-bold text-primary-foreground">
-                {stats.loading ? '...' : stats.totalDirecoes}
-              </p>
-              <p className="text-primary-foreground/70 text-sm">{settings?.departments_description || 'Áreas de atuação'}</p>
-            </div>
-            
-            <div className="bg-primary-foreground/10 backdrop-blur-sm rounded-lg p-6 border border-primary-foreground/20">
-              <div className="flex items-center gap-3 mb-2">
-                <FileTextIcon className="w-6 h-6 text-accent" />
-                <span className="text-primary-foreground text-sm font-medium">Notícias</span>
-              </div>
-              <p className="text-2xl font-bold text-primary-foreground">
-                {stats.loading ? '...' : stats.publishedNews}
-              </p>
-              <p className="text-primary-foreground/70 text-sm">Notícias publicadas</p>
             </div>
           </div>
         </div>
+      </SectionContent>
+
+      {/* Premium Slide Indicators */}
+      <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 z-20">
+        <div className="flex space-x-3 bg-black/20 backdrop-blur-xl rounded-full px-4 py-2 border border-white/20">
+          {imagesToDisplay.map((_, index) => (
+            <button
+              key={index}
+              className={cn(
+                "h-3 rounded-full transition-all duration-700 hover:scale-125",
+                index === currentSlide 
+                  ? "bg-gradient-to-r from-yellow-400 to-orange-500 w-16 shadow-lg shadow-yellow-500/50" 
+                  : "bg-primary-foreground/40 hover:bg-primary-foreground/70 w-3"
+              )}
+              onClick={() => setCurrentSlide(index)}
+            />
+          ))}
+        </div>
       </div>
-    </section>
+
+      {/* Enhanced Interactive Elements */}
+      <div className="absolute bottom-12 right-12 z-20 animate-bounce">
+        <div className="relative group cursor-pointer">
+          <div className="w-8 h-12 border-2 border-primary-foreground/60 rounded-full flex justify-center backdrop-blur-xl bg-primary-foreground/10 group-hover:border-yellow-400/60 transition-all duration-300">
+            <div className="w-1.5 h-4 bg-gradient-to-b from-yellow-400 to-orange-500 rounded-full mt-3 animate-pulse group-hover:h-5 transition-all duration-300" />
+          </div>
+          <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <span className="text-xs text-primary-foreground/80 whitespace-nowrap">Role para baixo</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Enhanced Image Counter */}
+      <div className="absolute top-8 left-8 z-20">
+        <Badge 
+          variant="secondary" 
+          className="bg-gradient-to-r from-black/30 to-black/20 text-primary-foreground border-primary-foreground/40 backdrop-blur-xl font-bold px-4 py-2 shadow-2xl"
+        >
+          <span className="text-yellow-400">{currentSlide + 1}</span>
+          <span className="mx-2 text-primary-foreground/60">/</span>
+          <span className="text-primary-foreground/80">{imagesToDisplay.length}</span>
+        </Badge>
+      </div>
+
+
+    </Section>
   );
 };

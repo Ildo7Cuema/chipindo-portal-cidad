@@ -32,16 +32,16 @@ interface OrganigramaMember {
 const departments = [
   'Gabinete do Administrador',
   'Secretaria Geral', 
-  'Departamento Administrativo',
-  'Departamento de Obras Públicas',
-  'Departamento de Saúde',
-  'Departamento de Educação',
-  'Departamento de Agricultura',
-  'Departamento de Água e Saneamento',
-  'Departamento de Segurança',
-  'Departamento de Finanças',
-  'Departamento de Cultura e Turismo',
-  'Departamento de Assuntos Sociais'
+  'Direcção Administrativa',
+  'Direcção de Obras Públicas',
+  'Direcção de Saúde',
+  'Direcção de Educação',
+  'Direcção de Agricultura',
+  'Direcção de Água e Saneamento',
+  'Direcção de Segurança',
+  'Direcção de Finanças',
+  'Direcção de Cultura e Turismo',
+  'Direcção de Assuntos Sociais'
 ];
 
 interface Direccao {

@@ -1,7 +1,12 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Section, SectionContent } from "@/components/ui/section";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { cn } from "@/lib/utils";
 import insigniaAngola from "@/assets/insignia-angola.png";
+import logoRodape from "@/assets/logo_Rodape.png";
+import logoRodapeHuila from "@/assets/logo_Rodape_huila.png";
 import { 
   MapPinIcon, 
   PhoneIcon, 
@@ -10,204 +15,323 @@ import {
   FacebookIcon,
   InstagramIcon,
   TwitterIcon,
-  YoutubeIcon
+  YoutubeIcon,
+  ExternalLinkIcon,
+  HeartIcon,
+  ShieldCheckIcon,
+  Users2Icon,
+  BuildingIcon,
+  ArrowUpIcon,
+  StarIcon,
+  GlobeIcon
 } from "lucide-react";
 
 export const Footer = () => {
   const { settings } = useSiteSettings();
+  
+  const currentYear = new Date().getFullYear();
+  
+  const quickLinks = [
+    { label: "Notícias", href: "/noticias" },
+    { label: "Concursos", href: "/concursos" },
+    { label: "Acervo Digital", href: "/acervo" },
+    { label: "Transparência", href: "/transparencia" },
+    { label: "Ouvidoria", href: "/ouvidoria" },
+    { label: "Serviços", href: "/servicos" }
+  ];
+
+  const legalLinks = [
+    { label: "Privacidade", href: "/privacidade" },
+    { label: "Termos", href: "/termos" },
+    { label: "Acessibilidade", href: "/acessibilidade" },
+    { label: "Sitemap", href: "/sitemap" }
+  ];
+
+  const socialLinks = [
+    { 
+      platform: "Facebook", 
+      icon: FacebookIcon, 
+      href: settings?.social_facebook || "#", 
+      color: "hover:bg-blue-600"
+    },
+    { 
+      platform: "Instagram", 
+      icon: InstagramIcon, 
+      href: settings?.social_instagram || "#", 
+      color: "hover:bg-pink-600"
+    },
+    { 
+      platform: "Twitter", 
+      icon: TwitterIcon, 
+      href: settings?.social_twitter || "#", 
+      color: "hover:bg-blue-400"
+    },
+    { 
+      platform: "YouTube", 
+      icon: YoutubeIcon, 
+      href: settings?.social_youtube || "#", 
+      color: "hover:bg-red-600"
+    }
+  ];
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
-    <footer className="bg-card border-t border-border">
-      <div className="container mx-auto px-4 py-16">
+    <footer className="bg-slate-900 text-slate-300 border-t border-slate-800">
+      {/* Golden accent line */}
+      <div className="h-px bg-gradient-to-r from-transparent via-yellow-500 to-transparent"></div>
+      
+      <Section variant="default" size="md" className="py-8">
+        <SectionContent>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* About */}
-          <div className="space-y-4">
+            
+            {/* About Section - Compact */}
+            <div className="lg:col-span-2 space-y-4">
             <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-elegant border border-border p-1">
+                <div className="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-lg flex items-center justify-center p-2 shadow-lg">
                 <img 
                   src={insigniaAngola} 
-                  alt="Insígnia da República de Angola" 
+                    alt="Insígnia de Angola" 
                   className="w-full h-full object-contain"
                 />
               </div>
               <div>
-                <h3 className="font-bold text-foreground">{settings?.footer_about_title || 'Portal de Chipindo'}</h3>
-                <p className="text-sm text-muted-foreground">{settings?.footer_about_subtitle || 'Administração Municipal'}</p>
-              </div>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              {settings?.footer_about_description || 'Conectando a Administração Municipal aos cidadãos através de informação transparente, serviços digitais e oportunidades de crescimento.'}
-            </p>
-            <div className="flex space-x-3">
-              {settings?.social_facebook && (
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="p-2"
-                  asChild
-                >
-                  <a 
-                    href={settings.social_facebook} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    aria-label="Facebook"
-                  >
-                    <FacebookIcon className="w-4 h-4" />
-                  </a>
-                </Button>
-              )}
-              {settings?.social_instagram && (
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="p-2"
-                  asChild
-                >
-                  <a 
-                    href={settings.social_instagram} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    aria-label="Instagram"
-                  >
-                    <InstagramIcon className="w-4 h-4" />
-                  </a>
-                </Button>
-              )}
-              {settings?.social_twitter && (
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="p-2"
-                  asChild
-                >
-                  <a 
-                    href={settings.social_twitter} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    aria-label="Twitter"
-                  >
-                    <TwitterIcon className="w-4 h-4" />
-                  </a>
-                </Button>
-              )}
-              {settings?.social_youtube && (
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="p-2"
-                  asChild
-                >
-                  <a 
-                    href={settings.social_youtube} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    aria-label="YouTube"
-                  >
-                    <YoutubeIcon className="w-4 h-4" />
-                  </a>
-                </Button>
-              )}
-            </div>
-          </div>
-
-          {/* Contact Info */}
-          <div className="space-y-4">
-            <h4 className="font-semibold text-foreground">Contactos</h4>
-            <div className="space-y-3">
-              <div className="flex items-start gap-3">
-                <MapPinIcon className="w-5 h-5 text-primary mt-0.5" />
-                <div>
-                  <p className="text-sm font-medium">Sede da Administração</p>
-                  <p className="text-sm text-muted-foreground">
-                    {settings?.contact_address || 'Rua Principal, Bairro Central, Chipindo, Província de Huíla, Angola'}
+                  <h3 className="text-lg font-bold text-white">
+                    {settings?.footer_about_title || 'Portal de Chipindo'}
+                  </h3>
+                  <p className="text-sm text-slate-400">
+                    {settings?.footer_about_subtitle || 'Administração Municipal'}
                   </p>
                 </div>
+                <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0 text-xs px-2 py-1">
+                  <ShieldCheckIcon className="w-3 h-3 mr-1" />
+                  Oficial
+                </Badge>
               </div>
               
-              <div className="flex items-center gap-3">
-                <PhoneIcon className="w-5 h-5 text-primary" />
-                <div>
-                  <p className="text-sm font-medium">{settings?.contact_phone || '+244 XXX XXX XXX'}</p>
-                  <p className="text-sm text-muted-foreground">Linha principal</p>
+              <p className="text-slate-400 text-sm leading-relaxed">
+                Conectando a Administração Municipal aos cidadãos através de informação transparente e serviços digitais de qualidade.
+              </p>
+              
+              {/* Social Media - Compact */}
+              <div className="space-y-2">
+                <h4 className="text-sm font-semibold text-white flex items-center gap-2">
+                  <Users2Icon className="w-4 h-4 text-yellow-500" />
+                  Redes Sociais
+                </h4>
+                <div className="flex space-x-2">
+                  {socialLinks.map((social) => {
+                    const IconComponent = social.icon;
+                    return (
+                <Button 
+                        key={social.platform}
+                  size="sm" 
+                        variant="outline"
+                        className={cn(
+                          "w-8 h-8 p-0 border-slate-700 hover:border-slate-600 text-slate-400 hover:text-white transition-all duration-300",
+                          social.color
+                        )}
+                  asChild
+                >
+                  <a 
+                          href={social.href} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                          aria-label={social.platform}
+                  >
+                          <IconComponent className="w-4 h-4" />
+                  </a>
+                </Button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* Contact Information - Compact Cards */}
+            <div className="space-y-4">
+              <h4 className="text-sm font-semibold text-white flex items-center gap-2">
+                <BuildingIcon className="w-4 h-4 text-yellow-500" />
+                Contactos
+              </h4>
+              
+              <div className="space-y-3">
+                <div className="flex items-start gap-3 p-3 rounded-lg bg-slate-800/50 border border-slate-700/50 hover:bg-slate-800 transition-colors duration-300">
+                  <div className="w-6 h-6 bg-blue-600 rounded-md flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <MapPinIcon className="w-3 h-3 text-white" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs font-medium text-white">Endereço</p>
+                    <p className="text-xs text-slate-400 leading-relaxed">
+                      {settings?.contact_address || 'Rua Principal, Chipindo, Província de Huíla'}
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-slate-800/50 border border-slate-700/50 hover:bg-slate-800 transition-colors duration-300">
+                  <div className="w-6 h-6 bg-green-600 rounded-md flex items-center justify-center flex-shrink-0">
+                    <PhoneIcon className="w-3 h-3 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium text-white">{settings?.contact_phone || '+244 XXX XXX XXX'}</p>
+                    <p className="text-xs text-slate-400">Linha principal</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-slate-800/50 border border-slate-700/50 hover:bg-slate-800 transition-colors duration-300">
+                  <div className="w-6 h-6 bg-orange-600 rounded-md flex items-center justify-center flex-shrink-0">
+                    <MailIcon className="w-3 h-3 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium text-white">{settings?.contact_email || 'admin@chipindo.gov.ao'}</p>
+                    <p className="text-xs text-slate-400">Email oficial</p>
+                  </div>
+                </div>
+
+                {/* Operating Hours - Compact */}
+                <div className="p-3 rounded-lg bg-slate-800/50 border border-slate-700/50">
+                  <div className="flex items-start gap-3">
+                    <div className="w-6 h-6 bg-purple-600 rounded-md flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <ClockIcon className="w-3 h-3 text-white" />
+                    </div>
+                    <div className="min-w-0">
+                      <h5 className="text-xs font-medium text-white mb-2">Horário</h5>
+                      <div className="space-y-1 text-xs text-slate-400">
+                        <div className="flex justify-between">
+                          <span>Seg-Sex:</span>
+                          <span>{settings?.opening_hours_weekdays || '08:00-16:00'}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Sáb:</span>
+                          <span>{settings?.opening_hours_saturday || '08:00-12:00'}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Dom:</span>
+                          <span className="text-slate-500">{settings?.opening_hours_sunday || 'Encerrado'}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Links - Compact */}
+            <div className="space-y-4">
+              <h4 className="text-sm font-semibold text-white flex items-center gap-2">
+                <GlobeIcon className="w-4 h-4 text-yellow-500" />
+                Links Rápidos
+              </h4>
+              <div className="space-y-1">
+                {quickLinks.map((link) => (
+                  <a 
+                    key={link.label}
+                    href={link.href} 
+                    className="flex items-center justify-between py-2 px-3 text-sm text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-md transition-colors duration-300 group"
+                  >
+                    <span>{link.label}</span>
+                    <ExternalLinkIcon className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Official Logos Section */}
+          <div className="border-t border-slate-800 mt-8 pt-6">
+            <div className="text-center space-y-4">
+              <h4 className="text-sm font-semibold text-white flex items-center justify-center gap-2">
+                <ShieldCheckIcon className="w-4 h-4 text-yellow-500" />
+                Vínculos Institucionais
+              </h4>
+              
+              <div className="flex items-center justify-center">
+                {/* Logos conectados sem linha divisória */}
+                <div className="flex items-center">
+                  <img 
+                    src={logoRodape} 
+                    alt="Governo de Angola" 
+                    className="h-16 w-auto object-contain hover:scale-105 transition-transform duration-300"
+                  />
+                  <img 
+                    src={logoRodapeHuila} 
+                    alt="Huíla.gov.ao - Administração Municipal de Chipindo" 
+                    className="h-16 w-auto object-contain hover:scale-105 transition-transform duration-300"
+                  />
                 </div>
               </div>
               
-              <div className="flex items-center gap-3">
-                <MailIcon className="w-5 h-5 text-primary" />
-                <div>
-                  <p className="text-sm font-medium">{settings?.contact_email || 'admin@chipindo.gov.ao'}</p>
-                  <p className="text-sm text-muted-foreground">Email oficial</p>
+              <p className="text-xs text-slate-500 max-w-2xl mx-auto">
+                Portal oficial vinculado ao Governo Provincial de Huíla e ao Governo da República de Angola
+              </p>
+            </div>
+          </div>
+
+          {/* Bottom Section - Compact */}
+          <div className="border-t border-slate-800 mt-6 pt-6">
+            <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
+              <div className="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
+                <p className="text-xs text-slate-400">
+                  {settings?.copyright_text || `© ${currentYear} Administração Municipal de Chipindo. Todos os direitos reservados.`}
+                </p>
+                <div className="flex items-center gap-2 text-xs">
+                  <span className="text-slate-500">Feito com</span>
+                  <HeartIcon className="w-3 h-3 text-red-500" />
+                  <span className="text-slate-500">para Angola</span>
+                  <div className="flex items-center gap-1 ml-2">
+                    <StarIcon className="w-3 h-3 text-yellow-500 fill-current" />
+                    <span className="text-yellow-500 font-medium text-xs">Premium</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3 text-xs">
+                  {legalLinks.map((link) => (
+                    <a 
+                      key={link.label}
+                      href={link.href} 
+                      className="text-slate-500 hover:text-slate-300 transition-colors duration-300"
+                    >
+                      {link.label}
+                    </a>
+                  ))}
+                </div>
+                
+                <Button
+                  onClick={scrollToTop}
+                  size="sm"
+                  className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 h-8 w-8 p-0 group"
+                >
+                  <ArrowUpIcon className="w-4 h-4 group-hover:-translate-y-0.5 transition-transform duration-300" />
+                </Button>
+            </div>
+          </div>
+
+            {/* System Status - Minimal */}
+            <div className="mt-4 pt-4 border-t border-slate-800/50">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+                <div className="flex items-center gap-4">
+                  <span>Portal desenvolvido com tecnologias modernas</span>
+                  <div className="hidden sm:flex items-center gap-1">
+                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
+                    <span>Online</span>
+                  </div>
+                  </div>
+                <div className="flex items-center gap-3">
+                  <span>v2.0.1</span>
+                  <div className="flex items-center gap-1">
+                    <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                    <span>99.9% Uptime</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-
-          {/* Opening Hours */}
-          <div className="space-y-4">
-            <h4 className="font-semibold text-foreground">Horário de Atendimento</h4>
-            <div className="space-y-3">
-              <div className="flex items-start gap-3">
-                <ClockIcon className="w-5 h-5 text-primary mt-0.5" />
-                <div className="space-y-2">
-                  <div>
-                    <p className="text-sm text-muted-foreground">{settings?.opening_hours_weekdays || 'Segunda a Sexta: 08:00 - 16:00'}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">{settings?.opening_hours_saturday || 'Sábado: 08:00 - 12:00'}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">{settings?.opening_hours_sunday || 'Domingo: Encerrado'}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Quick Links */}
-          <div className="space-y-4">
-            <h4 className="font-semibold text-foreground">Links Rápidos</h4>
-            <div className="space-y-2">
-              <a href="#noticias" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
-                Últimas Notícias
-              </a>
-              <a href="#concursos" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
-                Concursos Públicos
-              </a>
-              <a href="#acervo" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
-                Acervo Digital
-              </a>
-              <a href="#" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
-                Transparência
-              </a>
-              <a href="#" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
-                Ouvidoria
-              </a>
-              <a href="#" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
-                Área do Cidadão
-              </a>
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom Bar */}
-        <div className="border-t border-border mt-12 pt-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-sm text-muted-foreground">
-              {settings?.copyright_text || '© 2024 Administração Municipal de Chipindo. Todos os direitos reservados.'}
-            </p>
-            <div className="flex items-center gap-6 text-sm">
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                Política de Privacidade
-              </a>
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                Termos de Uso
-              </a>
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                Acessibilidade
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
+        </SectionContent>
+      </Section>
     </footer>
   );
 };

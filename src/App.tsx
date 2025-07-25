@@ -17,6 +17,10 @@ import AllNews from "./pages/AllNews";
 import Services from "./pages/Services";
 import ConcursosHistory from "./pages/ConcursosHistory";
 import RegisterInterest from "./pages/RegisterInterest";
+import Privacidade from "./pages/Privacidade";
+import Termos from "./pages/Termos";
+import Acessibilidade from "./pages/Acessibilidade";
+import Sitemap from "./pages/Sitemap";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +44,10 @@ const App = () => (
           <Route path="/contactos" element={<Contactos />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/privacidade" element={<Privacidade />} />
+          <Route path="/termos" element={<Termos />} />
+          <Route path="/acessibilidade" element={<Acessibilidade />} />
+          <Route path="/sitemap" element={<Sitemap />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

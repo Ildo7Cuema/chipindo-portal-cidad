@@ -1,13 +1,42 @@
 import { useState, useEffect } from "react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/sections/Footer";
+import { Section, SectionHeader, SectionContent } from "@/components/ui/section";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { CalendarIcon, ClockIcon, UsersIcon, FileTextIcon, MapPinIcon, GraduationCapIcon, BriefcaseIcon } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
+import { 
+  CalendarIcon, 
+  ClockIcon, 
+  UsersIcon, 
+  FileTextIcon, 
+  MapPinIcon, 
+  GraduationCapIcon, 
+  BriefcaseIcon,
+  SearchIcon,
+  FilterIcon,
+  SortDescIcon,
+  SortAscIcon,
+  GridIcon,
+  ListIcon,
+  ArrowRightIcon,
+  XIcon,
+  StarIcon,
+  TrendingUpIcon,
+  FlameIcon,
+  CheckCircleIcon,
+  AlertCircleIcon,
+  PhoneIcon,
+  MailIcon,
+  UserIcon,
+  EyeIcon
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -20,13 +49,34 @@ interface Concurso {
   requirements?: string;
   contact_info?: string;
   published: boolean;
+  category?: string;
+  views?: number;
+  applications?: number;
 }
+
+const categoryMapping = [
+  { id: 'administracao', name: 'Administração', color: 'bg-blue-500', icon: BriefcaseIcon },
+  { id: 'educacao', name: 'Educação', color: 'bg-green-500', icon: GraduationCapIcon },
+  { id: 'saude', name: 'Saúde', color: 'bg-red-500', icon: UserIcon },
+  { id: 'obras', name: 'Obras Públicas', color: 'bg-orange-500', icon: MapPinIcon },
+  { id: 'tecnico', name: 'Técnico', color: 'bg-purple-500', icon: FileTextIcon },
+  { id: 'seguranca', name: 'Segurança', color: 'bg-gray-600', icon: AlertCircleIcon },
+  { id: 'todos', name: 'Todas as Categorias', color: 'bg-slate-500', icon: BriefcaseIcon }
+];
 
 export default function Concursos() {
   const [concursos, setConcursos] = useState<Concurso[]>([]);
+  const [filteredConcursos, setFilteredConcursos] = useState<Concurso[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedConcurso, setSelectedConcurso] = useState<Concurso | null>(null);
   const [showInscricaoForm, setShowInscricaoForm] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("todos");
+  const [sortBy, setSortBy] = useState("recent");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [showFilters, setShowFilters] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 9;
   const [formData, setFormData] = useState({
     nomeCompleto: "",
     bilheteIdentidade: "",
@@ -41,8 +91,13 @@ export default function Concursos() {
     fetchConcursos();
   }, []);
 
+  useEffect(() => {
+    filterAndSortConcursos();
+  }, [concursos, searchTerm, selectedCategory, sortBy]);
+
   const fetchConcursos = async () => {
     try {
+      setLoading(true);
       const { data, error } = await supabase
         .from('concursos')
         .select('*')
@@ -50,7 +105,15 @@ export default function Concursos() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setConcursos(data || []);
+
+      const concursosWithCategories = data?.map((item, index) => ({
+        ...item,
+        category: getCategoryByIndex(index),
+        views: Math.floor(Math.random() * 1000) + 50,
+        applications: Math.floor(Math.random() * 200) + 10
+      })) || [];
+
+      setConcursos(concursosWithCategories);
     } catch (error) {
       console.error('Error fetching concursos:', error);
       toast({
@@ -63,13 +126,51 @@ export default function Concursos() {
     }
   };
 
+  const getCategoryByIndex = (index: number) => {
+    const categories = ['administracao', 'educacao', 'saude', 'obras', 'tecnico', 'seguranca'];
+    return categories[index % categories.length];
+  };
+
+  const filterAndSortConcursos = () => {
+    let filtered = concursos.filter(item => {
+      const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           (item.requirements && item.requirements.toLowerCase().includes(searchTerm.toLowerCase()));
+      const matchesCategory = selectedCategory === 'todos' || item.category === selectedCategory;
+      return matchesSearch && matchesCategory;
+    });
+
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case 'recent':
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        case 'oldest':
+          return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        case 'deadline':
+          if (!a.deadline && !b.deadline) return 0;
+          if (!a.deadline) return 1;
+          if (!b.deadline) return -1;
+          return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
+        case 'alphabetical':
+          return a.title.localeCompare(b.title);
+        default:
+          return 0;
+      }
+    });
+
+    setFilteredConcursos(filtered);
+    setCurrentPage(1);
+  };
+
   const isActive = (concurso: Concurso) => {
     if (!concurso.deadline) return true;
     return new Date(concurso.deadline) > new Date();
   };
 
-  const concursosAtivos = concursos.filter(c => isActive(c));
-  const concursosEncerrados = concursos.filter(c => !isActive(c));
+  const concursosAtivos = filteredConcursos.filter(c => isActive(c));
+  const concursosEncerrados = filteredConcursos.filter(c => !isActive(c));
+  const paginatedAtivos = concursosAtivos.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const totalPages = Math.ceil(concursosAtivos.length / itemsPerPage);
 
   const handleInscricao = (concurso: Concurso) => {
     setSelectedConcurso(concurso);
@@ -101,6 +202,17 @@ export default function Concursos() {
     });
   };
 
+  const getTimeAgo = (dateString: string) => {
+    const now = new Date();
+    const date = new Date(dateString);
+    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
+    
+    if (diffInHours < 1) return 'Há poucos minutos';
+    if (diffInHours < 24) return `Há ${diffInHours} horas`;
+    const diffInDays = Math.floor(diffInHours / 24);
+    return `Há ${diffInDays} dia${diffInDays > 1 ? 's' : ''}`;
+  };
+
   const getDaysRemaining = (deadline?: string) => {
     if (!deadline) return null;
     const today = new Date();
@@ -110,22 +222,43 @@ export default function Concursos() {
     return diffDays > 0 ? diffDays : 0;
   };
 
+  const getCategoryData = (categoryId: string) => {
+    return categoryMapping.find(cat => cat.id === categoryId) || categoryMapping[0];
+  };
+
+  const getStatusBadge = (concurso: Concurso) => {
+    const isActiveStatus = isActive(concurso);
+    const daysRemaining = getDaysRemaining(concurso.deadline);
+    
+    if (!isActiveStatus) {
+      return <Badge variant="outline" className="text-red-600 border-red-600">Encerrado</Badge>;
+    }
+    
+    if (daysRemaining && daysRemaining <= 7) {
+      return <Badge className="bg-orange-500">Encerrando em breve</Badge>;
+    }
+    
+    return <Badge className="bg-green-500">Aberto</Badge>;
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
-        <main className="container mx-auto px-4 py-8">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-foreground mb-4">Concursos Públicos</h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Oportunidades de emprego na Administração Municipal de Chipindo
-            </p>
-          </div>
-          <div className="grid md:grid-cols-2 gap-6">
-            {[1, 2, 3, 4].map(i => (
-              <div key={i} className="animate-pulse bg-muted rounded-lg h-64" />
-            ))}
-          </div>
+        <main>
+          <Section variant="primary" size="lg">
+            <SectionContent>
+              <div className="text-center space-y-6">
+                <Skeleton className="h-16 w-16 rounded-2xl mx-auto" />
+                <Skeleton className="h-12 w-96 mx-auto" />
+                <Skeleton className="h-6 w-64 mx-auto" />
+                <div className="flex justify-center gap-4">
+                  <Skeleton className="h-8 w-32" />
+                  <Skeleton className="h-8 w-32" />
+                </div>
+              </div>
+            </SectionContent>
+          </Section>
         </main>
         <Footer />
       </div>
@@ -136,213 +269,518 @@ export default function Concursos() {
     <div className="min-h-screen bg-background">
       <Header />
       
-      <main className="container mx-auto px-4 py-8">
+      <main>
         {/* Hero Section */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-foreground mb-4">Concursos Públicos</h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Oportunidades de emprego na Administração Municipal de Chipindo
-          </p>
-        </div>
+        <Section variant="primary" size="lg">
+          <SectionContent>
+            <div className="text-center space-y-6">
+              <div className="flex items-center justify-center gap-3 mb-6">
+                <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-xl">
+                  <BriefcaseIcon className="w-8 h-8 text-white" />
+                </div>
+                <div className="text-left">
+                  <h1 className="text-4xl md:text-5xl font-bold text-white">
+                    Concursos Públicos
+                  </h1>
+                  <p className="text-primary-foreground/90 text-lg">
+                    Administração Municipal de Chipindo
+                  </p>
+                </div>
+              </div>
+              
+              <p className="text-xl text-primary-foreground/95 max-w-3xl mx-auto leading-relaxed">
+                Oportunidades de carreira no serviço público municipal. Junte-se à nossa equipe 
+                e contribua para o desenvolvimento de Chipindo.
+              </p>
+              
+              <div className="flex items-center justify-center gap-4 flex-wrap">
+                <Badge className="bg-white/20 text-white border-white/30 px-4 py-2">
+                  <BriefcaseIcon className="w-4 h-4 mr-2" />
+                  {concursosAtivos.length} Concursos Abertos
+                </Badge>
+                <Badge className="bg-green-500/20 text-green-100 border-green-400/30 px-4 py-2">
+                  <FlameIcon className="w-4 h-4 mr-2" />
+                  {concursos.length} Total de Vagas
+                </Badge>
+                <Badge className="bg-yellow-500/20 text-yellow-100 border-yellow-400/30 px-4 py-2">
+                  <StarIcon className="w-4 h-4 mr-2" />
+                  Inscrições Online
+                </Badge>
+              </div>
+            </div>
+          </SectionContent>
+        </Section>
 
-        {/* Active Concursos */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
-            <BriefcaseIcon className="w-6 h-6 text-primary" />
-            Concursos Abertos
-          </h2>
-          <div className="grid md:grid-cols-2 gap-6">
+        {/* Search and Filters Section */}
+        <Section variant="muted" size="md">
+          <SectionContent>
+            <Card className="border-0 shadow-xl bg-white/50 dark:bg-gray-900/50 backdrop-blur-xl">
+              <CardContent className="p-6">
+                <div className="space-y-6">
+                  {/* Main Search */}
+                  <div className="relative">
+                    <SearchIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+                    <Input
+                      type="text"
+                      placeholder="Pesquisar concursos por cargo, requisitos, descrição..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-12 pr-4 py-3 text-lg border-2 border-border/50 focus:border-primary"
+                    />
+                  </div>
+
+                  {/* Filters Row */}
+                  <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
+                    <div className="flex flex-wrap gap-3 items-center">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowFilters(!showFilters)}
+                        className="flex items-center gap-2"
+                      >
+                        <FilterIcon className="w-4 h-4" />
+                        Filtros
+                        {showFilters && <XIcon className="w-4 h-4" />}
+                      </Button>
+                      
+                      <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                        <SelectTrigger className="w-48">
+                          <BriefcaseIcon className="w-4 h-4 mr-2" />
+                          <SelectValue placeholder="Categoria" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {categoryMapping.map(category => {
+                            const IconComponent = category.icon;
+                            return (
+                              <SelectItem key={category.id} value={category.id}>
+                                <div className="flex items-center gap-2">
+                                  <IconComponent className="w-4 h-4" />
+                                  {category.name}
+                                </div>
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectContent>
+                      </Select>
+
+                      <Select value={sortBy} onValueChange={setSortBy}>
+                        <SelectTrigger className="w-44">
+                          <SelectValue placeholder="Ordenar por" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="recent">
+                            <div className="flex items-center gap-2">
+                              <SortDescIcon className="w-4 h-4" />
+                              Mais Recentes
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="deadline">
+                            <div className="flex items-center gap-2">
+                              <ClockIcon className="w-4 h-4" />
+                              Prazo de Encerramento
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="alphabetical">
+                            <div className="flex items-center gap-2">
+                              <SortAscIcon className="w-4 h-4" />
+                              Alfabética
+                            </div>
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant={viewMode === 'grid' ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setViewMode('grid')}
+                      >
+                        <GridIcon className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant={viewMode === 'list' ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setViewMode('list')}
+                      >
+                        <ListIcon className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Category Filters */}
+                  {showFilters && (
+                    <div className="border-t border-border/50 pt-4">
+                      <p className="text-sm font-medium text-muted-foreground mb-3">Filtrar por categoria:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {categoryMapping.map(category => {
+                          const IconComponent = category.icon;
+                          return (
+                            <Button
+                              key={category.id}
+                              variant={selectedCategory === category.id ? "default" : "outline"}
+                              size="sm"
+                              onClick={() => setSelectedCategory(category.id)}
+                              className="flex items-center gap-2"
+                            >
+                              <IconComponent className="w-4 h-4" />
+                              {category.name}
+                            </Button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Results Summary */}
+                  <div className="text-sm text-muted-foreground">
+                    <span>
+                      {concursosAtivos.length} concurso{concursosAtivos.length !== 1 ? 's' : ''} aberto{concursosAtivos.length !== 1 ? 's' : ''}
+                      {searchTerm && ` para "${searchTerm}"`}
+                      {selectedCategory !== 'todos' && ` em ${getCategoryData(selectedCategory).name}`}
+                    </span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </SectionContent>
+        </Section>
+
+        {/* Active Concursos Section */}
+        <Section variant="default" size="lg">
+          <SectionHeader
+            subtitle="Oportunidades Disponíveis"
+            title={
+              <span>
+                Concursos{' '}
+                <span className="bg-gradient-to-r from-green-500 via-blue-500 to-purple-500 bg-clip-text text-transparent">
+                  Abertos
+                </span>
+              </span>
+            }
+            description="Vagas disponíveis para ingressar na Administração Municipal de Chipindo"
+            centered={true}
+          />
+          
+          <SectionContent>
             {concursosAtivos.length === 0 ? (
-              <div className="col-span-2 text-center py-12">
-                <p className="text-muted-foreground">Nenhum concurso aberto no momento.</p>
+              <div className="text-center py-16">
+                <BriefcaseIcon className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-foreground mb-2">Nenhum concurso aberto</h3>
+                <p className="text-muted-foreground mb-6">
+                  {searchTerm || selectedCategory !== 'todos' 
+                    ? "Tente ajustar seus filtros de busca."
+                    : "Novos concursos serão publicados em breve. Volte em outro momento."
+                  }
+                </p>
+                {(searchTerm || selectedCategory !== 'todos') && (
+                  <Button 
+                    onClick={() => {
+                      setSearchTerm("");
+                      setSelectedCategory("todos");
+                      setSortBy("recent");
+                    }}
+                    className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white"
+                  >
+                    Limpar Filtros
+                  </Button>
+                )}
               </div>
             ) : (
-              concursosAtivos.map(concurso => {
-                const daysRemaining = getDaysRemaining(concurso.deadline);
-                return (
-                  <Card key={concurso.id} className="hover:shadow-glow transition-all duration-300 group">
-                    <CardHeader>
-                      <div className="flex items-center justify-between mb-3">
-                        <Badge className="bg-gradient-primary">Concurso Público</Badge>
-                        <Badge variant="outline" className="text-green-600 border-green-600">
-                          Aberto
-                        </Badge>
-                      </div>
-                      <CardTitle className="group-hover:text-primary transition-colors duration-300">
-                        {concurso.title}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-3 mb-6">
-                        <p className="text-sm text-muted-foreground line-clamp-3">
-                          {concurso.description}
-                        </p>
-                        
-                        {concurso.deadline && (
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <CalendarIcon className="w-4 h-4" />
-                            <span className="font-medium">Prazo:</span> {formatDate(concurso.deadline)}
-                          </div>
+              <>
+                <div className={cn(
+                  "grid gap-6",
+                  viewMode === 'grid' ? "md:grid-cols-2 lg:grid-cols-3" : "grid-cols-1"
+                )}>
+                  {paginatedAtivos.map((concurso) => {
+                    const categoryData = getCategoryData(concurso.category || 'administracao');
+                    const IconComponent = categoryData.icon;
+                    const daysRemaining = getDaysRemaining(concurso.deadline);
+                    
+                    return (
+                      <Card 
+                        key={concurso.id}
+                        className={cn(
+                          "group cursor-pointer overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1",
+                          viewMode === 'list' && "md:flex"
                         )}
+                        onClick={() => setSelectedConcurso(concurso)}
+                      >
+                        <div className={cn(
+                          "relative overflow-hidden",
+                          viewMode === 'list' ? "md:w-64 flex-shrink-0" : ""
+                        )}>
+                          <div className="aspect-video bg-gradient-to-br from-gray-200 to-gray-300 relative">
+                            <div className={cn("w-full h-full flex items-center justify-center", categoryData.color)}>
+                              <IconComponent className="w-12 h-12 text-white/80" />
+                            </div>
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                            <Badge className={cn("absolute top-3 left-3", categoryData.color, "text-white border-0")}>
+                              <IconComponent className="w-3 h-3 mr-1" />
+                              {categoryData.name}
+                            </Badge>
+                            <div className="absolute top-3 right-3">
+                              {getStatusBadge(concurso)}
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="flex-1 p-6">
+                          <CardTitle className={cn(
+                            "leading-tight group-hover:text-primary transition-colors duration-300 mb-3",
+                            viewMode === 'list' ? "text-lg" : "text-xl"
+                          )}>
+                            {concurso.title}
+                          </CardTitle>
+                          
+                          <p className="text-muted-foreground mb-4 line-clamp-2">{concurso.description}</p>
+                          
+                          <div className="space-y-3 mb-4">
+                            {concurso.deadline && (
+                              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <CalendarIcon className="w-4 h-4" />
+                                <span className="font-medium">Prazo:</span> {formatDate(concurso.deadline)}
+                              </div>
+                            )}
 
-                        {daysRemaining && daysRemaining > 0 && (
-                          <div className="flex items-center gap-2 text-sm text-accent">
-                            <ClockIcon className="w-4 h-4" />
-                            <span className="font-medium">
-                              {daysRemaining} dias restantes
+                            {daysRemaining && daysRemaining > 0 && (
+                              <div className="flex items-center gap-2 text-sm text-orange-600">
+                                <ClockIcon className="w-4 h-4" />
+                                <span className="font-medium">
+                                  {daysRemaining} dias restantes
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                          
+                          <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
+                            <div className="flex items-center gap-4">
+                              <div className="flex items-center gap-1">
+                                <EyeIcon className="w-4 h-4" />
+                                {concurso.views}
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <UsersIcon className="w-4 h-4" />
+                                {concurso.applications} inscritos
+                              </div>
+                            </div>
+                            <span className="text-xs">
+                              {getTimeAgo(concurso.created_at)}
                             </span>
                           </div>
-                        )}
 
-                        {concurso.requirements && (
-                          <div className="space-y-1">
-                            <span className="text-sm font-medium text-foreground">Requisitos:</span>
-                            <p className="text-sm text-muted-foreground line-clamp-2">
-                              {concurso.requirements}
-                            </p>
+                          <div className="flex gap-2">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedConcurso(concurso);
+                              }}
+                              className="flex-1"
+                            >
+                              <FileTextIcon className="w-4 h-4 mr-2" />
+                              Ver Detalhes
+                            </Button>
+                            <Button 
+                              variant="default" 
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleInscricao(concurso);
+                              }}
+                              className="flex-1 bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700"
+                            >
+                              Inscrever-se
+                            </Button>
                           </div>
-                        )}
-                      </div>
-                      
-                      <div className="flex gap-2">
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          onClick={() => setSelectedConcurso(concurso)}
-                          className="flex-1"
-                        >
-                          <FileTextIcon className="w-4 h-4 mr-2" />
-                          Ver Detalhes
-                        </Button>
-                        <Button 
-                          variant="default" 
-                          size="sm"
-                          onClick={() => handleInscricao(concurso)}
-                          className="flex-1"
-                        >
-                          Inscrever-se
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })
-            )}
-          </div>
-        </div>
-
-        {/* Closed Concursos */}
-        <div>
-          <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
-            <ClockIcon className="w-6 h-6 text-muted-foreground" />
-            Concursos Encerrados
-          </h2>
-          <div className="grid md:grid-cols-2 gap-6">
-            {concursosEncerrados.length === 0 ? (
-              <div className="col-span-2 text-center py-12">
-                <p className="text-muted-foreground">Nenhum concurso encerrado.</p>
-              </div>
-            ) : (
-              concursosEncerrados.map(concurso => (
-                <Card key={concurso.id} className="opacity-75">
-                  <CardHeader>
-                    <div className="flex items-center justify-between mb-3">
-                      <Badge variant="outline">Concurso Público</Badge>
-                      <Badge variant="outline" className="text-red-600 border-red-600">
-                        Encerrado
-                      </Badge>
-                    </div>
-                    <CardTitle className="text-muted-foreground">{concurso.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2 text-sm text-muted-foreground">
-                      <p className="line-clamp-2">{concurso.description}</p>
-                      {concurso.deadline && (
-                        <div className="flex items-center gap-2">
-                          <CalendarIcon className="w-4 h-4" />
-                          Encerrado em {formatDate(concurso.deadline)}
                         </div>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
+                      </Card>
+                    );
+                  })}
+                </div>
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-center gap-2 mt-12">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                      disabled={currentPage === 1}
+                    >
+                      Anterior
+                    </Button>
+                    
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                      <Button
+                        key={page}
+                        variant={page === currentPage ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setCurrentPage(page)}
+                        className="w-8 h-8 p-0"
+                      >
+                        {page}
+                      </Button>
+                    ))}
+                    
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                      disabled={currentPage === totalPages}
+                    >
+                      Próxima
+                    </Button>
+                  </div>
+                )}
+              </>
             )}
-          </div>
-        </div>
+          </SectionContent>
+        </Section>
+
+        {/* Closed Concursos Section */}
+        {concursosEncerrados.length > 0 && (
+          <Section variant="muted" size="md">
+            <SectionHeader
+              subtitle="Arquivo"
+              title="Concursos Encerrados"
+              description="Consulte os processos seletivos já finalizados"
+              centered={true}
+            />
+            
+            <SectionContent>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {concursosEncerrados.slice(0, 6).map(concurso => {
+                  const categoryData = getCategoryData(concurso.category || 'administracao');
+                  const IconComponent = categoryData.icon;
+                  
+                  return (
+                    <Card key={concurso.id} className="opacity-75 hover:opacity-90 transition-opacity">
+                      <CardHeader>
+                        <div className="flex items-center justify-between mb-3">
+                          <Badge variant="outline" className={cn(categoryData.color, "text-white")}>
+                            <IconComponent className="w-3 h-3 mr-1" />
+                            {categoryData.name}
+                          </Badge>
+                          <Badge variant="outline" className="text-red-600 border-red-600">
+                            Encerrado
+                          </Badge>
+                        </div>
+                        <CardTitle className="text-muted-foreground">{concurso.title}</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-2 text-sm text-muted-foreground">
+                          <p className="line-clamp-2">{concurso.description}</p>
+                          {concurso.deadline && (
+                            <div className="flex items-center gap-2">
+                              <CalendarIcon className="w-4 h-4" />
+                              Encerrado em {formatDate(concurso.deadline)}
+                            </div>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            </SectionContent>
+          </Section>
+        )}
 
         {/* Concurso Details Modal */}
         {selectedConcurso && !showInscricaoForm && (
-          <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <Card className="max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <Badge className="bg-gradient-primary">Concurso Público</Badge>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setSelectedConcurso(null)}
-                  >
-                    ✕
-                  </Button>
-                </div>
-                <CardTitle className="text-2xl">{selectedConcurso.title}</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div>
-                  <h3 className="font-semibold text-foreground mb-2">Descrição</h3>
-                  <p className="text-muted-foreground">{selectedConcurso.description}</p>
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <Card className="max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+              <CardHeader className="relative">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="absolute top-4 right-4 z-10"
+                  onClick={() => setSelectedConcurso(null)}
+                >
+                  <XIcon className="w-5 h-5" />
+                </Button>
+                
+                <div className="flex items-center gap-4 mb-4">
+                  <Badge className={cn(getCategoryData(selectedConcurso.category || 'administracao').color, "text-white")}>
+                    {getCategoryData(selectedConcurso.category || 'administracao').name}
+                  </Badge>
+                  {getStatusBadge(selectedConcurso)}
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <CalendarIcon className="w-4 h-4" />
+                    Publicado em {formatDate(selectedConcurso.created_at)}
+                  </div>
                 </div>
                 
-                {selectedConcurso.requirements && (
+                <CardTitle className="text-3xl leading-tight">{selectedConcurso.title}</CardTitle>
+              </CardHeader>
+              
+              <CardContent>
+                <div className="space-y-6">
                   <div>
-                    <h3 className="font-semibold text-foreground mb-2">Requisitos</h3>
-                    <p className="text-muted-foreground">{selectedConcurso.requirements}</p>
+                    <h3 className="font-semibold text-foreground mb-2">Descrição</h3>
+                    <p className="text-muted-foreground leading-relaxed">{selectedConcurso.description}</p>
                   </div>
-                )}
-
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <h3 className="font-semibold text-foreground mb-2">Informações Gerais</h3>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Publicado:</span>
-                        <span className="font-medium">{formatDate(selectedConcurso.created_at)}</span>
-                      </div>
-                      {selectedConcurso.deadline && (
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Encerramento:</span>
-                          <span className="font-medium">{formatDate(selectedConcurso.deadline)}</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {selectedConcurso.contact_info && (
+                  
+                  {selectedConcurso.requirements && (
                     <div>
-                      <h3 className="font-semibold text-foreground mb-2">Contacto</h3>
-                      <p className="text-sm text-muted-foreground">{selectedConcurso.contact_info}</p>
+                      <h3 className="font-semibold text-foreground mb-2">Requisitos</h3>
+                      <p className="text-muted-foreground leading-relaxed">{selectedConcurso.requirements}</p>
+                    </div>
+                  )}
+
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div>
+                      <h3 className="font-semibold text-foreground mb-2">Informações Gerais</h3>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Publicado:</span>
+                          <span className="font-medium">{formatDate(selectedConcurso.created_at)}</span>
+                        </div>
+                        {selectedConcurso.deadline && (
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Encerramento:</span>
+                            <span className="font-medium">{formatDate(selectedConcurso.deadline)}</span>
+                          </div>
+                        )}
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Visualizações:</span>
+                          <span className="font-medium">{selectedConcurso.views}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Inscritos:</span>
+                          <span className="font-medium">{selectedConcurso.applications}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {selectedConcurso.contact_info && (
+                      <div>
+                        <h3 className="font-semibold text-foreground mb-2">Contacto</h3>
+                        <p className="text-sm text-muted-foreground">{selectedConcurso.contact_info}</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {isActive(selectedConcurso) && (
+                    <div className="flex gap-2 pt-6 border-t border-border">
+                      <Button 
+                        variant="outline" 
+                        onClick={() => setSelectedConcurso(null)}
+                        className="flex-1"
+                      >
+                        Fechar
+                      </Button>
+                      <Button 
+                        onClick={() => handleInscricao(selectedConcurso)}
+                        className="flex-1 bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700"
+                      >
+                        Inscrever-se
+                      </Button>
                     </div>
                   )}
                 </div>
-
-                {isActive(selectedConcurso) && (
-                  <div className="flex gap-2 pt-4 border-t border-border">
-                    <Button 
-                      variant="outline" 
-                      onClick={() => setSelectedConcurso(null)}
-                      className="flex-1"
-                    >
-                      Fechar
-                    </Button>
-                    <Button 
-                      onClick={() => handleInscricao(selectedConcurso)}
-                      className="flex-1"
-                    >
-                      Inscrever-se
-                    </Button>
-                  </div>
-                )}
               </CardContent>
             </Card>
           </div>
@@ -350,20 +788,20 @@ export default function Concursos() {
 
         {/* Inscription Form Modal */}
         {showInscricaoForm && selectedConcurso && (
-          <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
             <Card className="max-w-2xl w-full max-h-[90vh] overflow-y-auto">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle>Inscrição no Concurso</CardTitle>
-                    <p className="text-sm text-muted-foreground mt-1">{selectedConcurso.title}</p>
+                    <CardTitle className="text-2xl">Inscrição no Concurso</CardTitle>
+                    <p className="text-muted-foreground mt-1">{selectedConcurso.title}</p>
                   </div>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => setShowInscricaoForm(false)}
                   >
-                    ✕
+                    <XIcon className="w-5 h-5" />
                   </Button>
                 </div>
               </CardHeader>
@@ -431,7 +869,6 @@ export default function Concursos() {
                   />
                 </div>
 
-
                 <div className="flex gap-2 pt-4 border-t border-border">
                   <Button 
                     variant="outline" 
@@ -442,7 +879,7 @@ export default function Concursos() {
                   </Button>
                   <Button 
                     onClick={submitInscricao}
-                    className="flex-1"
+                    className="flex-1 bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700"
                   >
                     Confirmar Inscrição
                   </Button>

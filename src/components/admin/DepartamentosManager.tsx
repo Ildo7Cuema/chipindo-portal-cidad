@@ -84,7 +84,7 @@ export function DirecoesManager() {
       resetForm();
       fetchDirecoes();
     } catch (error) {
-      console.error('Error saving departamento:', error);
+      console.error('Error saving direcção:', error);
       toast.error('Erro ao salvar direcção');
     } finally {
       setLoading(false);
@@ -116,7 +116,7 @@ export function DirecoesManager() {
       toast.success('Direcção excluída com sucesso!');
       fetchDirecoes();
     } catch (error) {
-      console.error('Error deleting departamento:', error);
+      console.error('Error deleting direcção:', error);
       toast.error('Erro ao excluir direcção');
     }
   };
