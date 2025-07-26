@@ -469,17 +469,6 @@ export const Hero = () => {
         </div>
       </div>
 
-      {/* Enhanced Image Counter */}
-      <div className="absolute top-8 left-8 z-20">
-        <Badge 
-          variant="secondary" 
-          className="bg-gradient-to-r from-black/30 to-black/20 text-primary-foreground border-primary-foreground/40 backdrop-blur-xl font-bold px-4 py-2 shadow-2xl"
-        >
-          <span className="text-yellow-400">{currentSlide + 1}</span>
-          <span className="mx-2 text-primary-foreground/60">/</span>
-          <span className="text-primary-foreground/80">{imagesToDisplay.length}</span>
-        </Badge>
-      </div>
 
 
     </Section>
