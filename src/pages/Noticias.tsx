@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/sections/Footer";
 import { Section, SectionHeader, SectionContent } from "@/components/ui/section";
@@ -8,8 +8,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import { useNewsLikes } from "@/hooks/useNewsLikes";
+import { useNewsViews } from "@/hooks/useNewsViews";
+import { toast } from "sonner";
 import { 
   CalendarIcon, 
   ClockIcon, 
@@ -30,7 +35,15 @@ import {
   NewspaperIcon as NewsIcon,
   FlameIcon,
   XIcon,
-  TreePineIcon as TreeIcon
+  TreePineIcon as TreeIcon,
+  Building2Icon,
+  MessageSquareIcon,
+  ZapIcon,
+  BookOpenIcon,
+  UsersIcon,
+  HeartIcon,
+  SendIcon,
+  ExternalLinkIcon
 } from "lucide-react";
 
 interface NewsItem {
@@ -47,17 +60,75 @@ interface NewsItem {
   category?: string;
   views?: number;
   author_name?: string;
+  likes?: number;
+  isLiked?: boolean;
 }
 
 const categoryMapping = [
-  { id: 'desenvolvimento', name: 'Desenvolvimento', color: 'bg-blue-500', icon: TrendingUpIcon },
-  { id: 'educacao', name: 'Educação', color: 'bg-green-500', icon: BookmarkIcon },
-  { id: 'saude', name: 'Saúde', color: 'bg-red-500', icon: UserIcon },
-  { id: 'obras', name: 'Obras Públicas', color: 'bg-orange-500', icon: GridIcon },
-  { id: 'turismo', name: 'Turismo', color: 'bg-purple-500', icon: StarIcon },
-  { id: 'agricultura', name: 'Agricultura', color: 'bg-emerald-500', icon: TreeIcon },
-  { id: 'cultura', name: 'Cultura', color: 'bg-pink-500', icon: ShareIcon },
-  { id: 'todos', name: 'Todas as Categorias', color: 'bg-slate-500', icon: NewsIcon }
+  { 
+    id: 'desenvolvimento', 
+    name: 'Desenvolvimento', 
+    color: 'bg-blue-500', 
+    bgColor: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/20 dark:text-blue-300 dark:border-blue-800',
+    icon: TrendingUpIcon,
+    description: 'Projetos e iniciativas de desenvolvimento municipal'
+  },
+  { 
+    id: 'educacao', 
+    name: 'Educação', 
+    color: 'bg-green-500', 
+    bgColor: 'bg-green-50 text-green-700 border-green-200 dark:bg-green-950/20 dark:text-green-300 dark:border-green-800',
+    icon: BookOpenIcon,
+    description: 'Educação, ensino e formação'
+  },
+  { 
+    id: 'saude', 
+    name: 'Saúde', 
+    color: 'bg-red-500', 
+    bgColor: 'bg-red-50 text-red-700 border-red-200 dark:bg-red-950/20 dark:text-red-300 dark:border-red-800',
+    icon: UsersIcon,
+    description: 'Saúde pública e bem-estar'
+  },
+  { 
+    id: 'obras', 
+    name: 'Obras Públicas', 
+    color: 'bg-orange-500', 
+    bgColor: 'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-950/20 dark:text-orange-300 dark:border-orange-800',
+    icon: Building2Icon,
+    description: 'Infraestruturas e obras públicas'
+  },
+  { 
+    id: 'turismo', 
+    name: 'Turismo', 
+    color: 'bg-purple-500', 
+    bgColor: 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950/20 dark:text-purple-300 dark:border-purple-800',
+    icon: StarIcon,
+    description: 'Turismo e promoção cultural'
+  },
+  { 
+    id: 'agricultura', 
+    name: 'Agricultura', 
+    color: 'bg-emerald-500', 
+    bgColor: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/20 dark:text-emerald-300 dark:border-emerald-800',
+    icon: TreeIcon,
+    description: 'Agricultura e desenvolvimento rural'
+  },
+  { 
+    id: 'cultura', 
+    name: 'Cultura', 
+    color: 'bg-pink-500', 
+    bgColor: 'bg-pink-50 text-pink-700 border-pink-200 dark:bg-pink-950/20 dark:text-pink-300 dark:border-pink-800',
+    icon: MessageSquareIcon,
+    description: 'Eventos culturais e patrimônio'
+  },
+  { 
+    id: 'todos', 
+    name: 'Todas as Categorias', 
+    color: 'bg-slate-500', 
+    bgColor: 'bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-950/20 dark:text-slate-300 dark:border-slate-800',
+    icon: NewsIcon,
+    description: 'Todas as notícias e comunicados'
+  }
 ];
 
 const Noticias = () => {
@@ -66,16 +137,40 @@ const Noticias = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("todos");
-  const [sortBy, setSortBy] = useState("recent");
+  const [sortBy, setSortBy] = useState<"recent" | "oldest" | "popular" | "alphabetical">("recent");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9;
 
+  // Usar o hook de curtidas
+  const { likedNews, newsLikes, handleLike, isLoading: likesLoading } = useNewsLikes();
+  const { registerView, getViewsCount, isLoading: viewsLoading } = useNewsViews();
+
   useEffect(() => {
+    getUser();
     fetchNews();
   }, []);
+
+  // Função para registrar visualização
+  const handleNewsClick = async (newsId: string) => {
+    try {
+      await registerView(newsId);
+      
+      // Atualizar a contagem de visualizações na notícia
+      const updatedViews = await getViewsCount(newsId);
+      setNews(prevNews => 
+        prevNews.map(item => 
+          item.id === newsId 
+            ? { ...item, views: updatedViews }
+            : item
+        )
+      );
+    } catch (error) {
+      console.error('Erro ao registrar visualização:', error);
+    }
+  };
 
   useEffect(() => {
     filterAndSortNews();
@@ -86,25 +181,40 @@ const Noticias = () => {
       setLoading(true);
       const { data, error } = await supabase
         .from('news')
-        .select(`
-          *,
-          profiles:author_id (
-            full_name
-          )
-        `)
+        .select('*')
         .eq('published', true)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
 
-      const newsWithCategories = data?.map((item, index) => ({
-        ...item,
-        category: getCategoryByIndex(index),
-        views: Math.floor(Math.random() * 2000) + 100,
-        author_name: item.profiles?.full_name || 'Administração Municipal'
-      })) || [];
+      // Buscar visualizações reais para cada notícia
+      const newsWithData = await Promise.all(
+        (data || []).map(async (item, index) => {
+          // Buscar contagem de visualizações
+          let viewsCount = 0;
+          try {
+            const { data: viewsData, error: viewsError } = await supabase
+              .from('news_views' as any)
+              .select('id', { count: 'exact' })
+              .eq('news_id', item.id);
 
-      setNews(newsWithCategories);
+            if (!viewsError && viewsData) {
+              viewsCount = viewsData.length;
+            }
+          } catch (error) {
+            console.error('Erro ao buscar visualizações:', error);
+          }
+
+          return {
+            ...item,
+            category: getCategoryByIndex(index),
+            views: viewsCount,
+            author_name: 'Administração Municipal' // Default author name since we can't join with profiles
+          };
+        })
+      );
+
+      setNews(newsWithData);
     } catch (error) {
       console.error('Error fetching news:', error);
     } finally {
@@ -122,8 +232,8 @@ const Noticias = () => {
       const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            item.excerpt.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = selectedCategory === 'todos' || item.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+      return matchesSearch && matchesCategory;
+    });
 
     filtered.sort((a, b) => {
       switch (sortBy) {
@@ -171,6 +281,68 @@ const Noticias = () => {
   const paginatedNews = filteredNews.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
   const totalPages = Math.ceil(filteredNews.length / itemsPerPage);
 
+  const shareNews = (newsItem: NewsItem) => {
+    if (navigator.share) {
+      navigator.share({
+        title: newsItem.title,
+        text: newsItem.excerpt,
+        url: window.location.href
+      });
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+    }
+  };
+
+  const getUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    // setUser(user); // This is now handled by useNewsLikes
+  };
+
+  const fetchLikes = async () => {
+    try {
+      // Buscar curtidas do usuário atual
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Por enquanto, usar apenas localStorage até a tabela news_likes ser criada
+      const savedLikedNews = localStorage.getItem('likedNews');
+      const savedNewsLikes = localStorage.getItem('newsLikes');
+      
+      // setLikedNews(new Set(JSON.parse(savedLikedNews))); // This is now handled by useNewsLikes
+      
+      // setNewsLikes(JSON.parse(savedNewsLikes)); // This is now handled by useNewsLikes
+
+      // TODO: Implementar quando a tabela news_likes for criada
+      // const { data: userLikes, error } = await supabase
+      //   .from('news_likes')
+      //   .select('news_id')
+      //   .eq('user_id', user.id);
+
+      // if (error) throw error;
+
+      // // Atualizar estado de curtidas do usuário
+      // const likedNewsSet = new Set(userLikes?.map(like => like.news_id) || []);
+      // setLikedNews(likedNewsSet);
+
+      // // Buscar contagem total de curtidas para todas as notícias
+      // const { data: allLikes, error: countError } = await supabase
+      //   .from('news_likes')
+      //   .select('news_id');
+
+      // if (countError) throw countError;
+
+      // // Contar curtidas por notícia
+      // const likesMap: Record<string, number> = {};
+      // allLikes?.forEach(like => {
+      //   likesMap[like.news_id] = (likesMap[like.news_id] || 0) + 1;
+      // });
+
+      // setNewsLikes(likesMap);
+    } catch (error) {
+      console.error('Erro ao carregar curtidas:', error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -179,39 +351,42 @@ const Noticias = () => {
         {/* Hero Section */}
         <Section variant="primary" size="lg">
           <SectionContent>
-            <div className="text-center space-y-6">
-              <div className="flex items-center justify-center gap-3 mb-6">
-                <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-xl">
-                  <NewsIcon className="w-8 h-8 text-white" />
+            <div className="text-center space-y-8">
+              <div className="flex items-center justify-center gap-4 mb-8">
+                <div className="w-20 h-20 bg-white/20 rounded-3xl flex items-center justify-center backdrop-blur-xl border border-white/30">
+                  <NewsIcon className="w-10 h-10 text-white" />
                 </div>
                 <div className="text-left">
-                  <h1 className="text-4xl md:text-5xl font-bold text-white">
-                    Central de Notícias
+                  <h1 className="text-5xl md:text-6xl font-bold text-white leading-tight">
+                    Central de
+                    <span className="block bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">
+                      Notícias
+                    </span>
                   </h1>
-                  <p className="text-primary-foreground/90 text-lg">
+                  <p className="text-primary-foreground/90 text-xl mt-2">
                     Administração Municipal de Chipindo
-          </p>
-        </div>
+                  </p>
+                </div>
               </div>
               
-              <p className="text-xl text-primary-foreground/95 max-w-3xl mx-auto leading-relaxed">
+              <p className="text-xl text-primary-foreground/95 max-w-4xl mx-auto leading-relaxed">
                 Acompanhe os desenvolvimentos, projetos e conquistas que transformam 
-                nossa comunidade e impactam a vida dos cidadãos de Chipindo.
+                nossa comunidade e impactam positivamente a vida dos cidadãos de Chipindo.
               </p>
               
-              <div className="flex items-center justify-center gap-4 flex-wrap">
-                <Badge className="bg-white/20 text-white border-white/30 px-4 py-2">
-                  <TrendingUpIcon className="w-4 h-4 mr-2" />
-                  {news.length} Notícias Publicadas
-                </Badge>
-                <Badge className="bg-green-500/20 text-green-100 border-green-400/30 px-4 py-2">
-                  <FlameIcon className="w-4 h-4 mr-2" />
-                  {featuredNews.length} em Destaque
-                </Badge>
-                <Badge className="bg-yellow-500/20 text-yellow-100 border-yellow-400/30 px-4 py-2">
-                  <StarIcon className="w-4 h-4 mr-2" />
-                  Atualização Diária
-                </Badge>
+              <div className="flex items-center justify-center gap-6 flex-wrap">
+                <div className="flex items-center gap-2 px-6 py-3 bg-white/10 rounded-full backdrop-blur-md border border-white/20">
+                  <TrendingUpIcon className="w-5 h-5 text-white" />
+                  <span className="text-white font-medium">{news.length} Notícias</span>
+                </div>
+                <div className="flex items-center gap-2 px-6 py-3 bg-green-500/20 rounded-full backdrop-blur-md border border-green-400/30">
+                  <FlameIcon className="w-5 h-5 text-green-100" />
+                  <span className="text-green-100 font-medium">{featuredNews.length} em Destaque</span>
+                </div>
+                <div className="flex items-center gap-2 px-6 py-3 bg-yellow-500/20 rounded-full backdrop-blur-md border border-yellow-400/30">
+                  <ZapIcon className="w-5 h-5 text-yellow-100" />
+                  <span className="text-yellow-100 font-medium">Atualização Diária</span>
+                </div>
               </div>
             </div>
           </SectionContent>
@@ -222,14 +397,7 @@ const Noticias = () => {
           <Section variant="secondary" size="lg">
             <SectionHeader
               subtitle="Destaques da Semana"
-              title={
-                <span>
-                  Notícias em{' '}
-                  <span className="bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 bg-clip-text text-transparent">
-                    Destaque
-                  </span>
-                </span>
-              }
+              title="Notícias em Destaque"
               description="As principais novidades e desenvolvimentos que estão impactando nossa comunidade"
               centered={true}
             />
@@ -241,12 +409,12 @@ const Noticias = () => {
                   const IconComponent = categoryData.icon;
                   
                   return (
-              <Card 
+                    <Card 
                       key={item.id} 
-                      className="group cursor-pointer overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800"
+                      className="group cursor-pointer overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800"
                       onClick={() => setSelectedNews(item)}
-              >
-                <div className="relative overflow-hidden">
+                    >
+                      <div className="relative overflow-hidden">
                         <div className="aspect-video bg-gradient-to-br from-blue-500 to-purple-600 relative">
                           {item.image_url ? (
                             <img 
@@ -260,38 +428,38 @@ const Noticias = () => {
                             </div>
                           )}
                           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                          <Badge className={cn("absolute top-4 left-4", categoryData.color, "text-white border-0")}>
+                          <Badge className={cn("absolute top-4 left-4 border-0 text-white shadow-lg", categoryData.color)}>
                             <IconComponent className="w-3 h-3 mr-1" />
                             {categoryData.name}
                           </Badge>
-                          <Badge className="absolute top-4 right-4 bg-yellow-500 text-yellow-900 border-0">
+                          <Badge className="absolute top-4 right-4 bg-yellow-500 text-yellow-900 border-0 shadow-lg">
                             <StarIcon className="w-3 h-3 mr-1" />
                             Destaque
-                  </Badge>
-                </div>
+                          </Badge>
+                        </div>
                       </div>
                       
                       <CardHeader className="pb-3">
-                        <CardTitle className="text-xl leading-tight group-hover:text-primary transition-colors duration-300">
+                        <CardTitle className="text-xl leading-tight group-hover:text-primary transition-colors duration-300 line-clamp-2">
                           {item.title}
-                  </CardTitle>
-                </CardHeader>
+                        </CardTitle>
+                      </CardHeader>
                       
-                <CardContent>
-                        <p className="text-muted-foreground mb-4 line-clamp-3">{item.excerpt}</p>
+                      <CardContent>
+                        <p className="text-muted-foreground mb-4 line-clamp-3 leading-relaxed">{item.excerpt}</p>
                         
                         <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
                           <div className="flex items-center gap-3">
-                      <div className="flex items-center gap-1">
-                        <CalendarIcon className="w-4 h-4" />
+                            <div className="flex items-center gap-1">
+                              <CalendarIcon className="w-4 h-4" />
                               {formatDate(item.created_at)}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <EyeIcon className="w-4 h-4" />
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <EyeIcon className="w-4 h-4" />
                               {item.views}
-                      </div>
-                    </div>
-                          <span className="text-xs text-muted-foreground">
+                            </div>
+                          </div>
+                          <span className="text-xs">
                             {getTimeAgo(item.created_at)}
                           </span>
                         </div>
@@ -299,26 +467,88 @@ const Noticias = () => {
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <UserIcon className="w-4 h-4" />
-                            {item.author_name}
+                            <span className="truncate">{item.author_name}</span>
                           </div>
-                          <Button size="sm" className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white border-0">
-                            Ler Mais
-                            <ArrowRightIcon className="w-4 h-4 ml-1" />
-                          </Button>
-                  </div>
-                </CardContent>
-              </Card>
+                          <div className="flex items-center gap-2">
+                            <Button 
+                              size="sm" 
+                              variant={likedNews.has(item.id) ? "default" : "outline"}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleLike(item.id);
+                              }}
+                              className={likedNews.has(item.id) ? "bg-red-500 hover:bg-red-600 text-white" : ""}
+                            >
+                              <HeartIcon className={`w-3 h-3 ${likedNews.has(item.id) ? "fill-current" : ""}`} />
+                              {newsLikes[item.id] > 0 && (
+                                <span className="ml-1 text-xs">({newsLikes[item.id]})</span>
+                              )}
+                            </Button>
+                            <Button size="sm" className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white border-0 shadow-md">
+                              <ArrowRightIcon className="w-4 h-4 ml-1" />
+                            </Button>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
                   );
                 })}
-          </div>
+              </div>
             </SectionContent>
           </Section>
         )}
 
-        {/* Search and Filters Section */}
+        {/* Categories Section */}
         <Section variant="muted" size="md">
           <SectionContent>
-            <Card className="border-0 shadow-xl bg-white/50 dark:bg-gray-900/50 backdrop-blur-xl">
+            <Card className="border-0 shadow-xl bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl">
+              <CardContent className="p-8">
+                <div className="text-center mb-8">
+                  <h2 className="text-2xl font-bold mb-2">Explore por Categoria</h2>
+                  <p className="text-muted-foreground">Encontre notícias específicas sobre diferentes áreas</p>
+                </div>
+                
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
+                  {categoryMapping.slice(0, -1).map(category => {
+                    const IconComponent = category.icon;
+                    const isActive = selectedCategory === category.id;
+                    
+                    return (
+                      <button
+                        key={category.id}
+                        onClick={() => setSelectedCategory(category.id)}
+                        className={cn(
+                          "group p-4 rounded-xl border-2 transition-all duration-300 hover:scale-105 hover:shadow-lg",
+                          isActive 
+                            ? "border-primary bg-primary/10 shadow-md" 
+                            : "border-border hover:border-primary/50"
+                        )}
+                      >
+                        <div className={cn(
+                          "w-12 h-12 rounded-xl mx-auto mb-3 flex items-center justify-center transition-colors duration-300",
+                          isActive ? "bg-primary text-primary-foreground" : category.color + " text-white group-hover:scale-110"
+                        )}>
+                          <IconComponent className="w-6 h-6" />
+                        </div>
+                        <h3 className={cn(
+                          "font-medium text-sm text-center transition-colors duration-300",
+                          isActive ? "text-primary" : "text-foreground group-hover:text-primary"
+                        )}>
+                          {category.name}
+                        </h3>
+                      </button>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          </SectionContent>
+        </Section>
+
+        {/* Search and Filters Section */}
+        <Section variant="default" size="md">
+          <SectionContent>
+            <Card className="border-0 shadow-lg">
               <CardContent className="p-6">
                 <div className="space-y-6">
                   {/* Main Search */}
@@ -329,9 +559,9 @@ const Noticias = () => {
                       placeholder="Pesquisar notícias, eventos, anúncios..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-12 pr-4 py-3 text-lg border-2 border-border/50 focus:border-primary"
+                      className="pl-12 pr-4 py-4 text-lg border-2 border-border/50 focus:border-primary rounded-xl"
                     />
-        </div>
+                  </div>
 
                   {/* Filters Row */}
                   <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
@@ -340,35 +570,18 @@ const Noticias = () => {
                         variant="outline"
                         size="sm"
                         onClick={() => setShowFilters(!showFilters)}
-                        className="flex items-center gap-2"
+                        className={cn(
+                          "flex items-center gap-2 transition-colors duration-200",
+                          showFilters && "bg-primary text-primary-foreground"
+                        )}
                       >
                         <FilterIcon className="w-4 h-4" />
-                        Filtros
+                        Filtros Avançados
                         {showFilters && <XIcon className="w-4 h-4" />}
                       </Button>
-                      
-                      <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                        <SelectTrigger className="w-48">
-                          <TagIcon className="w-4 h-4 mr-2" />
-                          <SelectValue placeholder="Categoria" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {categoryMapping.map(category => {
-                            const IconComponent = category.icon;
-                            return (
-                              <SelectItem key={category.id} value={category.id}>
-                                <div className="flex items-center gap-2">
-                                  <IconComponent className="w-4 h-4" />
-                                  {category.name}
-                                </div>
-                              </SelectItem>
-                            );
-                          })}
-                        </SelectContent>
-                      </Select>
 
-                      <Select value={sortBy} onValueChange={setSortBy}>
-                        <SelectTrigger className="w-44">
+                      <Select value={sortBy} onValueChange={(value: string) => setSortBy(value as any)}>
+                        <SelectTrigger className="w-48">
                           <SelectValue placeholder="Ordenar por" />
                         </SelectTrigger>
                         <SelectContent>
@@ -398,7 +611,7 @@ const Noticias = () => {
                           </SelectItem>
                         </SelectContent>
                       </Select>
-                      </div>
+                    </div>
 
                     <div className="flex items-center gap-2">
                       <Button
@@ -416,43 +629,35 @@ const Noticias = () => {
                         <ListIcon className="w-4 h-4" />
                       </Button>
                     </div>
-                      </div>
-
-                  {/* Category Filters */}
-                  {showFilters && (
-                    <div className="border-t border-border/50 pt-4">
-                      <p className="text-sm font-medium text-muted-foreground mb-3">Filtrar por categoria:</p>
-                      <div className="flex flex-wrap gap-2">
-                        {categoryMapping.map(category => {
-                          const IconComponent = category.icon;
-                          return (
-                            <Button
-                              key={category.id}
-                              variant={selectedCategory === category.id ? "default" : "outline"}
-                              size="sm"
-                              onClick={() => setSelectedCategory(category.id)}
-                              className="flex items-center gap-2"
-                            >
-                              <IconComponent className="w-4 h-4" />
-                              {category.name}
-                            </Button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
+                  </div>
 
                   {/* Results Summary */}
-                  <div className="text-sm text-muted-foreground">
+                  <div className="flex items-center justify-between text-sm text-muted-foreground bg-muted/50 rounded-lg p-4">
                     {loading ? (
                       <Skeleton className="h-4 w-48" />
                     ) : (
-                      <span>
-                        {filteredNews.length} notícia{filteredNews.length !== 1 ? 's' : ''} encontrada{filteredNews.length !== 1 ? 's' : ''}
-                        {searchTerm && ` para "${searchTerm}"`}
-                        {selectedCategory !== 'todos' && ` em ${getCategoryData(selectedCategory).name}`}
-                      </span>
+                      <div className="flex items-center gap-4">
+                        <span className="font-medium">
+                          {filteredNews.length} notícia{filteredNews.length !== 1 ? 's' : ''} encontrada{filteredNews.length !== 1 ? 's' : ''}
+                        </span>
+                        {searchTerm && <span className="text-primary">para "{searchTerm}"</span>}
+                        {selectedCategory !== 'todos' && <span className="text-primary">em {getCategoryData(selectedCategory).name}</span>}
+                      </div>
                     )}
+                    
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => {
+                        setSearchTerm("");
+                        setSelectedCategory("todos");
+                        setSortBy("recent");
+                        setShowFilters(false);
+                      }}
+                      className="text-muted-foreground hover:text-foreground"
+                    >
+                      Limpar Filtros
+                    </Button>
                   </div>
                 </div>
               </CardContent>
@@ -461,7 +666,7 @@ const Noticias = () => {
         </Section>
 
         {/* News Grid/List Section */}
-        <Section variant="default" size="lg">
+        <Section variant="secondary" size="lg">
           <SectionContent>
             {loading ? (
               <div className={cn(
@@ -469,7 +674,7 @@ const Noticias = () => {
                 viewMode === 'grid' ? "md:grid-cols-2 lg:grid-cols-3" : "grid-cols-1"
               )}>
                 {Array.from({ length: 6 }).map((_, i) => (
-                  <Card key={i} className="overflow-hidden">
+                  <Card key={i} className="overflow-hidden border-0 shadow-md">
                     <Skeleton className="aspect-video" />
                     <CardHeader>
                       <Skeleton className="h-6 w-3/4" />
@@ -479,14 +684,16 @@ const Noticias = () => {
                       <Skeleton className="h-4 w-full mb-2" />
                       <Skeleton className="h-4 w-2/3" />
                     </CardContent>
-              </Card>
-            ))}
+                  </Card>
+                ))}
               </div>
             ) : filteredNews.length === 0 ? (
-              <div className="text-center py-16">
-                <NewsIcon className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-foreground mb-2">Nenhuma notícia encontrada</h3>
-                <p className="text-muted-foreground mb-6">
+              <div className="text-center py-20">
+                <div className="w-24 h-24 bg-muted/20 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                  <NewsIcon className="w-12 h-12 text-muted-foreground" />
+                </div>
+                <h3 className="text-2xl font-semibold text-foreground mb-3">Nenhuma notícia encontrada</h3>
+                <p className="text-muted-foreground mb-8 max-w-md mx-auto">
                   Tente ajustar seus filtros de busca ou verificar a categoria selecionada.
                 </p>
                 <Button 
@@ -495,7 +702,7 @@ const Noticias = () => {
                     setSelectedCategory("todos");
                     setSortBy("recent");
                   }}
-                  className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white"
+                  className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg"
                 >
                   Limpar Filtros
                 </Button>
@@ -514,14 +721,17 @@ const Noticias = () => {
                       <Card 
                         key={item.id}
                         className={cn(
-                          "group cursor-pointer overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300",
+                          "group cursor-pointer overflow-hidden border-0 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1",
                           viewMode === 'list' && "md:flex"
                         )}
-                        onClick={() => setSelectedNews(item)}
+                        onClick={async () => {
+                          await handleNewsClick(item.id);
+                          setSelectedNews(item);
+                        }}
                       >
                         <div className={cn(
                           "relative overflow-hidden",
-                          viewMode === 'list' ? "md:w-64 flex-shrink-0" : ""
+                          viewMode === 'list' ? "md:w-80 flex-shrink-0" : ""
                         )}>
                           <div className="aspect-video bg-gradient-to-br from-gray-200 to-gray-300 relative">
                             {item.image_url ? (
@@ -536,22 +746,22 @@ const Noticias = () => {
                               </div>
                             )}
                             <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-                            <Badge className={cn("absolute top-3 left-3", categoryData.color, "text-white border-0")}>
+                            <Badge className={cn("absolute top-3 left-3 border-0 text-white shadow-md", categoryData.color)}>
                               <IconComponent className="w-3 h-3 mr-1" />
                               {categoryData.name}
                             </Badge>
-          </div>
-        </div>
+                          </div>
+                        </div>
                         
                         <div className="flex-1 p-6">
                           <CardTitle className={cn(
-                            "leading-tight group-hover:text-primary transition-colors duration-300 mb-3",
+                            "leading-tight group-hover:text-primary transition-colors duration-300 mb-3 line-clamp-2",
                             viewMode === 'list' ? "text-lg" : "text-xl"
                           )}>
                             {item.title}
                           </CardTitle>
                           
-                          <p className="text-muted-foreground mb-4 line-clamp-2">{item.excerpt}</p>
+                          <p className="text-muted-foreground mb-4 line-clamp-2 leading-relaxed">{item.excerpt}</p>
                           
                           <div className="flex items-center justify-between text-sm text-muted-foreground">
                             <div className="flex items-center gap-4">
@@ -564,9 +774,25 @@ const Noticias = () => {
                                 {item.views}
                               </div>
                             </div>
-                            <span className="text-xs">
-                              {getTimeAgo(item.created_at)}
-                            </span>
+                            <div className="flex items-center gap-2">
+                              <Button 
+                                size="sm" 
+                                variant={likedNews.has(item.id) ? "default" : "outline"}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleLike(item.id);
+                                }}
+                                className={likedNews.has(item.id) ? "bg-red-500 hover:bg-red-600 text-white" : ""}
+                              >
+                                <HeartIcon className={`w-3 h-3 ${likedNews.has(item.id) ? "fill-current" : ""}`} />
+                                {newsLikes[item.id] > 0 && (
+                                  <span className="ml-1 text-xs">({newsLikes[item.id]})</span>
+                                )}
+                              </Button>
+                              <span className="text-xs">
+                                {getTimeAgo(item.created_at)}
+                              </span>
+                            </div>
                           </div>
                         </div>
                       </Card>
@@ -582,27 +808,34 @@ const Noticias = () => {
                       size="sm"
                       onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                       disabled={currentPage === 1}
+                      className="shadow-sm hover:shadow-md"
                     >
                       Anterior
                     </Button>
                     
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                      <Button
-                        key={page}
-                        variant={page === currentPage ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setCurrentPage(page)}
-                        className="w-8 h-8 p-0"
-                      >
-                        {page}
-                      </Button>
-                    ))}
+                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                      const page = currentPage <= 3 ? i + 1 : currentPage - 2 + i;
+                      if (page > totalPages) return null;
+                      
+                      return (
+                        <Button
+                          key={page}
+                          variant={page === currentPage ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setCurrentPage(page)}
+                          className="w-10 h-10 p-0 shadow-sm hover:shadow-md"
+                        >
+                          {page}
+                        </Button>
+                      );
+                    })}
                     
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                       disabled={currentPage === totalPages}
+                      className="shadow-sm hover:shadow-md"
                     >
                       Próxima
                     </Button>
@@ -615,75 +848,120 @@ const Noticias = () => {
 
         {/* News Modal */}
         {selectedNews && (
-          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <Card className="max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-              <CardHeader className="relative">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="absolute top-4 right-4 z-10"
-                  onClick={() => setSelectedNews(null)}
-                >
-                  <XIcon className="w-5 h-5" />
-                </Button>
-                
-                <div className="aspect-video bg-gradient-to-br from-gray-200 to-gray-300 rounded-lg mb-4 relative overflow-hidden">
-                  {selectedNews.image_url ? (
-                    <img 
-                      src={selectedNews.image_url} 
-                      alt={selectedNews.title}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                      <NewsIcon className="w-16 h-16 text-white/80" />
+          <Dialog open={!!selectedNews} onOpenChange={() => setSelectedNews(null)}>
+            <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden flex flex-col">
+              <DialogHeader className="pb-6 border-b border-border/50">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className={cn(
+                      "w-12 h-12 rounded-xl flex items-center justify-center",
+                      getCategoryData(selectedNews.category || 'desenvolvimento').color
+                    )}>
+                      {React.createElement(getCategoryData(selectedNews.category || 'desenvolvimento').icon, {
+                        className: "w-6 h-6 text-white"
+                      })}
+                    </div>
+                    <div>
+                      <DialogTitle className="text-2xl font-bold leading-tight">
+                        {selectedNews.title}
+                      </DialogTitle>
+                      <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-1">
+                          <CalendarIcon className="w-4 h-4" />
+                          {formatDate(selectedNews.created_at)}
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <ClockIcon className="w-4 h-4" />
+                          {getTimeAgo(selectedNews.created_at)}
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <EyeIcon className="w-4 h-4" />
+                          {selectedNews.views} visualizações
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => shareNews(selectedNews)}
+                    >
+                      <ShareIcon className="w-4 h-4 mr-2" />
+                      Compartilhar
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setSelectedNews(null)}
+                    >
+                      <XIcon className="w-5 h-5" />
+                    </Button>
+                  </div>
+                </div>
+              </DialogHeader>
+              
+              <ScrollArea className="flex-1 py-6">
+                <div className="space-y-6">
+                  {selectedNews.image_url && (
+                    <div className="relative aspect-video rounded-xl overflow-hidden">
+                      <img 
+                        src={selectedNews.image_url} 
+                        alt={selectedNews.title}
+                        className="w-full h-full object-cover"
+                      />
                     </div>
                   )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                </div>
-                
-                <div className="flex items-center gap-4 mb-4">
-                  <Badge className={cn(getCategoryData(selectedNews.category || 'desenvolvimento').color, "text-white")}>
-                    {getCategoryData(selectedNews.category || 'desenvolvimento').name}
-                  </Badge>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <CalendarIcon className="w-4 h-4" />
-                    {formatDate(selectedNews.created_at)}
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <ClockIcon className="w-4 h-4" />
-                    {getTimeAgo(selectedNews.created_at)}
-                  </div>
-                </div>
-                
-                <CardTitle className="text-3xl leading-tight">{selectedNews.title}</CardTitle>
-              </CardHeader>
-              
-              <CardContent>
-                <div className="prose max-w-none dark:prose-invert">
-                  <p className="text-xl text-muted-foreground mb-6 leading-relaxed">{selectedNews.excerpt}</p>
-                  <div className="text-foreground leading-relaxed whitespace-pre-wrap">{selectedNews.content}</div>
-                </div>
-                
-                <div className="flex items-center justify-between mt-8 pt-6 border-t border-border">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <UserIcon className="w-4 h-4" />
-                    {selectedNews.author_name}
-                  </div>
-                  <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                    <EyeIcon className="w-4 h-4" />
-                    {selectedNews.views} visualizações
+                  
+                  <div className="prose max-w-none dark:prose-invert">
+                    <p className="text-xl text-muted-foreground mb-6 leading-relaxed font-medium">
+                      {selectedNews.excerpt}
+                    </p>
+                    <div className="text-foreground leading-relaxed whitespace-pre-wrap text-lg">
+                      {selectedNews.content}
                     </div>
-                    <Button size="sm" variant="outline">
-                      <ShareIcon className="w-4 h-4 mr-2" />
+                  </div>
+                </div>
+              </ScrollArea>
+              
+              <div className="pt-6 border-t border-border/50">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Badge variant="outline" className={getCategoryData(selectedNews.category || 'desenvolvimento').bgColor}>
+                      {React.createElement(getCategoryData(selectedNews.category || 'desenvolvimento').icon, {
+                        className: "w-4 h-4 mr-1"
+                      })}
+                      {getCategoryData(selectedNews.category || 'desenvolvimento').name}
+                    </Badge>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <UserIcon className="w-4 h-4" />
+                      {selectedNews.author_name}
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-3">
+                    <Button 
+                      variant={likedNews.has(selectedNews.id) ? "default" : "outline"} 
+                      size="sm" 
+                      onClick={() => handleLike(selectedNews.id)}
+                      className={likedNews.has(selectedNews.id) ? "bg-red-500 hover:bg-red-600 text-white" : ""}
+                    >
+                      <HeartIcon className={`w-4 h-4 mr-2 ${likedNews.has(selectedNews.id) ? "fill-current" : ""}`} />
+                      {likedNews.has(selectedNews.id) ? "Curtido" : "Curtir"}
+                      {newsLikes[selectedNews.id] > 0 && (
+                        <span className="ml-1 text-xs">({newsLikes[selectedNews.id]})</span>
+                      )}
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => shareNews(selectedNews)}>
+                      <SendIcon className="w-4 h-4 mr-2" />
                       Compartilhar
                     </Button>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
+              </div>
+            </DialogContent>
+          </Dialog>
         )}
       </main>
       

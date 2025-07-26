@@ -35,7 +35,10 @@ import {
   PhoneIcon,
   MailIcon,
   UserIcon,
-  EyeIcon
+  EyeIcon,
+  UploadIcon,
+  IdCardIcon,
+  Tag
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -52,6 +55,7 @@ interface Concurso {
   category?: string;
   views?: number;
   applications?: number;
+  categorias_disponiveis?: string[]; // Added for modal
 }
 
 const categoryMapping = [
@@ -62,6 +66,16 @@ const categoryMapping = [
   { id: 'tecnico', name: 'Técnico', color: 'bg-purple-500', icon: FileTextIcon },
   { id: 'seguranca', name: 'Segurança', color: 'bg-gray-600', icon: AlertCircleIcon },
   { id: 'todos', name: 'Todas as Categorias', color: 'bg-slate-500', icon: BriefcaseIcon }
+];
+
+const categoriaOptions = [
+  { value: 'administracao', label: 'Administração' },
+  { value: 'educacao', label: 'Educação' },
+  { value: 'saude', label: 'Saúde' },
+  { value: 'obras', label: 'Obras Públicas' },
+  { value: 'tecnico', label: 'Técnico' },
+  { value: 'seguranca', label: 'Segurança' },
+  { value: 'outros', label: 'Outros' }
 ];
 
 export default function Concursos() {
@@ -83,7 +97,13 @@ export default function Concursos() {
     dataNascimento: "",
     telefone: "",
     email: "",
-    observacoes: ""
+    observacoes: "",
+    categoria: "",
+    arquivos: [] as File[],
+    biFile: null as File | null,
+    certificadoFile: null as File | null,
+    declaracaoFile: null as File | null,
+    cvFile: null as File | null
   });
   const { toast } = useToast();
 
@@ -177,7 +197,58 @@ export default function Concursos() {
     setShowInscricaoForm(true);
   };
 
-  const submitInscricao = () => {
+  const submitInscricao = async () => {
+    if (!selectedConcurso) return;
+    if (!formData.categoria) {
+      toast({
+        title: "Categoria obrigatória",
+        description: "Selecione a categoria a que se candidata.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const requiredFiles = [formData.biFile, formData.cvFile];
+    if (requiredFiles.some(file => !file)) {
+      toast({
+        title: "Erro na Inscrição",
+        description: "Por favor, anexe todos os documentos obrigatórios (Bilhete de Identidade e Currículo Vitae).",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const { error } = await supabase
+      .from('inscricoes')
+      .insert({
+        concurso_id: selectedConcurso.id,
+        nome_completo: formData.nomeCompleto,
+        bilhete_identidade: formData.bilheteIdentidade,
+        data_nascimento: formData.dataNascimento,
+        telefone: formData.telefone,
+        email: formData.email,
+        observacoes: formData.observacoes,
+        categoria: formData.categoria,
+        arquivos: [
+          ...(formData.biFile ? [{ name: formData.biFile.name, size: formData.biFile.size, type: formData.biFile.type, url: URL.createObjectURL(formData.biFile) }] : []),
+          ...(formData.cvFile ? [{ name: formData.cvFile.name, size: formData.cvFile.size, type: formData.cvFile.type, url: URL.createObjectURL(formData.cvFile) }] : []),
+          ...(formData.certificadoFile ? [{ name: formData.certificadoFile.name, size: formData.certificadoFile.size, type: formData.certificadoFile.type, url: URL.createObjectURL(formData.certificadoFile) }] : []),
+          ...(formData.declaracaoFile ? [{ name: formData.declaracaoFile.name, size: formData.declaracaoFile.size, type: formData.declaracaoFile.type, url: URL.createObjectURL(formData.declaracaoFile) }] : [])
+        ].map(file => ({
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          url: file.url
+        }))
+      });
+
+    if (error) {
+      toast({
+        title: "Erro na Inscrição",
+        description: `Erro ao enviar inscrição: ${error.message}`,
+        variant: "destructive"
+      });
+    } else {
     toast({
       title: "Sucesso!",
       description: "Inscrição enviada com sucesso! Receberá confirmação por email.",
@@ -190,8 +261,15 @@ export default function Concursos() {
       dataNascimento: "",
       telefone: "",
       email: "",
-      observacoes: ""
-    });
+        observacoes: "",
+        categoria: "",
+        arquivos: [],
+        biFile: null,
+        certificadoFile: null,
+        declaracaoFile: null,
+        cvFile: null
+      });
+    }
   };
 
   const formatDate = (dateString: string) => {
@@ -793,8 +871,11 @@ export default function Concursos() {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle className="text-2xl">Inscrição no Concurso</CardTitle>
-                    <p className="text-muted-foreground mt-1">{selectedConcurso.title}</p>
+                    <CardTitle className="text-2xl flex items-center gap-2">
+                      <FileTextIcon className="w-6 h-6 text-blue-600" />
+                      Inscrição no Concurso
+                    </CardTitle>
+                    <p className="text-muted-foreground mt-1 font-medium">{selectedConcurso.title}</p>
                   </div>
                   <Button
                     variant="ghost"
@@ -806,69 +887,170 @@ export default function Concursos() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-4">
+                {/* Requisitos do Concurso */}
+                {selectedConcurso.requirements && (
+                  <div className="p-4 rounded-lg bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800 flex items-start gap-3">
+                    <CheckCircleIcon className="w-6 h-6 text-blue-600 mt-1" />
                   <div>
-                    <Label htmlFor="nomeCompleto">Nome Completo *</Label>
+                      <div className="font-semibold text-blue-900 dark:text-blue-200 mb-1">Requisitos do Concurso</div>
+                      <div className="text-sm text-blue-800 dark:text-blue-300 whitespace-pre-line">{selectedConcurso.requirements}</div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Upload de Documentos Obrigatórios */}
+                <div className="space-y-4">
+                  {/* Bilhete de Identidade */}
+                  <div>
+                    <Label className="flex items-center gap-2 text-sm font-medium">
+                      <IdCardIcon className="w-4 h-4" />
+                      Bilhete de Identidade <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      id="biUpload"
+                      type="file"
+                      accept=".pdf,.jpg,.jpeg,.png"
+                      required
+                      onChange={e => setFormData({ ...formData, biFile: e.target.files?.[0] || null })}
+                      className="file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                    />
+                    <p className="text-xs text-muted-foreground">Anexe uma cópia legível do seu Bilhete de Identidade.</p>
+                  </div>
+
+                  {/* Certificado de Habilitação OU Declaração com Notas */}
+                  <div>
+                    <Label className="flex items-center gap-2 text-sm font-medium">
+                      <FileTextIcon className="w-4 h-4" />
+                      Certificado de Habilitação <span className="text-muted-foreground">ou</span> Declaração com Notas
+                    </Label>
+                    <div className="flex flex-col md:flex-row gap-2">
+                      <Input
+                        id="certificadoUpload"
+                        type="file"
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        onChange={e => setFormData({ ...formData, certificadoFile: e.target.files?.[0] || null })}
+                        className="file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                      />
+                      <span className="text-xs text-muted-foreground self-center">ou</span>
+                      <Input
+                        id="declaracaoUpload"
+                        type="file"
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        onChange={e => setFormData({ ...formData, declaracaoFile: e.target.files?.[0] || null })}
+                        className="file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                      />
+                    </div>
+                    <p className="text-xs text-muted-foreground">Anexe um dos documentos: Certificado de Habilitação <b>ou</b> Declaração com Notas.</p>
+                  </div>
+
+                  {/* Currículo Vitae */}
+                  <div>
+                    <Label className="flex items-center gap-2 text-sm font-medium">
+                      <FileTextIcon className="w-4 h-4" />
+                      Currículo Vitae <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      id="cvUpload"
+                      type="file"
+                      accept=".pdf,.doc,.docx"
+                      required
+                      onChange={e => setFormData({ ...formData, cvFile: e.target.files?.[0] || null })}
+                      className="file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                    />
+                    <p className="text-xs text-muted-foreground">Anexe seu currículo em PDF ou Word.</p>
+                  </div>
+                </div>
+
+                {/* Campos do Formulário com Ícones */}
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="relative">
+                    <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
                     <Input
                       id="nomeCompleto"
                       value={formData.nomeCompleto}
                       onChange={(e) => setFormData({...formData, nomeCompleto: e.target.value})}
-                      placeholder="Digite seu nome completo"
+                      placeholder="Nome Completo *"
+                      className="pl-10"
                     />
                   </div>
-                  <div>
-                    <Label htmlFor="bilheteIdentidade">Nº Bilhete de Identidade *</Label>
+                  <div className="relative">
+                    <IdCardIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
                     <Input
                       id="bilheteIdentidade"
                       value={formData.bilheteIdentidade}
                       onChange={(e) => setFormData({...formData, bilheteIdentidade: e.target.value})}
-                      placeholder="000000000LA000"
+                      placeholder="Nº Bilhete de Identidade *"
+                      className="pl-10"
                     />
                   </div>
                 </div>
-
                 <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="dataNascimento">Data de Nascimento *</Label>
+                  <div className="relative">
+                    <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
                     <Input
                       id="dataNascimento"
                       type="date"
                       value={formData.dataNascimento}
                       onChange={(e) => setFormData({...formData, dataNascimento: e.target.value})}
+                      className="pl-10"
                     />
                   </div>
-                  <div>
-                    <Label htmlFor="telefone">Contacto Telefônico *</Label>
+                  <div className="relative">
+                    <PhoneIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
                     <Input
                       id="telefone"
                       value={formData.telefone}
                       onChange={(e) => setFormData({...formData, telefone: e.target.value})}
-                      placeholder="+244 900 000 000"
+                      placeholder="Contacto Telefônico *"
+                      className="pl-10"
                     />
                   </div>
                 </div>
-
-                <div>
-                  <Label htmlFor="email">Email *</Label>
+                <div className="relative">
+                  <MailIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
                   <Input
                     id="email"
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
-                    placeholder="seuemail@exemplo.com"
+                    placeholder="Email *"
+                    className="pl-10"
                   />
                 </div>
-
-                <div>
-                  <Label>Informações Adicionais</Label>
+                <div className="relative">
+                  <Tag className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                  <Select
+                    value={formData.categoria}
+                    onValueChange={value => setFormData({ ...formData, categoria: value })}
+                    disabled={!selectedConcurso.categorias_disponiveis || selectedConcurso.categorias_disponiveis.length === 0}
+                  >
+                    <SelectTrigger className="pl-10 h-10">
+                      <SelectValue placeholder={selectedConcurso.categorias_disponiveis && selectedConcurso.categorias_disponiveis.length > 0 ? "Categoria a que se candidata *" : "Nenhuma categoria cadastrada para este concurso"} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {selectedConcurso.categorias_disponiveis && selectedConcurso.categorias_disponiveis.length > 0 ? (
+                        selectedConcurso.categorias_disponiveis.map((cat: string) => (
+                          <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                        ))
+                      ) : (
+                        <div className="text-xs text-muted-foreground p-2">Nenhuma categoria cadastrada para este concurso.</div>
+                      )}
+                    </SelectContent>
+                  </Select>
+                  {(!selectedConcurso.categorias_disponiveis || selectedConcurso.categorias_disponiveis.length === 0) && (
+                    <p className="text-xs text-muted-foreground mt-1">O administrador ainda não cadastrou categorias para este concurso.</p>
+                  )}
+                </div>
+                <div className="relative">
+                  <FileTextIcon className="absolute left-3 top-3 text-muted-foreground w-4 h-4" />
                   <Textarea
                     value={formData.observacoes}
                     onChange={(e) => setFormData({...formData, observacoes: e.target.value})}
                     placeholder="Informações adicionais relevantes para o concurso..."
                     rows={4}
+                    className="pl-10"
                   />
                 </div>
-
                 <div className="flex gap-2 pt-4 border-t border-border">
                   <Button 
                     variant="outline" 

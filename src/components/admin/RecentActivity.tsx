@@ -9,7 +9,10 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import ExportUtils from "@/lib/export-utils";
 import { 
   FileText, 
   Trophy, 
@@ -29,7 +32,10 @@ import {
   Search,
   Filter,
   Download,
-  X
+  X,
+  FileSpreadsheet,
+  FileDown,
+  ChevronDown
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -55,6 +61,7 @@ export const RecentActivity = () => {
   const [showAllDialog, setShowAllDialog] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [exportLoading, setExportLoading] = useState<string | null>(null);
 
   useEffect(() => {
     fetchRecentActivity();
@@ -130,7 +137,7 @@ export const RecentActivity = () => {
       // Fetch recent organigrama updates
       const { data: organigramaData } = await supabase
         .from('organigrama')
-        .select('id, name, position, created_at')
+        .select('id, nome, cargo, created_at')
         .order('created_at', { ascending: false })
         .limit(8);
 
@@ -138,8 +145,8 @@ export const RecentActivity = () => {
         activities.push(...organigramaData.map(item => ({
           id: `org-${item.id}`,
           type: 'organigrama' as const,
-          title: item.name,
-          description: `${item.position} - Organigrama atualizado`,
+          title: item.nome,
+          description: `${item.cargo} - Organigrama atualizado`,
           created_at: item.created_at,
           status: 'atualizado'
         })));
@@ -258,30 +265,79 @@ export const RecentActivity = () => {
     { value: 'user', label: 'Usuários', icon: User }
   ];
 
-  const exportActivities = () => {
-    const csvData = [
-      ['Tipo', 'Título', 'Descrição', 'Status', 'Data de Criação'],
-      ...filteredAllActivities.map(activity => [
-        activity.type,
-        activity.title,
-        activity.description,
-        activity.status || '',
-        formatFullDate(activity.created_at)
-      ])
-    ];
+  // Export functions
+  const exportToCSV = async () => {
+    setExportLoading('csv');
+    try {
+      const exportData = ExportUtils.exportActivities(filteredAllActivities);
+      ExportUtils.exportToCSV(exportData, { 
+        filename: 'atividades-chipindo',
+        includeTimestamp: true 
+      });
+      
+      toast({
+        title: "Atividades exportadas",
+        description: "O relatório de atividades foi baixado em formato CSV.",
+      });
+    } catch (error) {
+      toast({
+        title: "Erro na exportação",
+        description: "Não foi possível exportar as atividades.",
+        variant: "destructive"
+      });
+    } finally {
+      setExportLoading(null);
+    }
+  };
 
-    const csvContent = csvData.map(row => row.join(',')).join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    
-    if (link.download !== undefined) {
-      const url = URL.createObjectURL(blob);
-      link.setAttribute('href', url);
-      link.setAttribute('download', `atividades-${new Date().toISOString().split('T')[0]}.csv`);
-      link.style.visibility = 'hidden';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+  const exportToExcel = async () => {
+    setExportLoading('excel');
+    try {
+      const exportData = ExportUtils.exportActivities(filteredAllActivities);
+      ExportUtils.exportToExcel(exportData, { 
+        filename: 'atividades-chipindo',
+        sheetName: 'Atividades do Sistema',
+        author: 'Administração Municipal',
+        company: 'Município de Chipindo'
+      });
+      
+      toast({
+        title: "Relatório Excel gerado",
+        description: "O relatório de atividades foi gerado em formato Excel.",
+      });
+    } catch (error) {
+      toast({
+        title: "Erro na exportação",
+        description: "Não foi possível gerar o relatório Excel.",
+        variant: "destructive"
+      });
+    } finally {
+      setExportLoading(null);
+    }
+  };
+
+  const exportToPDF = async () => {
+    setExportLoading('pdf');
+    try {
+      const exportData = ExportUtils.exportActivities(filteredAllActivities);
+      ExportUtils.exportToPDF(exportData, { 
+        filename: 'atividades-chipindo',
+        author: 'Administração Municipal',
+        company: 'Município de Chipindo - Província da Huíla'
+      });
+      
+      toast({
+        title: "Relatório PDF gerado",
+        description: "O relatório de atividades foi gerado em formato PDF.",
+      });
+    } catch (error) {
+      toast({
+        title: "Erro na exportação",
+        description: "Não foi possível gerar o relatório PDF.",
+        variant: "destructive"
+      });
+    } finally {
+      setExportLoading(null);
     }
   };
 
@@ -485,10 +541,35 @@ export const RecentActivity = () => {
                         Histórico completo de atividades registradas no portal
                       </DialogDescription>
                     </div>
-                    <Button variant="outline" size="sm" onClick={exportActivities}>
-                      <Download className="w-4 h-4 mr-2" />
-                      Exportar
-                    </Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="sm" disabled={exportLoading !== null}>
+                          {exportLoading ? (
+                            <div className="w-4 h-4 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin mr-2" />
+                          ) : (
+                            <Download className="w-4 h-4 mr-2" />
+                          )}
+                          Exportar
+                          <ChevronDown className="w-4 h-4 ml-1" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Formatos de Exportação</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={exportToCSV} disabled={exportLoading === 'csv'}>
+                          <FileSpreadsheet className="w-4 h-4 mr-2" />
+                          CSV
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={exportToExcel} disabled={exportLoading === 'excel'}>
+                          <FileDown className="w-4 h-4 mr-2" />
+                          Excel
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={exportToPDF} disabled={exportLoading === 'pdf'}>
+                          <Download className="w-4 h-4 mr-2" />
+                          PDF
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                 </DialogHeader>
                 

@@ -35,6 +35,7 @@ import {
 } from "lucide-react";
 import { RecentActivity } from "./RecentActivity";
 import { useRealTimeStats } from "@/hooks/useRealTimeStats";
+import ExportUtils from "@/lib/export-utils";
 import { cn } from "@/lib/utils";
 
 interface DashboardData {
@@ -52,6 +53,7 @@ interface DashboardData {
 export const DashboardStats = () => {
   const { stats } = useRealTimeStats();
   const [activeView, setActiveView] = useState("overview");
+  const [exportLoading, setExportLoading] = useState<string | null>(null);
 
   // Calculate derived stats
   const publicationRate = stats.totalNews > 0 ? Math.round((stats.publishedNews / stats.totalNews) * 100) : 0;
@@ -59,67 +61,79 @@ export const DashboardStats = () => {
   const activeRate = stats.totalConcursos > 0 ? Math.round((stats.activeConcursos / stats.totalConcursos) * 100) : 0;
 
   // Export functionality
-  const exportToCSV = () => {
-    const csvData = [
-      ['Métrica', 'Valor', 'Descrição'],
-      ['Total de Notícias', stats.totalNews, `${stats.publishedNews} publicadas`],
-      ['Concursos', stats.totalConcursos, `${stats.activeConcursos} ativos`],
-      ['Direcções', stats.totalDirecoes, 'Áreas de atuação'],
-      ['Organigrama', stats.totalOrganigramaMembers, 'Membros ativos'],
-      ['Acervo Digital', stats.totalAcervoItems, `${stats.publicAcervoItems} públicos`],
-      ['Usuários', stats.totalUsers, 'Total cadastrados'],
-      ['Taxa de Publicação', `${publicationRate}%`, 'Notícias publicadas'],
-      ['Taxa de Transparência', `${transparencyRate}%`, 'Documentos públicos']
-    ];
-
-    const csvContent = csvData.map(row => row.join(',')).join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    
-    if (link.download !== undefined) {
-      const url = URL.createObjectURL(blob);
-      link.setAttribute('href', url);
-      link.setAttribute('download', `dashboard-report-${new Date().toISOString().split('T')[0]}.csv`);
-      link.style.visibility = 'hidden';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+  const exportToCSV = async () => {
+    setExportLoading('csv');
+    try {
+      const exportData = ExportUtils.exportDashboardStats(stats);
+      ExportUtils.exportToCSV(exportData, { 
+        filename: 'dashboard-chipindo',
+        includeTimestamp: true 
+      });
+      
+      toast({
+        title: "Relatório CSV exportado",
+        description: "O relatório foi baixado com sucesso em formato CSV.",
+      });
+    } catch (error) {
+      toast({
+        title: "Erro na exportação",
+        description: "Não foi possível exportar o relatório CSV.",
+        variant: "destructive"
+      });
+    } finally {
+      setExportLoading(null);
     }
-
-    toast({
-      title: "Relatório exportado",
-      description: "O relatório foi baixado em formato CSV.",
-    });
   };
 
-  const exportToPDF = () => {
-    // Simulate PDF generation
-    toast({
-      title: "Gerando PDF",
-      description: "O relatório PDF está sendo preparado para download...",
-    });
-    
-    setTimeout(() => {
-      toast({
-        title: "PDF gerado",
-        description: "O relatório PDF foi gerado com sucesso.",
+  const exportToPDF = async () => {
+    setExportLoading('pdf');
+    try {
+      const exportData = ExportUtils.exportDashboardStats(stats);
+      ExportUtils.exportToPDF(exportData, { 
+        filename: 'dashboard-chipindo',
+        author: 'Administração Municipal',
+        company: 'Município de Chipindo - Província da Huíla'
       });
-    }, 2000);
+      
+      toast({
+        title: "Relatório PDF gerado",
+        description: "O relatório foi gerado e baixado com sucesso em formato PDF.",
+      });
+    } catch (error) {
+      toast({
+        title: "Erro na exportação",
+        description: "Não foi possível gerar o relatório PDF.",
+        variant: "destructive"
+      });
+    } finally {
+      setExportLoading(null);
+    }
   };
 
-  const exportToExcel = () => {
-    // Simulate Excel generation
-    toast({
-      title: "Gerando Excel",
-      description: "O relatório Excel está sendo preparado para download...",
-    });
-    
-    setTimeout(() => {
-      toast({
-        title: "Excel gerado",
-        description: "O relatório Excel foi gerado com sucesso.",
+  const exportToExcel = async () => {
+    setExportLoading('excel');
+    try {
+      const exportData = ExportUtils.exportDashboardStats(stats);
+      ExportUtils.exportToExcel(exportData, { 
+        filename: 'dashboard-chipindo',
+        sheetName: 'Dashboard Executivo',
+        author: 'Administração Municipal',
+        company: 'Município de Chipindo'
       });
-    }, 2000);
+      
+      toast({
+        title: "Relatório Excel gerado",
+        description: "O relatório foi gerado e baixado com sucesso em formato Excel.",
+      });
+    } catch (error) {
+      toast({
+        title: "Erro na exportação",
+        description: "Não foi possível gerar o relatório Excel.",
+        variant: "destructive"
+      });
+    } finally {
+      setExportLoading(null);
+    }
   };
 
   // Quick actions functionality
@@ -209,16 +223,43 @@ export const DashboardStats = () => {
             Sistema Online
           </Badge>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={exportToCSV}>
-              <FileSpreadsheet className="w-4 h-4 mr-2" />
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={exportToCSV}
+              disabled={exportLoading === 'csv'}
+            >
+              {exportLoading === 'csv' ? (
+                <div className="w-4 h-4 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin mr-2" />
+              ) : (
+                <FileSpreadsheet className="w-4 h-4 mr-2" />
+              )}
               CSV
             </Button>
-            <Button variant="outline" size="sm" onClick={exportToExcel}>
-              <FileDown className="w-4 h-4 mr-2" />
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={exportToExcel}
+              disabled={exportLoading === 'excel'}
+            >
+              {exportLoading === 'excel' ? (
+                <div className="w-4 h-4 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin mr-2" />
+              ) : (
+                <FileDown className="w-4 h-4 mr-2" />
+              )}
               Excel
             </Button>
-            <Button variant="outline" size="sm" onClick={exportToPDF}>
-              <Download className="w-4 h-4 mr-2" />
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={exportToPDF}
+              disabled={exportLoading === 'pdf'}
+            >
+              {exportLoading === 'pdf' ? (
+                <div className="w-4 h-4 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin mr-2" />
+              ) : (
+                <Download className="w-4 h-4 mr-2" />
+              )}
               PDF
             </Button>
           </div>
