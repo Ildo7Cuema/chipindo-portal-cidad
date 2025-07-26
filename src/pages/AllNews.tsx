@@ -1,3 +1,4 @@
+import React from "react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/sections/Footer";
 import { Section, SectionHeader, SectionContent } from "@/components/ui/section";
