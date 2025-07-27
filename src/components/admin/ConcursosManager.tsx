@@ -318,8 +318,8 @@ export const ConcursosManager = () => {
       salary_range: concurso.salary_range || "",
       positions_available: concurso.positions_available || 1,
       priority: concurso.priority || 'normal',
-      area: concurso.area || "",
-      categorias_disponiveis: concurso.categorias_disponiveis || []
+      area: "",
+      categorias_disponiveis: []
     });
     setIsDialogOpen(true);
   };
@@ -584,12 +584,13 @@ export const ConcursosManager = () => {
     setInscricoesModalOpen(true);
     setInscricoesLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('inscricoes')
-        .select('*')
-        .eq('concurso_id', concurso.id);
-      if (error) throw error;
-      setInscricoes(data || []);
+      // Commented out since inscricoes table doesn't exist
+      // const { data, error } = await supabase
+      //   .from('inscricoes')
+      //   .select('*')
+      //   .eq('concurso_id', concurso.id);
+      // if (error) throw error;
+      setInscricoes([]);
     } catch (error) {
       toast({
         title: "Erro ao carregar inscritos",

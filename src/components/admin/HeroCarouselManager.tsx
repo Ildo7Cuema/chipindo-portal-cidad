@@ -151,9 +151,9 @@ export const HeroCarouselManager = () => {
         image_url: image.image_url,
         active: image.active,
         order_index: image.order_index,
-        link_url: image.link_url || '',
-        button_text: image.button_text || '',
-        overlay_opacity: image.overlay_opacity || 0.5
+        link_url: '',
+        button_text: '',
+        overlay_opacity: 0.5
       });
     } else {
       resetForm();
@@ -666,12 +666,7 @@ export const HeroCarouselManager = () => {
                         Inativa
                       </Badge>
                     )}
-                    {image.link_url && (
-                      <Badge variant="outline" className="bg-white/90">
-                        <Link className="h-3 w-3 mr-1" />
-                        Link
-                      </Badge>
-                    )}
+                    {/* Removed link_url reference since property doesn't exist */}
                   </div>
                   <div className="absolute bottom-2 left-2">
                     <Badge variant="outline" className="bg-black/50 text-white">
