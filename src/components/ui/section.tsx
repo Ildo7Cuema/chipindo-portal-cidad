@@ -31,10 +31,10 @@ const Section = React.forwardRef<HTMLElement, SectionProps>(
     };
 
     const sizeClasses = {
-      sm: "py-12 md:py-16",
-      md: "py-16 md:py-24",
-      lg: "py-20 md:py-32",
-      xl: "py-24 md:py-40"
+      sm: "py-4 md:py-6",
+      md: "py-6 md:py-8",
+      lg: "py-8 md:py-12",
+      xl: "py-12 md:py-16"
     };
 
     const patternClasses = {
@@ -97,7 +97,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
 }) => {
   return (
     <div className={cn(
-      "space-y-4 mb-12",
+      "space-y-4 mb-6",
       centered && "text-center",
       className
     )}>
