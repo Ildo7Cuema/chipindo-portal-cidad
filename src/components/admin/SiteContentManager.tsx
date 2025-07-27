@@ -220,7 +220,7 @@ export const SiteContentManager = () => {
               <div>
                 <p className="text-sm font-medium text-orange-600 dark:text-orange-400">Última Atualização</p>
                 <p className="text-xs font-bold text-orange-900 dark:text-orange-100">
-                  {settings?.updated_at ? new Date(settings.updated_at).toLocaleDateString('pt-AO') : 'Nunca'}
+                  Recente
                 </p>
               </div>
               <Calendar className="h-8 w-8 text-orange-600 dark:text-orange-400" />

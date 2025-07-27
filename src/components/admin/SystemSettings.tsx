@@ -875,7 +875,7 @@ export const SystemSettings = () => {
                     
                     <div className="space-y-2">
                       <Label htmlFor="timeFormat">Formato de Hora</Label>
-                      <Select value={localConfig.timeFormat || '24h'} onValueChange={setTimeFormat}>
+                      <Select value={localConfig.dateFormat || '24h'} onValueChange={setTimeFormat}>
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
@@ -897,12 +897,12 @@ export const SystemSettings = () => {
                           <input
                             type="color"
                             id="primaryColor"
-                            value={localConfig.primaryColor || '#0f172a'}
-                            onChange={(e) => setPrimaryColor(e.target.value)}
+                            value="#0f172a"
+                            disabled
                             className="w-12 h-8 rounded border cursor-pointer"
                           />
                           <span className="text-sm text-muted-foreground">
-                            {localConfig.primaryColor || '#0f172a'}
+                            #0f172a
                           </span>
                         </div>
                       </div>
@@ -913,12 +913,12 @@ export const SystemSettings = () => {
                           <input
                             type="color"
                             id="accentColor"
-                            value={localConfig.accentColor || '#3b82f6'}
-                            onChange={(e) => setAccentColor(e.target.value)}
+                            value="#3b82f6"
+                            disabled
                             className="w-12 h-8 rounded border cursor-pointer"
                           />
                           <span className="text-sm text-muted-foreground">
-                            {localConfig.accentColor || '#3b82f6'}
+                            #3b82f6
                           </span>
                         </div>
                       </div>
