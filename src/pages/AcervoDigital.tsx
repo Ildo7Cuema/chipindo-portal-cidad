@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
+import { useAcervoViews } from '@/hooks/useAcervoViews';
 import { 
   SearchIcon, 
   FileTextIcon, 
@@ -61,7 +62,7 @@ interface AcervoItem {
   mime_type: string | null;
   is_public: boolean;
   created_at: string;
-  views?: number;
+  views?: number; // Contagem real de visualizações
   downloads?: number;
 }
 
@@ -101,13 +102,38 @@ export default function AcervoDigital() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
 
+  // Hook para visualizações do acervo
+  const { registerView, getViewsCount, isLoading: viewsLoading } = useAcervoViews();
+
   useEffect(() => {
     fetchPublicItems();
   }, []);
 
-  useEffect(() => {
-    filterAndSortItems();
-  }, [items, searchTerm, selectedDirection, selectedType, sortBy]);
+  // Função para registrar visualização
+  const handleItemView = async (itemId: string) => {
+    try {
+      await registerView(itemId);
+      
+      // Atualizar a contagem de visualizações no item
+      const updatedViews = await getViewsCount(itemId);
+      setItems(prevItems => 
+        prevItems.map(item => 
+          item.id === itemId 
+            ? { ...item, views: updatedViews }
+            : item
+        )
+      );
+      setFilteredItems(prevItems => 
+        prevItems.map(item => 
+          item.id === itemId 
+            ? { ...item, views: updatedViews }
+            : item
+        )
+      );
+    } catch (error) {
+      console.error('Erro ao registrar visualização do acervo:', error);
+    }
+  };
 
   const fetchPublicItems = async () => {
     try {
@@ -120,21 +146,52 @@ export default function AcervoDigital() {
 
       if (error) throw error;
 
-      const itemsWithStats = (data || []).map((item, index) => ({
-        ...item,
-        type: item.type as 'documento' | 'imagem' | 'video',
-        direction: item.department, // Map department from database to direction in interface
-        views: Math.floor(Math.random() * 500) + 50,
-        downloads: Math.floor(Math.random() * 100) + 10
-      }));
+      // Buscar visualizações reais para cada item
+      const itemsWithViews = await Promise.all(
+        (data || []).map(async (item) => {
+          // Buscar contagem de visualizações
+          let viewsCount = 0;
+          try {
+            const { data: viewsData, error: viewsError } = await supabase
+              .from('acervo_views' as any)
+              .select('id', { count: 'exact' })
+              .eq('acervo_id', item.id);
 
-      setItems(itemsWithStats);
+            if (!viewsError && viewsData) {
+              viewsCount = viewsData.length;
+            }
+          } catch (error) {
+            console.error('Erro ao buscar visualizações do acervo:', error);
+          }
+
+          return {
+            ...item,
+            type: item.type as 'documento' | 'imagem' | 'video',
+            direction: item.department, // Mapear department para direction
+            views: viewsCount
+          };
+        })
+      );
+
+      setItems(itemsWithViews);
+      setFilteredItems(itemsWithViews);
     } catch (error) {
       console.error('Error fetching public acervo items:', error);
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    filterAndSortItems();
+  }, [items, searchTerm, selectedDirection, selectedType, sortBy]);
+
+  // Registrar visualização quando modal é aberto
+  useEffect(() => {
+    if (selectedItem) {
+      handleItemView(selectedItem.id);
+    }
+  }, [selectedItem]);
 
   const filterAndSortItems = () => {
     let filtered = items.filter(item => {
@@ -204,18 +261,39 @@ export default function AcervoDigital() {
   };
 
   const getTypeIcon = (type: string) => {
-    const typeData = getTypeData(type);
-    const IconComponent = typeData.icon;
-    return <IconComponent className="w-5 h-5" />;
+    switch (type) {
+      case 'documento': return <FileTextIcon className="w-8 h-8" />;
+      case 'imagem': return <ImageIcon className="w-8 h-8" />;
+      case 'video': return <VideoIcon className="w-8 h-8" />;
+      default: return <FileTextIcon className="w-8 h-8" />;
+    }
   };
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case 'documento': return 'text-blue-500';
-      case 'imagem': return 'text-green-500';
-      case 'video': return 'text-purple-500';
-      default: return 'text-gray-500';
+      case 'documento': return 'bg-blue-500';
+      case 'imagem': return 'bg-green-500';
+      case 'video': return 'bg-purple-500';
+      default: return 'bg-gray-500';
     }
+  };
+
+  // Função para gerar thumbnail automático
+  const getThumbnailUrl = (item: AcervoItem) => {
+    if (item.type === 'imagem' && item.file_url) {
+      return item.file_url;
+    }
+    
+    if (item.thumbnail_url) {
+      return item.thumbnail_url;
+    }
+    
+    return null;
+  };
+
+  // Função para verificar se é uma imagem válida
+  const isValidImage = (url: string) => {
+    return url.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i);
   };
 
   const downloadFile = (item: AcervoItem) => {
@@ -581,77 +659,100 @@ export default function AcervoDigital() {
                           "group cursor-pointer overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1",
                           viewMode === 'list' && "md:flex"
                         )}
-                        onClick={() => setSelectedItem(item)}
+                        onClick={async () => {
+                          await handleItemView(item.id);
+                          setSelectedItem(item);
+                        }}
                       >
                         <div className={cn(
                           "relative overflow-hidden",
                           viewMode === 'list' ? "md:w-64 flex-shrink-0" : ""
                         )}>
                           <div className="aspect-video bg-gradient-to-br from-gray-200 to-gray-300 relative">
-                            {item.thumbnail_url ? (
+                            {item.type === 'imagem' && item.file_url && isValidImage(item.file_url) ? (
+                              // Para imagens, mostrar a imagem real
+                              <img 
+                                src={item.file_url} 
+                                alt={item.title}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                onError={(e) => {
+                                  // Fallback para ícone se a imagem falhar
+                                  const target = e.target as HTMLImageElement;
+                                  target.style.display = 'none';
+                                  const parent = target.parentElement;
+                                  if (parent) {
+                                    const fallback = document.createElement('div');
+                                    fallback.className = `w-full h-full flex items-center justify-center ${getTypeColor(item.type)}`;
+                                    fallback.innerHTML = `<svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>`;
+                                    parent.appendChild(fallback);
+                                  }
+                                }}
+                              />
+                            ) : item.thumbnail_url ? (
+                              // Para outros tipos, mostrar thumbnail se disponível
                               <img 
                                 src={item.thumbnail_url} 
                                 alt={item.title}
                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                               />
+                            ) : item.type === 'video' && item.file_url ? (
+                              // Para vídeos, mostrar preview do vídeo
+                              <video 
+                                src={item.file_url}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                muted
+                                preload="metadata"
+                              />
                             ) : (
-                              <div className={cn("w-full h-full flex items-center justify-center", getTypeData(item.type).color)}>
+                              // Fallback para ícone
+                              <div className={cn("w-full h-full flex items-center justify-center", getTypeColor(item.type))}>
                                 {getTypeIcon(item.type)}
                               </div>
                             )}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                            <Badge className={cn("absolute top-3 left-3", getTypeData(item.type).color, "text-white border-0")}>
-                              {getTypeIcon(item.type)}
-                              <span className="ml-1">{getTypeData(item.type).name}</span>
-                            </Badge>
-                            <Badge className={cn("absolute top-3 right-3", directionData.color, "text-white border-0")}>
-                              <DirIconComponent className="w-3 h-3 mr-1" />
-                              {directionData.label}
-                            </Badge>
+                            
+                            {/* Overlay sutil com informações essenciais */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                            
+                            {/* Badge de tipo - mais sutil */}
+                            <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                              <Badge className={cn("text-xs", getTypeData(item.type).color, "text-white border-0 bg-black/50 backdrop-blur-sm")}>
+                                {getTypeIcon(item.type)}
+                              </Badge>
+                            </div>
+                            
+                            {/* Indicador de visualizações - sutil */}
+                            {item.views && item.views > 0 && (
+                              <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <Badge className="text-xs bg-black/50 backdrop-blur-sm text-white border-0">
+                                  <EyeIcon className="w-3 h-3 mr-1" />
+                                  {item.views}
+                                </Badge>
+                              </div>
+                            )}
                           </div>
                         </div>
                         
-                        <div className="flex-1 p-6">
+                        <div className="flex-1 p-4">
+                          {/* Título - mais proeminente */}
                           <CardTitle className={cn(
-                            "leading-tight group-hover:text-primary transition-colors duration-300 mb-3",
-                            viewMode === 'list' ? "text-lg" : "text-xl"
+                            "leading-tight group-hover:text-primary transition-colors duration-300 mb-2",
+                            viewMode === 'list' ? "text-base" : "text-lg"
                           )}>
                             {item.title}
                           </CardTitle>
                           
-                          {item.description && (
-                            <p className="text-muted-foreground mb-4 line-clamp-2">{item.description}</p>
-                          )}
-                          
-                          {item.category && (
-                            <Badge variant="secondary" className="mb-4">{item.category}</Badge>
-                          )}
-                          
-                          <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
-                            <div className="flex items-center gap-4">
-                              <div className="flex items-center gap-1">
-                                <CalendarIcon className="w-4 h-4" />
-                                {formatDate(item.created_at)}
-                              </div>
-                              <div className="flex items-center gap-1">
-                                <EyeIcon className="w-4 h-4" />
-                                {item.views}
-                              </div>
-                            </div>
-                            <span className="text-xs">
-                              {getTimeAgo(item.created_at)}
+                          {/* Informações essenciais em uma linha */}
+                          <div className="flex items-center gap-3 text-xs text-muted-foreground mb-3">
+                            <span className="flex items-center gap-1">
+                              <CalendarIcon className="w-3 h-3" />
+                              {formatDate(item.created_at)}
                             </span>
-                          </div>
-
-                          <div className="space-y-2 mb-4 text-xs text-muted-foreground">
-                            {item.file_size && (
-                              <div>Tamanho: {formatFileSize(item.file_size)}</div>
-                            )}
-                            {item.mime_type && (
-                              <div>Formato: {item.mime_type}</div>
+                            {item.category && (
+                              <span className="text-primary/70">{item.category}</span>
                             )}
                           </div>
-
+                          
+                          {/* Botões de ação - mais compactos */}
                           <div className="flex gap-2">
                             <Button 
                               variant="outline" 
@@ -660,10 +761,10 @@ export default function AcervoDigital() {
                                 e.stopPropagation();
                                 setSelectedItem(item);
                               }}
-                              className="flex-1"
+                              className="flex-1 text-xs h-8"
                             >
-                              <EyeIcon className="w-4 h-4 mr-2" />
-                              Visualizar
+                              <EyeIcon className="w-3 h-3 mr-1" />
+                              Ver
                             </Button>
                             {item.file_url && (
                               <Button 
@@ -673,10 +774,10 @@ export default function AcervoDigital() {
                                   e.stopPropagation();
                                   downloadFile(item);
                                 }}
-                                className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
+                                className="flex-1 text-xs h-8 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
                               >
-                                <DownloadIcon className="w-4 h-4 mr-2" />
-                                Download
+                                <DownloadIcon className="w-3 h-3 mr-1" />
+                                Baixar
                               </Button>
                             )}
                           </div>
@@ -770,8 +871,8 @@ export default function AcervoDigital() {
                         {getTypeIcon(selectedItem.type)}
                       </div>
                       <div>
-                        <DialogTitle className="text-2xl">{selectedItem.title}</DialogTitle>
-                        <DialogDescription className="flex items-center gap-2">
+                        <DialogTitle className="text-xl">{selectedItem.title}</DialogTitle>
+                        <DialogDescription className="flex items-center gap-2 text-sm">
                           <Badge className={cn(getDirectionData(selectedItem.direction).color, "text-white")}>
                             {getDirectionData(selectedItem.direction).label}
                           </Badge>
@@ -779,6 +880,9 @@ export default function AcervoDigital() {
                             <Badge variant="outline">{selectedItem.category}</Badge>
                           )}
                           <span>• {formatDate(selectedItem.created_at)}</span>
+                          {selectedItem.views && selectedItem.views > 0 && (
+                            <span>• {selectedItem.views} visualizações</span>
+                          )}
                         </DialogDescription>
                       </div>
                     </div>
@@ -792,7 +896,8 @@ export default function AcervoDigital() {
                   </div>
                 </DialogHeader>
                 
-                <div className="space-y-6">
+                <div className="space-y-4">
+                  {/* Descrição - apenas se existir */}
                   {selectedItem.description && (
                     <div>
                       <h4 className="font-semibold text-foreground mb-2">Descrição</h4>
@@ -800,6 +905,7 @@ export default function AcervoDigital() {
                     </div>
                   )}
 
+                  {/* Visualização do arquivo - foco principal */}
                   {selectedItem.file_url && (
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
@@ -808,6 +914,7 @@ export default function AcervoDigital() {
                           <Button
                             onClick={() => window.open(selectedItem.file_url!, '_blank')}
                             className="flex items-center gap-2"
+                            size="sm"
                           >
                             <EyeIcon className="w-4 h-4" />
                             Abrir
@@ -816,6 +923,7 @@ export default function AcervoDigital() {
                             variant="outline"
                             onClick={() => downloadFile(selectedItem)}
                             className="flex items-center gap-2"
+                            size="sm"
                           >
                             <DownloadIcon className="w-4 h-4" />
                             Download
@@ -823,68 +931,116 @@ export default function AcervoDigital() {
                         </div>
                       </div>
 
-                      {selectedItem.type === 'imagem' && (
+                      {/* Visualização do arquivo - foco na imagem/vídeo */}
+                      {selectedItem.type === 'imagem' && selectedItem.file_url && isValidImage(selectedItem.file_url) && (
                         <div className="border rounded-lg overflow-hidden">
                           <img
                             src={selectedItem.file_url}
                             alt={selectedItem.title}
                             className="w-full h-auto max-h-96 object-contain"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.style.display = 'none';
+                              const parent = target.parentElement;
+                              if (parent) {
+                                const fallback = document.createElement('div');
+                                fallback.className = 'w-full h-48 flex items-center justify-center bg-gray-100 border rounded-lg';
+                                fallback.innerHTML = '<div class="text-center"><svg class="w-12 h-12 text-gray-400 mx-auto mb-2" fill="currentColor" viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg><p class="text-sm text-gray-500">Imagem não disponível</p></div>';
+                                parent.appendChild(fallback);
+                              }
+                            }}
                           />
                         </div>
                       )}
 
-                      {selectedItem.type === 'video' && (
+                      {selectedItem.type === 'video' && selectedItem.file_url && (
                         <div className="border rounded-lg overflow-hidden">
                           <video
                             src={selectedItem.file_url}
                             controls
                             className="w-full h-auto max-h-96"
+                            preload="metadata"
                           >
                             Seu navegador não suporta o elemento de vídeo.
                           </video>
                         </div>
                       )}
+
+                      {selectedItem.type === 'documento' && selectedItem.file_url && (
+                        <div className="border rounded-lg overflow-hidden bg-gray-50 p-6">
+                          <div className="text-center">
+                            <FileTextIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                            <h5 className="font-semibold text-gray-700 mb-2">{selectedItem.title}</h5>
+                            <p className="text-sm text-gray-500 mb-4">
+                              {selectedItem.mime_type && `Formato: ${selectedItem.mime_type}`}
+                              {selectedItem.file_size && ` • Tamanho: ${formatFileSize(selectedItem.file_size)}`}
+                            </p>
+                            <div className="flex gap-2 justify-center">
+                              <Button
+                                onClick={() => window.open(selectedItem.file_url!, '_blank')}
+                                className="flex items-center gap-2"
+                                size="sm"
+                              >
+                                <EyeIcon className="w-4 h-4" />
+                                Abrir Documento
+                              </Button>
+                              <Button
+                                variant="outline"
+                                onClick={() => downloadFile(selectedItem)}
+                                className="flex items-center gap-2"
+                                size="sm"
+                              >
+                                <DownloadIcon className="w-4 h-4" />
+                                Download
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
 
-                  <div className="grid md:grid-cols-2 gap-6 pt-4 border-t border-border">
+                  {/* Informações técnicas - mais compactas */}
+                  <div className="grid md:grid-cols-2 gap-4 pt-4 border-t border-border">
                     <div>
                       <h4 className="font-semibold text-foreground mb-2">Informações do Arquivo</h4>
-                      <div className="space-y-2 text-sm">
+                      <div className="space-y-1 text-sm">
                         <div className="flex justify-between">
                           <span className="text-muted-foreground">Tipo:</span>
                           <span className="font-medium">{getTypeData(selectedItem.type).name}</span>
                         </div>
-                        {selectedItem.file_size && (
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Tamanho:</span>
-                            <span className="font-medium">{formatFileSize(selectedItem.file_size)}</span>
-                          </div>
-                        )}
                         {selectedItem.mime_type && (
                           <div className="flex justify-between">
                             <span className="text-muted-foreground">Formato:</span>
                             <span className="font-medium">{selectedItem.mime_type}</span>
                           </div>
                         )}
+                        {selectedItem.file_size && (
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Tamanho:</span>
+                            <span className="font-medium">{formatFileSize(selectedItem.file_size)}</span>
+                          </div>
+                        )}
                       </div>
                     </div>
-
+                    
                     <div>
-                      <h4 className="font-semibold text-foreground mb-2">Estatísticas</h4>
-                      <div className="space-y-2 text-sm">
+                      <h4 className="font-semibold text-foreground mb-2">Metadados</h4>
+                      <div className="space-y-1 text-sm">
                         <div className="flex justify-between">
-                          <span className="text-muted-foreground">Visualizações:</span>
-                          <span className="font-medium">{selectedItem.views}</span>
+                          <span className="text-muted-foreground">Data:</span>
+                          <span className="font-medium">{formatDate(selectedItem.created_at)}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-muted-foreground">Downloads:</span>
-                          <span className="font-medium">{selectedItem.downloads}</span>
+                          <span className="text-muted-foreground">Direção:</span>
+                          <span className="font-medium">{getDirectionData(selectedItem.direction).label}</span>
                         </div>
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Adicionado:</span>
-                          <span className="font-medium">{getTimeAgo(selectedItem.created_at)}</span>
-                        </div>
+                        {selectedItem.views && selectedItem.views > 0 && (
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Visualizações:</span>
+                            <span className="font-medium">{selectedItem.views}</span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>

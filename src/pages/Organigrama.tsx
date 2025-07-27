@@ -38,6 +38,7 @@ import {
   HeartIcon,
   HammerIcon
 } from 'lucide-react';
+import { Tree, TreeNode } from 'react-organizational-chart';
 
 interface OrganigramaMember {
   id: string;
@@ -90,7 +91,7 @@ export default function Organigrama() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDirection, setSelectedDirection] = useState('todos');
   const [sortBy, setSortBy] = useState('direction');
-  const [viewMode, setViewMode] = useState<'grid' | 'list' | 'hierarchy'>('grid');
+  // Removido: const [viewMode, setViewMode] = useState<'grid' | 'list' | 'hierarchy'>('grid');
   const [showFilters, setShowFilters] = useState(false);
   const [expandedDirections, setExpandedDirections] = useState<Set<string>>(new Set());
 
@@ -217,6 +218,157 @@ export default function Organigrama() {
   const formatInitials = (name: string) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   };
+
+  // Componente de Nó Profissional para o Organograma
+  const OrgChartNode = ({ member }: { member: OrganigramaMember }) => {
+    const directionData = getDirectionData(member.departamento);
+    const IconComponent = directionData.icon;
+    const hierarchyLevel = getHierarchyLevel(member);
+
+    // Nó raiz virtual
+    if (member.id === "virtual-root") {
+      return (
+        <div className="flex flex-col items-center justify-center p-6 bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-2xl shadow-xl min-w-[220px] border-2 border-primary-foreground/20">
+          <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mb-4 backdrop-blur-sm">
+            <UsersIcon className="h-10 w-10" />
+          </div>
+          <h3 className="font-bold text-xl text-center leading-tight mb-2">{member.nome}</h3>
+          <p className="text-sm opacity-90 text-center">{member.cargo}</p>
+        </div>
+      );
+    }
+
+    return (
+      <div 
+        className="group relative cursor-pointer flex flex-col items-center"
+        onClick={() => setSelectedMember(member)}
+      >
+        {/* Container da imagem circular - centralizada para as linhas conectarem */}
+        <div className="relative mb-3">
+          <div className="relative w-32 h-32 rounded-full bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 shadow-lg hover:shadow-xl transition-all duration-300 border-4 border-primary-500 overflow-hidden">
+            {/* Imagem do membro */}
+            <Avatar className="w-full h-full rounded-full">
+              <AvatarImage src={member.foto_url || ''} alt={member.nome} className="object-cover" />
+              <AvatarFallback className="text-2xl font-bold bg-gradient-to-br from-primary to-primary/80 text-white">
+                {formatInitials(member.nome)}
+              </AvatarFallback>
+            </Avatar>
+            
+            {/* Overlay com informações implícitas */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3">
+              <h4 className="text-white font-semibold text-sm leading-tight line-clamp-2 mb-1">
+                {member.nome}
+              </h4>
+              <p className="text-white/90 text-xs line-clamp-1 font-medium">
+                {member.cargo}
+              </p>
+            </div>
+          </div>
+
+          {/* Badge de nível hierárquico (pequeno, no canto inferior direito da imagem) */}
+          {hierarchyLevel === 0 && (
+            <div className="absolute -bottom-1 -right-1 z-10">
+              <Badge variant="secondary" className="text-xs bg-yellow-500/90 text-yellow-100 border-yellow-400/30 px-1.5 py-0.5 rounded-full shadow-md">
+                Dirigente
+              </Badge>
+            </div>
+          )}
+        </div>
+
+        {/* Informações abaixo da imagem - centralizadas */}
+        <div className="flex flex-col items-center gap-1 text-center">
+          {/* Nome do membro */}
+          <h4 className="font-semibold text-sm text-foreground leading-tight line-clamp-2 max-w-32">
+            {member.nome}
+          </h4>
+          
+          {/* Cargo */}
+          <p className="text-xs text-muted-foreground line-clamp-1 max-w-32">
+            {member.cargo}
+          </p>
+          
+          {/* Badge do departamento */}
+          <Badge className={cn("text-xs px-2 py-1 rounded-full shadow-sm mt-1", directionData.color, "text-white border-0")}>
+            <IconComponent className="w-3 h-3 mr-1" />
+            {member.departamento}
+          </Badge>
+        </div>
+      </div>
+    );
+  };
+
+  // Função para construir a estrutura de árvore do organograma
+  const buildOrgChartNodes = (membersList: OrganigramaMember[], parentId: string | null) => {
+    const nodes: React.ReactNode[] = [];
+    const directReports = membersList.filter(member => member.superior_id === parentId);
+
+    directReports.sort((a, b) => a.ordem - b.ordem);
+
+    for (const member of directReports) {
+      const children = buildOrgChartNodes(membersList, member.id);
+      nodes.push(
+        <TreeNode key={member.id} label={<OrgChartNode member={member} />}>
+          {children}
+        </TreeNode>
+      );
+    }
+    return nodes;
+  };
+
+  // Encontrar membros de nível superior
+  const topLevelMembers = members.filter(m => !m.superior_id);
+
+  let rootMember: OrganigramaMember | null = null;
+  let treeChildrenData: React.ReactNode[] = [];
+
+  // Debug: Log para verificar os dados
+  console.log('Members:', members);
+  console.log('Top level members:', topLevelMembers);
+
+  if (topLevelMembers.length === 1) {
+    // Se há um único membro de nível superior, esse é nosso raiz
+    rootMember = topLevelMembers[0];
+    treeChildrenData = buildOrgChartNodes(members, rootMember.id);
+    console.log('Single root member:', rootMember);
+  } else if (topLevelMembers.length > 1) {
+    // Se há múltiplos membros de nível superior, criar um raiz virtual
+    rootMember = {
+      id: "virtual-root",
+      nome: "Administração Municipal",
+      cargo: "Estrutura Organizacional",
+      departamento: "Nível Superior",
+      superior_id: null,
+      email: null,
+      telefone: null,
+      descricao: "Representa a estrutura de nível mais alto da administração municipal.",
+      foto_url: null,
+      ordem: 0,
+      ativo: true,
+    };
+    // Todos os membros de nível superior se tornam filhos diretos do raiz virtual
+    treeChildrenData = buildOrgChartNodes(members, null);
+    console.log('Virtual root created:', rootMember);
+  } else if (members.length > 0) {
+    // Fallback se nenhum raiz explícito for encontrado
+    console.warn("No explicit root member found. Creating virtual root.");
+    rootMember = {
+      id: "virtual-root",
+      nome: "Estrutura Sem Raiz Clara",
+      cargo: "Organograma",
+      departamento: "Nível Superior",
+      superior_id: null,
+      email: null,
+      telefone: null,
+      descricao: "Não foi possível determinar uma raiz clara para o organograma.",
+      foto_url: null,
+      ordem: 0,
+      ativo: true,
+    };
+    treeChildrenData = buildOrgChartNodes(members, null);
+    console.log('Fallback virtual root created:', rootMember);
+  }
+
+  console.log('Tree children data:', treeChildrenData);
 
   const directionStats = getDirectionStats();
   const totalMembers = members.length;
@@ -384,29 +536,7 @@ export default function Organigrama() {
                       </Select>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant={viewMode === 'grid' ? 'default' : 'outline'}
-                        size="sm"
-                        onClick={() => setViewMode('grid')}
-                      >
-                        <GridIcon className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant={viewMode === 'list' ? 'default' : 'outline'}
-                        size="sm"
-                        onClick={() => setViewMode('list')}
-                      >
-                        <ListIcon className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant={viewMode === 'hierarchy' ? 'default' : 'outline'}
-                        size="sm"
-                        onClick={() => setViewMode('hierarchy')}
-                      >
-                        <UsersIcon className="w-4 h-4" />
-                      </Button>
-                    </div>
+                    {/* Removido: Botões de alternância de visualização */}
                   </div>
 
                   {/* Direction Filters */}
@@ -496,209 +626,46 @@ export default function Organigrama() {
                   </Button>
                 )}
               </div>
-            ) : viewMode === 'hierarchy' ? (
-              /* Hierarchical View */
-              <div className="space-y-6">
-                {directions.map(direction => {
-                  const directionMembers = filteredMembers.filter(member => member.departamento === direction.nome);
-                  if (directionMembers.length === 0) return null;
-
-                  const isExpanded = expandedDirections.has(direction.nome);
-                  const directionData = getDirectionData(direction.nome);
-                  const IconComponent = directionData.icon;
-
-                  return (
-                    <Card key={direction.id} className="overflow-hidden">
-                      <div 
-                        className="p-6 bg-gradient-to-r from-primary/10 to-primary/5 border-b cursor-pointer hover:from-primary/15 hover:to-primary/10 transition-all duration-300"
-                        onClick={() => toggleDirection(direction.nome)}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-4">
-                            <div className={cn("w-12 h-12 rounded-full flex items-center justify-center", directionData.color)}>
-                              <IconComponent className="w-6 h-6 text-white" />
-                            </div>
-                            <div>
-                              <h2 className="text-xl font-semibold text-foreground">{direction.nome}</h2>
-                              <p className="text-sm text-muted-foreground">
-                                {directionMembers.length} {directionMembers.length === 1 ? 'membro' : 'membros'}
-                              </p>
-                            </div>
-                          </div>
-                          <Button variant="ghost" size="sm">
-                            {isExpanded ? <ChevronUpIcon className="h-4 w-4" /> : <ChevronDownIcon className="h-4 w-4" />}
-                          </Button>
-                        </div>
-                      </div>
-
-                      {isExpanded && (
-                        <CardContent className="p-6">
-                          <div className="space-y-4">
-                            {directionMembers
-                              .sort((a, b) => {
-                                const aLevel = getHierarchyLevel(a);
-                                const bLevel = getHierarchyLevel(b);
-                                if (aLevel !== bLevel) return aLevel - bLevel;
-                                return a.ordem - b.ordem;
-                              })
-                              .map((member) => {
-                                const hierarchyLevel = getHierarchyLevel(member);
-                                return (
-                                  <div 
-                                    key={member.id}
-                                    className={cn("ml-0", hierarchyLevel > 0 && `ml-${Math.min(hierarchyLevel * 8, 32)}`)}
-                                  >
-                                    <Card 
-                                      className="hover:shadow-lg transition-all duration-300 cursor-pointer group"
-                                      onClick={() => setSelectedMember(member)}
-                                    >
-                                      <CardContent className="p-4">
-                                        <div className="flex items-center gap-4">
-                                          <Avatar className="h-12 w-12">
-                                            <AvatarImage src={member.foto_url || ''} alt={member.nome} />
-                                            <AvatarFallback className="text-sm font-medium">
-                                              {formatInitials(member.nome)}
-                                            </AvatarFallback>
-                                          </Avatar>
-                                          <div className="flex-1">
-                                            <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
-                                              {member.nome}
-                                            </h3>
-                                            <p className="text-sm text-primary font-medium">{member.cargo}</p>
-                                            {getSuperiorName(member.superior_id) && (
-                                              <p className="text-xs text-muted-foreground">
-                                                Reporta a: {getSuperiorName(member.superior_id)}
-                                              </p>
-                                            )}
-                                          </div>
-                                          <div className="text-right">
-                                            <Badge variant="outline" className="text-xs">
-                                              {hierarchyLevel === 0 ? 'Dirigente' : `Nível ${hierarchyLevel + 1}`}
-                                            </Badge>
-                                          </div>
-                                        </div>
-                                      </CardContent>
-                                    </Card>
-                                  </div>
-                                );
-                              })}
-                          </div>
-                        </CardContent>
-                      )}
-                    </Card>
-                  );
-                })}
-              </div>
             ) : (
-              /* Grid/List View */
-              <div className={cn(
-                "grid gap-6",
-                viewMode === 'grid' ? "md:grid-cols-2 lg:grid-cols-3" : "grid-cols-1"
-              )}>
-                {filteredMembers.map((member) => {
-                  const directionData = getDirectionData(member.departamento);
-                  const IconComponent = directionData.icon;
-                  const hierarchyLevel = getHierarchyLevel(member);
-                  
-                  return (
-                    <Card 
-                      key={member.id}
-                      className={cn(
-                        "group cursor-pointer overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1",
-                        viewMode === 'list' && "md:flex"
-                      )}
-                      onClick={() => setSelectedMember(member)}
+              /* Sempre mostrar a visualização hierárquica */
+              <div className="p-4 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 rounded-2xl shadow-inner overflow-x-auto min-h-[600px] flex items-center justify-center">
+                {rootMember && treeChildrenData.length > 0 ? (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <Tree 
+                      lineWidth={'3px'}
+                      lineColor={'#8b5cf6'}
+                      lineBorderRadius={'15px'}
+                      label={<OrgChartNode member={rootMember} />}
                     >
-                      <div className={cn(
-                        "relative overflow-hidden",
-                        viewMode === 'list' ? "md:w-64 flex-shrink-0" : ""
-                      )}>
-                        <div className="aspect-video bg-gradient-to-br from-gray-200 to-gray-300 relative">
-                          {member.foto_url ? (
-                            <img 
-                              src={member.foto_url} 
-                              alt={member.nome}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                            />
-                          ) : (
-                            <div className={cn("w-full h-full flex items-center justify-center", directionData.color)}>
-                              <UserIcon className="w-12 h-12 text-white/80" />
-                            </div>
-                          )}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                          <Badge className={cn("absolute top-3 left-3", directionData.color, "text-white border-0")}>
-                            <IconComponent className="w-3 h-3 mr-1" />
-                            {member.departamento}
-                          </Badge>
-                          <Badge className="absolute top-3 right-3 bg-white/20 text-white border-white/30">
-                            {hierarchyLevel === 0 ? 'Dirigente' : `Nível ${hierarchyLevel + 1}`}
-                          </Badge>
-                        </div>
+                      {treeChildrenData}
+                    </Tree>
+                  </div>
+                ) : rootMember && treeChildrenData.length === 0 ? (
+                  <div className="text-center py-16">
+                    <UsersIcon className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                    <h3 className="text-xl font-semibold text-foreground mb-2">Estrutura Hierárquica Simples</h3>
+                    <p className="text-muted-foreground mb-6">
+                      Apenas o membro raiz foi encontrado. Adicione mais membros para visualizar a estrutura hierárquica completa.
+                    </p>
+                    <div className="flex justify-center">
+                      <OrgChartNode member={rootMember} />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-16">
+                    <UsersIcon className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                    <h3 className="text-xl font-semibold text-foreground mb-2">Organigrama não disponível</h3>
+                    <p className="text-muted-foreground mb-6">
+                      Não foi possível carregar a estrutura do organigrama ou nenhum membro foi encontrado.
+                    </p>
+                    {members.length > 0 && (
+                      <div className="text-sm text-muted-foreground">
+                        <p>Membros encontrados: {members.length}</p>
+                        <p>Membros de nível superior: {topLevelMembers.length}</p>
                       </div>
-                      
-                      <div className="flex-1 p-6">
-                        <CardTitle className={cn(
-                          "leading-tight group-hover:text-primary transition-colors duration-300 mb-2",
-                          viewMode === 'list' ? "text-lg" : "text-xl"
-                        )}>
-                          {member.nome}
-                        </CardTitle>
-                        
-                        <p className="text-primary font-medium mb-3">{member.cargo}</p>
-                        
-                        {member.descricao && (
-                          <p className="text-muted-foreground mb-4 line-clamp-2">{member.descricao}</p>
-                        )}
-
-                        {getSuperiorName(member.superior_id) && (
-                          <p className="text-sm text-muted-foreground mb-4">
-                            <strong>Reporta a:</strong> {getSuperiorName(member.superior_id)}
-                          </p>
-                        )}
-                        
-                        <div className="space-y-2 mb-4">
-                          {member.email && (
-                            <div className="flex items-center gap-2 text-sm">
-                              <MailIcon className="w-4 h-4 text-muted-foreground" />
-                              <a 
-                                href={`mailto:${member.email}`}
-                                className="text-primary hover:underline"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                {member.email}
-                              </a>
-                            </div>
-                          )}
-                          {member.telefone && (
-                            <div className="flex items-center gap-2 text-sm">
-                              <PhoneIcon className="w-4 h-4 text-muted-foreground" />
-                              <a 
-                                href={`tel:${member.telefone}`}
-                                className="text-primary hover:underline"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                {member.telefone}
-                              </a>
-                            </div>
-                          )}
-                        </div>
-
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedMember(member);
-                          }}
-                          className="w-full"
-                        >
-                          <EyeIcon className="w-4 h-4 mr-2" />
-                          Ver Detalhes
-                        </Button>
-                      </div>
-                    </Card>
-                  );
-                })}
+                    )}
+                  </div>
+                )}
               </div>
             )}
           </SectionContent>

@@ -3,6 +3,189 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Estilos personalizados para o organograma */
+.org-chart-tree {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.org-chart-tree .org-tree-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.org-chart-tree .org-tree-node__children {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 2rem;
+  margin-top: 2rem;
+  position: relative;
+}
+
+.org-chart-tree .org-tree-node__children::before {
+  content: '';
+  position: absolute;
+  top: -1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3px;
+  height: 1rem;
+  background: linear-gradient(to bottom, #8b5cf6, #a855f7);
+  border-radius: 2px;
+}
+
+.org-chart-tree .org-tree-node__children .org-tree-node:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: -1rem;
+  right: -1rem;
+  width: 1rem;
+  height: 3px;
+  background: linear-gradient(to right, #8b5cf6, #a855f7);
+  border-radius: 2px;
+}
+
+.org-chart-tree .org-tree-node__children .org-tree-node:not(:first-child)::before {
+  content: '';
+  position: absolute;
+  top: -1rem;
+  left: -1rem;
+  width: 1rem;
+  height: 3px;
+  background: linear-gradient(to left, #8b5cf6, #a855f7);
+  border-radius: 2px;
+}
+
+/* Melhorias para os nós circulares - linhas conectam as imagens */
+.org-chart-tree .org-tree-node__label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  /* Centralizar o conteúdo para que as linhas liguem as imagens */
+  position: relative;
+}
+
+.org-chart-tree .org-tree-node__label:hover {
+  transform: scale(1.05);
+  z-index: 10;
+}
+
+/* Ajustar posicionamento das linhas para conectar as imagens circulares */
+.org-chart-tree .org-tree-node__children {
+  /* Ajustar o gap para que as linhas conectem as imagens */
+  gap: 4rem;
+}
+
+.org-chart-tree .org-tree-node__children .org-tree-node {
+  /* Centralizar cada nó para que as linhas conectem as imagens */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Linhas horizontais entre nós do mesmo nível */
+.org-chart-tree .org-tree-node__children .org-tree-node:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: -2rem;
+  width: 2rem;
+  height: 3px;
+  background: linear-gradient(to right, #8b5cf6, #a855f7);
+  border-radius: 2px;
+  transform: translateY(-50%);
+}
+
+.org-chart-tree .org-tree-node__children .org-tree-node:not(:first-child)::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: -2rem;
+  width: 2rem;
+  height: 3px;
+  background: linear-gradient(to left, #8b5cf6, #a855f7);
+  border-radius: 2px;
+  transform: translateY(-50%);
+}
+
+/* Linha vertical do pai para o centro dos filhos */
+.org-chart-tree .org-tree-node__children::before {
+  content: '';
+  position: absolute;
+  top: -1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3px;
+  height: 1rem;
+  background: linear-gradient(to bottom, #8b5cf6, #a855f7);
+  border-radius: 2px;
+}
+
+/* Responsividade para o organograma */
+@media (max-width: 768px) {
+  .org-chart-tree .org-tree-node__children {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .org-chart-tree .org-tree-node__children::before {
+    display: none;
+  }
+  
+  .org-chart-tree .org-tree-node__children .org-tree-node::after,
+  .org-chart-tree .org-tree-node__children .org-tree-node::before {
+    display: none;
+  }
+}
+
+/* Animações suaves */
+.org-chart-tree .org-tree-node {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Estilos para o modo escuro */
+.dark .org-chart-tree .org-tree-node__children::before,
+.dark .org-chart-tree .org-tree-node__children .org-tree-node::after,
+.dark .org-chart-tree .org-tree-node__children .org-tree-node::before {
+  background: linear-gradient(to bottom, #a855f7, #c084fc);
+}
+
+/* Melhorias para acessibilidade */
+.org-chart-tree .org-tree-node__label:focus {
+  outline: 2px solid #8b5cf6;
+  outline-offset: 2px;
+  border-radius: 50%;
+}
+
+/* Estilos para scroll horizontal em telas pequenas */
+@media (max-width: 1024px) {
+  .org-chart-tree {
+    min-width: 800px;
+    overflow-x: auto;
+  }
+}
+
 @layer base {
   :root {
     /* Base colors (HSL) */
@@ -101,31 +284,189 @@
   }
   
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
-    scroll-behavior: smooth;
   }
   
-  /* Custom scrollbar */
+  /* Custom scrollbar styles */
   ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
   }
   
   ::-webkit-scrollbar-track {
-    @apply bg-muted/30;
-    border-radius: 10px;
+    @apply bg-gray-100 rounded-full;
   }
   
   ::-webkit-scrollbar-thumb {
-    @apply bg-gradient-to-b from-primary to-secondary;
-    border-radius: 10px;
-    border: 2px solid transparent;
-    background-clip: content-box;
+    @apply bg-gray-300 rounded-full;
+    transition: background-color 0.2s ease;
   }
   
   ::-webkit-scrollbar-thumb:hover {
-    @apply from-primary/80 to-secondary/80;
+    @apply bg-gray-400;
+  }
+  
+  /* Modal content scrollbar */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(209 213 219) rgb(243 244 246);
+  }
+  
+  .scrollbar-thumb-gray-300::-webkit-scrollbar-thumb {
+    @apply bg-gray-300;
+  }
+  
+  .scrollbar-track-gray-100::-webkit-scrollbar-track {
+    @apply bg-gray-100;
+  }
+  
+  /* Smooth scrolling for modal content */
+  .overflow-y-auto {
+    scroll-behavior: smooth;
+  }
+  
+  /* Modal backdrop blur effect */
+  .modal-backdrop {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  
+  /* Image container improvements */
+  .image-container {
+    position: relative;
+    overflow: hidden;
+    border-radius: 0.75rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  }
+  
+  .image-container img {
+    transition: transform 0.3s ease;
+  }
+  
+  .image-container:hover img {
+    transform: scale(1.02);
+  }
+  
+  /* Content typography improvements */
+  .news-content {
+    line-height: 1.75;
+    text-rendering: optimizeLegibility;
+  }
+  
+  .news-content h1,
+  .news-content h2,
+  .news-content h3 {
+    @apply font-bold text-gray-900;
+  }
+  
+  .news-content p {
+    @apply text-gray-800 leading-relaxed;
+  }
+  
+  .news-content blockquote {
+    @apply border-l-4 border-primary pl-6 italic text-gray-700;
+  }
+  
+  /* Excerpt styling */
+  .news-excerpt {
+    position: relative;
+    padding-left: 1.5rem;
+  }
+  
+  .news-excerpt::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(to bottom, hsl(15 85% 55%), hsl(45 100% 50%));
+    border-radius: 2px;
+  }
+  
+  /* Author card improvements */
+  .author-card {
+    background: linear-gradient(135deg, rgb(239 246 255) 0%, rgb(250 245 255) 100%);
+    border: 1px solid rgb(219 234 254);
+    border-radius: 0.75rem;
+    padding: 1rem;
+    transition: all 0.2s ease;
+  }
+  
+  .author-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Meta information styling */
+  .meta-info {
+    background: rgb(249 250 251);
+    border-radius: 0.75rem;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    font-size: 0.875rem;
+    color: rgb(75 85 99);
+  }
+  
+  .meta-info > div {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  /* Footer styling */
+  .modal-footer {
+    background: linear-gradient(to right, rgb(249 250 251), rgb(255 255 255));
+    border-top: 1px solid rgb(229 231 235);
+    padding: 1.5rem;
+    flex-shrink: 0;
+  }
+  
+  /* Button improvements */
+  .action-button {
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  }
+  
+  .action-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Like button special styling */
+  .like-button {
+    transition: all 0.2s ease;
+  }
+  
+  .like-button.liked {
+    background: rgb(239 68 68);
+    color: white;
+    box-shadow: 0 4px 14px 0 rgba(239, 68, 68, 0.4);
+  }
+  
+  .like-button.liked:hover {
+    background: rgb(220 38 38);
+    transform: scale(1.05);
+  }
+  
+  /* Responsive improvements */
+  @media (max-width: 768px) {
+    .modal-content {
+      flex-direction: column;
+    }
+    
+    .image-section {
+      width: 100%;
+      height: 40vh;
+    }
+    
+    .content-section {
+      width: 100%;
+      height: 60vh;
+    }
   }
 }
 

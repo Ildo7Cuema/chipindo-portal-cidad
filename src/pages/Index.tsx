@@ -2,7 +2,6 @@ import { Header } from "@/components/layout/Header";
 import { Hero } from "@/components/sections/Hero";
 import { NewsSection } from "@/components/sections/NewsSection";
 import { ConcursosSection } from "@/components/sections/ConcursosSection";
-import { DigitalArchive } from "@/components/sections/DigitalArchive";
 import { Footer } from "@/components/sections/Footer";
 import { Section, SectionHeader, SectionContent } from "@/components/ui/section";
 import { StatCard } from "@/components/ui/stat-card";
@@ -175,17 +174,6 @@ const Index = () => {
                 variant="glass"
                 size="md"
                 className="hover:scale-105 transition-all duration-500 hover:shadow-2xl hover:shadow-yellow-500/20"
-                loading={statsLoading}
-              />
-
-              <StatCard
-                icon={BookOpenIcon}
-                label="Arquivo Digital"
-                value={statsLoading ? '...' : stats.totalAcervo.toString()}
-                description="Documentos públicos"
-                variant="glass"
-                size="md"
-                className="hover:scale-105 transition-all duration-500 hover:shadow-2xl hover:shadow-purple-500/20"
                 loading={statsLoading}
               />
 
@@ -377,7 +365,6 @@ const Index = () => {
           </Section>
         )}
 
-        <DigitalArchive />
       </main>
       
       <Footer />

@@ -19,6 +19,7 @@ import JSZip from 'jszip';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useDropzone } from 'react-dropzone';
 import { Pie } from 'react-chartjs-2';
+import { useAcervoViews } from '@/hooks/useAcervoViews';
 import 'chart.js/auto';
 
 interface AcervoItem {
@@ -36,6 +37,7 @@ interface AcervoItem {
   author_id: string;
   created_at: string;
   updated_at: string;
+  views?: number; // Contagem de visualizações
 }
 
 const departments = [
@@ -66,6 +68,28 @@ export default function AcervoDigitalManager() {
   const [searchTerm, setSearchTerm] = useState('');
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // Hook para visualizações do acervo
+  const { registerView, getViewsCount, isLoading: viewsLoading } = useAcervoViews();
+  
+  // Função para registrar visualização
+  const handleItemView = async (itemId: string) => {
+    try {
+      await registerView(itemId);
+      
+      // Atualizar a contagem de visualizações no item
+      const updatedViews = await getViewsCount(itemId);
+      setItems(prevItems => 
+        prevItems.map(item => 
+          item.id === itemId 
+            ? { ...item, views: updatedViews }
+            : item
+        )
+      );
+    } catch (error) {
+      console.error('Erro ao registrar visualização do acervo:', error);
+    }
+  };
   
   const [formData, setFormData] = useState({
     title: '',
@@ -105,10 +129,34 @@ export default function AcervoDigitalManager() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setItems((data || []).map(item => ({ 
+
+      // Buscar visualizações reais para cada item
+      const itemsWithViews = await Promise.all(
+        (data || []).map(async (item) => {
+          // Buscar contagem de visualizações
+          let viewsCount = 0;
+          try {
+            const { data: viewsData, error: viewsError } = await supabase
+              .from('acervo_views' as any)
+              .select('id', { count: 'exact' })
+              .eq('acervo_id', item.id);
+
+            if (!viewsError && viewsData) {
+              viewsCount = viewsData.length;
+            }
+          } catch (error) {
+            console.error('Erro ao buscar visualizações do acervo:', error);
+          }
+
+          return {
         ...item, 
-        type: item.type as 'documento' | 'imagem' | 'video' 
-      })));
+            type: item.type as 'documento' | 'imagem' | 'video',
+            views: viewsCount
+          };
+        })
+      );
+
+      setItems(itemsWithViews);
     } catch (error) {
       console.error('Error fetching acervo items:', error);
       toast.error('Erro ao carregar itens do acervo');
@@ -276,9 +324,9 @@ export default function AcervoDigitalManager() {
     } else {
       const valA = (a[sortBy] || '').toString().toLowerCase();
       const valB = (b[sortBy] || '').toString().toLowerCase();
-      if (valA < valB) return sortDir === 'asc' ? -1 : 1;
-      if (valA > valB) return sortDir === 'asc' ? 1 : -1;
-      return 0;
+    if (valA < valB) return sortDir === 'asc' ? -1 : 1;
+    if (valA > valB) return sortDir === 'asc' ? 1 : -1;
+    return 0;
     }
   });
 
@@ -632,7 +680,10 @@ export default function AcervoDigitalManager() {
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <div onClick={()=>setFullscreenItem(item)} className="cursor-pointer relative group">
+                    <div onClick={async () => {
+                      await handleItemView(item.id);
+                      setFullscreenItem(item);
+                    }} className="cursor-pointer relative group">
                       {renderPreview(item)}
                       <div className="absolute top-2 right-2 bg-white/80 rounded-full p-1 shadow">
                         {getTypeBadge(item.type)}
@@ -648,6 +699,7 @@ export default function AcervoDigitalManager() {
                       <div><b>Tamanho:</b> {formatFileSize(item.file_size)}</div>
                       <div><b>Visibilidade:</b> {item.is_public ? 'Público' : 'Interno'}</div>
                       <div><b>Data:</b> {new Date(item.created_at).toLocaleDateString('pt-BR')}</div>
+                      <div><b>Visualizações:</b> {item.views || 0}</div>
                       {item.description && <div><b>Descrição:</b> {item.description}</div>}
                     </div>
                   </TooltipContent>
@@ -665,6 +717,7 @@ export default function AcervoDigitalManager() {
                 <div className="text-xs text-muted-foreground mb-2 flex gap-2">
                   <span className="flex items-center gap-1"><FileText className="w-3 h-3" />{formatFileSize(item.file_size)}</span>
                   <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />{new Date(item.created_at).toLocaleDateString('pt-BR')}</span>
+                  <span className="flex items-center gap-1"><Eye className="w-3 h-3" />{item.views || 0}</span>
                 </div>
                 <div className="flex gap-2 mt-2">
                   <TooltipProvider>

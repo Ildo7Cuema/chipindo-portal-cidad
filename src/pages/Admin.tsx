@@ -7,7 +7,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { 
   LogOut, 
-  Home, Bell, FileText, Trophy, FolderOpen, Network, Building2, Brush, ImageIcon, MapPin, Phone, Users, Settings, ChevronLeft, ChevronRight, Activity, BarChart3, Calendar, Search, Filter, MoreVertical, RefreshCw, Download, Archive, Trash2, HelpCircle
+  Home, Bell, FileText, Trophy, FolderOpen, Network, Building2, Brush, ImageIcon, MapPin, Phone, Users, Settings, ChevronLeft, ChevronRight, Activity, BarChart3, Calendar, Search, Filter, MoreVertical, RefreshCw, Download, Archive, Trash2, HelpCircle, ImageUp, AlertTriangle
 } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AdminLoading } from "@/components/ui/loading";
@@ -23,6 +23,14 @@ import { NewsManager } from "@/components/admin/NewsManager";
 import { NotificationsManager } from "@/components/admin/NotificationsManager";
 import { ConcursosManager } from "@/components/admin/ConcursosManager";
 import AcervoDigitalManager from "@/components/admin/AcervoDigitalManager";
+import { OrganigramaManager } from "@/components/admin/OrganigramaManager";
+import { DepartamentosManager } from "@/components/admin/DepartamentosManager";
+import { SiteContentManager } from "@/components/admin/SiteContentManager";
+import { HeroCarouselManager } from "@/components/admin/HeroCarouselManager";
+import { LocationsManager } from "@/components/admin/LocationsManager";
+import { EmergencyContactsManager } from "@/components/admin/EmergencyContactsManager";
+import { UserManager } from "@/components/admin/UserManager";
+import { SystemSettings } from "@/components/admin/SystemSettings";
 
 interface NavigationItem {
   id: string;
@@ -49,82 +57,21 @@ const Admin = () => {
 
   // Navigation items
   const navigationItems: NavigationItem[] = [
-    {
-      id: "dashboard",
-      label: "Dashboard",
-      icon: Home,
-      description: "Visão geral do sistema"
-    },
-    {
-      id: "notifications",
-      label: "Notificações",
-      icon: Bell,
-      description: "Gerir notificações",
-      badge: notificationStats.unread > 0 ? notificationStats.unread.toString() : undefined
-    },
-    {
-      id: "news",
-      label: "Notícias",
-      icon: FileText,
-      description: "Gerir notícias"
-    },
-    {
-      id: "concursos",
-      label: "Concursos",
-      icon: Trophy,
-      description: "Gerir concursos públicos"
-    },
-    {
-      id: "acervo",
-      label: "Acervo Digital",
-      icon: FolderOpen,
-      description: "Documentos e arquivos"
-    },
-    {
-      id: "organigrama",
-      label: "Organigrama",
-      icon: Network,
-      description: "Estrutura organizacional"
-    },
-    {
-      id: "departamentos",
-      label: "Direcções",
-      icon: Building2,
-      description: "Gerir departamentos"
-    },
-    {
-      id: "content",
-      label: "Conteúdo",
-      icon: Brush,
-      description: "Gerir conteúdo do site"
-    },
-    {
-      id: "carousel",
-      label: "Carousel",
-      icon: ImageIcon,
-      description: "Gerir imagens do carousel"
-    },
-    {
-      id: "locations",
-      label: "Localizações",
-      icon: MapPin,
-      description: "Gerir localizações"
-    },
-    {
-      id: "emergency-contacts",
-      label: "Contactos",
-      icon: Phone,
-      description: "Contactos de emergência"
-    }
+    { id: "dashboard", label: "Dashboard", icon: BarChart3, description: "Visão geral do sistema" },
+    { id: "notifications", label: "Notificações", icon: Bell, description: "Gerir notificações" },
+    { id: "news", label: "Notícias", icon: FileText, description: "Gerir notícias" },
+    { id: "concursos", label: "Concursos", icon: Trophy, description: "Gerir concursos" },
+    { id: "acervo", label: "Acervo Digital", icon: Archive, description: "Gerir acervo digital" },
+    { id: "organigrama", label: "Organigrama", icon: Network, description: "Gerir estrutura organizacional" },
+    { id: "departamentos", label: "Direcções", icon: Building2, description: "Gerir departamentos" },
+    { id: "content", label: "Conteúdo", icon: FileText, description: "Gerir conteúdo do site" },
+    { id: "carousel", label: "Carousel", icon: ImageUp, description: "Gerir imagens do carousel" },
+    { id: "locations", label: "Localizações", icon: MapPin, description: "Gerir localizações" },
+    { id: "emergency-contacts", label: "Contactos", icon: AlertTriangle, description: "Contactos de emergência" },
+    { id: "users", label: "Utilizadores", icon: Users, description: "Gerir utilizadores do sistema" }
   ];
 
   const adminOnlyItems: NavigationItem[] = [
-    {
-      id: "users",
-      label: "Utilizadores",
-      icon: Users,
-      description: "Gerir utilizadores do sistema"
-    },
     {
       id: "settings",
       label: "Configurações",
@@ -428,8 +375,16 @@ const Admin = () => {
               {activeTab === "news" && <NewsManager />}
               {activeTab === "concursos" && <ConcursosManager />}
               {activeTab === "acervo" && <AcervoDigitalManager />}
+              {activeTab === "organigrama" && <OrganigramaManager />}
+              {activeTab === "departamentos" && <DepartamentosManager />}
+              {activeTab === "content" && <SiteContentManager />}
+              {activeTab === "carousel" && <HeroCarouselManager />}
+              {activeTab === "locations" && <LocationsManager />}
+              {activeTab === "emergency-contacts" && <EmergencyContactsManager />}
+              {activeTab === "users" && <UserManager currentUserRole={role} />}
+              {activeTab === "settings" && <SystemSettings />}
               {/* Other tabs would be added here */}
-              {activeTab !== "dashboard" && activeTab !== "notifications" && activeTab !== "news" && activeTab !== "concursos" && activeTab !== "acervo" && (
+              {activeTab !== "dashboard" && activeTab !== "notifications" && activeTab !== "news" && activeTab !== "concursos" && activeTab !== "acervo" && activeTab !== "organigrama" && activeTab !== "departamentos" && activeTab !== "content" && activeTab !== "carousel" && activeTab !== "locations" && activeTab !== "emergency-contacts" && activeTab !== "users" && activeTab !== "settings" && (
                 <div className="text-center py-12">
                   <div className="w-16 h-16 bg-muted/20 rounded-xl flex items-center justify-center mx-auto mb-4">
                     <Settings className="w-8 h-8 text-muted-foreground" />

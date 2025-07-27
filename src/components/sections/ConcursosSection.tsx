@@ -1,9 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CalendarIcon, UsersIcon, MapPinIcon, ClockIcon, FileTextIcon } from "lucide-react";
+import { CalendarIcon, UsersIcon, MapPinIcon, ClockIcon, FileTextIcon, PhoneIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
 interface Concurso {
   id: string;
@@ -19,6 +20,8 @@ interface Concurso {
 export const ConcursosSection = () => {
   const [concursos, setConcursos] = useState<Concurso[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedConcurso, setSelectedConcurso] = useState<Concurso | null>(null);
+  const [showContact, setShowContact] = useState<Concurso | null>(null);
 
   useEffect(() => {
     fetchConcursos();
@@ -170,12 +173,21 @@ export const ConcursosSection = () => {
                     )}
 
                     <div className="flex gap-2">
-                      <Button variant="institutional" size="sm" className="flex-1">
+                      <Button 
+                        variant="institutional" 
+                        size="sm" 
+                        className="flex-1"
+                        onClick={() => setSelectedConcurso(concurso)}
+                      >
                         <FileTextIcon className="w-4 h-4" />
                         Ver detalhes
                       </Button>
                       {concurso.contact_info && (
-                        <Button variant="outline" size="sm">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => setShowContact(concurso)}
+                        >
                           Contacto
                         </Button>
                       )}
@@ -216,6 +228,46 @@ export const ConcursosSection = () => {
           </div>
         </div>
       </div>
+
+      {/* Modal de Detalhes do Concurso */}
+      <Dialog open={!!selectedConcurso} onOpenChange={() => setSelectedConcurso(null)}>
+        <DialogContent className="max-w-lg">
+          <DialogTitle className="mb-4">{selectedConcurso?.title}</DialogTitle>
+          <div className="space-y-4">
+            <div className="text-sm text-muted-foreground">{selectedConcurso?.description}</div>
+            {selectedConcurso?.requirements && (
+              <div>
+                <h4 className="font-medium mb-1">Requisitos:</h4>
+                <div className="text-sm text-muted-foreground whitespace-pre-line">{selectedConcurso.requirements}</div>
+              </div>
+            )}
+            {selectedConcurso?.deadline && (
+              <div className="flex items-center gap-2 text-sm">
+                <ClockIcon className="w-4 h-4" />
+                <span><b>Prazo:</b> {formatDate(selectedConcurso.deadline)}</span>
+              </div>
+            )}
+            {selectedConcurso?.contact_info && (
+              <div className="flex items-center gap-2 text-sm">
+                <PhoneIcon className="w-4 h-4" />
+                <span><b>Contacto:</b> {selectedConcurso.contact_info}</span>
+              </div>
+            )}
+            <div className="text-xs text-muted-foreground">Publicado em: {selectedConcurso && formatDate(selectedConcurso.created_at)}</div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal de Contacto */}
+      <Dialog open={!!showContact} onOpenChange={() => setShowContact(null)}>
+        <DialogContent className="max-w-md">
+          <DialogTitle>Contacto</DialogTitle>
+          <div className="flex items-center gap-2 text-base mt-2">
+            <PhoneIcon className="w-5 h-5 text-primary" />
+            <span>{showContact?.contact_info}</span>
+          </div>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };

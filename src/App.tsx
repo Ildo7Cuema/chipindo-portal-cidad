@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { MaintenanceMode } from "@/components/MaintenanceMode";
 import Index from "./pages/Index";
 import Noticias from "./pages/Noticias";
 import Concursos from "./pages/Concursos";
@@ -31,26 +32,28 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/noticias" element={<Noticias />} />
-          <Route path="/all-news" element={<AllNews />} />
-          <Route path="/concursos" element={<Concursos />} />
-          <Route path="/concursos-history" element={<ConcursosHistory />} />
-          <Route path="/register-interest" element={<RegisterInterest />} />
-          <Route path="/acervo" element={<AcervoDigital />} />
-          <Route path="/organigrama" element={<Organigrama />} />
-          <Route path="/servicos" element={<Servicos />} />
-          <Route path="/services" element={<Services />} />
-          <Route path="/contactos" element={<Contactos />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/admin" element={<Admin />} />
-          <Route path="/privacidade" element={<Privacidade />} />
-          <Route path="/termos" element={<Termos />} />
-          <Route path="/acessibilidade" element={<Acessibilidade />} />
-          <Route path="/sitemap" element={<Sitemap />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <MaintenanceMode>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/noticias" element={<Noticias />} />
+            <Route path="/all-news" element={<AllNews />} />
+            <Route path="/concursos" element={<Concursos />} />
+            <Route path="/concursos-history" element={<ConcursosHistory />} />
+            <Route path="/register-interest" element={<RegisterInterest />} />
+            <Route path="/acervo" element={<AcervoDigital />} />
+            <Route path="/organigrama" element={<Organigrama />} />
+            <Route path="/servicos" element={<Servicos />} />
+            <Route path="/services" element={<Services />} />
+            <Route path="/contactos" element={<Contactos />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/admin" element={<Admin />} />
+            <Route path="/privacidade" element={<Privacidade />} />
+            <Route path="/termos" element={<Termos />} />
+            <Route path="/acessibilidade" element={<Acessibilidade />} />
+            <Route path="/sitemap" element={<Sitemap />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </MaintenanceMode>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

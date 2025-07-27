@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
-import { Pencil, Trash2, Plus, Upload, Users } from 'lucide-react';
+import { Pencil, Trash2, Plus, Upload, Users, User, Briefcase, Mail, Phone, Building2, Network, ListOrdered, ImageUp, Info } from 'lucide-react';
 
 interface OrganigramaMember {
   id: string;
@@ -290,42 +290,55 @@ export function OrganigramaManager() {
               Adicionar Membro
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="sm:max-w-xl p-6 max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>
-                {editingMember ? 'Editar Membro' : 'Adicionar Membro'}
+              <DialogTitle className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                <Users className="h-7 w-7 text-primary" />
+                {editingMember ? 'Editar Membro do Organigrama' : 'Adicionar Novo Membro'}
               </DialogTitle>
             </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="nome">Nome Completo *</Label>
+            <form onSubmit={handleSubmit} className="space-y-6 py-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="nome" className="text-base">Nome Completo <span className="text-red-500">*</span></Label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                   <Input
                     id="nome"
                     value={formData.nome}
                     onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
                     required
+                      className="pl-10 text-base py-2"
+                      placeholder="Nome do membro"
                   />
+                  </div>
                 </div>
-                <div>
-                  <Label htmlFor="cargo">Cargo *</Label>
+                <div className="space-y-2">
+                  <Label htmlFor="cargo" className="text-base">Cargo <span className="text-red-500">*</span></Label>
+                  <div className="relative">
+                    <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                   <Input
                     id="cargo"
                     value={formData.cargo}
                     onChange={(e) => setFormData({ ...formData, cargo: e.target.value })}
                     required
+                      className="pl-10 text-base py-2"
+                      placeholder="Cargo do membro"
                   />
+                  </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="departamento">Direcção *</Label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="departamento" className="text-base">Direcção <span className="text-red-500">*</span></Label>
+                  <div className="relative">
+                    <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 z-10" />
                   <Select
                     value={formData.departamento}
                     onValueChange={(value) => setFormData({ ...formData, departamento: value })}
                   >
-                    <SelectTrigger>
+                      <SelectTrigger className="pl-10 text-base py-2">
                       <SelectValue placeholder="Selecione a direcção" />
                     </SelectTrigger>
                     <SelectContent>
@@ -337,13 +350,16 @@ export function OrganigramaManager() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div>
-                  <Label htmlFor="superior">Superior Hierárquico</Label>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="superior" className="text-base">Superior Hierárquico</Label>
+                  <div className="relative">
+                    <Network className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 z-10" />
                   <Select
                     value={formData.superior_id}
                     onValueChange={(value) => setFormData({ ...formData, superior_id: value })}
                   >
-                    <SelectTrigger>
+                      <SelectTrigger className="pl-10 text-base py-2">
                       <SelectValue placeholder="Selecione o superior" />
                     </SelectTrigger>
                     <SelectContent>
@@ -355,38 +371,89 @@ export function OrganigramaManager() {
                       ))}
                     </SelectContent>
                   </Select>
+                  </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="email">Email</Label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-base">Email</Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                   <Input
                     id="email"
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      className="pl-10 text-base py-2"
+                      placeholder="email@example.com"
                   />
+                  </div>
                 </div>
-                <div>
-                  <Label htmlFor="telefone">Telefone</Label>
+                <div className="space-y-2">
+                  <Label htmlFor="telefone" className="text-base">Telefone</Label>
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                   <Input
                     id="telefone"
                     value={formData.telefone}
                     onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
+                      className="pl-10 text-base py-2"
+                      placeholder="+244 9xx xxx xxx"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="ordem" className="text-base">Ordem de Exibição <span className="text-red-500">*</span></Label>
+                  <div className="relative">
+                    <ListOrdered className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <Input
+                      id="ordem"
+                      type="number"
+                      value={formData.ordem}
+                      onChange={(e) => setFormData({ ...formData, ordem: parseInt(e.target.value) })}
+                      required
+                      className="pl-10 text-base py-2"
+                      placeholder="0"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2 flex items-center pt-8">
+                  <Switch
+                    id="ativo"
+                    checked={formData.ativo}
+                    onCheckedChange={(checked) => setFormData({ ...formData, ativo: checked })}
+                  />
+                  <Label htmlFor="ativo" className="ml-2 text-base">Membro Ativo</Label>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="descricao" className="text-base">Descrição (Biografia)</Label>
+                <div className="relative">
+                  <Info className="absolute left-3 top-4 h-5 w-5 text-gray-400" />
+                  <Textarea
+                    id="descricao"
+                    value={formData.descricao || ''}
+                    onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
+                    className="min-h-[100px] pl-10 text-base py-2"
+                    placeholder="Breve descrição sobre as funções ou biografia..."
                   />
                 </div>
               </div>
 
-              <div>
-                <Label htmlFor="foto">Foto do Membro</Label>
+              <div className="space-y-2">
+                <Label htmlFor="foto" className="text-base">Foto do Membro</Label>
                 <div className="space-y-3">
                   {imagePreview && (
                     <div className="flex justify-center">
-                      <Avatar className="h-20 w-20">
+                      <Avatar className="h-24 w-24 border-2 border-primary-500 shadow-md">
                         <AvatarImage src={imagePreview} alt="Preview" />
-                        <AvatarFallback>
-                          {formData.nome.split(' ').map(n => n[0]).join('').toUpperCase() || 'IMG'}
+                        <AvatarFallback className="text-xl font-semibold bg-gray-200 text-gray-600">
+                          {formData.nome.split(' ').map(n => n[0]).join('').toUpperCase() || <ImageUp className="h-8 w-8 text-gray-500" />}
                         </AvatarFallback>
                       </Avatar>
                     </div>
@@ -398,59 +465,31 @@ export function OrganigramaManager() {
                       accept="image/*"
                       onChange={handleImageSelect}
                       disabled={uploading}
+                      className="file:text-primary-foreground file:bg-primary hover:file:bg-primary/90 file:font-semibold text-base py-2"
                     />
-                    {selectedImage && (
-                      <Badge variant="secondary">
-                        {selectedImage.name}
-                      </Badge>
-                    )}
+                    <Button
+                      type="button"
+                      onClick={() => {
+                        setSelectedImage(null);
+                        setImagePreview(null);
+                      }}
+                      variant="outline"
+                      size="icon"
+                      className="h-10 w-10"
+                    >
+                      <Trash2 className="h-5 w-5 text-destructive" />
+                    </Button>
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    Formatos aceitos: JPG, PNG, GIF (máx. 5MB)
-                  </p>
+                  {uploading && <p className="text-sm text-muted-foreground">A carregar imagem...</p>}
                 </div>
               </div>
 
-              <div>
-                <Label htmlFor="descricao">Descrição/Responsabilidades</Label>
-                <Textarea
-                  id="descricao"
-                  value={formData.descricao}
-                  onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
-                  rows={3}
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="ordem">Ordem de Exibição</Label>
-                  <Input
-                    id="ordem"
-                    type="number"
-                    value={formData.ordem}
-                    onChange={(e) => setFormData({ ...formData, ordem: parseInt(e.target.value) || 0 })}
-                  />
-                </div>
-                <div className="flex items-center space-x-2 mt-6">
-                  <Switch
-                    id="ativo"
-                    checked={formData.ativo}
-                    onCheckedChange={(checked) => setFormData({ ...formData, ativo: checked })}
-                  />
-                  <Label htmlFor="ativo">Ativo</Label>
-                </div>
-              </div>
-
-              <div className="flex justify-end gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setIsDialogOpen(false)}
-                >
+              <div className="flex justify-end gap-2 mt-6">
+                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
                   Cancelar
                 </Button>
-                <Button type="submit" disabled={loading}>
-                  {loading ? 'Salvando...' : editingMember ? 'Atualizar' : 'Adicionar'}
+                <Button type="submit" disabled={loading || uploading}>
+                  {loading ? 'A Salvar...' : (editingMember ? 'Salvar Alterações' : 'Adicionar Membro')}
                 </Button>
               </div>
             </form>

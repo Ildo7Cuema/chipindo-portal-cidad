@@ -13,6 +13,7 @@ import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/sections/Footer";
+import { useAuthSettings } from "@/hooks/useAuthSettings";
 import { cn } from "@/lib/utils";
 import { 
   ShieldCheckIcon, 
@@ -40,13 +41,16 @@ const Auth = () => {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
-  const [allowRegistration, setAllowRegistration] = useState(false);
   const [justRegistered, setJustRegistered] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
-  const [checkingUsers, setCheckingUsers] = useState(true);
   const [activeTab, setActiveTab] = useState("signin");
+  const [checkingUsers, setCheckingUsers] = useState(false);
+  const [allowRegistration, setAllowRegistration] = useState(false);
   const navigate = useNavigate();
+
+  // Use auth settings hook
+  const { settings: authSettings, loading: authSettingsLoading } = useAuthSettings();
 
   // Função para calcular força da senha
   const calculatePasswordStrength = (pwd: string) => {
@@ -71,12 +75,16 @@ const Auth = () => {
     setPasswordStrength(strength);
   }, [password]);
 
-  // Debug effect to monitor allowRegistration changes
+  // Set active tab based on registration settings
   useEffect(() => {
-    console.log('allowRegistration state changed to:', allowRegistration);
-  }, [allowRegistration]);
+    if (!authSettingsLoading) {
+      if (!authSettings.allowRegistration) {
+        setActiveTab("signin");
+      }
+    }
+  }, [authSettingsLoading, authSettings.allowRegistration]);
 
-      useEffect(() => {
+  useEffect(() => {
     console.log('Auth page mounted, justRegistered:', justRegistered);
     
     // Check if registration should be allowed (only if no admin exists)

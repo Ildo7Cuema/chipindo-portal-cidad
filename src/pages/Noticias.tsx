@@ -181,7 +181,7 @@ const Noticias = () => {
       setLoading(true);
       const { data, error } = await supabase
         .from('news')
-        .select('*')
+        .select('id, title, excerpt, content, author_id, published, featured, image_url, created_at, updated_at')
         .eq('published', true)
         .order('created_at', { ascending: false });
 
@@ -215,6 +215,17 @@ const Noticias = () => {
       );
 
       setNews(newsWithData);
+      
+      // Debug: verificar se as notícias têm image_url e content
+      console.log('Notícias carregadas:', newsWithData.map(item => ({
+        id: item.id,
+        title: item.title,
+        image_url: item.image_url,
+        hasImage: !!item.image_url,
+        content_length: item.content ? item.content.length : 0,
+        hasContent: !!item.content,
+        excerpt_length: item.excerpt ? item.excerpt.length : 0
+      })));
     } catch (error) {
       console.error('Error fetching news:', error);
     } finally {
@@ -849,114 +860,199 @@ const Noticias = () => {
         {/* News Modal */}
         {selectedNews && (
           <Dialog open={!!selectedNews} onOpenChange={() => setSelectedNews(null)}>
-            <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden flex flex-col">
-              <DialogHeader className="pb-6 border-b border-border/50">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className={cn(
-                      "w-12 h-12 rounded-xl flex items-center justify-center",
-                      getCategoryData(selectedNews.category || 'desenvolvimento').color
+            <DialogContent className="max-w-7xl h-[95vh] overflow-hidden p-0 bg-white">
+              {/* DialogTitle para acessibilidade - oculto visualmente */}
+              <DialogTitle className="sr-only">
+                {selectedNews.title}
+              </DialogTitle>
+              
+              {/* Header com botão de fechar */}
+              <div className="absolute top-4 right-4 z-20">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSelectedNews(null)}
+                  className="bg-white/95 backdrop-blur-sm hover:bg-white shadow-lg border border-gray-200"
+                >
+                  <XIcon className="w-5 h-5" />
+                </Button>
+              </div>
+              
+              <div className="flex h-full">
+                
+                {/* Coluna da Imagem - Lado Esquerdo */}
+                <div className="w-1/2 relative overflow-hidden bg-gradient-to-br from-blue-50 to-purple-50">
+                  {selectedNews.image_url ? (
+                    <div className="h-full w-full flex items-center justify-center p-6">
+                      <div className="relative w-full h-full max-w-lg max-h-[80vh] image-container">
+                        <img 
+                          src={selectedNews.image_url} 
+                          alt={selectedNews.title}
+                          className="w-full h-full object-contain rounded-xl shadow-2xl border-4 border-white hover:scale-105 transition-transform duration-300"
+                          onError={(e) => {
+                            console.error('Erro ao carregar imagem:', selectedNews.image_url);
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                            const parent = target.parentElement;
+                            if (parent) {
+                              const fallback = document.createElement('div');
+                              fallback.className = 'w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl';
+                              fallback.innerHTML = `
+                                <div class="text-center p-8">
+                                  <svg class="w-20 h-20 text-gray-400 mx-auto mb-4" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                                  </svg>
+                                  <p class="text-gray-500 font-medium">Imagem não disponível</p>
+                                  <p class="text-xs text-gray-400 mt-2">URL: ${selectedNews.image_url}</p>
+                                </div>
+                              `;
+                              parent.appendChild(fallback);
+                            }
+                          }}
+                          onLoad={(e) => {
+                            console.log('Imagem carregada com sucesso:', selectedNews.image_url);
+                          }}
+                        />
+                        {/* Overlay sutil para melhor contraste */}
+                        <div className="absolute inset-0 rounded-xl bg-gradient-to-t from-black/5 via-transparent to-transparent pointer-events-none" />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="h-full w-full flex items-center justify-center p-6">
+                      <div className="text-center max-w-md">
+                        <div className={cn(
+                          "w-24 h-24 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg",
+                          getCategoryData(selectedNews.category || 'desenvolvimento').color
+                        )}>
+                          {React.createElement(getCategoryData(selectedNews.category || 'desenvolvimento').icon, {
+                            className: "w-12 h-12 text-white"
+                          })}
+                        </div>
+                        <h3 className="text-lg font-semibold text-gray-700 mb-2">Sem imagem</h3>
+                        <p className="text-sm text-gray-500">Esta notícia não possui imagem associada</p>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Badge de categoria sobre a imagem */}
+                  <div className="absolute top-6 left-6 z-10">
+                    <Badge className={cn(
+                      "text-sm font-medium shadow-lg backdrop-blur-sm",
+                      getCategoryData(selectedNews.category || 'desenvolvimento').color,
+                      "text-white border-0"
                     )}>
                       {React.createElement(getCategoryData(selectedNews.category || 'desenvolvimento').icon, {
-                        className: "w-6 h-6 text-white"
+                        className: "w-4 h-4 mr-2"
                       })}
-                    </div>
-                    <div>
-                      <DialogTitle className="text-2xl font-bold leading-tight">
-                        {selectedNews.title}
-                      </DialogTitle>
-                      <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                          <CalendarIcon className="w-4 h-4" />
-                          {formatDate(selectedNews.created_at)}
+                      {getCategoryData(selectedNews.category || 'desenvolvimento').name}
+                    </Badge>
+                  </div>
+                </div>
+                
+                {/* Coluna do Conteúdo - Lado Direito */}
+                <div className="w-1/2 flex flex-col h-full bg-white">
+                  {/* Área de scroll do conteúdo */}
+                  <div className="flex-1 overflow-y-auto" style={{maxHeight: 'calc(95vh - 100px)'}}>
+                    <div className="p-8 pb-24">
+                      {/* Header do conteúdo */}
+                      <div className="mb-8">
+                        <h1 className="text-3xl font-bold leading-tight mb-6 text-gray-900">
+                          {selectedNews.title}
+                        </h1>
+                        
+                        {/* Meta informações */}
+                        <div className="meta-info">
+                          <div className="flex items-center gap-2">
+                            <CalendarIcon className="w-4 h-4" />
+                            <span className="font-medium">{formatDate(selectedNews.created_at)}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <ClockIcon className="w-4 h-4" />
+                            <span>{getTimeAgo(selectedNews.created_at)}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <EyeIcon className="w-4 h-4" />
+                            <span>{selectedNews.views || 0} visualizações</span>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-1">
-                          <ClockIcon className="w-4 h-4" />
-                          {getTimeAgo(selectedNews.created_at)}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <EyeIcon className="w-4 h-4" />
-                          {selectedNews.views} visualizações
+                        
+                        {/* Autor */}
+                        {selectedNews.author_name && (
+                          <div className="author-card mt-6">
+                            <div className="flex items-center gap-3">
+                              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg border-2 border-white">
+                                <UserIcon className="w-6 h-6 text-white" />
+                              </div>
+                              <div>
+                                <p className="font-semibold text-gray-900">Por {selectedNews.author_name}</p>
+                                <p className="text-sm text-gray-600">Autor da publicação</p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Conteúdo da notícia */}
+                      <div className="space-y-8 news-content">
+                        {/* Excerpt */}
+                        {selectedNews.excerpt && (
+                          <div className="mb-8">
+                            <div className="news-excerpt">
+                              <blockquote className="pl-6">
+                                <p className="text-xl text-gray-700 leading-relaxed font-medium italic">
+                                  "{selectedNews.excerpt}"
+                                </p>
+                              </blockquote>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {/* Conteúdo principal */}
+                        <div className="prose prose-lg max-w-none">
+                          <div className="text-gray-800 leading-relaxed text-base whitespace-pre-wrap">
+                            {selectedNews.content}
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
                   
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => shareNews(selectedNews)}
-                    >
-                      <ShareIcon className="w-4 h-4 mr-2" />
-                      Compartilhar
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setSelectedNews(null)}
-                    >
-                      <XIcon className="w-5 h-5" />
-                    </Button>
-                  </div>
-                </div>
-              </DialogHeader>
-              
-              <ScrollArea className="flex-1 py-6">
-                <div className="space-y-6">
-                  {selectedNews.image_url && (
-                    <div className="relative aspect-video rounded-xl overflow-hidden">
-                      <img 
-                        src={selectedNews.image_url} 
-                        alt={selectedNews.title}
-                        className="w-full h-full object-cover"
-                      />
+                  {/* Footer com ações - Fixo na parte inferior */}
+                  <div className="modal-footer bg-gradient-to-r from-blue-50 to-purple-50" style={{height: '80px', minHeight: '80px'}}>
+                    <div className="flex items-center justify-between h-full px-6">
+                      <div className="flex items-center gap-4">
+                        <Button 
+                          variant={likedNews.has(selectedNews.id) ? "default" : "outline"} 
+                          size="sm" 
+                          onClick={() => handleLike(selectedNews.id)}
+                          className={cn(
+                            "action-button like-button",
+                            likedNews.has(selectedNews.id) ? "liked" : ""
+                          )}
+                        >
+                          <HeartIcon className={cn(
+                            "w-4 h-4 mr-2 transition-all duration-200",
+                            likedNews.has(selectedNews.id) ? "fill-current" : ""
+                          )} />
+                          {selectedNews.likes || 0} curtidas
+                        </Button>
+                        
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => shareNews(selectedNews)}
+                          className="action-button hover:bg-blue-50 hover:border-blue-200 bg-white shadow-lg"
+                        >
+                          <ShareIcon className="w-4 h-4 mr-2" />
+                          Compartilhar
+                        </Button>
+                      </div>
+                      
+                      <div className="text-xs text-gray-500 flex items-center gap-1">
+                        <EyeIcon className="w-3 h-3" />
+                        {selectedNews.views || 0} visualizações
+                      </div>
                     </div>
-                  )}
-                  
-                  <div className="prose max-w-none dark:prose-invert">
-                    <p className="text-xl text-muted-foreground mb-6 leading-relaxed font-medium">
-                      {selectedNews.excerpt}
-                    </p>
-                    <div className="text-foreground leading-relaxed whitespace-pre-wrap text-lg">
-                      {selectedNews.content}
-                    </div>
-                  </div>
-                </div>
-              </ScrollArea>
-              
-              <div className="pt-6 border-t border-border/50">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Badge variant="outline" className={getCategoryData(selectedNews.category || 'desenvolvimento').bgColor}>
-                      {React.createElement(getCategoryData(selectedNews.category || 'desenvolvimento').icon, {
-                        className: "w-4 h-4 mr-1"
-                      })}
-                      {getCategoryData(selectedNews.category || 'desenvolvimento').name}
-                    </Badge>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <UserIcon className="w-4 h-4" />
-                      {selectedNews.author_name}
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-3">
-                    <Button 
-                      variant={likedNews.has(selectedNews.id) ? "default" : "outline"} 
-                      size="sm" 
-                      onClick={() => handleLike(selectedNews.id)}
-                      className={likedNews.has(selectedNews.id) ? "bg-red-500 hover:bg-red-600 text-white" : ""}
-                    >
-                      <HeartIcon className={`w-4 h-4 mr-2 ${likedNews.has(selectedNews.id) ? "fill-current" : ""}`} />
-                      {likedNews.has(selectedNews.id) ? "Curtido" : "Curtir"}
-                      {newsLikes[selectedNews.id] > 0 && (
-                        <span className="ml-1 text-xs">({newsLikes[selectedNews.id]})</span>
-                      )}
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={() => shareNews(selectedNews)}>
-                      <SendIcon className="w-4 h-4 mr-2" />
-                      Compartilhar
-                    </Button>
                   </div>
                 </div>
               </div>

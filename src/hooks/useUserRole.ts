@@ -9,7 +9,7 @@ interface UserProfile {
   user_id: string;
   email: string;
   full_name: string | null;
-  role: UserRole;
+  role: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -61,6 +61,6 @@ export function useUserRole(user: User | null) {
     isAdmin,
     isEditor,
     canManageContent,
-    role: profile?.role || 'user'
+    role: (profile?.role as UserRole) || 'user'
   };
 }
