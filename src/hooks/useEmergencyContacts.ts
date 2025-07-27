@@ -117,31 +117,32 @@ export function useEmergencyContacts() {
 
   const fetchContacts = async () => {
     try {
-      // Use mock data for now
-      setContacts(mockContacts);
-      
-      // TODO: Uncomment when database is available
-      // const { data, error } = await supabase
-      //   .from('emergency_contacts')
-      //   .select('*')
-      //   .order('priority', { ascending: false });
+      const { data, error } = await supabase
+        .from('emergency_contacts')
+        .select('*')
+        .eq('active', true)
+        .order('priority', { ascending: false });
 
-      // if (error) {
-      //   console.error('Error fetching emergency contacts:', error);
-      // } else {
-      //   // Map data to include default values for new fields
-      //   const mappedContacts = (data || []).map(contact => ({
-      //     ...contact,
-      //     type: (contact as any).type || 'emergency',
-      //     email: (contact as any).email || null,
-      //     address: (contact as any).address || null,
-      //     department: (contact as any).department || null,
-      //     availability: (contact as any).availability || null
-      //   }));
-      //   setContacts(mappedContacts);
-      // }
+      if (error) {
+        console.error('Error fetching emergency contacts:', error);
+        // Fallback to mock data on error
+        setContacts(mockContacts);
+      } else {
+        // Map data to include all fields needed by the interface
+        const mappedContacts = (data || []).map(contact => ({
+          ...contact,
+          type: 'emergency',
+          email: null,
+          address: null,
+          department: null,
+          availability: '24/7'
+        }));
+        setContacts(mappedContacts);
+      }
     } catch (error) {
       console.error('Error fetching emergency contacts:', error);
+      // Fallback to mock data on error
+      setContacts(mockContacts);
     } finally {
       setLoading(false);
     }
@@ -149,30 +150,24 @@ export function useEmergencyContacts() {
 
   const addContact = async (contact: Omit<EmergencyContact, 'id' | 'created_at' | 'updated_at'>) => {
     try {
-      // Mock implementation
-      const newContact: EmergencyContact = {
-        ...contact,
-        id: Math.random().toString(36).substr(2, 9),
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      };
-      
-      setContacts(prev => [newContact, ...prev]);
-      return newContact;
-      
-      // TODO: Uncomment when database is available
-      // const { data, error } = await supabase
-      //   .from('emergency_contacts')
-      //   .insert([contact])
-      //   .select()
-      //   .single();
+      const { data, error } = await supabase
+        .from('emergency_contacts')
+        .insert([{
+          name: contact.name,
+          phone: contact.phone,
+          description: contact.description,
+          priority: contact.priority,
+          active: contact.active
+        }])
+        .select()
+        .single();
 
-      // if (error) {
-      //   throw error;
-      // }
+      if (error) {
+        throw error;
+      }
 
-      // await fetchContacts();
-      // return data;
+      await fetchContacts();
+      return data;
     } catch (error) {
       console.error('Error adding emergency contact:', error);
       throw error;
@@ -181,27 +176,25 @@ export function useEmergencyContacts() {
 
   const updateContact = async (id: string, updates: Partial<EmergencyContact>) => {
     try {
-      // Mock implementation
-      setContacts(prev => prev.map(contact => 
-        contact.id === id 
-          ? { ...contact, ...updates, updated_at: new Date().toISOString() }
-          : contact
-      ));
-      
-      // TODO: Uncomment when database is available
-      // const { data, error } = await supabase
-      //   .from('emergency_contacts')
-      //   .update(updates)
-      //   .eq('id', id)
-      //   .select()
-      //   .single();
+      const { data, error } = await supabase
+        .from('emergency_contacts')
+        .update({
+          name: updates.name,
+          phone: updates.phone,
+          description: updates.description,
+          priority: updates.priority,
+          active: updates.active
+        })
+        .eq('id', id)
+        .select()
+        .single();
 
-      // if (error) {
-      //   throw error;
-      // }
+      if (error) {
+        throw error;
+      }
 
-      // await fetchContacts();
-      // return data;
+      await fetchContacts();
+      return data;
     } catch (error) {
       console.error('Error updating emergency contact:', error);
       throw error;
@@ -210,20 +203,16 @@ export function useEmergencyContacts() {
 
   const deleteContact = async (id: string) => {
     try {
-      // Mock implementation
-      setContacts(prev => prev.filter(contact => contact.id !== id));
-      
-      // TODO: Uncomment when database is available
-      // const { error } = await supabase
-      //   .from('emergency_contacts')
-      //   .delete()
-      //   .eq('id', id);
+      const { error } = await supabase
+        .from('emergency_contacts')
+        .delete()
+        .eq('id', id);
 
-      // if (error) {
-      //   throw error;
-      // }
+      if (error) {
+        throw error;
+      }
 
-      // await fetchContacts();
+      await fetchContacts();
     } catch (error) {
       console.error('Error deleting emergency contact:', error);
       throw error;
