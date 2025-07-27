@@ -210,6 +210,9 @@ export type Database = {
           order_index: number
           title: string
           updated_at: string
+          link_url: string | null
+          button_text: string | null
+          overlay_opacity: number | null
         }
         Insert: {
           active?: boolean
@@ -220,6 +223,9 @@ export type Database = {
           order_index?: number
           title: string
           updated_at?: string
+          link_url?: string | null
+          button_text?: string | null
+          overlay_opacity?: number | null
         }
         Update: {
           active?: boolean
@@ -230,6 +236,9 @@ export type Database = {
           order_index?: number
           title?: string
           updated_at?: string
+          link_url?: string | null
+          button_text?: string | null
+          overlay_opacity?: number | null
         }
         Relationships: []
       }
@@ -531,6 +540,146 @@ export type Database = {
           social_instagram?: string | null
           social_twitter?: string | null
           social_youtube?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      transparency_documents: {
+        Row: {
+          id: string
+          title: string
+          category: string
+          date: string
+          status: string
+          file_size: string | null
+          downloads: number
+          views: number
+          description: string | null
+          tags: string[]
+          file_url: string | null
+          author_id: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          title: string
+          category: string
+          date: string
+          status?: string
+          file_size?: string | null
+          downloads?: number
+          views?: number
+          description?: string | null
+          tags?: string[]
+          file_url?: string | null
+          author_id?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          title?: string
+          category?: string
+          date?: string
+          status?: string
+          file_size?: string | null
+          downloads?: number
+          views?: number
+          description?: string | null
+          tags?: string[]
+          file_url?: string | null
+          author_id?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transparency_documents_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      budget_execution: {
+        Row: {
+          id: string
+          year: string
+          category: string
+          total_budget: number
+          executed_budget: number
+          percentage: number
+          status: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          year: string
+          category: string
+          total_budget: number
+          executed_budget: number
+          percentage: number
+          status?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          year?: string
+          category?: string
+          total_budget?: number
+          executed_budget?: number
+          percentage?: number
+          status?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      transparency_projects: {
+        Row: {
+          id: string
+          name: string
+          description: string | null
+          budget: number
+          progress: number
+          start_date: string
+          end_date: string
+          status: string
+          location: string
+          beneficiaries: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          description?: string | null
+          budget: number
+          progress?: number
+          start_date: string
+          end_date: string
+          status?: string
+          location: string
+          beneficiaries?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          description?: string | null
+          budget?: number
+          progress?: number
+          start_date?: string
+          end_date?: string
+          status?: string
+          location?: string
+          beneficiaries?: number
+          created_at?: string
           updated_at?: string
         }
         Relationships: []

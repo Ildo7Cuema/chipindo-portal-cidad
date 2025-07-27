@@ -81,7 +81,8 @@ import {
   Target as TargetIcon,
   Award as AwardIcon,
   BookOpen as BookOpenIcon,
-  MessageSquare as MessageSquareIcon
+  MessageSquare as MessageSquareIcon,
+  BarChart as BarChartIcon
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 

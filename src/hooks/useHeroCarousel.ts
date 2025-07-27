@@ -9,6 +9,9 @@ export interface HeroCarouselImage {
   image_url: string;
   active: boolean;
   order_index: number;
+  link_url?: string | null;
+  button_text?: string | null;
+  overlay_opacity?: number;
   created_at: string;
   updated_at: string;
 }
@@ -19,20 +22,22 @@ export function useHeroCarousel() {
 
   const fetchImages = async () => {
     try {
+      console.log('🔄 Buscando imagens do carrossel...');
       const { data, error } = await supabase
         .from('hero_carousel')
         .select('*')
-        .eq('active', true)
         .order('order_index', { ascending: true });
 
       if (error) {
-        console.error('Error fetching hero carousel images:', error);
+        console.error('❌ Error fetching hero carousel images:', error);
         toast.error('Erro ao carregar imagens do carrossel');
       } else {
+        console.log('✅ Imagens carregadas:', data?.length || 0, 'imagens');
+        console.log('📋 Dados das imagens:', data);
         setImages(data || []);
       }
     } catch (error) {
-      console.error('Error fetching hero carousel images:', error);
+      console.error('❌ Error fetching hero carousel images:', error);
       toast.error('Erro ao carregar imagens do carrossel');
     } finally {
       setLoading(false);

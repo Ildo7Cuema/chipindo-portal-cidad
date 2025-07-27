@@ -153,12 +153,18 @@ export const NewsManager = () => {
   };
 
   const removeImage = () => {
+    console.log('Removendo imagem...');
     setImageFile(null);
     setImagePreview("");
     setFormData({ ...formData, image_url: "" });
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
+    // Force re-render by updating editingNews if we're editing
+    if (editingNews) {
+      setEditingNews({ ...editingNews, image_url: "" });
+    }
+    console.log('Imagem removida com sucesso');
   };
 
   const uploadImage = async (file: File) => {
@@ -274,6 +280,7 @@ export const NewsManager = () => {
       category: (newsItem.category as CategoryType) || 'desenvolvimento',
       image_url: newsItem.image_url || "",
     });
+    setImageFile(null); // Reset imageFile to null when editing
     setImagePreview(newsItem.image_url || "");
     setIsDialogOpen(true);
   };
@@ -942,19 +949,38 @@ export const NewsManager = () => {
                     </div>
                     
                     <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4">
-                      {imagePreview || (editingNews?.image_url && !imageFile) ? (
+                      {(() => {
+                        const shouldShowImage = imagePreview || (editingNews?.image_url && !imageFile);
+                        console.log('Debug imagem:', {
+                          imagePreview,
+                          editingNewsImageUrl: editingNews?.image_url,
+                          imageFile: !!imageFile,
+                          shouldShowImage
+                        });
+                        return shouldShowImage;
+                      })() ? (
                         <div className="relative">
                           <img
                             src={imagePreview || editingNews?.image_url}
                             alt="Preview"
                             className="w-full h-32 object-cover rounded-lg"
+                            onError={(e) => {
+                              console.error('Erro ao carregar imagem:', imagePreview || editingNews?.image_url);
+                              // Remove the image if it fails to load
+                              removeImage();
+                            }}
                           />
                           <Button
                             type="button"
                             variant="destructive"
                             size="sm"
                             className="absolute top-2 right-2 h-7 w-7 p-0"
-                            onClick={removeImage}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              console.log('Botão de remover imagem clicado');
+                              removeImage();
+                            }}
                           >
                             <X className="w-3 h-3" />
                           </Button>

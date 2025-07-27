@@ -23,6 +23,8 @@ import Privacidade from "./pages/Privacidade";
 import Termos from "./pages/Termos";
 import Acessibilidade from "./pages/Acessibilidade";
 import Sitemap from "./pages/Sitemap";
+import Transparencia from "./pages/Transparencia";
+import Ouvidoria from "./pages/Ouvidoria";
 
 const queryClient = new QueryClient();
 
@@ -51,6 +53,8 @@ const App = () => (
             <Route path="/termos" element={<Termos />} />
             <Route path="/acessibilidade" element={<Acessibilidade />} />
             <Route path="/sitemap" element={<Sitemap />} />
+            <Route path="/transparencia" element={<Transparencia />} />
+            <Route path="/ouvidoria" element={<Ouvidoria />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </MaintenanceMode>

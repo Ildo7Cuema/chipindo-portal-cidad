@@ -17,6 +17,16 @@ interface SectionHeaderProps {
   className?: string;
 }
 
+interface SectionTitleProps {
+  children: React.ReactNode;
+  className?: string;
+}
+
+interface SectionDescriptionProps {
+  children: React.ReactNode;
+  className?: string;
+}
+
 interface SectionContentProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
 }
@@ -146,8 +156,32 @@ const SectionContent: React.FC<SectionContentProps> = ({
   );
 };
 
+const SectionTitle: React.FC<SectionTitleProps> = ({
+  children,
+  className
+}) => {
+  return (
+    <h2 className={cn("text-3xl md:text-4xl lg:text-5xl font-bold text-foreground", className)}>
+      {children}
+    </h2>
+  );
+};
+
+const SectionDescription: React.FC<SectionDescriptionProps> = ({
+  children,
+  className
+}) => {
+  return (
+    <p className={cn("text-lg text-muted-foreground max-w-3xl mx-auto", className)}>
+      {children}
+    </p>
+  );
+};
+
 Section.displayName = "Section";
 SectionHeader.displayName = "SectionHeader";
 SectionContent.displayName = "SectionContent";
+SectionTitle.displayName = "SectionTitle";
+SectionDescription.displayName = "SectionDescription";
 
-export { Section, SectionHeader, SectionContent }; 
+export { Section, SectionHeader, SectionContent, SectionTitle, SectionDescription }; 

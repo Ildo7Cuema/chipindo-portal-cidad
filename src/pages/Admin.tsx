@@ -7,7 +7,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { 
   LogOut, 
-  Home, Bell, FileText, Trophy, FolderOpen, Network, Building2, Brush, ImageIcon, MapPin, Phone, Users, Settings, ChevronLeft, ChevronRight, Activity, BarChart3, Calendar, Search, Filter, MoreVertical, RefreshCw, Download, Archive, Trash2, HelpCircle, ImageUp, AlertTriangle
+  Home, Bell, FileText, Trophy, FolderOpen, Network, Building2, Brush, ImageIcon, MapPin, Phone, Users, Settings, ChevronLeft, ChevronRight, Activity, BarChart3, Calendar, Search, Filter, MoreVertical, RefreshCw, Download, Archive, Trash2, HelpCircle, ImageUp, AlertTriangle, EyeIcon, MessageSquare
 } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AdminLoading } from "@/components/ui/loading";
@@ -31,6 +31,8 @@ import { LocationsManager } from "@/components/admin/LocationsManager";
 import { EmergencyContactsManager } from "@/components/admin/EmergencyContactsManager";
 import { UserManager } from "@/components/admin/UserManager";
 import { SystemSettings } from "@/components/admin/SystemSettings";
+import { TransparencyManager } from "@/components/admin/TransparencyManager";
+import { OuvidoriaManager } from "@/components/admin/OuvidoriaManager";
 
 interface NavigationItem {
   id: string;
@@ -68,6 +70,8 @@ const Admin = () => {
     { id: "carousel", label: "Carousel", icon: ImageUp, description: "Gerir imagens do carousel" },
     { id: "locations", label: "Localizações", icon: MapPin, description: "Gerir localizações" },
     { id: "emergency-contacts", label: "Contactos", icon: AlertTriangle, description: "Contactos de emergência" },
+    { id: "transparency", label: "Transparência", icon: EyeIcon, description: "Gerir documentos de transparência" },
+    { id: "ouvidoria", label: "Ouvidoria", icon: MessageSquare, description: "Gerir manifestações da ouvidoria" },
     { id: "users", label: "Utilizadores", icon: Users, description: "Gerir utilizadores do sistema" }
   ];
 
@@ -381,10 +385,12 @@ const Admin = () => {
               {activeTab === "carousel" && <HeroCarouselManager />}
               {activeTab === "locations" && <LocationsManager />}
               {activeTab === "emergency-contacts" && <EmergencyContactsManager />}
+              {activeTab === "transparency" && <TransparencyManager />}
+              {activeTab === "ouvidoria" && <OuvidoriaManager />}
               {activeTab === "users" && <UserManager currentUserRole={role} />}
               {activeTab === "settings" && <SystemSettings />}
               {/* Other tabs would be added here */}
-              {activeTab !== "dashboard" && activeTab !== "notifications" && activeTab !== "news" && activeTab !== "concursos" && activeTab !== "acervo" && activeTab !== "organigrama" && activeTab !== "departamentos" && activeTab !== "content" && activeTab !== "carousel" && activeTab !== "locations" && activeTab !== "emergency-contacts" && activeTab !== "users" && activeTab !== "settings" && (
+              {activeTab !== "dashboard" && activeTab !== "notifications" && activeTab !== "news" && activeTab !== "concursos" && activeTab !== "acervo" && activeTab !== "organigrama" && activeTab !== "departamentos" && activeTab !== "content" && activeTab !== "carousel" && activeTab !== "locations" && activeTab !== "emergency-contacts" && activeTab !== "transparency" && activeTab !== "ouvidoria" && activeTab !== "users" && activeTab !== "settings" && (
                 <div className="text-center py-12">
                   <div className="w-16 h-16 bg-muted/20 rounded-xl flex items-center justify-center mx-auto mb-4">
                     <Settings className="w-8 h-8 text-muted-foreground" />

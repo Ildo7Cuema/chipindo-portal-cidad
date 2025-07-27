@@ -151,9 +151,9 @@ export const HeroCarouselManager = () => {
         image_url: image.image_url,
         active: image.active,
         order_index: image.order_index,
-        link_url: '',
-        button_text: '',
-        overlay_opacity: 0.5
+        link_url: image.link_url || '',
+        button_text: image.button_text || '',
+        overlay_opacity: image.overlay_opacity || 0.5
       });
     } else {
       resetForm();
@@ -217,13 +217,25 @@ export const HeroCarouselManager = () => {
     }
 
     try {
+      // Preparar dados para envio, removendo campos vazios
+      const submitData = {
+        title: formData.title.trim(),
+        description: formData.description.trim() || null,
+        image_url: formData.image_url.trim(),
+        active: formData.active,
+        order_index: formData.order_index,
+        ...(formData.link_url.trim() && { link_url: formData.link_url.trim() }),
+        ...(formData.button_text.trim() && { button_text: formData.button_text.trim() }),
+        ...(formData.overlay_opacity !== 0.5 && { overlay_opacity: formData.overlay_opacity })
+      };
+
       if (selectedImage) {
-        await updateImage(selectedImage.id, formData);
+        await updateImage(selectedImage.id, submitData);
         toast.success('Imagem atualizada com sucesso!', {
           description: 'As alterações foram aplicadas ao carrossel.'
         });
       } else {
-        await createImage(formData);
+        await createImage(submitData);
         toast.success('Imagem adicionada com sucesso!', {
           description: 'A nova imagem foi adicionada ao carrossel.'
         });

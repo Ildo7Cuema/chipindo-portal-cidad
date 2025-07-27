@@ -111,7 +111,7 @@ export const Footer = () => {
                 </Badge>
               </div>
               
-              <p className="text-slate-400 text-sm leading-relaxed">
+              <p className="text-slate-300 text-sm leading-relaxed">
                 Conectando a Administração Municipal aos cidadãos através de informação transparente e serviços digitais de qualidade.
               </p>
               
@@ -130,7 +130,7 @@ export const Footer = () => {
                   size="sm" 
                         variant="outline"
                         className={cn(
-                          "w-8 h-8 p-0 border-slate-700 hover:border-slate-600 text-slate-400 hover:text-white transition-all duration-300",
+                          "w-8 h-8 p-0 border-slate-600 hover:border-slate-500 text-slate-300 hover:text-white transition-all duration-300",
                           social.color
                         )}
                   asChild
@@ -158,47 +158,47 @@ export const Footer = () => {
               </h4>
               
               <div className="space-y-3">
-                <div className="flex items-start gap-3 p-3 rounded-lg bg-slate-800/50 border border-slate-700/50 hover:bg-slate-800 transition-colors duration-300">
+                <div className="flex items-start gap-3 p-3 rounded-lg bg-slate-800/60 border border-slate-600/50 hover:bg-slate-800/80 transition-colors duration-300">
                   <div className="w-6 h-6 bg-blue-600 rounded-md flex items-center justify-center flex-shrink-0 mt-0.5">
                     <MapPinIcon className="w-3 h-3 text-white" />
                   </div>
                   <div className="min-w-0">
                     <p className="text-xs font-medium text-white">Endereço</p>
-                    <p className="text-xs text-slate-400 leading-relaxed">
+                    <p className="text-xs text-slate-300 leading-relaxed">
                       {settings?.contact_address || 'Rua Principal, Chipindo, Província de Huíla'}
                     </p>
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-3 p-3 rounded-lg bg-slate-800/50 border border-slate-700/50 hover:bg-slate-800 transition-colors duration-300">
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-slate-800/60 border border-slate-600/50 hover:bg-slate-800/80 transition-colors duration-300">
                   <div className="w-6 h-6 bg-green-600 rounded-md flex items-center justify-center flex-shrink-0">
                     <PhoneIcon className="w-3 h-3 text-white" />
                   </div>
                   <div>
                     <p className="text-xs font-medium text-white">{settings?.contact_phone || '+244 XXX XXX XXX'}</p>
-                    <p className="text-xs text-slate-400">Linha principal</p>
+                    <p className="text-xs text-slate-300">Linha principal</p>
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-3 p-3 rounded-lg bg-slate-800/50 border border-slate-700/50 hover:bg-slate-800 transition-colors duration-300">
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-slate-800/60 border border-slate-600/50 hover:bg-slate-800/80 transition-colors duration-300">
                   <div className="w-6 h-6 bg-orange-600 rounded-md flex items-center justify-center flex-shrink-0">
                     <MailIcon className="w-3 h-3 text-white" />
                   </div>
                   <div>
                     <p className="text-xs font-medium text-white">{settings?.contact_email || 'admin@chipindo.gov.ao'}</p>
-                    <p className="text-xs text-slate-400">Email oficial</p>
+                    <p className="text-xs text-slate-300">Email oficial</p>
                   </div>
                 </div>
 
                 {/* Operating Hours - Compact */}
-                <div className="p-3 rounded-lg bg-slate-800/50 border border-slate-700/50">
+                <div className="p-3 rounded-lg bg-slate-800/60 border border-slate-600/50">
                   <div className="flex items-start gap-3">
                     <div className="w-6 h-6 bg-purple-600 rounded-md flex items-center justify-center flex-shrink-0 mt-0.5">
                       <ClockIcon className="w-3 h-3 text-white" />
                     </div>
                     <div className="min-w-0">
                       <h5 className="text-xs font-medium text-white mb-2">Horário</h5>
-                      <div className="space-y-1 text-xs text-slate-400">
+                      <div className="space-y-1 text-xs text-slate-300">
                         <div className="flex justify-between">
                           <span>Seg-Sex:</span>
                           <span>{settings?.opening_hours_weekdays || '08:00-16:00'}</span>
@@ -209,7 +209,7 @@ export const Footer = () => {
                         </div>
                         <div className="flex justify-between">
                           <span>Dom:</span>
-                          <span className="text-slate-500">{settings?.opening_hours_sunday || 'Encerrado'}</span>
+                          <span className="text-slate-400">{settings?.opening_hours_sunday || 'Encerrado'}</span>
                         </div>
                       </div>
                     </div>
@@ -229,7 +229,7 @@ export const Footer = () => {
                   <a 
                     key={link.label}
                     href={link.href} 
-                    className="flex items-center justify-between py-2 px-3 text-sm text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-md transition-colors duration-300 group"
+                    className="flex items-center justify-between py-2 px-3 text-sm text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-md transition-colors duration-300 group"
                   >
                     <span>{link.label}</span>
                     <ExternalLinkIcon className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -263,7 +263,7 @@ export const Footer = () => {
                 </div>
               </div>
               
-              <p className="text-xs text-slate-500 max-w-2xl mx-auto">
+              <p className="text-xs text-slate-400 max-w-2xl mx-auto">
                 Portal oficial vinculado ao Governo Provincial de Huíla e ao Governo da República de Angola
               </p>
             </div>
@@ -277,9 +277,9 @@ export const Footer = () => {
                   {settings?.copyright_text || `© ${currentYear} Administração Municipal de Chipindo. Todos os direitos reservados.`}
                 </p>
                 <div className="flex items-center gap-2 text-xs">
-                  <span className="text-slate-500">Feito com</span>
+                  <span className="text-slate-400">Feito com</span>
                   <HeartIcon className="w-3 h-3 text-red-500" />
-                  <span className="text-slate-500">para Angola</span>
+                  <span className="text-slate-400">para Angola</span>
                   <div className="flex items-center gap-1 ml-2">
                     <StarIcon className="w-3 h-3 text-yellow-500 fill-current" />
                     <span className="text-yellow-500 font-medium text-xs">Premium</span>
@@ -293,7 +293,7 @@ export const Footer = () => {
                     <a 
                       key={link.label}
                       href={link.href} 
-                      className="text-slate-500 hover:text-slate-300 transition-colors duration-300"
+                      className="text-slate-400 hover:text-slate-200 transition-colors duration-300"
                     >
                       {link.label}
                     </a>
@@ -312,22 +312,22 @@ export const Footer = () => {
 
             {/* System Status - Minimal */}
             <div className="mt-4 pt-4 border-t border-slate-800/50">
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
-                <div className="flex items-center gap-4">
-                  <span>Portal desenvolvido com tecnologias modernas</span>
-                  <div className="hidden sm:flex items-center gap-1">
-                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
-                    <span>Online</span>
-                  </div>
-                  </div>
-                <div className="flex items-center gap-3">
-                  <span>v2.0.1</span>
-                  <div className="flex items-center gap-1">
-                    <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-                    <span>99.9% Uptime</span>
-                  </div>
+                          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
+              <div className="flex items-center gap-4">
+                <span>Portal desenvolvido com tecnologias modernas</span>
+                <div className="hidden sm:flex items-center gap-1">
+                  <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
+                  <span>Online</span>
+                </div>
+                </div>
+              <div className="flex items-center gap-3">
+                <span>v2.0.1</span>
+                <div className="flex items-center gap-1">
+                  <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                  <span>99.9% Uptime</span>
                 </div>
               </div>
+            </div>
             </div>
           </div>
         </SectionContent>
