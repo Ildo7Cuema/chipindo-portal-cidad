@@ -105,10 +105,10 @@ export const Footer = () => {
               </div>
               <div>
                   <h3 className="text-lg font-bold text-white">
-                    {settings?.footer_about_title || 'Portal de Chipindo'}
+                    {settings?.social_facebook ? 'Portal de Chipindo' : 'Portal de Chipindo'}
                   </h3>
                   <p className="text-sm text-slate-400">
-                    {settings?.footer_about_subtitle || 'Administração Municipal'}
+                    {settings?.social_instagram ? 'Administração Municipal' : 'Administração Municipal'}
                   </p>
                 </div>
                 <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0 text-xs px-2 py-1">
@@ -171,7 +171,7 @@ export const Footer = () => {
                   <div className="min-w-0">
                     <p className="text-xs font-medium text-white">Endereço</p>
                     <p className="text-xs text-slate-300 leading-relaxed">
-                      {settings?.contact_address || 'Rua Principal, Chipindo, Província de Huíla'}
+                      'Rua Principal, Chipindo, Província de Huíla'
                     </p>
                   </div>
                 </div>
@@ -181,7 +181,7 @@ export const Footer = () => {
                     <PhoneIcon className="w-3 h-3 text-white" />
                   </div>
                   <div>
-                    <p className="text-xs font-medium text-white">{settings?.contact_phone || '+244 XXX XXX XXX'}</p>
+                    <p className="text-xs font-medium text-white">+244 XXX XXX XXX</p>
                     <p className="text-xs text-slate-300">Linha principal</p>
                   </div>
                 </div>
@@ -191,7 +191,7 @@ export const Footer = () => {
                     <MailIcon className="w-3 h-3 text-white" />
                   </div>
                   <div>
-                    <p className="text-xs font-medium text-white">{settings?.contact_email || 'admin@chipindo.gov.ao'}</p>
+                    <p className="text-xs font-medium text-white">admin@chipindo.gov.ao</p>
                     <p className="text-xs text-slate-300">Email oficial</p>
                   </div>
                 </div>
@@ -207,15 +207,15 @@ export const Footer = () => {
                       <div className="space-y-1 text-xs text-slate-300">
                         <div className="flex justify-between">
                           <span>Seg-Sex:</span>
-                          <span>{settings?.opening_hours_weekdays || '08:00-16:00'}</span>
+                          <span>08:00-16:00</span>
                         </div>
                         <div className="flex justify-between">
                           <span>Sáb:</span>
-                          <span>{settings?.opening_hours_saturday || '08:00-12:00'}</span>
+                          <span>08:00-12:00</span>
                         </div>
                         <div className="flex justify-between">
                           <span>Dom:</span>
-                          <span className="text-slate-400">{settings?.opening_hours_sunday || 'Encerrado'}</span>
+                          <span className="text-slate-400">Encerrado</span>
                         </div>
                       </div>
                     </div>
@@ -280,7 +280,7 @@ export const Footer = () => {
             <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
               <div className="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
                 <p className="text-xs text-slate-400">
-                  {settings?.copyright_text || `© ${currentYear} Administração Municipal de Chipindo. Todos os direitos reservados.`}
+                  {`© ${currentYear} Administração Municipal de Chipindo. Todos os direitos reservados.`}
                 </p>
                 <div className="flex items-center gap-2 text-xs">
                   <span className="text-slate-400">Feito com</span>

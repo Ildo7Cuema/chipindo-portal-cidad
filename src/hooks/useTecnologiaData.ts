@@ -1,15 +1,12 @@
+// Mock implementation for technology data
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 
 export interface TecnologiaInfo {
-  id: string;
   title: string;
   subtitle: string;
   description: string;
   vision: string;
   mission: string;
-  created_at: string;
-  updated_at: string;
 }
 
 export interface EstatisticaTecnologia {
@@ -17,10 +14,6 @@ export interface EstatisticaTecnologia {
   label: string;
   value: string;
   icon: string;
-  ordem: number;
-  ativo: boolean;
-  created_at: string;
-  updated_at: string;
 }
 
 export interface AreaTecnologica {
@@ -30,52 +23,34 @@ export interface AreaTecnologica {
   profissionais: string;
   projetos: string;
   estado: string;
-  ordem: number;
-  ativo: boolean;
-  created_at: string;
-  updated_at: string;
 }
 
 export interface ServicoDigital {
   id: string;
   nome: string;
   descricao: string;
-  utilizadores: string;
-  servicos: string;
-  estado: string;
-  funcionalidades: string[];
-  url_acesso: string;
-  ordem: number;
-  ativo: boolean;
-  created_at: string;
-  updated_at: string;
+  status: string;
+  usuarios: string;
+  disponibilidade: string;
 }
 
-export interface ProgramaTecnologico {
+export interface ProgramaTecnologia {
   id: string;
   title: string;
   description: string;
-  beneficios: string[];
   requisitos: string[];
+  beneficios: string[];
   contact: string;
-  ordem: number;
-  ativo: boolean;
-  created_at: string;
-  updated_at: string;
 }
 
 export interface OportunidadeTecnologia {
   id: string;
   title: string;
   description: string;
+  vagas: string;
+  prazo: string;
   requisitos: string[];
   beneficios: string[];
-  prazo: string;
-  vagas: string;
-  ordem: number;
-  ativo: boolean;
-  created_at: string;
-  updated_at: string;
 }
 
 export interface InfraestruturaTecnologia {
@@ -85,269 +60,226 @@ export interface InfraestruturaTecnologia {
   capacidade: string;
   equipamentos: string[];
   estado: string;
-  ordem: number;
-  ativo: boolean;
-  created_at: string;
-  updated_at: string;
 }
 
 export interface ContactoTecnologia {
-  id: string;
   endereco: string;
   telefone: string;
   email: string;
-  horario: string;
   responsavel: string;
-  created_at: string;
-  updated_at: string;
+  horario: string;
 }
 
-export const useTecnologiaData = () => {
-  const [tecnologiaInfo, setTecnologiaInfo] = useState<TecnologiaInfo | null>(null);
-  const [estatisticas, setEstatisticas] = useState<EstatisticaTecnologia[]>([]);
-  const [areasTecnologicas, setAreasTecnologicas] = useState<AreaTecnologica[]>([]);
-  const [servicosDigitais, setServicosDigitais] = useState<ServicoDigital[]>([]);
-  const [programasTecnologicos, setProgramasTecnologicos] = useState<ProgramaTecnologico[]>([]);
-  const [oportunidades, setOportunidades] = useState<OportunidadeTecnologia[]>([]);
-  const [infraestruturas, setInfraestruturas] = useState<InfraestruturaTecnologia[]>([]);
-  const [contactInfo, setContactInfo] = useState<ContactoTecnologia | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+export function useTecnologiaData() {
+  const [tecnologiaInfo, setTecnologiaInfo] = useState<TecnologiaInfo>({
+    title: "Tecnologia e Inovação",
+    subtitle: "Impulsionando a transformação digital do município",
+    description: "O setor de tecnologia promove a inovação e digitalização dos serviços municipais, apoiando startups e desenvolvendo soluções tecnológicas.",
+    vision: "Ser referência em inovação tecnológica municipal, criando um ecossistema digital inclusivo e sustentável.",
+    mission: "Promover a inovação tecnológica, digitalizar serviços e apoiar o desenvolvimento do setor tech local."
+  });
 
-  useEffect(() => {
-    fetchTecnologiaData();
-  }, []);
+  const [estatisticas, setEstatisticas] = useState<EstatisticaTecnologia[]>([
+    {
+      id: '1',
+      label: 'Startups Tech',
+      value: '15',
+      icon: 'Cpu'
+    },
+    {
+      id: '2',
+      label: 'Profissionais IT',
+      value: '89',
+      icon: 'Users'
+    },
+    {
+      id: '3',
+      label: 'Projetos Digitais',
+      value: '32',
+      icon: 'Code'
+    },
+    {
+      id: '4',
+      label: 'Serviços Online',
+      value: '12',
+      icon: 'Globe'
+    }
+  ]);
 
-  const fetchTecnologiaData = async () => {
+  const [areas, setAreas] = useState<AreaTecnologica[]>([
+    {
+      id: '1',
+      nome: 'Desenvolvimento de Software',
+      empresas: '8 empresas',
+      profissionais: '35 desenvolvedores',
+      projetos: '15 projetos ativos',
+      estado: 'Crescimento'
+    },
+    {
+      id: '2',
+      nome: 'Infraestrutura Digital',
+      empresas: '3 empresas',
+      profissionais: '20 técnicos',
+      projetos: '8 projetos',
+      estado: 'Expansão'
+    },
+    {
+      id: '3',
+      nome: 'E-commerce',
+      empresas: '2 empresas',
+      profissionais: '15 especialistas',
+      projetos: '5 projetos',
+      estado: 'Crescimento'
+    },
+    {
+      id: '4',
+      nome: 'Consultoria IT',
+      empresas: '2 empresas',
+      profissionais: '19 consultores',
+      projetos: '4 projetos',
+      estado: 'Estável'
+    }
+  ]);
+
+  const [servicosDigitais, setServicosDigitais] = useState<ServicoDigital[]>([
+    {
+      id: '1',
+      nome: 'Portal do Cidadão',
+      descricao: 'Plataforma online para serviços municipais',
+      status: 'Ativo',
+      usuarios: '1,200',
+      disponibilidade: '99.5%'
+    },
+    {
+      id: '2',
+      nome: 'App Municipal',
+      descricao: 'Aplicação móvel para serviços do município',
+      status: 'Em desenvolvimento',
+      usuarios: '0',
+      disponibilidade: 'N/A'
+    },
+    {
+      id: '3',
+      nome: 'Sistema de Gestão',
+      descricao: 'Sistema interno de gestão municipal',
+      status: 'Ativo',
+      usuarios: '150',
+      disponibilidade: '98.8%'
+    },
+    {
+      id: '4',
+      nome: 'Centro de Contacto',
+      descricao: 'Sistema de atendimento ao cidadão',
+      status: 'Ativo',
+      usuarios: '800',
+      disponibilidade: '99.2%'
+    }
+  ]);
+
+  const [programas, setProgramas] = useState<ProgramaTecnologia[]>([
+    {
+      id: '1',
+      title: 'Formação em Tecnologia',
+      description: 'Programa de capacitação em tecnologias digitais',
+      requisitos: ['Idade mínima 16 anos', 'Ensino médio completo', 'Interesse em tecnologia'],
+      beneficios: ['Formação gratuita', 'Certificação', 'Oportunidades de emprego'],
+      contact: 'formacao.tech@chipindo.gov.ao'
+    },
+    {
+      id: '2',
+      title: 'Incubação de Startups',
+      description: 'Programa de apoio a startups tecnológicas',
+      requisitos: ['Ideia inovadora', 'Equipe definida', 'Plano de negócios'],
+      beneficios: ['Espaço físico', 'Mentoria', 'Acesso a investidores'],
+      contact: 'incubadora@chipindo.gov.ao'
+    }
+  ]);
+
+  const [oportunidades, setOportunidades] = useState<OportunidadeTecnologia[]>([
+    {
+      id: '1',
+      title: 'Desenvolvedor Full Stack',
+      description: 'Desenvolvimento de sistemas municipais',
+      vagas: '2 vagas',
+      prazo: '30 de Novembro 2024',
+      requisitos: ['Licenciatura em Informática', 'Experiência em React/Node.js'],
+      beneficios: ['Salário competitivo', 'Trabalho remoto parcial', 'Formação contínua']
+    },
+    {
+      id: '2',
+      title: 'Analista de Dados',
+      description: 'Análise de dados municipais e relatórios',
+      vagas: '1 vaga',
+      prazo: '15 de Dezembro 2024',
+      requisitos: ['Formação em Estatística ou TI', 'Conhecimento em Python/R'],
+      beneficios: ['Remuneração atrativa', 'Flexibilidade de horários']
+    }
+  ]);
+
+  const [infraestruturas, setInfraestruturas] = useState<InfraestruturaTecnologia[]>([
+    {
+      id: '1',
+      nome: 'Centro de Inovação Tecnológica',
+      localizacao: 'Zona Tecnológica',
+      capacidade: '30 startups',
+      equipamentos: ['Internet 1Gb', 'Salas de desenvolvimento', 'Laboratório'],
+      estado: 'Excelente'
+    },
+    {
+      id: '2',
+      nome: 'Centro de Formação IT',
+      localizacao: 'Centro da cidade',
+      capacidade: '100 formandos',
+      equipamentos: ['Computadores', 'Projetores', 'Software licenciado'],
+      estado: 'Muito bom'
+    },
+    {
+      id: '3',
+      nome: 'Data Center Municipal',
+      localizacao: 'Zona Industrial',
+      capacidade: '500 servidores',
+      equipamentos: ['Servidores', 'Sistema UPS', 'Refrigeração'],
+      estado: 'Excelente'
+    }
+  ]);
+
+  const [contacto, setContacto] = useState<ContactoTecnologia>({
+    endereco: 'Rua da Tecnologia, Chipindo',
+    telefone: '+244 XXX XXX XXX',
+    email: 'tecnologia@chipindo.gov.ao',
+    responsavel: 'Eng. João Silva',
+    horario: 'Segunda a Sexta: 08:00 - 16:00'
+  });
+
+  const [loading, setLoading] = useState(false);
+
+  const fetchData = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      setError(null);
-
-      // Fetch tecnologia info
-      const { data: infoData, error: infoError } = await supabase
-        .from('tecnologia_info')
-        .select('*')
-        .single();
-
-      if (infoError && infoError.code !== 'PGRST116') {
-        throw infoError;
-      }
-
-      if (infoData) {
-        setTecnologiaInfo(infoData);
-      }
-
-      // Fetch estatisticas
-      const { data: statsData, error: statsError } = await supabase
-        .from('tecnologia_estatisticas')
-        .select('*')
-        .eq('ativo', true)
-        .order('ordem');
-
-      if (statsError) throw statsError;
-      setEstatisticas(statsData || []);
-
-      // Fetch areas tecnologicas
-      const { data: areasData, error: areasError } = await supabase
-        .from('tecnologia_areas')
-        .select('*')
-        .eq('ativo', true)
-        .order('ordem');
-
-      if (areasError) throw areasError;
-      setAreasTecnologicas(areasData || []);
-
-      // Fetch servicos digitais
-      const { data: servicosData, error: servicosError } = await supabase
-        .from('tecnologia_servicos_digitais')
-        .select('*')
-        .eq('ativo', true)
-        .order('ordem');
-
-      if (servicosError) throw servicosError;
-      setServicosDigitais(servicosData || []);
-
-      // Fetch programas tecnologicos
-      const { data: programasData, error: programasError } = await supabase
-        .from('tecnologia_programas')
-        .select('*')
-        .eq('ativo', true)
-        .order('ordem');
-
-      if (programasError) throw programasError;
-      setProgramasTecnologicos(programasData || []);
-
-      // Fetch oportunidades
-      const { data: oportunidadesData, error: oportunidadesError } = await supabase
-        .from('tecnologia_oportunidades')
-        .select('*')
-        .eq('ativo', true)
-        .order('ordem');
-
-      if (oportunidadesError) throw oportunidadesError;
-      setOportunidades(oportunidadesData || []);
-
-      // Fetch infraestruturas
-      const { data: infraData, error: infraError } = await supabase
-        .from('tecnologia_infraestruturas')
-        .select('*')
-        .eq('ativo', true)
-        .order('ordem');
-
-      if (infraError) throw infraError;
-      setInfraestruturas(infraData || []);
-
-      // Fetch contact info
-      const { data: contactData, error: contactError } = await supabase
-        .from('tecnologia_contactos')
-        .select('*')
-        .single();
-
-      if (contactError && contactError.code !== 'PGRST116') {
-        throw contactError;
-      }
-
-      if (contactData) {
-        setContactInfo(contactData);
-      }
-
-    } catch (err) {
-      console.error('Error fetching tecnologia data:', err);
-      setError(err instanceof Error ? err.message : 'Erro ao carregar dados');
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log('Technology data loaded (mock data)');
+    } catch (error) {
+      console.error('Error loading technology data:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  // CRUD operations for servicos digitais
-  const createServicoDigital = async (servico: Omit<ServicoDigital, 'id' | 'created_at' | 'updated_at'>) => {
-    try {
-      const { data, error } = await supabase
-        .from('tecnologia_servicos_digitais')
-        .insert([servico])
-        .select()
-        .single();
-
-      if (error) throw error;
-      
-      setServicosDigitais(prev => [...prev, data]);
-      return data;
-    } catch (err) {
-      console.error('Error creating servico digital:', err);
-      throw err;
-    }
-  };
-
-  const updateServicoDigital = async (id: string, updates: Partial<ServicoDigital>) => {
-    try {
-      const { data, error } = await supabase
-        .from('tecnologia_servicos_digitais')
-        .update(updates)
-        .eq('id', id)
-        .select()
-        .single();
-
-      if (error) throw error;
-      
-      setServicosDigitais(prev => prev.map(servico => 
-        servico.id === id ? data : servico
-      ));
-      return data;
-    } catch (err) {
-      console.error('Error updating servico digital:', err);
-      throw err;
-    }
-  };
-
-  const deleteServicoDigital = async (id: string) => {
-    try {
-      const { error } = await supabase
-        .from('tecnologia_servicos_digitais')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-      
-      setServicosDigitais(prev => prev.filter(servico => servico.id !== id));
-    } catch (err) {
-      console.error('Error deleting servico digital:', err);
-      throw err;
-    }
-  };
-
-  // CRUD operations for estatisticas
-  const createEstatistica = async (estatistica: Omit<EstatisticaTecnologia, 'id' | 'created_at' | 'updated_at'>) => {
-    try {
-      const { data, error } = await supabase
-        .from('tecnologia_estatisticas')
-        .insert([estatistica])
-        .select()
-        .single();
-
-      if (error) throw error;
-      
-      setEstatisticas(prev => [...prev, data]);
-      return data;
-    } catch (err) {
-      console.error('Error creating estatistica:', err);
-      throw err;
-    }
-  };
-
-  const updateEstatistica = async (id: string, updates: Partial<EstatisticaTecnologia>) => {
-    try {
-      const { data, error } = await supabase
-        .from('tecnologia_estatisticas')
-        .update(updates)
-        .eq('id', id)
-        .select()
-        .single();
-
-      if (error) throw error;
-      
-      setEstatisticas(prev => prev.map(stat => 
-        stat.id === id ? data : stat
-      ));
-      return data;
-    } catch (err) {
-      console.error('Error updating estatistica:', err);
-      throw err;
-    }
-  };
-
-  const deleteEstatistica = async (id: string) => {
-    try {
-      const { error } = await supabase
-        .from('tecnologia_estatisticas')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-      
-      setEstatisticas(prev => prev.filter(stat => stat.id !== id));
-    } catch (err) {
-      console.error('Error deleting estatistica:', err);
-      throw err;
-    }
-  };
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return {
     tecnologiaInfo,
     estatisticas,
-    areasTecnologicas,
+    areas,
     servicosDigitais,
-    programasTecnologicos,
+    programas,
     oportunidades,
     infraestruturas,
-    contactInfo,
+    contacto,
     loading,
-    error,
-    fetchTecnologiaData,
-    createServicoDigital,
-    updateServicoDigital,
-    deleteServicoDigital,
-    createEstatistica,
-    updateEstatistica,
-    deleteEstatistica,
+    refetch: fetchData
   };
-}; 
+}

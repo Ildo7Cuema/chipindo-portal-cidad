@@ -105,7 +105,7 @@ export function PopulationHistoryManager() {
   const handleAutoUpdate = async () => {
     try {
       const result = await updateGrowthRateAutomatically();
-      if (result.success) {
+      if (result && typeof result === 'object' && 'success' in result && (result as any).success) {
         toast.success("Taxa de crescimento atualizada automaticamente!");
       } else {
         toast.error("Não foi possível calcular a taxa automaticamente");
