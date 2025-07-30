@@ -86,18 +86,35 @@ export function usePopulationData() {
     fetchPopulationData();
   }, []);
 
-  // Get current data for direct access
+  // Calculate derived values for the component
   const currentData = getCurrentPopulation();
+  const currentYear = new Date().getFullYear();
+  const previousYear = currentYear - 1;
+  const previousData = populationData.find(data => data.year === previousYear) || mockPopulationData[1];
+  
+  const currentPopulation = currentData.population_count;
+  const previousPopulation = previousData.population_count;
+  const populationChange = currentPopulation - previousPopulation;
+  const totalChange = mockPopulationData[0].population_count - mockPopulationData[mockPopulationData.length - 1].population_count;
+  const percentageChange = ((currentPopulation - previousPopulation) / previousPopulation) * 100;
 
   return {
     populationData,
-    currentPopulation: currentData.population_count,
+    currentPopulation,
+    previousPopulation,
     growthRate: currentData.growth_rate,
     growthDescription: "Taxa de crescimento anual",
     period: `${currentData.year}`,
+    latestYear: currentYear,
+    previousYear,
+    totalChange,
+    percentageChange,
+    yearsOfData: mockPopulationData.length,
+    populationChange,
     loading,
     error,
     fetchPopulationData,
+    refreshData: fetchPopulationData,
     getCurrentPopulation,
     getGrowthRate
   };
