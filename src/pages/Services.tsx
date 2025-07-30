@@ -26,6 +26,7 @@ import {
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { CandidaturaForm } from "@/components/ui/candidatura-form";
+import { useContactInfo } from "@/hooks/useContactInfo";
 
 const Services = () => {
   const serviceCategories = [
@@ -109,16 +110,7 @@ const Services = () => {
     }
   ];
 
-  const contactInfo = {
-    address: "Rua Principal, Bairro Central, Chipindo",
-    phone: "+244 XXX XXX XXX",
-    email: "servicos@chipindo.gov.ao",
-    hours: {
-      weekdays: "Segunda a Sexta: 08:00 - 16:00",
-      saturday: "Sábado: 08:00 - 12:00",
-      sunday: "Domingo: Encerrado"
-    }
-  };
+  const { contactInfo, loading: contactLoading } = useContactInfo();
 
   const setoresEstrategicos = [
     {
@@ -316,43 +308,54 @@ const Services = () => {
             Informações de Contacto
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="text-center">
-              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3">
-                <BuildingIcon className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="font-semibold text-foreground mb-2">Endereço</h3>
-              <p className="text-sm text-muted-foreground">{contactInfo.address}</p>
+          {contactLoading ? (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+              <p className="text-muted-foreground mt-2">Carregando informações...</p>
             </div>
-            
-            <div className="text-center">
-              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3">
-                <PhoneIcon className="w-6 h-6 text-primary" />
+          ) : contactInfo ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="text-center">
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3">
+                  <BuildingIcon className="w-6 h-6 text-primary" />
+                </div>
+                <h3 className="font-semibold text-foreground mb-2">Endereço</h3>
+                <p className="text-sm text-muted-foreground">{contactInfo.address}</p>
               </div>
-              <h3 className="font-semibold text-foreground mb-2">Telefone</h3>
-              <p className="text-sm text-muted-foreground">{contactInfo.phone}</p>
+              
+              <div className="text-center">
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3">
+                  <PhoneIcon className="w-6 h-6 text-primary" />
+                </div>
+                <h3 className="font-semibold text-foreground mb-2">Telefone</h3>
+                <p className="text-sm text-muted-foreground">{contactInfo.phone}</p>
+              </div>
+              
+              <div className="text-center">
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3">
+                  <FileTextIcon className="w-6 h-6 text-primary" />
+                </div>
+                <h3 className="font-semibold text-foreground mb-2">Email</h3>
+                <p className="text-sm text-muted-foreground">{contactInfo.email}</p>
+              </div>
+              
+              <div className="text-center">
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3">
+                  <ClockIcon className="w-6 h-6 text-primary" />
+                </div>
+                <h3 className="font-semibold text-foreground mb-2">Horários</h3>
+                <div className="text-sm text-muted-foreground space-y-1">
+                  <p>{contactInfo.hours.weekdays}</p>
+                  <p>{contactInfo.hours.saturday}</p>
+                  <p>{contactInfo.hours.sunday}</p>
+                </div>
+              </div>
             </div>
-            
-            <div className="text-center">
-              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3">
-                <FileTextIcon className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="font-semibold text-foreground mb-2">Email</h3>
-              <p className="text-sm text-muted-foreground">{contactInfo.email}</p>
+          ) : (
+            <div className="text-center py-8">
+              <p className="text-muted-foreground">Erro ao carregar informações de contacto.</p>
             </div>
-            
-            <div className="text-center">
-              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3">
-                <ClockIcon className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="font-semibold text-foreground mb-2">Horários</h3>
-              <div className="text-sm text-muted-foreground space-y-1">
-                <p>{contactInfo.hours.weekdays}</p>
-                <p>{contactInfo.hours.saturday}</p>
-                <p>{contactInfo.hours.sunday}</p>
-              </div>
-            </div>
-          </div>
+          )}
         </div>
         <CandidaturaForm
           open={openSolicitar}
