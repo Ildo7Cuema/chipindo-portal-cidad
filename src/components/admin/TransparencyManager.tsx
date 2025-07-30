@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
-export default function TransparencyManager() {
+export function TransparencyManager() {
   return (
     <div className="space-y-6">
       <Card>
