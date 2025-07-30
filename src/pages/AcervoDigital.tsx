@@ -46,7 +46,10 @@ import {
   ArchiveIcon,
   PlayIcon,
   FileIcon,
-  ArrowRightIcon
+  ArrowRightIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  MaximizeIcon
 } from 'lucide-react';
 
 interface AcervoItem {
@@ -100,7 +103,14 @@ export default function AcervoDigital() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 12;
+  const [itemsPerPage] = useState(12);
+  
+  // Estados para carrossel e visualização
+  const [carouselItems, setCarouselItems] = useState<AcervoItem[]>([]);
+  const [currentCarouselIndex, setCurrentCarouselIndex] = useState(0);
+  const [showCarousel, setShowCarousel] = useState(false);
+  const [fullscreenItem, setFullscreenItem] = useState<AcervoItem | null>(null);
+  const [isFullscreenOpen, setIsFullscreenOpen] = useState(false);
 
   // Hook para visualizações do acervo
   const { registerView, getViewsCount, isLoading: viewsLoading } = useAcervoViews();
@@ -192,6 +202,33 @@ export default function AcervoDigital() {
       handleItemView(selectedItem.id);
     }
   }, [selectedItem]);
+
+  // Navegação por teclado para carrossel e modais
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        if (showCarousel) {
+          closeCarousel();
+        }
+        if (isFullscreenOpen) {
+          closeFullscreen();
+        }
+      }
+      
+      // Navegação do carrossel com setas
+      if (showCarousel && carouselItems.length > 0) {
+        if (event.key === 'ArrowLeft') {
+          prevCarouselItem();
+        }
+        if (event.key === 'ArrowRight') {
+          nextCarouselItem();
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [showCarousel, carouselItems.length, isFullscreenOpen]);
 
   const filterAndSortItems = () => {
     let filtered = items.filter(item => {
@@ -296,13 +333,88 @@ export default function AcervoDigital() {
     return url.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i);
   };
 
+  // Função para verificar se é um vídeo válido
+  const isValidVideo = (url: string) => {
+    return url.match(/\.(mp4|avi|mov|webm|mkv)$/i);
+  };
+
+  // Função para verificar se URL é válido
+  const isValidUrl = (url: string) => {
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  // Função para debug de URLs
+  const debugFileUrl = (item: AcervoItem) => {
+    console.log('Debug file URL:', {
+      id: item.id,
+      title: item.title,
+      type: item.type,
+      file_url: item.file_url,
+      thumbnail_url: item.thumbnail_url,
+      is_valid_url: item.file_url ? isValidUrl(item.file_url) : false,
+      is_valid_image: item.file_url ? isValidImage(item.file_url) : false,
+      is_valid_video: item.file_url ? isValidVideo(item.file_url) : false
+    });
+  };
+
   const downloadFile = (item: AcervoItem) => {
     if (item.file_url) {
       const link = document.createElement('a');
       link.href = item.file_url;
       link.download = item.title;
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
     }
+  };
+
+  // Funções para o carrossel
+  const openCarousel = (items: AcervoItem[], startIndex: number = 0) => {
+    setCarouselItems(items);
+    setCurrentCarouselIndex(startIndex);
+    setShowCarousel(true);
+  };
+
+  const closeCarousel = () => {
+    setShowCarousel(false);
+    setCarouselItems([]);
+    setCurrentCarouselIndex(0);
+  };
+
+  const nextCarouselItem = () => {
+    setCurrentCarouselIndex((prev) => 
+      prev === carouselItems.length - 1 ? 0 : prev + 1
+    );
+  };
+
+  const prevCarouselItem = () => {
+    setCurrentCarouselIndex((prev) => 
+      prev === 0 ? carouselItems.length - 1 : prev - 1
+    );
+  };
+
+  const openFullscreen = (item: AcervoItem) => {
+    setFullscreenItem(item);
+    setIsFullscreenOpen(true);
+  };
+
+  const closeFullscreen = () => {
+    setIsFullscreenOpen(false);
+    setFullscreenItem(null);
+  };
+
+  // Função para obter itens de mídia (imagens e vídeos) para o carrossel
+  const getMediaItems = () => {
+    return filteredItems.filter(item => 
+      (item.type === 'imagem' || item.type === 'video') && 
+      item.file_url && 
+      isValidUrl(item.file_url)
+    );
   };
 
   const itemsByType = {
@@ -527,6 +639,19 @@ export default function AcervoDigital() {
                       >
                         <ListIcon className="w-4 h-4" />
                       </Button>
+                      
+                      {/* Botão do Carrossel */}
+                      {getMediaItems().length > 0 && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => openCarousel(getMediaItems())}
+                          className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white border-0 hover:from-blue-600 hover:to-purple-700"
+                        >
+                          <ImageIcon className="w-4 h-4" />
+                          Carrossel ({getMediaItems().length})
+                        </Button>
+                      )}
                     </div>
                   </div>
 
@@ -669,46 +794,191 @@ export default function AcervoDigital() {
                           viewMode === 'list' ? "md:w-64 flex-shrink-0" : ""
                         )}>
                           <div className="aspect-video bg-gradient-to-br from-gray-200 to-gray-300 relative">
-                            {item.type === 'imagem' && item.file_url && isValidImage(item.file_url) ? (
-                              // Para imagens, mostrar a imagem real
-                              <img 
-                                src={item.file_url} 
-                                alt={item.title}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                onError={(e) => {
-                                  // Fallback para ícone se a imagem falhar
-                                  const target = e.target as HTMLImageElement;
-                                  target.style.display = 'none';
-                                  const parent = target.parentElement;
-                                  if (parent) {
-                                    const fallback = document.createElement('div');
-                                    fallback.className = `w-full h-full flex items-center justify-center ${getTypeColor(item.type)}`;
-                                    fallback.innerHTML = `<svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>`;
-                                    parent.appendChild(fallback);
-                                  }
-                                }}
-                              />
-                            ) : item.thumbnail_url ? (
-                              // Para outros tipos, mostrar thumbnail se disponível
-                              <img 
-                                src={item.thumbnail_url} 
-                                alt={item.title}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                              />
-                            ) : item.type === 'video' && item.file_url ? (
-                              // Para vídeos, mostrar preview do vídeo
-                              <video 
-                                src={item.file_url}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                muted
-                                preload="metadata"
-                              />
-                            ) : (
+                            {(() => {
+                              // Debug do item para identificar problemas
+                              debugFileUrl(item);
+                              
+                              // Verificar se temos um URL válido
+                              if (!item.file_url || !isValidUrl(item.file_url)) {
+                                return (
+                                  <div className={cn("w-full h-full flex items-center justify-center", getTypeColor(item.type))}>
+                                    <div className="text-center">
+                                      {getTypeIcon(item.type)}
+                                      <p className="text-xs text-gray-500 mt-1">URL inválido</p>
+                                    </div>
+                                  </div>
+                                );
+                              }
+
+                              // Para imagens
+                              if (item.type === 'imagem' && isValidImage(item.file_url)) {
+                                return (
+                                  <div className="relative w-full h-full group">
+                                    <img 
+                                      src={item.file_url} 
+                                      alt={item.title}
+                                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                      onError={(e) => {
+                                        console.error('Erro ao carregar imagem:', item.file_url);
+                                        const target = e.target as HTMLImageElement;
+                                        target.style.display = 'none';
+                                        const parent = target.parentElement;
+                                        if (parent) {
+                                          const fallback = document.createElement('div');
+                                          fallback.className = `w-full h-full flex items-center justify-center ${getTypeColor(item.type)}`;
+                                          fallback.innerHTML = `
+                                            <div class="text-center">
+                                              <svg class="w-8 h-8 text-white mx-auto" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                                              </svg>
+                                              <p class="text-xs text-white mt-1">Erro ao carregar</p>
+                                            </div>
+                                          `;
+                                          parent.appendChild(fallback);
+                                        }
+                                      }}
+                                      onLoad={() => {
+                                        console.log('Imagem carregada com sucesso:', item.file_url);
+                                      }}
+                                    />
+                                    {/* Botões de ação para imagens */}
+                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                                      <div className="flex gap-2">
+                                        <Button
+                                          size="sm"
+                                          variant="secondary"
+                                          className="bg-white/90 text-black hover:bg-white"
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            openFullscreen(item);
+                                          }}
+                                        >
+                                          <MaximizeIcon className="w-4 h-4" />
+                                        </Button>
+                                        <Button
+                                          size="sm"
+                                          variant="secondary"
+                                          className="bg-white/90 text-black hover:bg-white"
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            downloadFile(item);
+                                          }}
+                                        >
+                                          <DownloadIcon className="w-4 h-4" />
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                );
+                              }
+
+                              // Para vídeos
+                              if (item.type === 'video' && isValidVideo(item.file_url)) {
+                                return (
+                                  <div className="relative w-full h-full group">
+                                    <video 
+                                      src={item.file_url}
+                                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                      muted
+                                      preload="metadata"
+                                      onError={(e) => {
+                                        console.error('Erro ao carregar vídeo:', item.file_url);
+                                        const target = e.target as HTMLVideoElement;
+                                        target.style.display = 'none';
+                                        const parent = target.parentElement;
+                                        if (parent) {
+                                          const fallback = document.createElement('div');
+                                          fallback.className = `w-full h-full flex items-center justify-center ${getTypeColor(item.type)}`;
+                                          fallback.innerHTML = `
+                                            <div class="text-center">
+                                              <svg class="w-8 h-8 text-white mx-auto" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M8 5v14l11-7z"/>
+                                              </svg>
+                                              <p class="text-xs text-white mt-1">Erro ao carregar</p>
+                                            </div>
+                                          `;
+                                          parent.appendChild(fallback);
+                                        }
+                                      }}
+                                      onLoadedMetadata={() => {
+                                        console.log('Vídeo carregado com sucesso:', item.file_url);
+                                      }}
+                                    />
+                                    {/* Overlay com ícone de play */}
+                                    <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                                      <div className="w-12 h-12 bg-white/90 rounded-full flex items-center justify-center">
+                                        <PlayIcon className="w-6 h-6 text-black" />
+                                      </div>
+                                    </div>
+                                    {/* Botões de ação para vídeos */}
+                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                                      <div className="flex gap-2">
+                                        <Button
+                                          size="sm"
+                                          variant="secondary"
+                                          className="bg-white/90 text-black hover:bg-white"
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            openFullscreen(item);
+                                          }}
+                                        >
+                                          <MaximizeIcon className="w-4 h-4" />
+                                        </Button>
+                                        <Button
+                                          size="sm"
+                                          variant="secondary"
+                                          className="bg-white/90 text-black hover:bg-white"
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            downloadFile(item);
+                                          }}
+                                        >
+                                          <DownloadIcon className="w-4 h-4" />
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                );
+                              }
+
+                              // Para documentos ou outros tipos
+                              if (item.thumbnail_url && isValidUrl(item.thumbnail_url)) {
+                                return (
+                                  <img 
+                                    src={item.thumbnail_url} 
+                                    alt={item.title}
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                    onError={(e) => {
+                                      console.error('Erro ao carregar thumbnail:', item.thumbnail_url);
+                                      const target = e.target as HTMLImageElement;
+                                      target.style.display = 'none';
+                                      const parent = target.parentElement;
+                                      if (parent) {
+                                        const fallback = document.createElement('div');
+                                        fallback.className = `w-full h-full flex items-center justify-center ${getTypeColor(item.type)}`;
+                                        fallback.innerHTML = `
+                                          <div class="text-center">
+                                            ${getTypeIcon(item.type).props.children}
+                                            <p class="text-xs text-white mt-1">Sem preview</p>
+                                          </div>
+                                        `;
+                                        parent.appendChild(fallback);
+                                      }
+                                    }}
+                                  />
+                                );
+                              }
+
                               // Fallback para ícone
-                              <div className={cn("w-full h-full flex items-center justify-center", getTypeColor(item.type))}>
-                                {getTypeIcon(item.type)}
-                              </div>
-                            )}
+                              return (
+                                <div className={cn("w-full h-full flex items-center justify-center", getTypeColor(item.type))}>
+                                  <div className="text-center">
+                                    {getTypeIcon(item.type)}
+                                    <p className="text-xs text-white mt-1">Sem preview</p>
+                                  </div>
+                                </div>
+                              );
+                            })()}
                             
                             {/* Overlay sutil com informações essenciais */}
                             <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -1050,6 +1320,183 @@ export default function AcervoDigital() {
           </DialogContent>
         </Dialog>
       </main>
+      
+      {/* Modal do Carrossel */}
+      {showCarousel && carouselItems.length > 0 && (
+        <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center">
+          <div className="relative w-full h-full flex items-center justify-center">
+            {/* Botão de fechar */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={closeCarousel}
+              className="absolute top-4 right-4 z-10 bg-white/20 text-white hover:bg-white/30"
+            >
+              <XIcon className="w-6 h-6" />
+            </Button>
+
+            {/* Botões de navegação */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={prevCarouselItem}
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10 bg-white/20 text-white hover:bg-white/30"
+            >
+              <ChevronLeftIcon className="w-8 h-8" />
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={nextCarouselItem}
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 bg-white/20 text-white hover:bg-white/30"
+            >
+              <ChevronRightIcon className="w-8 h-8" />
+            </Button>
+
+            {/* Conteúdo do carrossel */}
+            <div className="w-full h-full flex items-center justify-center p-8">
+              <div className="max-w-4xl max-h-full w-full">
+                {(() => {
+                  const currentItem = carouselItems[currentCarouselIndex];
+                  
+                  if (currentItem.type === 'imagem' && currentItem.file_url) {
+                    return (
+                      <div className="relative w-full h-full">
+                        <img
+                          src={currentItem.file_url}
+                          alt={currentItem.title}
+                          className="w-full h-auto max-h-[80vh] object-contain mx-auto"
+                        />
+                        {/* Informações da imagem */}
+                        <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white p-4">
+                          <h3 className="text-lg font-semibold">{currentItem.title}</h3>
+                          {currentItem.description && (
+                            <p className="text-sm text-gray-300 mt-1">{currentItem.description}</p>
+                          )}
+                          <div className="flex items-center gap-4 mt-2 text-xs text-gray-300">
+                            <span>{getDirectionData(currentItem.direction).label}</span>
+                            <span>{formatDate(currentItem.created_at)}</span>
+                            {currentItem.views && currentItem.views > 0 && (
+                              <span>{currentItem.views} visualizações</span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  if (currentItem.type === 'video' && currentItem.file_url) {
+                    return (
+                      <div className="relative w-full h-full">
+                        <video
+                          src={currentItem.file_url}
+                          controls
+                          className="w-full h-auto max-h-[80vh] mx-auto"
+                          autoPlay
+                        >
+                          Seu navegador não suporta o elemento de vídeo.
+                        </video>
+                        {/* Informações do vídeo */}
+                        <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white p-4">
+                          <h3 className="text-lg font-semibold">{currentItem.title}</h3>
+                          {currentItem.description && (
+                            <p className="text-sm text-gray-300 mt-1">{currentItem.description}</p>
+                          )}
+                          <div className="flex items-center gap-4 mt-2 text-xs text-gray-300">
+                            <span>{getDirectionData(currentItem.direction).label}</span>
+                            <span>{formatDate(currentItem.created_at)}</span>
+                            {currentItem.views && currentItem.views > 0 && (
+                              <span>{currentItem.views} visualizações</span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  return null;
+                })()}
+              </div>
+            </div>
+
+            {/* Indicadores */}
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
+              {carouselItems.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentCarouselIndex(index)}
+                  className={cn(
+                    "w-3 h-3 rounded-full transition-colors",
+                    index === currentCarouselIndex ? "bg-white" : "bg-white/50"
+                  )}
+                />
+              ))}
+            </div>
+
+            {/* Contador */}
+            <div className="absolute top-4 left-4 text-white text-sm">
+              {currentCarouselIndex + 1} de {carouselItems.length}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Visualização em Tela Cheia */}
+      <Dialog open={isFullscreenOpen} onOpenChange={setIsFullscreenOpen}>
+        <DialogContent className="max-w-7xl max-h-[90vh] p-0 overflow-hidden">
+          {fullscreenItem && (
+            <div className="relative w-full h-full">
+              {/* Botão de fechar */}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={closeFullscreen}
+                className="absolute top-4 right-4 z-10 bg-black/50 text-white hover:bg-black/70"
+              >
+                <XIcon className="w-6 h-6" />
+              </Button>
+
+              {/* Conteúdo */}
+              <div className="w-full h-full flex items-center justify-center p-8">
+                {fullscreenItem.type === 'imagem' && fullscreenItem.file_url && (
+                  <img
+                    src={fullscreenItem.file_url}
+                    alt={fullscreenItem.title}
+                    className="w-full h-auto max-h-[80vh] object-contain"
+                  />
+                )}
+
+                {fullscreenItem.type === 'video' && fullscreenItem.file_url && (
+                  <video
+                    src={fullscreenItem.file_url}
+                    controls
+                    className="w-full h-auto max-h-[80vh]"
+                    autoPlay
+                  >
+                    Seu navegador não suporta o elemento de vídeo.
+                  </video>
+                )}
+              </div>
+
+              {/* Informações */}
+              <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white p-4">
+                <h3 className="text-lg font-semibold">{fullscreenItem.title}</h3>
+                {fullscreenItem.description && (
+                  <p className="text-sm text-gray-300 mt-1">{fullscreenItem.description}</p>
+                )}
+                <div className="flex items-center gap-4 mt-2 text-xs text-gray-300">
+                  <span>{getDirectionData(fullscreenItem.direction).label}</span>
+                  <span>{formatDate(fullscreenItem.created_at)}</span>
+                  {fullscreenItem.views && fullscreenItem.views > 0 && (
+                    <span>{fullscreenItem.views} visualizações</span>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
       
       <Footer />
     </div>

@@ -13,8 +13,19 @@ import {
   MapIcon,
   PhoneIcon,
   ClockIcon,
-  ArrowRightIcon
+  ArrowRightIcon,
+  ZapIcon,
+  DropletsIcon,
+  SproutIcon,
+  PickaxeIcon,
+  TrendingUpIcon,
+  PaletteIcon,
+  CpuIcon,
+  HeartIcon
 } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useState } from "react";
+import { CandidaturaForm } from "@/components/ui/candidatura-form";
 
 const Services = () => {
   const serviceCategories = [
@@ -109,6 +120,76 @@ const Services = () => {
     }
   };
 
+  const setoresEstrategicos = [
+    {
+      title: "Educação",
+      description: "Informações detalhadas sobre o setor educacional, programas, oportunidades e infraestruturas",
+      icon: GraduationCapIcon,
+      color: "bg-blue-100 text-blue-800",
+      path: "/educacao",
+      stats: "12 escolas, 156 professores, 2.847 estudantes"
+    },
+    {
+      title: "Saúde",
+      description: "Serviços de saúde, programas de prevenção, oportunidades profissionais e infraestruturas médicas",
+      icon: HeartIcon,
+      color: "bg-red-100 text-red-800",
+      path: "/saude",
+      stats: "8 unidades, 89 profissionais, 3.245 consultas/mês"
+    },
+    {
+      title: "Agricultura",
+      description: "Programas agrícolas, modernização, oportunidades de emprego e infraestruturas rurais",
+      icon: SproutIcon,
+      color: "bg-green-100 text-green-800",
+      path: "/agricultura",
+      stats: "1.245 agricultores, 8.750 ha cultivados"
+    },
+    {
+      title: "Setor Mineiro",
+      description: "Recursos minerais, programas de formação, oportunidades de emprego e infraestruturas mineiras",
+      icon: PickaxeIcon,
+      color: "bg-yellow-100 text-yellow-800",
+      path: "/sector-mineiro",
+      stats: "8 minas ativas, 450 empregos diretos"
+    },
+    {
+      title: "Desenvolvimento Económico",
+      description: "Programas de desenvolvimento económico, atração de investimentos e oportunidades de negócio",
+      icon: TrendingUpIcon,
+      color: "bg-emerald-100 text-emerald-800",
+      path: "/desenvolvimento-economico",
+      stats: "245 empresas, 1.850 empregos, 25M USD investimento"
+    },
+    {
+      title: "Cultura",
+      description: "Programas culturais, eventos, oportunidades artísticas e infraestruturas culturais",
+      icon: PaletteIcon,
+      color: "bg-purple-100 text-purple-800",
+      path: "/cultura",
+      stats: "25 grupos culturais, 48 eventos anuais"
+    },
+    {
+      title: "Tecnologia",
+      description: "Inovação tecnológica, programas digitais, oportunidades IT e infraestruturas tecnológicas",
+      icon: CpuIcon,
+      color: "bg-indigo-100 text-indigo-800",
+      path: "/tecnologia",
+      stats: "15 startups tech, 89 profissionais IT"
+    },
+    {
+      title: "Energia e Água",
+      description: "Serviços de energia e água, programas de eficiência, oportunidades e infraestruturas",
+      icon: ZapIcon,
+      color: "bg-cyan-100 text-cyan-800",
+      path: "/energia-agua",
+      stats: "78% cobertura elétrica, 65% cobertura de água"
+    }
+  ];
+
+  const [openSolicitar, setOpenSolicitar] = useState(false);
+  const [servicoSelecionado, setServicoSelecionado] = useState<string>("");
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -159,7 +240,15 @@ const Services = () => {
                       </li>
                     ))}
                   </ul>
-                  <Button variant="institutional" size="sm" className="w-full">
+                  <Button 
+                    variant="institutional" 
+                    size="sm" 
+                    className="w-full"
+                    onClick={() => {
+                      setServicoSelecionado(category.title);
+                      setOpenSolicitar(true);
+                    }}
+                  >
                     Solicitar serviço
                     <ArrowRightIcon className="w-4 h-4" />
                   </Button>
@@ -168,6 +257,58 @@ const Services = () => {
             );
           })}
         </div>
+
+        {/* Setores Estratégicos Section */}
+        <section className="mb-16">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-foreground mb-4">
+              Setores Estratégicos
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+              Explore informações detalhadas sobre os setores estratégicos do município de Chipindo. 
+              Cada setor possui sua própria página com programas, oportunidades e infraestruturas específicas.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {setoresEstrategicos.map((setor, index) => {
+              const IconComponent = setor.icon;
+              return (
+                <Link key={index} to={setor.path} className="block">
+                  <Card className="h-full overflow-hidden hover:shadow-elegant transition-all duration-300 group cursor-pointer">
+                    <CardHeader className="pb-4">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="p-3 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors">
+                          <IconComponent className="w-6 h-6 text-primary" />
+                        </div>
+                        <Badge className={setor.color}>
+                          {setor.title}
+                        </Badge>
+                      </div>
+                      <CardTitle className="text-lg group-hover:text-primary transition-colors">
+                        {setor.title}
+                      </CardTitle>
+                      <p className="text-sm text-muted-foreground">
+                        {setor.description}
+                      </p>
+                    </CardHeader>
+                    
+                    <CardContent>
+                      <div className="mb-4">
+                        <p className="text-xs text-muted-foreground font-medium mb-2">Estatísticas Principais:</p>
+                        <p className="text-sm text-foreground font-medium">{setor.stats}</p>
+                      </div>
+                      <Button variant="outline" size="sm" className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                        Ver Detalhes
+                        <ArrowRightIcon className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
 
         {/* Contact Information */}
         <div className="bg-muted/50 rounded-xl p-8">
@@ -213,6 +354,12 @@ const Services = () => {
             </div>
           </div>
         </div>
+        <CandidaturaForm
+          open={openSolicitar}
+          onOpenChange={setOpenSolicitar}
+          setor={servicoSelecionado}
+          onSuccess={() => setServicoSelecionado("")}
+        />
       </main>
       
       <Footer />

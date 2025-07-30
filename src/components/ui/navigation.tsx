@@ -10,7 +10,16 @@ import {
   BuildingIcon,
   HomeIcon,
   PhoneIcon,
-  WrenchIcon
+  WrenchIcon,
+  ChevronDownIcon,
+  GraduationCapIcon,
+  HeartIcon,
+  SproutIcon,
+  PickaxeIcon,
+  TrendingUpIcon,
+  PaletteIcon,
+  CpuIcon,
+  ZapIcon
 } from "lucide-react";
 import { useState, useEffect } from "react";
 
@@ -20,6 +29,7 @@ interface NavigationProps {
 
 export const Navigation = ({ className }: NavigationProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSetoresOpen, setIsSetoresOpen] = useState(false);
   const [activeItem, setActiveItem] = useState("/");
 
   useEffect(() => {
@@ -32,8 +42,19 @@ export const Navigation = ({ className }: NavigationProps) => {
     { label: "Concursos", href: "/concursos", icon: CalendarIcon },
     { label: "Acervo", href: "/acervo", icon: ImageIcon },
     { label: "Organigrama", href: "/organigrama", icon: UserIcon },
-    { label: "Serviços", href: "/servicos", icon: WrenchIcon },
+    { label: "Serviços", href: "/services", icon: WrenchIcon },
     { label: "Contactos", href: "/contactos", icon: PhoneIcon },
+  ];
+
+  const setoresItems = [
+    { label: "Educação", href: "/educacao", icon: GraduationCapIcon },
+    { label: "Saúde", href: "/saude", icon: HeartIcon },
+    { label: "Agricultura", href: "/agricultura", icon: SproutIcon },
+    { label: "Setor Mineiro", href: "/sector-mineiro", icon: PickaxeIcon },
+    { label: "Desenvolvimento Económico", href: "/desenvolvimento-economico", icon: TrendingUpIcon },
+    { label: "Cultura", href: "/cultura", icon: PaletteIcon },
+    { label: "Tecnologia", href: "/tecnologia", icon: CpuIcon },
+    { label: "Energia e Água", href: "/energia-agua", icon: ZapIcon },
   ];
 
   const handleNavClick = (href: string) => {
@@ -70,6 +91,68 @@ export const Navigation = ({ className }: NavigationProps) => {
             </Button>
           );
         })}
+
+        {/* Setores Dropdown */}
+        <div className="relative">
+          <Button
+            variant="ghost"
+            size="sm"
+            className={cn(
+              "h-8 px-2.5 text-sm font-medium transition-colors duration-200",
+              isSetoresOpen || setoresItems.some(item => isActive(item.href))
+                ? "bg-primary/10 text-primary" 
+                : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+            )}
+            onClick={() => setIsSetoresOpen(!isSetoresOpen)}
+            onMouseEnter={() => setIsSetoresOpen(true)}
+            onMouseLeave={() => setIsSetoresOpen(false)}
+          >
+            <BuildingIcon className="w-3.5 h-3.5 mr-2" />
+            Setores
+            <ChevronDownIcon className={cn(
+              "w-3.5 h-3.5 ml-1 transition-transform duration-200",
+              isSetoresOpen && "rotate-180"
+            )} />
+          </Button>
+
+          {/* Dropdown Menu */}
+          {isSetoresOpen && (
+            <div 
+              className="absolute top-full left-0 mt-1 w-64 bg-card border border-border rounded-lg shadow-floating z-50"
+              onMouseEnter={() => setIsSetoresOpen(true)}
+              onMouseLeave={() => setIsSetoresOpen(false)}
+            >
+              <div className="p-2">
+                <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  Setores Estratégicos
+                </div>
+                {setoresItems.map((item) => {
+                  const IconComponent = item.icon;
+                  const active = isActive(item.href);
+                  
+                  return (
+                    <button
+                      key={item.label}
+                      className={cn(
+                        "w-full flex items-center gap-3 text-left p-2.5 rounded-md transition-colors duration-200",
+                        active 
+                          ? "bg-primary/10 text-primary" 
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                      )}
+                      onClick={() => {
+                        handleNavClick(item.href);
+                        setIsSetoresOpen(false);
+                      }}
+                    >
+                      <IconComponent className="w-4 h-4" />
+                      <span className="font-medium text-sm">{item.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
         
         <div className="ml-2 pl-2 border-l border-border/50">
           <Button 
@@ -130,6 +213,33 @@ export const Navigation = ({ className }: NavigationProps) => {
                   </button>
                 );
               })}
+
+              {/* Setores Section in Mobile */}
+              <div className="border-t border-border mt-2 pt-2">
+                <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  Setores Estratégicos
+                </div>
+                {setoresItems.map((item) => {
+                  const IconComponent = item.icon;
+                  const active = isActive(item.href);
+                  
+                  return (
+                    <button
+                      key={item.label}
+                      className={cn(
+                        "w-full flex items-center gap-3 text-left p-2.5 rounded-md transition-colors duration-200",
+                        active 
+                          ? "bg-primary/10 text-primary" 
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                      )}
+                      onClick={() => handleNavClick(item.href)}
+                    >
+                      <IconComponent className="w-4 h-4" />
+                      <span className="font-medium text-sm">{item.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
               
               <div className="border-t border-border mt-2 pt-2">
                 <Button 

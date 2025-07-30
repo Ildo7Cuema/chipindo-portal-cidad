@@ -474,6 +474,87 @@ export const SiteContentManager = () => {
                         />
                       </div>
                     </div>
+                    
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Label htmlFor="area_total_count" className="flex items-center gap-2">
+                            <MapPin className="h-4 w-4" />
+                            Área Total (Número)
+                          </Label>
+                          {getStatusIcon(getFieldStatus('area_total_count'))}
+                        </div>
+                        <Input
+                          id="area_total_count"
+                          value={formData.area_total_count || ''}
+                          onChange={(e) => handleInputChange('area_total_count', e.target.value)}
+                          placeholder="2.100"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Label htmlFor="area_total_description" className="flex items-center gap-2">
+                            <Info className="h-4 w-4" />
+                            Área Total (Descrição)
+                          </Label>
+                          {getStatusIcon(getFieldStatus('area_total_description'))}
+                        </div>
+                        <Input
+                          id="area_total_description"
+                          value={formData.area_total_description || ''}
+                          onChange={(e) => handleInputChange('area_total_description', e.target.value)}
+                          placeholder="Quilómetros quadrados"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Label htmlFor="growth_rate" className="flex items-center gap-2">
+                            <TrendingUpIcon className="h-4 w-4" />
+                            Taxa de Crescimento (%)
+                          </Label>
+                          {getStatusIcon(getFieldStatus('growth_rate'))}
+                        </div>
+                        <Input
+                          id="growth_rate"
+                          value={formData.growth_rate || ''}
+                          onChange={(e) => handleInputChange('growth_rate', e.target.value)}
+                          placeholder="5.4"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Label htmlFor="growth_description" className="flex items-center gap-2">
+                            <Info className="h-4 w-4" />
+                            Descrição da Taxa
+                          </Label>
+                          {getStatusIcon(getFieldStatus('growth_description'))}
+                        </div>
+                        <Input
+                          id="growth_description"
+                          value={formData.growth_description || ''}
+                          onChange={(e) => handleInputChange('growth_description', e.target.value)}
+                          placeholder="Taxa anual"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Label htmlFor="growth_period" className="flex items-center gap-2">
+                            <Calendar className="h-4 w-4" />
+                            Período de Referência
+                          </Label>
+                          {getStatusIcon(getFieldStatus('growth_period'))}
+                        </div>
+                        <Input
+                          id="growth_period"
+                          value={formData.growth_period || ''}
+                          onChange={(e) => handleInputChange('growth_period', e.target.value)}
+                          placeholder="2024"
+                        />
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               </div>

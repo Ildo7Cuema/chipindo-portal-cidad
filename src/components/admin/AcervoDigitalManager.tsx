@@ -9,9 +9,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { Upload, Eye, Edit, Trash2, FileText, Image, Video, Download, Search, Filter, XIcon, Copy, Calendar, LayoutGrid, Layers } from 'lucide-react';
+import { Upload, Eye, Edit, Trash2, FileText, Image, Video, Download, Search, Filter, XIcon, Copy, Calendar, LayoutGrid, Layers, FolderOpen, CheckCircle, AlertCircle, Clock, Globe, Lock, EyeIcon, ExternalLink, MoreVertical } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { User } from '@supabase/supabase-js';
 import ExportUtils from '@/lib/export-utils';
@@ -20,7 +21,9 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { useDropzone } from 'react-dropzone';
 import { Pie } from 'react-chartjs-2';
 import { useAcervoViews } from '@/hooks/useAcervoViews';
+import { BatchUploadModal } from './BatchUploadModal';
 import 'chart.js/auto';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 interface AcervoItem {
   id: string;
@@ -67,27 +70,30 @@ export default function AcervoDigitalManager() {
   const [filterCategory, setFilterCategory] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
+  const [isBatchUploadOpen, setIsBatchUploadOpen] = useState(false);
+  const [batchUploadFiles, setBatchUploadFiles] = useState<File[]>([]);
+  const [batchUploadDepartment, setBatchUploadDepartment] = useState('');
+  const [batchUploadProgress, setBatchUploadProgress] = useState<{ [key: string]: number }>({});
+  const [batchUploadStatus, setBatchUploadStatus] = useState<{ [key: string]: 'pending' | 'uploading' | 'success' | 'error' }>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   // Hook para visualizações do acervo
   const { registerView, getViewsCount, isLoading: viewsLoading } = useAcervoViews();
   
   // Função para registrar visualização
-  const handleItemView = async (itemId: string) => {
+  const handleRegisterView = async (itemId: string) => {
     try {
       await registerView(itemId);
-      
-      // Atualizar a contagem de visualizações no item
-      const updatedViews = await getViewsCount(itemId);
+      // Atualizar contagem local
       setItems(prevItems => 
         prevItems.map(item => 
           item.id === itemId 
-            ? { ...item, views: updatedViews }
+            ? { ...item, views: (item.views || 0) + 1 }
             : item
         )
       );
     } catch (error) {
-      console.error('Erro ao registrar visualização do acervo:', error);
+      console.error('Erro ao registrar visualização:', error);
     }
   };
   
@@ -109,11 +115,27 @@ export default function AcervoDigitalManager() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string|null>(null);
   const [dragActive, setDragActive] = useState(false);
+  const [viewItemDetails, setViewItemDetails] = useState<AcervoItem|null>(null);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [isToggleVisibilityLoading, setIsToggleVisibilityLoading] = useState<string|null>(null);
+  const [fullscreenPreview, setFullscreenPreview] = useState<{url: string, type: string, title: string}|null>(null);
 
   useEffect(() => {
     getUser();
     fetchItems();
   }, []);
+
+  // Fechar preview em tela cheia com ESC
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && fullscreenPreview) {
+        setFullscreenPreview(null);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [fullscreenPreview]);
 
   const getUser = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -137,21 +159,21 @@ export default function AcervoDigitalManager() {
           let viewsCount = 0;
           try {
             const { data: viewsData, error: viewsError } = await supabase
-              .from('acervo_views' as any)
+              .from('acervo_views')
               .select('id', { count: 'exact' })
               .eq('acervo_id', item.id);
 
-            if (!viewsError && viewsData) {
-              viewsCount = viewsData.length;
+            if (!viewsError && viewsData !== null) {
+              viewsCount = viewsData.length || 0;
             }
           } catch (error) {
             console.error('Erro ao buscar visualizações do acervo:', error);
           }
 
           return {
-        ...item, 
+            ...item, 
             type: item.type as 'documento' | 'imagem' | 'video',
-            views: viewsCount
+            views: viewsCount > 0 ? viewsCount : undefined
           };
         })
       );
@@ -169,17 +191,23 @@ export default function AcervoDigitalManager() {
     try {
       setUploadProgress(0);
       const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random()}.${fileExt}`;
+      const timestamp = Date.now();
+      const randomId = Math.random().toString(36).substring(2, 15);
+      const fileName = `${timestamp}-${randomId}.${fileExt}`;
       const filePath = `${formData.department}/${fileName}`;
+      
       const { data, error } = await supabase.storage
         .from('acervo-digital')
         .upload(filePath, file, {
           upsert: false
         });
+      
       if (error) throw error;
+      
       const { data: urlData } = supabase.storage
         .from('acervo-digital')
         .getPublicUrl(filePath);
+      
       setUploadProgress(null);
       return urlData.publicUrl;
     } catch (error) {
@@ -208,14 +236,24 @@ export default function AcervoDigitalManager() {
         type: formData.type,
         category: formData.category || null,
         department: formData.department,
-        file_url: fileUrl,
         file_size: formData.file?.size || null,
         mime_type: formData.file?.type || null,
         is_public: formData.is_public,
-        author_id: user.id
+        author_id: user.id,
+        file_url: null as string | null
       };
 
+      // Se há um novo arquivo, adicionar o URL
+      if (fileUrl) {
+        itemData.file_url = fileUrl;
+      }
+
       if (editingItem) {
+        // Para edição, preservar o file_url existente se não há novo arquivo
+        if (!fileUrl && editingItem.file_url) {
+          itemData.file_url = editingItem.file_url;
+        }
+        
         const { error } = await supabase
           .from('acervo_digital')
           .update(itemData)
@@ -224,6 +262,13 @@ export default function AcervoDigitalManager() {
         if (error) throw error;
         toast.success('Item atualizado com sucesso!');
       } else {
+        // Para novo item, file_url deve ser obrigatório
+        if (!fileUrl) {
+          toast.error('É necessário selecionar um arquivo para criar um novo item');
+          setUploading(false);
+          return;
+        }
+        
         const { error } = await supabase
           .from('acervo_digital')
           .insert([itemData]);
@@ -273,6 +318,40 @@ export default function AcervoDigitalManager() {
       console.error('Error deleting item:', error);
       toast.error('Erro ao excluir item');
     }
+  };
+
+  // Função para visualizar detalhes do item
+  const handleViewDetails = (item: AcervoItem) => {
+    setViewItemDetails(item);
+    setIsViewModalOpen(true);
+    // Registrar visualização
+    handleRegisterView(item.id);
+  };
+
+  // Função para toggle de visibilidade (público/privado)
+  const handleToggleVisibility = async (item: AcervoItem) => {
+    setIsToggleVisibilityLoading(item.id);
+    try {
+      const { error } = await supabase
+        .from('acervo_digital')
+        .update({ is_public: !item.is_public })
+        .eq('id', item.id);
+
+      if (error) throw error;
+      
+      toast.success(`Item ${!item.is_public ? 'tornado público' : 'tornado privado'} com sucesso!`);
+      fetchItems();
+    } catch (error) {
+      console.error('Error toggling visibility:', error);
+      toast.error('Erro ao alterar visibilidade do item');
+    } finally {
+      setIsToggleVisibilityLoading(null);
+    }
+  };
+
+  // Função para abrir arquivo em nova aba
+  const handleOpenFile = (url: string) => {
+    window.open(url, '_blank');
   };
 
   const resetForm = () => {
@@ -404,15 +483,81 @@ export default function AcervoDigitalManager() {
 
   // Preview de arquivos
   const renderPreview = (item: AcervoItem) => {
+    if (!item.file_url) {
+      return <div className="w-full h-40 flex items-center justify-center bg-muted rounded"><FileText className="w-10 h-10 text-muted-foreground" /></div>;
+    }
+
     if (item.type === 'imagem' && item.file_url) {
-      return <img src={item.file_url} alt={item.title} className="w-full h-40 object-cover rounded" />;
+      return (
+        <div 
+          className="w-full h-40 cursor-pointer group relative overflow-hidden rounded"
+          onClick={() => setFullscreenPreview({url: item.file_url!, type: 'imagem', title: item.title})}
+        >
+          <img 
+            src={item.file_url} 
+            alt={item.title} 
+            className="w-full h-full object-cover transition-transform group-hover:scale-105" 
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+              e.currentTarget.nextElementSibling?.classList.remove('hidden');
+            }}
+          />
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+            <Eye className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+          </div>
+          {/* Fallback para erro de carregamento */}
+          <div className="hidden w-full h-full flex items-center justify-center bg-muted rounded">
+            <FileText className="w-10 h-10 text-muted-foreground" />
+          </div>
+        </div>
+      );
     }
+    
     if (item.type === 'video' && item.file_url) {
-      return <video src={item.file_url} controls className="w-full h-40 rounded" />;
+      return (
+        <div 
+          className="w-full h-40 cursor-pointer group relative overflow-hidden rounded"
+          onClick={() => setFullscreenPreview({url: item.file_url!, type: 'video', title: item.title})}
+        >
+          <video 
+            src={item.file_url} 
+            className="w-full h-full object-cover transition-transform group-hover:scale-105"
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+              e.currentTarget.nextElementSibling?.classList.remove('hidden');
+            }}
+          />
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+            <Eye className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+          </div>
+          {/* Fallback para erro de carregamento */}
+          <div className="hidden w-full h-full flex items-center justify-center bg-muted rounded">
+            <FileText className="w-10 h-10 text-muted-foreground" />
+          </div>
+        </div>
+      );
     }
+    
     if (item.type === 'documento' && item.file_url && item.mime_type?.includes('pdf')) {
-      return <iframe src={item.file_url} className="w-full h-40 rounded" title="Preview PDF" />;
+      return (
+        <div className="w-full h-40 rounded border">
+          <iframe 
+            src={item.file_url} 
+            className="w-full h-full rounded" 
+            title="Preview PDF"
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+              e.currentTarget.nextElementSibling?.classList.remove('hidden');
+            }}
+          />
+          {/* Fallback para erro de carregamento */}
+          <div className="hidden w-full h-full flex items-center justify-center bg-muted rounded">
+            <FileText className="w-10 h-10 text-muted-foreground" />
+          </div>
+        </div>
+      );
     }
+    
     return <div className="w-full h-40 flex items-center justify-center bg-muted rounded"><FileText className="w-10 h-10 text-muted-foreground" /></div>;
   };
 
@@ -423,8 +568,26 @@ export default function AcervoDigitalManager() {
   };
 
   // Download
-  const handleDownload = (url: string) => {
-    window.open(url, '_blank');
+  const handleDownload = async (url: string, fileName?: string) => {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Falha ao baixar arquivo');
+      
+      const blob = await response.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = fileName || 'arquivo';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(downloadUrl);
+      
+      toast.success('Download iniciado!');
+    } catch (error) {
+      console.error('Erro no download:', error);
+      toast.error('Erro ao baixar arquivo');
+    }
   };
 
   const getTypeBadge = (type: string) => {
@@ -444,6 +607,106 @@ export default function AcervoDigitalManager() {
       setFormData(f => ({ ...f, file }));
       await handleSubmit({ preventDefault: () => {} } as any);
     }
+  };
+
+  // Função para upload em lote
+  const handleBatchUpload = async () => {
+    if (!batchUploadDepartment || batchUploadFiles.length === 0) {
+      toast.error('Selecione uma direção e pelo menos um arquivo.');
+      return;
+    }
+
+    try {
+      const results = [];
+      
+      for (const file of batchUploadFiles) {
+        const fileId = `${file.name}-${Date.now()}`;
+        setBatchUploadStatus(prev => ({ ...prev, [fileId]: 'uploading' }));
+        setBatchUploadProgress(prev => ({ ...prev, [fileId]: 0 }));
+
+        try {
+          // Upload do arquivo
+          const fileUrl = await handleFileUpload(file);
+
+          if (fileUrl) {
+            // Determinar tipo do arquivo
+            const fileType = getFileType(file);
+            
+            // Criar entrada no acervo
+            const { data, error } = await supabase
+              .from('acervo_digital')
+              .insert({
+                title: file.name,
+                description: `Arquivo carregado em lote para ${departments.find(d => d.value === batchUploadDepartment)?.label}`,
+                type: fileType,
+                department: batchUploadDepartment,
+                file_url: fileUrl,
+                file_size: file.size,
+                mime_type: file.type,
+                is_public: false,
+                author_id: user?.id
+              })
+              .select()
+              .single();
+
+            if (error) throw error;
+
+            setBatchUploadStatus(prev => ({ ...prev, [fileId]: 'success' }));
+            results.push({ file: file.name, success: true });
+          }
+        } catch (error) {
+          console.error(`Erro ao processar ${file.name}:`, error);
+          setBatchUploadStatus(prev => ({ ...prev, [fileId]: 'error' }));
+          results.push({ file: file.name, success: false, error: error.message });
+        }
+      }
+
+      // Mostrar resultado final
+      const successCount = results.filter(r => r.success).length;
+      const errorCount = results.length - successCount;
+      
+      if (successCount > 0) {
+        toast.success(`${successCount} arquivo(s) carregado(s) com sucesso!`);
+      }
+      if (errorCount > 0) {
+        toast.error(`${errorCount} arquivo(s) falharam no carregamento.`);
+      }
+
+      // Limpar e fechar modal
+      setBatchUploadFiles([]);
+      setBatchUploadDepartment('');
+      setBatchUploadProgress({});
+      setBatchUploadStatus({});
+      setIsBatchUploadOpen(false);
+      
+      // Atualizar lista
+      fetchItems();
+      
+    } catch (error) {
+      console.error('Erro no upload em lote:', error);
+      toast.error('Erro no upload em lote. Tente novamente.');
+    }
+  };
+
+  // Função para determinar tipo do arquivo
+  const getFileType = (file: File): 'documento' | 'imagem' | 'video' => {
+    const mimeType = file.type.toLowerCase();
+    
+    if (mimeType.startsWith('image/')) return 'imagem';
+    if (mimeType.startsWith('video/')) return 'video';
+    return 'documento';
+  };
+
+  // Função para selecionar arquivos para upload em lote
+  const handleBatchFileSelect = (files: File[]) => {
+    setBatchUploadFiles(files);
+    setBatchUploadStatus({});
+    setBatchUploadProgress({});
+  };
+
+  // Função para remover arquivo do lote
+  const removeBatchFile = (index: number) => {
+    setBatchUploadFiles(prev => prev.filter((_, i) => i !== index));
   };
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -492,89 +755,99 @@ export default function AcervoDigitalManager() {
           <h2 className="text-2xl font-bold">Gestão do Acervo Digital</h2>
           <p className="text-muted-foreground">Gerencie documentos, imagens e vídeos da administração municipal</p>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="ml-auto bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg">
-              <Upload className="w-4 h-4 mr-2" />
-              Novo Item
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[95vh] overflow-hidden flex flex-col">
-            <DialogHeader className="pb-4 border-b border-border/50 flex-shrink-0">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
-                  <Upload className="w-5 h-5 text-blue-600" />
+        <div className="ml-auto flex items-center gap-2">
+          <Dialog open={isBatchUploadOpen} onOpenChange={setIsBatchUploadOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-lg">
+                <FolderOpen className="w-4 h-4 mr-2" />
+                Upload em Lote
+              </Button>
+            </DialogTrigger>
+          </Dialog>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg">
+                <Upload className="w-4 h-4 mr-2" />
+                Novo Item
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl max-h-[95vh] overflow-hidden flex flex-col">
+              <DialogHeader className="pb-4 border-b border-border/50 flex-shrink-0">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
+                    <Upload className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <div>
+                    <DialogTitle className="text-lg font-semibold">
+                      {editingItem ? "Editar Item do Acervo" : "Novo Item do Acervo"}
+                    </DialogTitle>
+                    <DialogDescription className="text-sm text-muted-foreground">
+                      {editingItem ? "Edite os detalhes do item do acervo" : "Cadastre um novo documento, imagem, vídeo ou áudio por Direção"}
+                    </DialogDescription>
+                  </div>
                 </div>
-                <div>
-                  <DialogTitle className="text-lg font-semibold">
-                    {editingItem ? "Editar Item do Acervo" : "Novo Item do Acervo"}
-                  </DialogTitle>
-                  <DialogDescription className="text-sm text-muted-foreground">
-                    {editingItem ? "Edite os detalhes do item do acervo" : "Cadastre um novo documento, imagem, vídeo ou áudio por Direção"}
-                  </DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="title">Título</Label>
+                    <Input id="title" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} required placeholder="Título do item" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="type">Tipo</Label>
+                    <Select value={formData.type} onValueChange={v => setFormData({ ...formData, type: v as any })}>
+                      <SelectTrigger className="h-10">
+                        <SelectValue placeholder="Selecione o tipo" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="documento">Documento</SelectItem>
+                        <SelectItem value="imagem">Imagem</SelectItem>
+                        <SelectItem value="video">Vídeo</SelectItem>
+                        <SelectItem value="audio">Áudio</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="department">Direção/Área</Label>
+                    <Select value={formData.department} onValueChange={v => setFormData({ ...formData, department: v })}>
+                      <SelectTrigger className="h-10">
+                        <SelectValue placeholder="Selecione a direção" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {departments.map(d => (
+                          <SelectItem key={d.value} value={d.value}>{d.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="category">Categoria</Label>
+                    <Input id="category" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} placeholder="Categoria (opcional)" />
+                  </div>
                 </div>
-              </div>
-            </DialogHeader>
-            <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="title">Título</Label>
-                  <Input id="title" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} required placeholder="Título do item" />
+                  <Label htmlFor="description">Descrição</Label>
+                  <Textarea id="description" value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} placeholder="Descrição do item (opcional)" rows={3} />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="type">Tipo</Label>
-                  <Select value={formData.type} onValueChange={v => setFormData({ ...formData, type: v as any })}>
-                    <SelectTrigger className="h-10">
-                      <SelectValue placeholder="Selecione o tipo" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="documento">Documento</SelectItem>
-                      <SelectItem value="imagem">Imagem</SelectItem>
-                      <SelectItem value="video">Vídeo</SelectItem>
-                      <SelectItem value="audio">Áudio</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Label htmlFor="file">Arquivo</Label>
+                  <Input id="file" type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.mp4,.avi,.mov,.mp3,.wav" onChange={e => setFormData({ ...formData, file: e.target.files?.[0] || null })} required={!editingItem} />
+                  <p className="text-xs text-muted-foreground">Formatos suportados: PDF, DOC, Imagem, Vídeo, Áudio</p>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="department">Direção/Área</Label>
-                  <Select value={formData.department} onValueChange={v => setFormData({ ...formData, department: v })}>
-                    <SelectTrigger className="h-10">
-                      <SelectValue placeholder="Selecione a direção" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {departments.map(d => (
-                        <SelectItem key={d.value} value={d.value}>{d.label}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                <div className="flex items-center space-x-2">
+                  <Switch id="is_public" checked={formData.is_public} onCheckedChange={checked => setFormData({ ...formData, is_public: checked })} />
+                  <Label htmlFor="is_public">Tornar público</Label>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="category">Categoria</Label>
-                  <Input id="category" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} placeholder="Categoria (opcional)" />
+                <div className="flex gap-2 pt-4">
+                  <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>Cancelar</Button>
+                  <Button type="submit" disabled={uploading || !formData.title || !formData.type || !formData.department || (!editingItem && !formData.file)} className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg">
+                    {uploading ? 'Salvando...' : (editingItem ? 'Atualizar' : 'Cadastrar')}
+                  </Button>
                 </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="description">Descrição</Label>
-                <Textarea id="description" value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} placeholder="Descrição do item (opcional)" rows={3} />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="file">Arquivo</Label>
-                <Input id="file" type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.mp4,.avi,.mov,.mp3,.wav" onChange={e => setFormData({ ...formData, file: e.target.files?.[0] || null })} required={!editingItem} />
-                <p className="text-xs text-muted-foreground">Formatos suportados: PDF, DOC, Imagem, Vídeo, Áudio</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <Switch checked={formData.is_public} onCheckedChange={v => setFormData({ ...formData, is_public: v })} id="is_public" />
-                <Label htmlFor="is_public">Tornar público</Label>
-              </div>
-              <div className="flex justify-end gap-2 pt-4 border-t border-border/50">
-                <Button type="button" variant="outline" onClick={()=>setIsDialogOpen(false)}>Cancelar</Button>
-                <Button type="submit" disabled={uploading || !formData.title || !formData.type || !formData.department || (!editingItem && !formData.file)} className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg">
-                  {uploading ? 'Salvando...' : (editingItem ? 'Atualizar' : 'Cadastrar')}
-                </Button>
-              </div>
-            </form>
-          </DialogContent>
-        </Dialog>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       {/* Cards de estatísticas com gradiente e ícone */}
@@ -667,155 +940,577 @@ export default function AcervoDigitalManager() {
           <div className="text-center text-red-600 text-sm font-medium py-8">Nenhum item encontrado.</div>
         ) : (
           paginatedItems.map(item => (
-            <Card key={item.id} className={cn("shadow-md border-0 relative group transition-all duration-200", selectedIds.includes(item.id) && "ring-2 ring-blue-500")}
-              onMouseEnter={()=>{}}
-              onMouseLeave={()=>{}}>
-              <input
-                type="checkbox"
-                checked={selectedIds.includes(item.id)}
-                onChange={()=>toggleSelect(item.id)}
-                className="absolute top-2 left-2 w-5 h-5 accent-blue-600 z-10"
-                title="Selecionar item"
-              />
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div onClick={async () => {
-                      await handleItemView(item.id);
-                      setFullscreenItem(item);
-                    }} className="cursor-pointer relative group">
-                      {renderPreview(item)}
-                      <div className="absolute top-2 right-2 bg-white/80 rounded-full p-1 shadow">
-                        {getTypeBadge(item.type)}
+            <Card key={item.id} className={cn("shadow-md border-0 relative group transition-all duration-200 min-h-[280px] flex flex-col", selectedIds.includes(item.id) && "ring-2 ring-blue-500")}>
+              <CardContent className="p-4 flex-1 flex flex-col">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                    {getTypeIcon(item.type)}
+                    <div className="min-w-0 flex-1">
+                      <h3 className="font-semibold text-base truncate">{item.title}</h3>
+                      <p className="text-xs text-muted-foreground truncate">{departments.find(d => d.value === item.department)?.label}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1 flex-shrink-0 ml-2">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.includes(item.id)}
+                      onChange={() => toggleSelect(item.id)}
+                      className="rounded"
+                    />
+                  </div>
+                </div>
+                
+                <div className="space-y-3 flex-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {getTypeBadge(item.type)}
+                    {getVisibilityBadge(item.is_public)}
+                  </div>
+                  
+                  {item.description && (
+                    <p className="text-xs text-muted-foreground line-clamp-2">{item.description}</p>
+                  )}
+                  
+                  <div className="text-xs text-muted-foreground space-y-1">
+                    <div>Tamanho: {formatFileSize(item.file_size)}</div>
+                    {item.views && item.views > 0 && (
+                      <div>Visualizações: {item.views}</div>
+                    )}
+                    <div>Criado: {new Date(item.created_at).toLocaleDateString('pt-AO')}</div>
+                  </div>
+                  
+                  {item.file_url && (
+                    <div className="mt-3">
+                      <div className="mb-2">
+                        {renderPreview(item)}
                       </div>
                     </div>
-                  </TooltipTrigger>
-                  <TooltipContent className="max-w-xs">
-                    <div className="text-xs">
-                      <div><b>Título:</b> {item.title}</div>
-                      <div><b>Tipo:</b> {item.type}</div>
-                      <div><b>Área:</b> {departments.find(d => d.value === item.department)?.label || item.department}</div>
-                      <div><b>Categoria:</b> {item.category || 'Sem categoria'}</div>
-                      <div><b>Tamanho:</b> {formatFileSize(item.file_size)}</div>
-                      <div><b>Visibilidade:</b> {item.is_public ? 'Público' : 'Interno'}</div>
-                      <div><b>Data:</b> {new Date(item.created_at).toLocaleDateString('pt-BR')}</div>
-                      <div><b>Visualizações:</b> {item.views || 0}</div>
-                      {item.description && <div><b>Descrição:</b> {item.description}</div>}
+                  )}
+                </div>
+                
+                {/* Botões - sempre no final do card */}
+                <div className="mt-auto pt-3 border-t border-border/50">
+                  {/* Versão Desktop - botões organizados em linhas */}
+                  <div className="hidden md:flex flex-col gap-2">
+                    {/* Botões principais - sempre visíveis */}
+                    <div className="flex gap-1">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              onClick={() => handleViewDetails(item)}
+                              className="flex-1"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Ver Detalhes</TooltipContent>
+                        </Tooltip>
+                        
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              onClick={() => handleOpenFile(item.file_url!)}
+                              disabled={!item.file_url}
+                              className="flex-1"
+                            >
+                              <ExternalLink className="w-4 h-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Abrir Arquivo</TooltipContent>
+                        </Tooltip>
+                        
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              onClick={() => handleDownload(item.file_url!, item.title)}
+                              disabled={!item.file_url}
+                              className="flex-1"
+                            >
+                              <Download className="w-4 h-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Baixar</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </div>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              <CardContent className="pt-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="font-semibold text-lg truncate flex-1" title={item.title}>{item.title}</span>
-                  {getVisibilityBadge(item.is_public)}
-                </div>
-                <div className="text-xs text-muted-foreground mb-2 flex flex-wrap gap-2">
-                  <span className="truncate" title={departments.find(d => d.value === item.department)?.label || item.department}>{departments.find(d => d.value === item.department)?.label || item.department}</span>
-                  <span className="truncate" title={item.category || 'Sem categoria'}>{item.category || 'Sem categoria'}</span>
-                </div>
-                <div className="text-xs text-muted-foreground mb-2 flex gap-2">
-                  <span className="flex items-center gap-1"><FileText className="w-3 h-3" />{formatFileSize(item.file_size)}</span>
-                  <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />{new Date(item.created_at).toLocaleDateString('pt-BR')}</span>
-                  <span className="flex items-center gap-1"><Eye className="w-3 h-3" />{item.views || 0}</span>
-                </div>
-                <div className="flex gap-2 mt-2">
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button size="sm" variant="outline" onClick={() => handleDownload(item.file_url!)}><Download className="w-4 h-4" /></Button>
-                      </TooltipTrigger>
-                      <TooltipContent>Baixar</TooltipContent>
-                    </Tooltip>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button size="sm" variant="outline" onClick={() => handleCopyLink(item.file_url!)}><Copy className="w-4 h-4" /></Button>
-                      </TooltipTrigger>
-                      <TooltipContent>Copiar Link</TooltipContent>
-                    </Tooltip>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button size="sm" variant="outline" onClick={() => handleEdit(item)}><Edit className="w-4 h-4" /></Button>
-                      </TooltipTrigger>
-                      <TooltipContent>Editar</TooltipContent>
-                    </Tooltip>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button size="sm" variant="outline" onClick={() => setConfirmDeleteId(item.id)}><Trash2 className="w-4 h-4" /></Button>
-                      </TooltipTrigger>
-                      <TooltipContent>Excluir</TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+
+                    {/* Botões secundários */}
+                    <div className="flex gap-1">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              onClick={() => handleToggleVisibility(item)}
+                              disabled={isToggleVisibilityLoading === item.id}
+                              className="flex-1"
+                            >
+                              {isToggleVisibilityLoading === item.id ? (
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current" />
+                              ) : item.is_public ? (
+                                <Lock className="w-4 h-4" />
+                              ) : (
+                                <Globe className="w-4 h-4" />
+                              )}
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            {item.is_public ? 'Tornar Privado' : 'Tornar Público'}
+                          </TooltipContent>
+                        </Tooltip>
+                        
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              onClick={() => handleEdit(item)}
+                              className="flex-1"
+                            >
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Editar</TooltipContent>
+                        </Tooltip>
+                        
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              onClick={() => setConfirmDeleteId(item.id)}
+                              className="flex-1"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Excluir</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+
+                    {/* Botões extras */}
+                    <div className="flex gap-1">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              onClick={() => handleCopyLink(item.file_url!)}
+                              disabled={!item.file_url}
+                              className="flex-1"
+                            >
+                              <Copy className="w-4 h-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Copiar Link</TooltipContent>
+                        </Tooltip>
+                        
+                        {/* Botão de preview em tela cheia (apenas para imagens/vídeos) */}
+                        {(item.type === 'imagem' || item.type === 'video') && item.file_url && (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
+                                onClick={() => setFullscreenPreview({url: item.file_url!, type: item.type, title: item.title})}
+                                className="flex-1"
+                              >
+                                <Eye className="w-4 h-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>Ver em Tela Cheia</TooltipContent>
+                          </Tooltip>
+                        )}
+                      </TooltipProvider>
+                    </div>
+                  </div>
+
+                  {/* Versão Mobile - botões compactos */}
+                  <div className="md:hidden flex gap-1">
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            onClick={() => handleViewDetails(item)}
+                            className="flex-1"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Ver Detalhes</TooltipContent>
+                      </Tooltip>
+                      
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            onClick={() => handleDownload(item.file_url!, item.title)}
+                            disabled={!item.file_url}
+                            className="flex-1"
+                          >
+                            <Download className="w-4 h-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Baixar</TooltipContent>
+                      </Tooltip>
+                      
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            onClick={() => handleEdit(item)}
+                            className="flex-1"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Editar</TooltipContent>
+                      </Tooltip>
+                      
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            onClick={() => setConfirmDeleteId(item.id)}
+                            className="flex-1"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Excluir</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+
+                    {/* Dropdown de ações extras para mobile */}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button size="sm" variant="outline">
+                          <MoreVertical className="w-4 h-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => handleOpenFile(item.file_url!)} disabled={!item.file_url}>
+                          <ExternalLink className="w-4 h-4 mr-2" />
+                          Abrir Arquivo
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleCopyLink(item.file_url!)} disabled={!item.file_url}>
+                          <Copy className="w-4 h-4 mr-2" />
+                          Copiar Link
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleToggleVisibility(item)} disabled={isToggleVisibilityLoading === item.id}>
+                          {isToggleVisibilityLoading === item.id ? (
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2" />
+                          ) : item.is_public ? (
+                            <Lock className="w-4 h-4 mr-2" />
+                          ) : (
+                            <Globe className="w-4 h-4 mr-2" />
+                          )}
+                          {item.is_public ? 'Tornar Privado' : 'Tornar Público'}
+                        </DropdownMenuItem>
+                        {(item.type === 'imagem' || item.type === 'video') && item.file_url && (
+                          <DropdownMenuItem onClick={() => setFullscreenPreview({url: item.file_url!, type: item.type, title: item.title})}>
+                            <Eye className="w-4 h-4 mr-2" />
+                            Ver em Tela Cheia
+                          </DropdownMenuItem>
+                        )}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </div>
               </CardContent>
             </Card>
           ))
         )}
       </div>
-      {fullscreenItem && (
-        <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
-          <div className="relative max-w-3xl w-full bg-white rounded shadow-lg p-6">
-            <Button variant="ghost" size="icon" className="absolute top-2 right-2" onClick={()=>setFullscreenItem(null)}><XIcon className="w-6 h-6" /></Button>
-            <h3 className="text-lg font-bold mb-2">{fullscreenItem.title}</h3>
-            {renderPreview(fullscreenItem)}
-            <div className="mt-4 text-sm text-muted-foreground">{fullscreenItem.description}</div>
-            <div className="mt-2 flex gap-2">
-              {fullscreenItem.file_url && <Button size="sm" variant="outline" onClick={()=>handleDownload(fullscreenItem.file_url!)}><Download className="w-4 h-4 mr-1"/>Baixar</Button>}
-              {fullscreenItem.file_url && <Button size="sm" variant="outline" onClick={()=>handleCopyLink(fullscreenItem.file_url!)}><Copy className="w-4 h-4 mr-1"/>Copiar Link</Button>}
-            </div>
-          </div>
-        </div>
-      )}
-      <div className="flex justify-center gap-2 mt-8">
-        <Button variant="outline" size="sm" disabled={page===1} onClick={()=>setPage(page-1)}>Anterior</Button>
-        <span className="text-sm px-2">Página {page} de {totalPages}</span>
-        <Button variant="outline" size="sm" disabled={page===totalPages} onClick={()=>setPage(page+1)}>Próxima</Button>
-      </div>
-      {confirmDeleteId && (
-        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center">
-          <div className="bg-white rounded-lg shadow-lg p-8 max-w-sm w-full">
-            <h3 className="text-lg font-bold mb-2">Confirmar Exclusão</h3>
-            <p className="mb-4">Tem certeza que deseja excluir {confirmDeleteId==='batch' ? `${selectedIds.length} itens selecionados?` : 'este item?'} Esta ação não pode ser desfeita.</p>
-            <div className="flex gap-2 justify-end">
-              <Button variant="outline" onClick={()=>setConfirmDeleteId(null)}>Cancelar</Button>
-              <Button variant="destructive" onClick={async()=>{
-                if(confirmDeleteId==='batch'){
-                  for(const id of selectedIds){ await handleDelete(id); }
-                  clearSelection();
-                }else{
-                  await handleDelete(confirmDeleteId);
+
+      {/* Modal de Upload em Lote */}
+      <BatchUploadModal
+        open={isBatchUploadOpen}
+        onOpenChange={setIsBatchUploadOpen}
+        onUploadComplete={fetchItems}
+        userId={user?.id || ''}
+      />
+
+      {/* Modal de Confirmação de Exclusão */}
+      <AlertDialog open={!!confirmDeleteId} onOpenChange={() => setConfirmDeleteId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja excluir este item do acervo? Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={() => {
+                if (confirmDeleteId) {
+                  handleDelete(confirmDeleteId);
+                  setConfirmDeleteId(null);
                 }
-                setConfirmDeleteId(null);
-              }}>Excluir</Button>
-            </div>
-          </div>
-        </div>
-      )}
-      {/* Área de upload drag & drop em card */}
-      <Card className="border-0 shadow-sm mb-6">
-        <CardContent>
-          <div {...getRootProps()} className={cn("border-2 border-dashed rounded-lg p-8 text-center transition-all duration-200 cursor-pointer", isDragActive || dragActive ? "border-blue-500 bg-blue-50" : "border-muted bg-muted/30") }>
-            <input {...getInputProps()} />
-            <Upload className="w-8 h-8 mx-auto mb-2 text-blue-600" />
-            <p className="font-medium">Arraste e solte arquivos aqui, ou clique para selecionar</p>
-            <p className="text-xs text-muted-foreground">Suporta múltiplos arquivos: PDF, DOC, Imagem, Vídeo</p>
-            {uploadProgress !== null && (
-              <div className="w-full bg-muted rounded h-2 mt-4">
-                <div className="bg-blue-500 h-2 rounded" style={{ width: `${uploadProgress}%` }} />
+              }}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Modal de Detalhes do Item */}
+      <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Eye className="w-5 h-5" />
+              Detalhes do Item
+            </DialogTitle>
+          </DialogHeader>
+          {viewItemDetails && (
+            <div className="space-y-6">
+              {/* Informações básicas */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-sm font-medium">Título</Label>
+                  <p className="text-sm text-muted-foreground mt-1">{viewItemDetails.title}</p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Tipo</Label>
+                  <div className="mt-1">{getTypeBadge(viewItemDetails.type)}</div>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Direção/Área</Label>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {departments.find(d => d.value === viewItemDetails.department)?.label}
+                  </p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Visibilidade</Label>
+                  <div className="mt-1">{getVisibilityBadge(viewItemDetails.is_public)}</div>
+                </div>
+                {viewItemDetails.category && (
+                  <div>
+                    <Label className="text-sm font-medium">Categoria</Label>
+                    <p className="text-sm text-muted-foreground mt-1">{viewItemDetails.category}</p>
+                  </div>
+                )}
+                <div>
+                  <Label className="text-sm font-medium">Visualizações</Label>
+                  <p className="text-sm text-muted-foreground mt-1">{viewItemDetails.views || 0}</p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Tamanho</Label>
+                  <p className="text-sm text-muted-foreground mt-1">{formatFileSize(viewItemDetails.file_size)}</p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Data de Criação</Label>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {new Date(viewItemDetails.created_at).toLocaleDateString('pt-AO', {
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </p>
+                </div>
               </div>
+
+              {/* Descrição */}
+              {viewItemDetails.description && (
+                <div>
+                  <Label className="text-sm font-medium">Descrição</Label>
+                  <p className="text-sm text-muted-foreground mt-1 whitespace-pre-wrap">
+                    {viewItemDetails.description}
+                  </p>
+                </div>
+              )}
+
+              {/* Preview do arquivo */}
+              {viewItemDetails.file_url && (
+                <div>
+                  <Label className="text-sm font-medium">Arquivo</Label>
+                  <div className="mt-2">
+                    {viewItemDetails.type === 'imagem' && (
+                      <div 
+                        className="w-full h-64 cursor-pointer group relative overflow-hidden rounded-lg border"
+                        onClick={() => setFullscreenPreview({url: viewItemDetails.file_url!, type: 'imagem', title: viewItemDetails.title})}
+                      >
+                        <img 
+                          src={viewItemDetails.file_url} 
+                          alt={viewItemDetails.title} 
+                          className="w-full h-full object-cover transition-transform group-hover:scale-105" 
+                        />
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                          <Eye className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </div>
+                      </div>
+                    )}
+                    {viewItemDetails.type === 'video' && (
+                      <div 
+                        className="w-full h-64 cursor-pointer group relative overflow-hidden rounded-lg border"
+                        onClick={() => setFullscreenPreview({url: viewItemDetails.file_url!, type: 'video', title: viewItemDetails.title})}
+                      >
+                        <video 
+                          src={viewItemDetails.file_url} 
+                          className="w-full h-full object-cover transition-transform group-hover:scale-105" 
+                        />
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                          <Eye className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </div>
+                      </div>
+                    )}
+                    {viewItemDetails.type === 'documento' && viewItemDetails.mime_type?.includes('pdf') && (
+                      <iframe src={viewItemDetails.file_url} className="w-full h-64 rounded-lg border" title="Preview PDF" />
+                    )}
+                    {viewItemDetails.type === 'documento' && !viewItemDetails.mime_type?.includes('pdf') && (
+                      <div className="w-full h-64 flex items-center justify-center bg-muted rounded-lg border">
+                        <FileText className="w-16 h-16 text-muted-foreground" />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Ações */}
+              <div className="flex items-center gap-2 pt-4 border-t">
+                <Button 
+                  onClick={() => handleOpenFile(viewItemDetails.file_url!)}
+                  disabled={!viewItemDetails.file_url}
+                >
+                  <ExternalLink className="w-4 h-4 mr-2" />
+                  Abrir Arquivo
+                </Button>
+                <Button 
+                  variant="outline"
+                  onClick={() => handleDownload(viewItemDetails.file_url!, viewItemDetails.title)}
+                  disabled={!viewItemDetails.file_url}
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Baixar
+                </Button>
+                <Button 
+                  variant="outline"
+                  onClick={() => handleCopyLink(viewItemDetails.file_url!)}
+                  disabled={!viewItemDetails.file_url}
+                >
+                  <Copy className="w-4 h-4 mr-2" />
+                  Copiar Link
+                </Button>
+                <Button 
+                  variant="outline"
+                  onClick={() => handleToggleVisibility(viewItemDetails)}
+                  disabled={isToggleVisibilityLoading === viewItemDetails.id}
+                >
+                  {isToggleVisibilityLoading === viewItemDetails.id ? (
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2" />
+                  ) : viewItemDetails.is_public ? (
+                    <Lock className="w-4 h-4 mr-2" />
+                  ) : (
+                    <Globe className="w-4 h-4 mr-2" />
+                  )}
+                  {viewItemDetails.is_public ? 'Tornar Privado' : 'Tornar Público'}
+                </Button>
+                <Button 
+                  variant="outline"
+                  onClick={() => {
+                    handleEdit(viewItemDetails);
+                    setIsViewModalOpen(false);
+                  }}
+                >
+                  <Edit className="w-4 h-4 mr-2" />
+                  Editar
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal de Preview em Tela Cheia */}
+      <Dialog open={!!fullscreenPreview} onOpenChange={() => setFullscreenPreview(null)}>
+        <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 overflow-hidden">
+          <div className="relative w-full h-full">
+            {fullscreenPreview && (
+              <>
+                {/* Header */}
+                <div className="absolute top-4 left-4 right-4 z-10 flex items-center justify-between bg-black/50 backdrop-blur-sm rounded-lg p-3">
+                  <h3 className="text-white font-medium truncate">{fullscreenPreview.title}</h3>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setFullscreenPreview(null)}
+                    className="text-white hover:bg-white/20"
+                  >
+                    <XIcon className="w-4 h-4" />
+                  </Button>
+                </div>
+
+                {/* Conteúdo */}
+                <div className="w-full h-full flex items-center justify-center bg-black">
+                  {fullscreenPreview.type === 'imagem' && (
+                    <img 
+                      src={fullscreenPreview.url} 
+                      alt={fullscreenPreview.title}
+                      className="max-w-full max-h-full object-contain"
+                    />
+                  )}
+                  {fullscreenPreview.type === 'video' && (
+                    <video 
+                      src={fullscreenPreview.url} 
+                      controls
+                      className="max-w-full max-h-full"
+                      autoPlay
+                    />
+                  )}
+                </div>
+
+                {/* Ações */}
+                <div className="absolute bottom-4 left-4 right-4 z-10 flex items-center justify-center gap-2">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => handleDownload(fullscreenPreview.url, fullscreenPreview.title)}
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    Baixar
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => handleCopyLink(fullscreenPreview.url)}
+                  >
+                    <Copy className="w-4 h-4 mr-2" />
+                    Copiar Link
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => handleOpenFile(fullscreenPreview.url)}
+                  >
+                    <ExternalLink className="w-4 h-4 mr-2" />
+                    Abrir
+                  </Button>
+                </div>
+              </>
             )}
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Chips de filtros ativos */}
-      {activeFilters.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-4">
-          {activeFilters.map((f, i) => (
-            <Badge key={i} className="bg-blue-100 text-blue-700 cursor-pointer" onClick={f.onRemove}>{f.label} <XIcon className="w-3 h-3 ml-1" /></Badge>
-          ))}
-        </div>
-      )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

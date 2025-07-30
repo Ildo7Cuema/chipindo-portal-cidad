@@ -18,6 +18,12 @@ export const MaintenanceMode: React.FC<MaintenanceModeProps> = ({ children }) =>
 
   const checkMaintenanceMode = async () => {
     try {
+      // Temporarily disable maintenance mode check for testing
+      setMaintenanceMode(false);
+      setLoading(false);
+      
+      // Original code commented out for testing
+      /*
       // Get maintenance mode setting from database
       const { data, error } = await supabase
         .rpc('get_system_setting' as any, {
@@ -30,10 +36,10 @@ export const MaintenanceMode: React.FC<MaintenanceModeProps> = ({ children }) =>
       } else {
         setMaintenanceMode(data === true);
       }
+      */
     } catch (error) {
       console.error('Error checking maintenance mode:', error);
       setMaintenanceMode(false);
-    } finally {
       setLoading(false);
     }
   };

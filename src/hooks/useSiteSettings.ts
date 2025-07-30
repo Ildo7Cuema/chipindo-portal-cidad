@@ -12,6 +12,11 @@ export interface SiteSettings {
   departments_description: string;
   services_count: string;
   services_description: string;
+  area_total_count: string;
+  area_total_description: string;
+  growth_rate: string;
+  growth_description: string;
+  growth_period: string;
   footer_about_title: string;
   footer_about_subtitle: string;
   footer_about_description: string;
@@ -44,7 +49,16 @@ export function useSiteSettings() {
         if (error) {
           console.error('Error fetching site settings:', error);
         } else {
-          setSettings(data);
+          // Ensure all required fields are present with defaults
+          const settingsWithDefaults: SiteSettings = {
+            ...data,
+            area_total_count: (data as any).area_total_count || '2.100',
+            area_total_description: (data as any).area_total_description || 'Quilómetros quadrados',
+            growth_rate: (data as any).growth_rate || '5.4',
+            growth_description: (data as any).growth_description || 'Taxa anual',
+            growth_period: (data as any).growth_period || '2024'
+          };
+          setSettings(settingsWithDefaults);
         }
       } catch (error) {
         console.error('Error fetching site settings:', error);
@@ -71,8 +85,17 @@ export function useSiteSettings() {
         throw error;
       }
 
-      setSettings(data);
-      return data;
+      // Ensure all required fields are present with defaults
+      const settingsWithDefaults: SiteSettings = {
+        ...data,
+        area_total_count: (data as any).area_total_count || '2.100',
+        area_total_description: (data as any).area_total_description || 'Quilómetros quadrados',
+        growth_rate: (data as any).growth_rate || '5.4',
+        growth_description: (data as any).growth_description || 'Taxa anual',
+        growth_period: (data as any).growth_period || '2024'
+      };
+      setSettings(settingsWithDefaults);
+      return settingsWithDefaults;
     } catch (error) {
       console.error('Error updating site settings:', error);
       throw error;

@@ -33,6 +33,8 @@ import { UserManager } from "@/components/admin/UserManager";
 import { SystemSettings } from "@/components/admin/SystemSettings";
 import { TransparencyManager } from "@/components/admin/TransparencyManager";
 import { OuvidoriaManager } from "@/components/admin/OuvidoriaManager";
+import { PopulationHistoryManager } from "@/components/admin/PopulationHistoryManager";
+import { SetoresEstrategicosManager } from "@/components/admin/SetoresEstrategicosManager";
 
 interface NavigationItem {
   id: string;
@@ -66,12 +68,14 @@ const Admin = () => {
     { id: "acervo", label: "Acervo Digital", icon: Archive, description: "Gerir acervo digital" },
     { id: "organigrama", label: "Organigrama", icon: Network, description: "Gerir estrutura organizacional" },
     { id: "departamentos", label: "Direcções", icon: Building2, description: "Gerir departamentos" },
+    { id: "setores", label: "Setores Estratégicos", icon: Building2, description: "Gerir setores estratégicos" },
     { id: "content", label: "Conteúdo", icon: FileText, description: "Gerir conteúdo do site" },
     { id: "carousel", label: "Carousel", icon: ImageUp, description: "Gerir imagens do carousel" },
     { id: "locations", label: "Localizações", icon: MapPin, description: "Gerir localizações" },
     { id: "emergency-contacts", label: "Contactos", icon: AlertTriangle, description: "Contactos de emergência" },
     { id: "transparency", label: "Transparência", icon: EyeIcon, description: "Gerir documentos de transparência" },
     { id: "ouvidoria", label: "Ouvidoria", icon: MessageSquare, description: "Gerir manifestações da ouvidoria" },
+    { id: "population", label: "População", icon: Users, description: "Gestão do histórico populacional" },
     { id: "users", label: "Utilizadores", icon: Users, description: "Gerir utilizadores do sistema" }
   ];
 
@@ -381,12 +385,14 @@ const Admin = () => {
               {activeTab === "acervo" && <AcervoDigitalManager />}
               {activeTab === "organigrama" && <OrganigramaManager />}
               {activeTab === "departamentos" && <DepartamentosManager />}
+              {activeTab === "setores" && <SetoresEstrategicosManager />}
               {activeTab === "content" && <SiteContentManager />}
               {activeTab === "carousel" && <HeroCarouselManager />}
               {activeTab === "locations" && <LocationsManager />}
               {activeTab === "emergency-contacts" && <EmergencyContactsManager />}
               {activeTab === "transparency" && <TransparencyManager />}
               {activeTab === "ouvidoria" && <OuvidoriaManager />}
+              {activeTab === "population" && <PopulationHistoryManager />}
               {activeTab === "users" && <UserManager currentUserRole={role} />}
               {activeTab === "settings" && <SystemSettings />}
               {/* Other tabs would be added here */}

@@ -9,6 +9,7 @@ import { useRef, useEffect, useState } from "react";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useRealTimeStats } from "@/hooks/useRealTimeStats";
 import { useHeroCarousel } from "@/hooks/useHeroCarousel";
+import { useHeroStats } from "@/hooks/useHeroStats";
 import { cn } from "@/lib/utils";
 
 export const Hero = () => {
@@ -18,6 +19,14 @@ export const Hero = () => {
   const { settings } = useSiteSettings();
   const { stats } = useRealTimeStats();
   const { images: carouselImages, loading: carouselLoading } = useHeroCarousel();
+  const { 
+    populationFormatted, 
+    growthRate, 
+    sectors, 
+    projects, 
+    opportunities,
+    loading: heroStatsLoading 
+  } = useHeroStats();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isVisible, setIsVisible] = useState(false);
@@ -241,7 +250,7 @@ export const Hero = () => {
                   ))}
                 </div>
                 <span className="text-sm text-primary-foreground/80 font-medium ml-2">
-                  +150.000 cidadãos prósperos
+                  {heroStatsLoading ? '...' : `${populationFormatted} cidadãos prósperos`}
                 </span>
               </div>
               <div className="flex items-center gap-2">
@@ -261,26 +270,27 @@ export const Hero = () => {
                 <StatCard
                   icon={UsersIcon}
                   label="População"
-                  value={settings?.population_count || '150.000+'}
-                  description={settings?.population_description || 'Habitantes prósperos'}
+                  value={heroStatsLoading ? '...' : populationFormatted}
+                  description={heroStatsLoading ? 'Carregando...' : 'Habitantes prósperos'}
                   variant="glass"
                   size="lg"
                   className="hover:scale-105 transition-all duration-500 hover:shadow-2xl hover:shadow-yellow-500/10"
                   trend={{
-                    value: 2.5,
-                    isPositive: true
+                    value: growthRate,
+                    isPositive: growthRate > 0
                   }}
+                  loading={heroStatsLoading}
                 />
                 
                 <StatCard
                   icon={BuildingIcon}
                   label="Setores"
-                  value={stats.loading ? '...' : '7+'}
+                  value={heroStatsLoading ? '...' : `${sectors}+`}
                   description="Áreas de potencial"
                   variant="glass"
                   size="lg"
                   className="hover:scale-105 transition-all duration-500 hover:shadow-2xl hover:shadow-emerald-500/10"
-                  loading={stats.loading}
+                  loading={heroStatsLoading}
                 />
               </div>
 
@@ -288,26 +298,27 @@ export const Hero = () => {
                 <StatCard
                   icon={FileTextIcon}
                   label="Projetos"
-                  value={stats.loading ? '...' : '25+'}
+                  value={heroStatsLoading ? '...' : `${projects}+`}
                   description="Iniciativas ativas"
                   variant="glass"
                   size="lg"
                   className="hover:scale-105 transition-all duration-500 hover:shadow-2xl hover:shadow-blue-500/10"
-                  loading={stats.loading}
+                  loading={heroStatsLoading}
                   trend={{
-                    value: 15,
-                    isPositive: true
+                    value: Math.min(projects * 0.6, 15), // Dynamic trend based on projects
+                    isPositive: projects > 0
                   }}
                 />
 
                 <StatCard
                   icon={SparklesIcon}
                   label="Oportunidades"
-                  value="∞"
+                  value={heroStatsLoading ? '...' : `${opportunities}+`}
                   description="Potencial ilimitado"
                   variant="glass"
                   size="lg"
                   className="hover:scale-105 transition-all duration-500 hover:shadow-2xl hover:shadow-purple-500/10"
+                  loading={heroStatsLoading}
                 />
               </div>
             </div>

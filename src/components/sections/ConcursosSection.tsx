@@ -220,7 +220,7 @@ export const ConcursosSection = () => {
             <Button 
               variant="outline" 
               size="lg" 
-              className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 hover:shadow-elegant transition-all duration-300"
+              className="border-primary-foreground text-primary-foreground bg-primary-foreground/5 hover:bg-primary-foreground/15 hover:shadow-elegant transition-all duration-300 font-semibold shadow-sm"
               onClick={() => window.location.href = '/concursos-history'}
             >
               Ver histórico de concursos

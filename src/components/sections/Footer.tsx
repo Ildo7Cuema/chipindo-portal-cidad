@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Section, SectionContent } from "@/components/ui/section";
-import { useSiteSettings } from "@/hooks/useSiteSettings";
+// import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { cn } from "@/lib/utils";
 import insigniaAngola from "@/assets/insignia-angola.png";
 import logoRodape from "@/assets/logo_Rodape.png";
@@ -27,7 +27,13 @@ import {
 } from "lucide-react";
 
 export const Footer = () => {
-  const { settings } = useSiteSettings();
+  // const { settings } = useSiteSettings();
+  const settings = {
+    social_facebook: "#",
+    social_instagram: "#",
+    social_twitter: "#",
+    social_youtube: "#"
+  };
   
   const currentYear = new Date().getFullYear();
   

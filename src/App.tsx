@@ -25,6 +25,16 @@ import Acessibilidade from "./pages/Acessibilidade";
 import Sitemap from "./pages/Sitemap";
 import Transparencia from "./pages/Transparencia";
 import Ouvidoria from "./pages/Ouvidoria";
+import Educacao from "./pages/Educacao";
+import Saude from "./pages/Saude";
+import Agricultura from "./pages/Agricultura";
+import SectorMineiro from "./pages/SectorMineiro";
+import DesenvolvimentoEconomico from "./pages/DesenvolvimentoEconomico";
+import Cultura from "./pages/Cultura";
+import Tecnologia from "./pages/Tecnologia";
+import EnergiaAgua from "./pages/EnergiaAgua";
+import TestPage from "./pages/TestPage";
+import EducacaoSimple from "./pages/EducacaoSimple";
 
 const queryClient = new QueryClient();
 
@@ -55,6 +65,16 @@ const App = () => (
             <Route path="/sitemap" element={<Sitemap />} />
             <Route path="/transparencia" element={<Transparencia />} />
             <Route path="/ouvidoria" element={<Ouvidoria />} />
+            <Route path="/educacao" element={<Educacao />} />
+            <Route path="/saude" element={<Saude />} />
+            <Route path="/agricultura" element={<Agricultura />} />
+            <Route path="/sector-mineiro" element={<SectorMineiro />} />
+            <Route path="/desenvolvimento-economico" element={<DesenvolvimentoEconomico />} />
+            <Route path="/cultura" element={<Cultura />} />
+            <Route path="/tecnologia" element={<Tecnologia />} />
+            <Route path="/energia-agua" element={<EnergiaAgua />} />
+            <Route path="/test" element={<TestPage />} />
+            <Route path="/educacao-simple" element={<EducacaoSimple />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </MaintenanceMode>

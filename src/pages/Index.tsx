@@ -3,6 +3,7 @@ import { Hero } from "@/components/sections/Hero";
 import { NewsSection } from "@/components/sections/NewsSection";
 import { ConcursosSection } from "@/components/sections/ConcursosSection";
 import { Footer } from "@/components/sections/Footer";
+import { PopulationDetailsSection } from "@/components/sections/PopulationDetailsSection";
 import { Section, SectionHeader, SectionContent } from "@/components/ui/section";
 import { StatCard } from "@/components/ui/stat-card";
 import { Card, CardContent } from "@/components/ui/card";
@@ -23,7 +24,14 @@ import {
   GlobeIcon,
   FileTextIcon,
   AwardIcon,
-  BookOpenIcon
+  BookOpenIcon,
+  GraduationCapIcon,
+  HeartIcon,
+  SproutIcon,
+  PickaxeIcon,
+  PaletteIcon,
+  CpuIcon,
+  ZapIcon
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
@@ -31,6 +39,8 @@ import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useMunicipalStats } from "@/hooks/useMunicipalStats";
 import { useDepartamentos } from "@/hooks/useDepartamentos";
 import { useEmergencyContacts } from "@/hooks/useEmergencyContacts";
+import { usePopulationData } from "@/hooks/usePopulationData";
+import { useSetoresEstrategicos } from "@/hooks/useSetoresEstrategicos";
 
 const Index = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -41,6 +51,15 @@ const Index = () => {
   const { stats, loading: statsLoading } = useMunicipalStats();
   const { departamentos: direccoes, loading: direccoesLoading } = useDepartamentos();
   const { contacts: emergencyContacts, loading: emergencyLoading } = useEmergencyContacts();
+  const { 
+    currentPopulation, 
+    growthRate, 
+    growthDescription, 
+    period, 
+    loading: populationLoading, 
+    error: populationError 
+  } = usePopulationData();
+  const { setores, loading: setoresLoading } = useSetoresEstrategicos();
 
   // Interactive mouse tracking
   useEffect(() => {
@@ -124,11 +143,12 @@ const Index = () => {
               <StatCard
                 icon={UsersIcon}
                 label="População"
-                value={settings?.population_count || 'N/A'}
-                description={settings?.population_description || 'Habitantes registados'}
+                value={populationLoading ? '...' : currentPopulation.toLocaleString('pt-AO')}
+                description={populationError ? 'Erro ao carregar dados' : 'Habitantes registados'}
                 variant="elevated"
                 size="lg"
                 className="hover:scale-105 transition-all duration-500 hover:shadow-2xl hover:shadow-blue-500/20"
+                loading={populationLoading}
               />
               
               <StatCard
@@ -156,8 +176,8 @@ const Index = () => {
               <StatCard
                 icon={MapIcon}
                 label="Área Total"
-                value="2.100"
-                description="Quilómetros quadrados"
+                value={settings?.area_total_count || '2.100'}
+                description={settings?.area_total_description || 'Quilómetros quadrados'}
                 variant="elevated"
                 size="lg"
                 className="hover:scale-105 transition-all duration-500 hover:shadow-2xl hover:shadow-yellow-500/20"
@@ -180,16 +200,20 @@ const Index = () => {
               <StatCard
                 icon={TrendingUpIcon}
                 label="Crescimento"
-                value="5.4%"
-                description="Taxa anual"
+                value={populationLoading ? '...' : `${growthRate.toFixed(1)}%`}
+                description={populationError ? 'Erro ao carregar dados' : `${growthDescription} (${period})`}
                 variant="glass"
                 size="md"
                 className="hover:scale-105 transition-all duration-500 hover:shadow-2xl hover:shadow-green-500/20"
-                trend={{ value: 5.4, isPositive: true }}
+                trend={{ value: growthRate, isPositive: growthRate > 0 }}
+                loading={populationLoading}
               />
             </div>
           </SectionContent>
         </Section>
+
+        {/* Population Details Section */}
+        <PopulationDetailsSection />
 
         {/* Services Section - Only show if we have directions */}
         {mainDirecoes.length > 0 && (
@@ -278,6 +302,117 @@ const Index = () => {
             </SectionContent>
           </Section>
         )}
+
+        {/* Setores Estratégicos Section */}
+        <Section variant="default" size="lg" className="relative overflow-hidden">
+          <SectionContent>
+            <SectionHeader className="text-center space-y-4">
+              <div className="flex items-center justify-center gap-3">
+                <div className="relative">
+                  <BuildingIcon className="w-10 h-10 text-primary" />
+                  <div className="absolute inset-0 w-10 h-10 bg-primary/20 rounded-full animate-pulse" />
+                </div>
+                <h2 className="text-3xl font-bold">
+                  <span className="text-foreground">Setores</span>{' '}
+                  <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                    Estratégicos
+                  </span>
+                </h2>
+              </div>
+              <p className="text-muted-foreground max-w-3xl mx-auto text-lg">
+                Explore os setores estratégicos do município de Chipindo e descubra oportunidades, 
+                programas e informações detalhadas sobre cada área
+              </p>
+            </SectionHeader>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-12">
+              {setoresLoading ? (
+                // Loading state
+                Array.from({ length: 8 }).map((_, index) => (
+                  <Card key={index} className="animate-pulse">
+                    <CardContent className="p-6 text-center">
+                      <div className="w-16 h-16 bg-muted rounded-full mx-auto mb-4" />
+                      <div className="h-6 bg-muted rounded mb-2" />
+                      <div className="h-4 bg-muted rounded mb-4" />
+                      <div className="h-8 bg-muted rounded" />
+                    </CardContent>
+                  </Card>
+                ))
+              ) : setores.length > 0 ? (
+                // Dynamic data from database
+                setores.map((setor, index) => {
+                  // Map icon names to components
+                  const getIconComponent = (iconName: string) => {
+                    switch (iconName) {
+                      case 'GraduationCap': return GraduationCapIcon;
+                      case 'Heart': return HeartIcon;
+                      case 'Sprout': return SproutIcon;
+                      case 'Pickaxe': return PickaxeIcon;
+                      case 'TrendingUp': return TrendingUpIcon;
+                      case 'Palette': return PaletteIcon;
+                      case 'Cpu': return CpuIcon;
+                      case 'Zap': return ZapIcon;
+                      default: return BuildingIcon;
+                    }
+                  };
+                  
+                  const IconComponent = getIconComponent(setor.icone);
+                  
+                  return (
+                    <Card key={setor.id} className="group hover:shadow-elegant transition-all duration-300 cursor-pointer overflow-hidden">
+                      <CardContent className="p-6 text-center">
+                        <div className="mb-4">
+                          <div 
+                            className="w-16 h-16 rounded-full flex items-center justify-center mx-auto group-hover:bg-primary/20 transition-colors"
+                            style={{ backgroundColor: setor.cor_primaria + '20' }}
+                          >
+                            <IconComponent className="w-8 h-8" style={{ color: setor.cor_primaria }} />
+                          </div>
+                        </div>
+                        <h3 className="font-semibold text-lg mb-2 group-hover:text-primary transition-colors">
+                          {setor.nome}
+                        </h3>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          {setor.descricao.substring(0, 60)}...
+                        </p>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
+                          onClick={() => window.location.href = `/${setor.slug}`}
+                        >
+                          Ver Detalhes
+                          <ArrowRightIcon className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  );
+                })
+              ) : (
+                // No data state
+                <div className="col-span-full text-center py-12">
+                  <BuildingIcon className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">Nenhum setor encontrado</h3>
+                  <p className="text-muted-foreground">
+                    Os setores estratégicos serão carregados em breve.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="text-center mt-8">
+              <Button 
+                variant="institutional" 
+                size="lg"
+                onClick={() => window.location.href = '/services'}
+                className="group"
+              >
+                Ver Todos os Serviços
+                <ArrowRightIcon className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </div>
+          </SectionContent>
+        </Section>
 
         <NewsSection />
         <ConcursosSection />
