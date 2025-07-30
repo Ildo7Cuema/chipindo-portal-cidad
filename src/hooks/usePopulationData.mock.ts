@@ -86,8 +86,15 @@ export function usePopulationData() {
     fetchPopulationData();
   }, []);
 
+  // Get current data for direct access
+  const currentData = getCurrentPopulation();
+
   return {
     populationData,
+    currentPopulation: currentData.population_count,
+    growthRate: currentData.growth_rate,
+    growthDescription: "Taxa de crescimento anual",
+    period: `${currentData.year}`,
     loading,
     error,
     fetchPopulationData,

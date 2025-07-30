@@ -143,7 +143,7 @@ const Index = () => {
               <StatCard
                 icon={UsersIcon}
                 label="População"
-                value={populationLoading ? '...' : currentPopulation.toLocaleString('pt-AO')}
+                value={populationLoading ? '...' : (currentPopulation || 0).toLocaleString('pt-AO')}
                 description={populationError ? 'Erro ao carregar dados' : 'Habitantes registados'}
                 variant="elevated"
                 size="lg"
