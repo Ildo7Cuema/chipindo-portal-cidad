@@ -25,9 +25,9 @@ export const Header = () => {
     )}>
       <div className="container mx-auto container-padding">
         <div className="flex items-center justify-between h-16">
-          {/* Logo and Title - Clean Design */}
-          <div className="flex items-center space-x-3 group">
-            <div className="w-10 h-10 bg-gradient-surface rounded-lg flex items-center justify-center shadow-sm border border-border/30 p-1 transition-all duration-300 group-hover:shadow-md">
+          {/* Logo and Title - Compact Design */}
+          <div className="flex items-center space-x-2 group">
+            <div className="w-8 h-8 bg-gradient-surface rounded-lg flex items-center justify-center shadow-sm border border-border/30 p-1 transition-all duration-300 group-hover:shadow-md">
               <img 
                 src={insigniaAngola} 
                 alt="Insígnia da República de Angola" 
@@ -36,17 +36,17 @@ export const Header = () => {
             </div>
             
             <div className="space-y-0">
-              <h1 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors duration-300">
+              <h1 className="text-base font-bold text-foreground group-hover:text-primary transition-colors duration-300">
                 Portal de Chipindo
               </h1>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs text-muted-foreground">
                 Administração Municipal
               </p>
             </div>
 
             <Badge 
               variant="outline" 
-              className="hidden sm:inline-flex bg-gradient-to-r from-yellow-500/10 to-orange-500/10 text-primary border-primary/30 text-xs px-3 py-1 ml-3 font-medium"
+              className="hidden md:inline-flex bg-gradient-to-r from-yellow-500/10 to-orange-500/10 text-primary border-primary/30 text-xs px-2 py-0.5 ml-2 font-medium"
             >
               Oficial
             </Badge>

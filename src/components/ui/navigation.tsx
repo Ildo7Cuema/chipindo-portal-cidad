@@ -69,7 +69,7 @@ export const Navigation = ({ className }: NavigationProps) => {
   return (
     <nav className={cn("relative", className)}>
       {/* Desktop Navigation */}
-      <div className="hidden lg:flex items-center space-x-1">
+      <div className="hidden lg:flex items-center space-x-0.5">
         {navItems.map((item) => {
           const IconComponent = item.icon;
           const active = isActive(item.href);
@@ -80,14 +80,14 @@ export const Navigation = ({ className }: NavigationProps) => {
               variant="ghost"
               size="sm"
               className={cn(
-                "h-8 px-2.5 text-sm font-medium transition-colors duration-200",
+                "h-8 px-2 text-xs font-medium transition-colors duration-200",
                 active 
                   ? "bg-primary/10 text-primary" 
                   : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
               )}
               onClick={() => handleNavClick(item.href)}
             >
-              <IconComponent className="w-3.5 h-3.5 mr-2" />
+              <IconComponent className="w-3 h-3 mr-1.5" />
               {item.label}
             </Button>
           );
@@ -98,8 +98,8 @@ export const Navigation = ({ className }: NavigationProps) => {
           <Button
             variant="ghost"
             size="sm"
-            className={cn(
-              "h-8 px-2.5 text-sm font-medium transition-colors duration-200",
+              className={cn(
+                "h-8 px-2 text-xs font-medium transition-colors duration-200",
               isSetoresOpen || setoresItems.some(item => isActive(item.href))
                 ? "bg-primary/10 text-primary" 
                 : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
@@ -108,10 +108,10 @@ export const Navigation = ({ className }: NavigationProps) => {
             onMouseEnter={() => setIsSetoresOpen(true)}
             onMouseLeave={() => setIsSetoresOpen(false)}
           >
-            <BuildingIcon className="w-3.5 h-3.5 mr-2" />
+            <BuildingIcon className="w-3 h-3 mr-1.5" />
             Setores
             <ChevronDownIcon className={cn(
-              "w-3.5 h-3.5 ml-1 transition-transform duration-200",
+              "w-3 h-3 ml-1 transition-transform duration-200",
               isSetoresOpen && "rotate-180"
             )} />
           </Button>
