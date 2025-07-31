@@ -35,6 +35,7 @@ import Tecnologia from "./pages/Tecnologia";
 import EnergiaAgua from "./pages/EnergiaAgua";
 import TestPage from "./pages/TestPage";
 import EducacaoSimple from "./pages/EducacaoSimple";
+import Events from "./pages/Events";
 
 const queryClient = new QueryClient();
 
@@ -75,6 +76,7 @@ const App = () => (
             <Route path="/energia-agua" element={<EnergiaAgua />} />
             <Route path="/test" element={<TestPage />} />
             <Route path="/educacao-simple" element={<EducacaoSimple />} />
+            <Route path="/eventos" element={<Events />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </MaintenanceMode>

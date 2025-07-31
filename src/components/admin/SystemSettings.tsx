@@ -1,2 +1,2 @@
-// Export the mock version to avoid build errors
-export { SystemSettings } from './SystemSettings.mock';
+// Export the real implementation
+export { SystemSettings } from './SystemSettings.real';

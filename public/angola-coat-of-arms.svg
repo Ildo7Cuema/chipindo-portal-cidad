@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="95" fill="#C8102E" stroke="#000" stroke-width="2"/>
+  
+  <!-- Inner circle -->
+  <circle cx="100" cy="100" r="85" fill="#FFD700" stroke="#000" stroke-width="1"/>
+  
+  <!-- Central emblem -->
+  <g transform="translate(100, 100)">
+    <!-- Machete -->
+    <path d="M-30,-40 L-20,-30 L-15,-25 L-10,-20 L-5,-15 L0,-10 L5,-5 L10,0 L15,5 L20,10 L25,15 L30,20 L35,25 L40,30 L45,35 L50,40 L45,45 L40,50 L35,55 L30,60 L25,65 L20,70 L15,75 L10,80 L5,85 L0,90 L-5,85 L-10,80 L-15,75 L-20,70 L-25,65 L-30,60 L-35,55 L-40,50 L-45,45 L-50,40 L-45,35 L-40,30 L-35,25 L-30,20 L-25,15 L-20,10 L-15,5 L-10,0 L-5,-5 L0,-10 L5,-15 L10,-20 L15,-25 L20,-30 L25,-35 L30,-40 Z" fill="#8B4513" stroke="#000" stroke-width="1"/>
+    
+    <!-- Gear -->
+    <circle cx="0" cy="0" r="25" fill="#C0C0C0" stroke="#000" stroke-width="1"/>
+    <circle cx="0" cy="0" r="15" fill="#C8102E"/>
+    
+    <!-- Gear teeth -->
+    <g fill="#C0C0C0" stroke="#000" stroke-width="0.5">
+      <rect x="-2" y="-35" width="4" height="10"/>
+      <rect x="-2" y="25" width="4" height="10"/>
+      <rect x="-35" y="-2" width="10" height="4"/>
+      <rect x="25" y="-2" width="10" height="4"/>
+      <rect x="-25" y="-25" width="8" height="8" transform="rotate(-45)"/>
+      <rect x="17" y="17" width="8" height="8" transform="rotate(-45)"/>
+      <rect x="-25" y="17" width="8" height="8" transform="rotate(45)"/>
+      <rect x="17" y="-25" width="8" height="8" transform="rotate(45)"/>
+    </g>
+    
+    <!-- Star -->
+    <g fill="#FFD700" stroke="#000" stroke-width="0.5">
+      <path d="M0,-20 L2,-8 L8,-8 L3,0 L8,8 L2,8 L0,20 L-2,8 L-8,8 L-3,0 L-8,-8 L-2,-8 Z"/>
+    </g>
+    
+    <!-- Book -->
+    <rect x="-15" y="25" width="30" height="20" fill="#8B4513" stroke="#000" stroke-width="1"/>
+    <rect x="-12" y="28" width="24" height="14" fill="#FFD700"/>
+    <line x1="-12" y1="35" x2="12" y2="35" stroke="#000" stroke-width="1"/>
+    <line x1="-12" y1="39" x2="12" y2="39" stroke="#000" stroke-width="1"/>
+    <line x1="-12" y1="43" x2="12" y2="43" stroke="#000" stroke-width="1"/>
+  </g>
+  
+  <!-- Text ring -->
+  <g transform="translate(100, 100)">
+    <circle cx="0" cy="0" r="70" fill="none" stroke="#000" stroke-width="1"/>
+    <text x="0" y="-60" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="#000">REPÚBLICA DE ANGOLA</text>
+  </g>
+</svg> 

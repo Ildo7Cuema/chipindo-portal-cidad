@@ -35,6 +35,8 @@ import { TransparencyManager } from "@/components/admin/TransparencyManager";
 import { OuvidoriaManager } from "@/components/admin/OuvidoriaManager";
 import { PopulationHistoryManager } from "@/components/admin/PopulationHistoryManager";
 import { SetoresEstrategicosManager } from "@/components/admin/SetoresEstrategicosManager";
+import { MunicipalityCharacterizationManager } from "@/components/admin/MunicipalityCharacterizationManager";
+import { EventsManager } from "@/components/admin/EventsManager";
 
 interface NavigationItem {
   id: string;
@@ -76,6 +78,8 @@ const Admin = () => {
     { id: "transparency", label: "Transparência", icon: EyeIcon, description: "Gerir documentos de transparência" },
     { id: "ouvidoria", label: "Ouvidoria", icon: MessageSquare, description: "Gerir manifestações da ouvidoria" },
     { id: "population", label: "População", icon: Users, description: "Gestão do histórico populacional" },
+    { id: "characterization", label: "Caracterização", icon: MapPin, description: "Caracterização do município" },
+    { id: "events", label: "Eventos", icon: Calendar, description: "Gerir eventos do município" },
     { id: "users", label: "Utilizadores", icon: Users, description: "Gerir utilizadores do sistema" }
   ];
 
@@ -393,6 +397,8 @@ const Admin = () => {
               {activeTab === "transparency" && <TransparencyManager />}
               {activeTab === "ouvidoria" && <OuvidoriaManager />}
               {activeTab === "population" && <PopulationHistoryManager />}
+              {activeTab === "characterization" && <MunicipalityCharacterizationManager />}
+              {activeTab === "events" && <EventsManager />}
               {activeTab === "users" && <UserManager currentUserRole={role} />}
               {activeTab === "settings" && <SystemSettings />}
               {/* Other tabs would be added here */}

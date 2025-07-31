@@ -4,6 +4,7 @@ import { NewsSection } from "@/components/sections/NewsSection";
 import { ConcursosSection } from "@/components/sections/ConcursosSection";
 import { Footer } from "@/components/sections/Footer";
 import { PopulationDetailsSection } from "@/components/sections/PopulationDetailsSection";
+import { MunicipalityCharacterization } from "@/components/sections/MunicipalityCharacterization";
 import { Section, SectionHeader, SectionContent } from "@/components/ui/section";
 import { StatCard } from "@/components/ui/stat-card";
 import { Card, CardContent } from "@/components/ui/card";
@@ -214,6 +215,9 @@ const Index = () => {
 
         {/* Population Details Section */}
         <PopulationDetailsSection />
+
+        {/* Municipality Characterization Section */}
+        <MunicipalityCharacterization />
 
         {/* Services Section - Only show if we have directions */}
         {mainDirecoes.length > 0 && (
