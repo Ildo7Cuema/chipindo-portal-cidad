@@ -1,3 +1,4 @@
+
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -23,7 +24,8 @@ import {
   BuildingIcon,
   ArrowUpIcon,
   StarIcon,
-  GlobeIcon
+  GlobeIcon,
+  UserIcon
 } from "lucide-react";
 
 export const Footer = () => {
@@ -43,7 +45,8 @@ export const Footer = () => {
     { label: "Acervo Digital", href: "/acervo" },
     { label: "Transparência", href: "/transparencia" },
     { label: "Ouvidoria", href: "/ouvidoria" },
-    { label: "Serviços", href: "/servicos" }
+    { label: "Serviços", href: "/servicos" },
+    { label: "Área Administrativa", href: "/auth", icon: UserIcon }
   ];
 
   const legalLinks = [
@@ -231,16 +234,28 @@ export const Footer = () => {
                 Links Rápidos
               </h4>
               <div className="space-y-1">
-                {quickLinks.map((link) => (
-                  <a 
-                    key={link.label}
-                    href={link.href} 
-                    className="flex items-center justify-between py-2 px-3 text-sm text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-md transition-colors duration-300 group"
-                  >
-                    <span>{link.label}</span>
-                    <ExternalLinkIcon className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  </a>
-                ))}
+                {quickLinks.map((link) => {
+                  const IconComponent = link.icon;
+                  
+                  return (
+                    <a 
+                      key={link.label}
+                      href={link.href} 
+                      className={cn(
+                        "flex items-center justify-between py-2 px-3 text-sm text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-md transition-colors duration-300 group",
+                        link.label === "Área Administrativa" && "bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-500/20 hover:border-yellow-500/30"
+                      )}
+                    >
+                      <div className="flex items-center gap-2">
+                        {IconComponent && <IconComponent className="w-3 h-3" />}
+                        <span>{link.label}</span>
+                      </div>
+                      {link.label !== "Área Administrativa" && (
+                        <ExternalLinkIcon className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      )}
+                    </a>
+                  );
+                })}
               </div>
             </div>
           </div>

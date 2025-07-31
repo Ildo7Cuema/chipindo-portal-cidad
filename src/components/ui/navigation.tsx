@@ -1,3 +1,4 @@
+
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { 
@@ -152,18 +153,6 @@ export const Navigation = ({ className }: NavigationProps) => {
               </div>
             </div>
           )}
-        </div>
-        
-        <div className="ml-2 pl-2 border-l border-border/50">
-          <Button 
-            variant="outline" 
-            size="sm"
-            className="h-8 px-2.5 text-sm text-primary border-primary/30 hover:bg-primary/5"
-            onClick={() => window.location.href = '/auth'}
-          >
-            <UserIcon className="w-3.5 h-3.5 mr-1.5" />
-            Admin
-          </Button>
         </div>
       </div>
 
