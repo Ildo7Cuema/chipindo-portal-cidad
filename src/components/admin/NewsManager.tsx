@@ -205,19 +205,15 @@ export const NewsManager = () => {
       let newsData = {
         ...formData,
         image_url: imageUrl,
+        author_id: user.id, // Adicionar author_id para novas notícias
       };
-      // Funcionalidade de autor temporariamente removida
-      // if (!editingNews) {
-      //   newsData = {
-      //     ...newsData,
-      //     author_id: user?.id || '',
-      //   };
-      // }
 
       if (editingNews) {
+        // Para edição, removemos o author_id dos dados de atualização
+        const { author_id, ...updateData } = newsData;
         const { error } = await supabase
           .from('news')
-          .update(newsData)
+          .update(updateData)
           .eq('id', editingNews.id);
 
         if (error) throw error;
@@ -227,12 +223,12 @@ export const NewsManager = () => {
           description: "A notícia foi atualizada com sucesso.",
         });
       } else {
-        // Funcionalidade de inserção temporariamente desabilitada devido a problemas de tipo
-        console.log('Insert news data:', newsData);
-        // const { error } = await supabase
-        //   .from('news')
-        //   .insert([newsData]);
-        // if (error) throw error;
+        // Inserir nova notícia
+        const { error } = await supabase
+          .from('news')
+          .insert([newsData]);
+
+        if (error) throw error;
 
         toast({
           title: "Notícia criada",
