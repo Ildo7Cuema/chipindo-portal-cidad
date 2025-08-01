@@ -15,7 +15,10 @@ import {
   RefreshCw, 
   Edit,
   Plus,
-  Trash2
+  Trash2,
+  Navigation,
+  Compass,
+  RotateCcw
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -25,6 +28,7 @@ export const MunicipalityCharacterizationManager = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [syncing, setSyncing] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -59,6 +63,74 @@ export const MunicipalityCharacterizationManager = () => {
     }
   };
 
+  const syncDemographicData = async () => {
+    try {
+      setSyncing(true);
+      
+      // Buscar dados populacionais atualizados
+      const { data: populationData, error: populationError } = await supabase
+        .from('population_history')
+        .select('*')
+        .order('year', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (populationError) {
+        throw new Error('Erro ao buscar dados populacionais');
+      }
+
+      if (populationData) {
+        const currentYear = new Date().getFullYear();
+        const currentPopulation = populationData.population_count;
+        
+        // Calcular densidade baseada na população atual e área
+        const areaKm2 = 2100; // Área do município em km²
+        const density = (currentPopulation / areaKm2).toFixed(1);
+        
+        // Calcular taxa de crescimento se houver dados do ano anterior
+        const { data: previousYearData } = await supabase
+          .from('population_history')
+          .select('population_count')
+          .eq('year', currentYear - 1)
+          .single();
+
+        let growthRate = "2.3% ao ano"; // Valor padrão
+        if (previousYearData && previousYearData.population_count > 0) {
+          const growth = ((currentPopulation - previousYearData.population_count) / previousYearData.population_count) * 100;
+          growthRate = `${growth.toFixed(1)}% ao ano`;
+        }
+
+        // Atualizar dados demográficos
+        const updatedDemography = {
+          population: `${currentPopulation.toLocaleString('pt-AO')} habitantes`,
+          density: `${density} hab/km²`,
+          growth: growthRate,
+          households: characterization?.demography?.households || "26.500 famílias",
+          urbanRate: characterization?.demography?.urbanRate || "35%"
+        };
+
+        setCharacterization(prev => ({
+          ...prev,
+          demography: updatedDemography
+        }));
+
+        toast({
+          title: "Dados sincronizados",
+          description: "Informações demográficas atualizadas com dados populacionais recentes"
+        });
+      }
+    } catch (error) {
+      console.error('Erro ao sincronizar dados demográficos:', error);
+      toast({
+        title: "Erro na sincronização",
+        description: "Não foi possível sincronizar os dados demográficos",
+        variant: "destructive"
+      });
+    } finally {
+      setSyncing(false);
+    }
+  };
+
   const handleSave = async () => {
     try {
       setSaving(true);
@@ -89,7 +161,7 @@ export const MunicipalityCharacterizationManager = () => {
     }
   };
 
-  const handleInputChange = (section: string, field: string, value: string) => {
+  const handleInputChange = (section: string, field: string, value: any) => {
     setCharacterization(prev => ({
       ...prev,
       [section]: {
@@ -141,6 +213,18 @@ export const MunicipalityCharacterizationManager = () => {
           </p>
         </div>
         <div className="flex gap-2">
+          <Button 
+            onClick={syncDemographicData} 
+            disabled={syncing}
+            variant="outline"
+          >
+            {syncing ? (
+              <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+            ) : (
+              <RotateCcw className="w-4 h-4 mr-2" />
+            )}
+            Sincronizar Demografia
+          </Button>
           {editing ? (
             <>
               <Button onClick={() => setEditing(false)} variant="outline">
@@ -165,10 +249,18 @@ export const MunicipalityCharacterizationManager = () => {
       </div>
 
       <Tabs defaultValue="geography" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-8">
           <TabsTrigger value="geography">
             <MapPin className="w-4 h-4 mr-2" />
             Geografia
+          </TabsTrigger>
+          <TabsTrigger value="boundaries">
+            <Navigation className="w-4 h-4 mr-2" />
+            Delimitações
+          </TabsTrigger>
+          <TabsTrigger value="coordinates">
+            <Compass className="w-4 h-4 mr-2" />
+            Coordenadas
           </TabsTrigger>
           <TabsTrigger value="demography">
             <Users className="w-4 h-4 mr-2" />
@@ -215,6 +307,122 @@ export const MunicipalityCharacterizationManager = () => {
                     disabled={!editing}
                   />
                 </div>
+                <div>
+                  <Label>Clima</Label>
+                  <Input
+                    value={characterization?.geography?.climate || ''}
+                    onChange={(e) => handleInputChange('geography', 'climate', e.target.value)}
+                    disabled={!editing}
+                  />
+                </div>
+                <div>
+                  <Label>Temperatura</Label>
+                  <Input
+                    value={characterization?.geography?.temperature || ''}
+                    onChange={(e) => handleInputChange('geography', 'temperature', e.target.value)}
+                    disabled={!editing}
+                  />
+                </div>
+                <div>
+                  <Label>Precipitação</Label>
+                  <Input
+                    value={characterization?.geography?.rainfall || ''}
+                    onChange={(e) => handleInputChange('geography', 'rainfall', e.target.value)}
+                    disabled={!editing}
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="boundaries">
+          <Card>
+            <CardHeader>
+              <CardTitle>Delimitações</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Norte</Label>
+                  <Input
+                    value={characterization?.geography?.boundaries?.north || ''}
+                    onChange={(e) => handleInputChange('geography', 'boundaries', {
+                      ...characterization?.geography?.boundaries,
+                      north: e.target.value
+                    })}
+                    disabled={!editing}
+                  />
+                </div>
+                <div>
+                  <Label>Sul</Label>
+                  <Input
+                    value={characterization?.geography?.boundaries?.south || ''}
+                    onChange={(e) => handleInputChange('geography', 'boundaries', {
+                      ...characterization?.geography?.boundaries,
+                      south: e.target.value
+                    })}
+                    disabled={!editing}
+                  />
+                </div>
+                <div>
+                  <Label>Este</Label>
+                  <Input
+                    value={characterization?.geography?.boundaries?.east || ''}
+                    onChange={(e) => handleInputChange('geography', 'boundaries', {
+                      ...characterization?.geography?.boundaries,
+                      east: e.target.value
+                    })}
+                    disabled={!editing}
+                  />
+                </div>
+                <div>
+                  <Label>Oeste</Label>
+                  <Input
+                    value={characterization?.geography?.boundaries?.west || ''}
+                    onChange={(e) => handleInputChange('geography', 'boundaries', {
+                      ...characterization?.geography?.boundaries,
+                      west: e.target.value
+                    })}
+                    disabled={!editing}
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="coordinates">
+          <Card>
+            <CardHeader>
+              <CardTitle>Coordenadas</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Latitude</Label>
+                  <Input
+                    value={characterization?.geography?.coordinates?.latitude || ''}
+                    onChange={(e) => handleInputChange('geography', 'coordinates', {
+                      ...characterization?.geography?.coordinates,
+                      latitude: e.target.value
+                    })}
+                    disabled={!editing}
+                    placeholder="Ex: 13.8333° S"
+                  />
+                </div>
+                <div>
+                  <Label>Longitude</Label>
+                  <Input
+                    value={characterization?.geography?.coordinates?.longitude || ''}
+                    onChange={(e) => handleInputChange('geography', 'coordinates', {
+                      ...characterization?.geography?.coordinates,
+                      longitude: e.target.value
+                    })}
+                    disabled={!editing}
+                    placeholder="Ex: 14.1667° E"
+                  />
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -223,7 +431,12 @@ export const MunicipalityCharacterizationManager = () => {
         <TabsContent value="demography">
           <Card>
             <CardHeader>
-              <CardTitle>Demografia</CardTitle>
+              <CardTitle className="flex items-center justify-between">
+                Demografia
+                <Badge variant="secondary" className="text-xs">
+                  Sincronizado com dados populacionais
+                </Badge>
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
@@ -233,6 +446,7 @@ export const MunicipalityCharacterizationManager = () => {
                     value={characterization?.demography?.population || ''}
                     onChange={(e) => handleInputChange('demography', 'population', e.target.value)}
                     disabled={!editing}
+                    placeholder="Ex: 159.000 habitantes"
                   />
                 </div>
                 <div>
@@ -241,8 +455,39 @@ export const MunicipalityCharacterizationManager = () => {
                     value={characterization?.demography?.density || ''}
                     onChange={(e) => handleInputChange('demography', 'density', e.target.value)}
                     disabled={!editing}
+                    placeholder="Ex: 76 hab/km²"
                   />
                 </div>
+                <div>
+                  <Label>Crescimento</Label>
+                  <Input
+                    value={characterization?.demography?.growth || ''}
+                    onChange={(e) => handleInputChange('demography', 'growth', e.target.value)}
+                    disabled={!editing}
+                    placeholder="Ex: 2.3% ao ano"
+                  />
+                </div>
+                <div>
+                  <Label>Famílias</Label>
+                  <Input
+                    value={characterization?.demography?.households || ''}
+                    onChange={(e) => handleInputChange('demography', 'households', e.target.value)}
+                    disabled={!editing}
+                    placeholder="Ex: 26.500 famílias"
+                  />
+                </div>
+                <div>
+                  <Label>Taxa Urbana</Label>
+                  <Input
+                    value={characterization?.demography?.urbanRate || ''}
+                    onChange={(e) => handleInputChange('demography', 'urbanRate', e.target.value)}
+                    disabled={!editing}
+                    placeholder="Ex: 35%"
+                  />
+                </div>
+              </div>
+              <div className="text-sm text-muted-foreground bg-blue-50 dark:bg-blue-950/20 p-3 rounded-lg">
+                <p><strong>Nota:</strong> Os dados de população, densidade e crescimento são automaticamente sincronizados com a tabela de histórico populacional para garantir consistência com a seção de Informações Demográficas.</p>
               </div>
             </CardContent>
           </Card>

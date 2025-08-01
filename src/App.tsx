@@ -33,6 +33,7 @@ import DesenvolvimentoEconomico from "./pages/DesenvolvimentoEconomico";
 import Cultura from "./pages/Cultura";
 import Tecnologia from "./pages/Tecnologia";
 import EnergiaAgua from "./pages/EnergiaAgua";
+import TurismoMeioAmbiente from "./pages/TurismoMeioAmbiente";
 import TestPage from "./pages/TestPage";
 import EducacaoSimple from "./pages/EducacaoSimple";
 import Events from "./pages/Events";
@@ -74,6 +75,7 @@ const App = () => (
             <Route path="/cultura" element={<Cultura />} />
             <Route path="/tecnologia" element={<Tecnologia />} />
             <Route path="/energia-agua" element={<EnergiaAgua />} />
+            <Route path="/turismo-meio-ambiente" element={<TurismoMeioAmbiente />} />
             <Route path="/test" element={<TestPage />} />
             <Route path="/educacao-simple" element={<EducacaoSimple />} />
             <Route path="/eventos" element={<Events />} />

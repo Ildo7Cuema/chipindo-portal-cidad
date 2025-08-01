@@ -22,18 +22,21 @@ export const MaintenanceMode: React.FC<MaintenanceModeProps> = ({ children }) =>
       const { data, error } = await supabase
         .from('system_settings')
         .select('maintenance_mode')
-        .limit(1)
-        .single();
+        .limit(1);
 
       if (error) {
         console.error('Error checking maintenance mode:', error);
+        // Se a tabela não existe, não ativar modo de manutenção
         setMaintenanceMode(false);
       } else {
-        setMaintenanceMode(data?.maintenance_mode || false);
+        // Pegar o primeiro registro se existir
+        const firstRecord = data && data.length > 0 ? data[0] : null;
+        setMaintenanceMode(firstRecord?.maintenance_mode || false);
       }
       setLoading(false);
     } catch (error) {
       console.error('Error checking maintenance mode:', error);
+      // Em caso de erro, não ativar modo de manutenção
       setMaintenanceMode(false);
       setLoading(false);
     }

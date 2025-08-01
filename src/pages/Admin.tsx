@@ -37,6 +37,7 @@ import { PopulationHistoryManager } from "@/components/admin/PopulationHistoryMa
 import { SetoresEstrategicosManager } from "@/components/admin/SetoresEstrategicosManager";
 import { MunicipalityCharacterizationManager } from "@/components/admin/MunicipalityCharacterizationManager";
 import { EventsManager } from "@/components/admin/EventsManager";
+import { TurismoAmbienteCarouselManager } from "@/components/admin/TurismoAmbienteCarouselManager";
 
 interface NavigationItem {
   id: string;
@@ -80,6 +81,7 @@ const Admin = () => {
     { id: "population", label: "População", icon: Users, description: "Gestão do histórico populacional" },
     { id: "characterization", label: "Caracterização", icon: MapPin, description: "Caracterização do município" },
     { id: "events", label: "Eventos", icon: Calendar, description: "Gerir eventos do município" },
+    { id: "turismo-carousel", label: "Carrossel Turismo", icon: ImageIcon, description: "Gerir carrossel turístico e ambiental" },
     { id: "users", label: "Utilizadores", icon: Users, description: "Gerir utilizadores do sistema" }
   ];
 
@@ -399,6 +401,7 @@ const Admin = () => {
               {activeTab === "population" && <PopulationHistoryManager />}
               {activeTab === "characterization" && <MunicipalityCharacterizationManager />}
               {activeTab === "events" && <EventsManager />}
+              {activeTab === "turismo-carousel" && <TurismoAmbienteCarouselManager />}
               {activeTab === "users" && <UserManager currentUserRole={role} />}
               {activeTab === "settings" && <SystemSettings />}
               {/* Other tabs would be added here */}

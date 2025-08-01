@@ -85,10 +85,10 @@ const DEFAULT_CHARACTERIZATION: MunicipalityCharacterizationData = {
   },
   
   demography: {
-    population: "150.000+ habitantes",
-    density: "71 hab/km²",
-    growth: "2.5% ao ano",
-    households: "25.000 famílias",
+    population: "159.000 habitantes",
+    density: "76 hab/km²",
+    growth: "2.3% ao ano",
+    households: "26.500 famílias",
     urbanRate: "35%"
   },
   
@@ -149,13 +149,23 @@ export const useMunicipalityCharacterization = () => {
         setCharacterization(DEFAULT_CHARACTERIZATION);
       } else if (data) {
         // Converter dados da base de dados para o formato esperado
-        const formattedData: MunicipalityCharacterizationData = {
+        let formattedData: MunicipalityCharacterizationData = {
           geography: {
             area: data.geography?.area || DEFAULT_CHARACTERIZATION.geography.area,
             altitude: data.geography?.altitude || DEFAULT_CHARACTERIZATION.geography.altitude,
             climate: data.geography?.climate || DEFAULT_CHARACTERIZATION.geography.climate,
             rainfall: data.geography?.rainfall || DEFAULT_CHARACTERIZATION.geography.rainfall,
-            temperature: data.geography?.temperature || DEFAULT_CHARACTERIZATION.geography.temperature
+            temperature: data.geography?.temperature || DEFAULT_CHARACTERIZATION.geography.temperature,
+            boundaries: {
+              north: data.geography?.boundaries?.north || DEFAULT_CHARACTERIZATION.geography.boundaries.north,
+              south: data.geography?.boundaries?.south || DEFAULT_CHARACTERIZATION.geography.boundaries.south,
+              east: data.geography?.boundaries?.east || DEFAULT_CHARACTERIZATION.geography.boundaries.east,
+              west: data.geography?.boundaries?.west || DEFAULT_CHARACTERIZATION.geography.boundaries.west
+            },
+            coordinates: {
+              latitude: data.geography?.coordinates?.latitude || DEFAULT_CHARACTERIZATION.geography.coordinates.latitude,
+              longitude: data.geography?.coordinates?.longitude || DEFAULT_CHARACTERIZATION.geography.coordinates.longitude
+            }
           },
           demography: {
             population: data.demography?.population || DEFAULT_CHARACTERIZATION.demography.population,
@@ -190,6 +200,50 @@ export const useMunicipalityCharacterization = () => {
             crafts: data.culture?.crafts || DEFAULT_CHARACTERIZATION.culture.crafts
           }
         };
+
+        // Sincronizar dados demográficos com population_history
+        try {
+          const { data: populationData, error: populationError } = await supabase
+            .from('population_history')
+            .select('*')
+            .order('year', { ascending: false })
+            .limit(1)
+            .single();
+
+          if (!populationError && populationData) {
+            const currentYear = new Date().getFullYear();
+            const currentPopulation = populationData.population_count;
+            
+            // Calcular densidade baseada na população atual e área
+            const areaKm2 = 2100; // Área do município em km²
+            const density = (currentPopulation / areaKm2).toFixed(1);
+            
+            // Calcular taxa de crescimento se houver dados do ano anterior
+            const { data: previousYearData } = await supabase
+              .from('population_history')
+              .select('population_count')
+              .eq('year', currentYear - 1)
+              .single();
+
+            let growthRate = "2.3% ao ano"; // Valor padrão
+            if (previousYearData && previousYearData.population_count > 0) {
+              const growth = ((currentPopulation - previousYearData.population_count) / previousYearData.population_count) * 100;
+              growthRate = `${growth.toFixed(1)}% ao ano`;
+            }
+
+            // Atualizar dados demográficos com informações sincronizadas
+            formattedData.demography = {
+              ...formattedData.demography,
+              population: `${currentPopulation.toLocaleString('pt-AO')} habitantes`,
+              density: `${density} hab/km²`,
+              growth: growthRate
+            };
+          }
+        } catch (populationError) {
+          console.warn('Erro ao sincronizar dados populacionais:', populationError);
+          // Continuar com os dados originais se não conseguir sincronizar
+        }
+
         setCharacterization(formattedData);
       } else {
         // Usar dados padrão se não houver dados na base de dados
