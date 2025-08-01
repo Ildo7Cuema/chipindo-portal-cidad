@@ -188,18 +188,35 @@ export const QuickLoading = () => (
 
 export { Loading, type LoadingProps };
 
-// Add CSS for wave animation
-const style = document.createElement('style');
-style.textContent = `
-  @keyframes wave {
-    0%, 40%, 100% {
-      transform: scaleY(0.4);
-      opacity: 0.5;
-    }
-    20% {
-      transform: scaleY(1);
-      opacity: 1;
-    }
+// Adicionar CSS para wave animation de forma segura
+const addWaveAnimation = () => {
+  // Verificar se o estilo já existe para evitar duplicação
+  if (document.getElementById('wave-animation-style')) {
+    return;
   }
-`;
-document.head.appendChild(style); 
+
+  const style = document.createElement('style');
+  style.id = 'wave-animation-style';
+  style.textContent = `
+    @keyframes wave {
+      0%, 40%, 100% {
+        transform: scaleY(0.4);
+        opacity: 0.5;
+      }
+      20% {
+        transform: scaleY(1);
+        opacity: 1;
+      }
+    }
+  `;
+  
+  // Adicionar de forma segura
+  if (document.head) {
+    document.head.appendChild(style);
+  }
+};
+
+// Executar apenas no lado do cliente
+if (typeof window !== 'undefined') {
+  addWaveAnimation();
+} 

@@ -207,27 +207,39 @@ export const DashboardStats = () => {
   return (
     <div className="space-y-8">
       {/* Dashboard Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-            Dashboard Executivo
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Visão geral do desempenho e atividade do portal municipal
-          </p>
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 p-4 lg:p-6 bg-gradient-to-br from-primary/5 via-primary/10 to-secondary/5 rounded-xl border border-border/50 shadow-sm">
+        <div className="flex-1 min-w-0 flex items-center gap-4">
+          <div className="hidden sm:flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-br from-primary to-primary/70 shadow-md">
+            <BarChart3 className="w-8 h-8 text-primary-foreground" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                Dashboard Executivo
+              </h1>
+              <span className="inline-block px-2 py-0.5 rounded bg-primary/10 text-primary text-xs font-semibold ml-1">Admin</span>
+            </div>
+            <p className="text-muted-foreground leading-relaxed text-xs sm:text-sm lg:text-base font-medium">
+              Painel de controle e estatísticas do portal municipal
+            </p>
+          </div>
         </div>
         
-        <div className="flex items-center gap-3">
-          <Badge className="bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 flex-shrink-0">
+          {/* Status Badge */}
+          <Badge className="bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400 px-3 py-1.5 h-auto font-medium">
             <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse" />
             Sistema Online
           </Badge>
-          <div className="flex gap-2">
+          
+          {/* Export Buttons */}
+          <div className="flex items-center gap-2">
             <Button 
               variant="outline" 
               size="sm" 
               onClick={exportToCSV}
               disabled={exportLoading === 'csv'}
+              className="h-9 px-3 hover:bg-muted/60 text-xs"
             >
               {exportLoading === 'csv' ? (
                 <div className="w-4 h-4 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin mr-2" />
@@ -241,6 +253,7 @@ export const DashboardStats = () => {
               size="sm" 
               onClick={exportToExcel}
               disabled={exportLoading === 'excel'}
+              className="h-9 px-3 hover:bg-muted/60 text-xs"
             >
               {exportLoading === 'excel' ? (
                 <div className="w-4 h-4 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin mr-2" />
@@ -254,6 +267,7 @@ export const DashboardStats = () => {
               size="sm" 
               onClick={exportToPDF}
               disabled={exportLoading === 'pdf'}
+              className="h-9 px-3 hover:bg-muted/60 text-xs"
             >
               {exportLoading === 'pdf' ? (
                 <div className="w-4 h-4 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin mr-2" />

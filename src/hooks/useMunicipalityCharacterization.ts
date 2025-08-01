@@ -149,7 +149,7 @@ export const useMunicipalityCharacterization = () => {
         setCharacterization(DEFAULT_CHARACTERIZATION);
       } else if (data) {
         // Converter dados da base de dados para o formato esperado
-        let formattedData: MunicipalityCharacterizationData = {
+        const formattedData: MunicipalityCharacterizationData = {
           geography: {
             area: data.geography?.area || DEFAULT_CHARACTERIZATION.geography.area,
             altitude: data.geography?.altitude || DEFAULT_CHARACTERIZATION.geography.altitude,

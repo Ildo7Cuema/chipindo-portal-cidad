@@ -152,7 +152,7 @@ export default function Concursos() {
   };
 
   const filterAndSortConcursos = () => {
-    let filtered = concursos.filter(item => {
+    const filtered = concursos.filter(item => {
       const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            (item.requirements && item.requirements.toLowerCase().includes(searchTerm.toLowerCase()));

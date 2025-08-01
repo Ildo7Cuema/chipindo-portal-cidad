@@ -143,7 +143,7 @@ export default function Organigrama() {
   };
 
   const filterAndSortMembers = () => {
-    let filtered = members.filter(member => {
+    const filtered = members.filter(member => {
       const matchesSearch = member.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            member.cargo.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            (member.descricao && member.descricao.toLowerCase().includes(searchTerm.toLowerCase()));

@@ -231,7 +231,7 @@ export default function AcervoDigital() {
   }, [showCarousel, carouselItems.length, isFullscreenOpen]);
 
   const filterAndSortItems = () => {
-    let filtered = items.filter(item => {
+    const filtered = items.filter(item => {
       const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            (item.description && item.description.toLowerCase().includes(searchTerm.toLowerCase())) ||
                            (item.category && item.category.toLowerCase().includes(searchTerm.toLowerCase()));

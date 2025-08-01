@@ -205,7 +205,7 @@ export default function Servicos() {
   };
 
   const filterAndSortServicos = () => {
-    let filtered = servicos.filter(servico => {
+    const filtered = servicos.filter(servico => {
       const matchesSearch = servico.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            servico.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            servico.direcao.toLowerCase().includes(searchTerm.toLowerCase());

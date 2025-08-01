@@ -202,7 +202,7 @@ export const NewsManager = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Usuário não autenticado.');
 
-      let newsData = {
+      const newsData = {
         ...formData,
         image_url: imageUrl,
         author_id: user.id, // Adicionar author_id para novas notícias
@@ -615,15 +615,15 @@ export const NewsManager = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold">Gestão de Notícias</h2>
-          <p className="text-muted-foreground">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 p-6 bg-white/50 dark:bg-slate-900/50 rounded-xl border border-border/50 shadow-sm">
+        <div className="flex-1 min-w-0">
+          <h2 className="text-2xl font-bold text-foreground mb-2">Gestão de Notícias</h2>
+          <p className="text-muted-foreground leading-relaxed">
             Gerencie conteúdo noticioso e comunicações do portal municipal
           </p>
         </div>
         
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 flex-shrink-0">
           {/* Export Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -631,7 +631,7 @@ export const NewsManager = () => {
                 variant="outline" 
                 size="sm" 
                 disabled={exportLoading !== null}
-                className="shadow-sm hover:shadow-md transition-all duration-200"
+                className="h-9 px-4 hover:bg-muted/60 shadow-sm hover:shadow-md transition-all duration-200"
               >
                 {exportLoading ? (
                   <div className="w-4 h-4 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin mr-2" />
@@ -643,7 +643,7 @@ export const NewsManager = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel className="flex items-center gap-2">
+              <DropdownMenuLabel className="flex items-center gap-2 font-semibold">
                 <div className="w-8 h-8 rounded-lg bg-green-100 dark:bg-green-900/20 flex items-center justify-center">
                   <Download className="w-4 h-4 text-green-600 dark:text-green-400" />
                 </div>
@@ -653,7 +653,7 @@ export const NewsManager = () => {
               <DropdownMenuItem 
                 onClick={exportNewsToCSV} 
                 disabled={exportLoading === 'csv'}
-                className="py-3"
+                className="py-3 cursor-pointer"
               >
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center">
@@ -668,7 +668,7 @@ export const NewsManager = () => {
               <DropdownMenuItem 
                 onClick={exportNewsToExcel} 
                 disabled={exportLoading === 'excel'}
-                className="py-3"
+                className="py-3 cursor-pointer"
               >
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg bg-green-100 dark:bg-green-900/20 flex items-center justify-center">
@@ -683,7 +683,7 @@ export const NewsManager = () => {
               <DropdownMenuItem 
                 onClick={exportNewsToPDF} 
                 disabled={exportLoading === 'pdf'}
-                className="py-3"
+                className="py-3 cursor-pointer"
               >
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg bg-red-100 dark:bg-red-900/20 flex items-center justify-center">

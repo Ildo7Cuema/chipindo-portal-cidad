@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import './styles/responsive.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -466,6 +467,223 @@
     .content-section {
       width: 100%;
       height: 60vh;
+    }
+
+    /* Modal de notícias - Melhorias mobile */
+    .news-modal-mobile {
+      /* Layout vertical em mobile */
+      flex-direction: column !important;
+    }
+
+    .news-modal-mobile .image-container {
+      /* Imagem ocupa toda a largura em mobile */
+      width: 100% !important;
+      height: 200px !important;
+      max-width: none !important;
+      max-height: none !important;
+    }
+
+    .news-modal-mobile .image-container img {
+      /* Object-cover para melhor preenchimento em mobile */
+      object-fit: cover !important;
+      border-radius: 0.5rem !important;
+    }
+
+    .news-modal-mobile .content-container {
+      /* Conteúdo ocupa toda a largura em mobile */
+      width: 100% !important;
+      flex: 1 !important;
+    }
+
+    .news-modal-mobile .content-scroll {
+      /* Scroll otimizado para mobile */
+      max-height: none !important;
+      -webkit-overflow-scrolling: touch;
+      scroll-behavior: smooth;
+    }
+
+    .news-modal-mobile .meta-info {
+      /* Layout vertical para meta informações em mobile */
+      flex-direction: column !important;
+      gap: 0.5rem !important;
+      padding: 0.75rem !important;
+    }
+
+    .news-modal-mobile .meta-info > div {
+      /* Cada meta info em linha separada */
+      width: 100% !important;
+      justify-content: flex-start !important;
+    }
+
+    .news-modal-mobile .author-card {
+      /* Card do autor menor em mobile */
+      padding: 0.75rem !important;
+      margin-top: 1rem !important;
+    }
+
+    .news-modal-mobile .news-content {
+      /* Espaçamento reduzido em mobile */
+      line-height: 1.6 !important;
+    }
+
+    .news-modal-mobile .news-content h1 {
+      /* Título menor em mobile */
+      font-size: 1.25rem !important;
+      line-height: 1.3 !important;
+    }
+
+    .news-modal-mobile .news-content p {
+      /* Texto menor em mobile */
+      font-size: 0.875rem !important;
+      line-height: 1.5 !important;
+    }
+
+    .news-modal-mobile .news-excerpt {
+      /* Excerpt menor em mobile */
+      padding-left: 1rem !important;
+    }
+
+    .news-modal-mobile .news-excerpt blockquote {
+      /* Blockquote menor em mobile */
+      font-size: 1rem !important;
+      line-height: 1.4 !important;
+    }
+
+    .news-modal-mobile .modal-footer {
+      /* Footer maior em mobile para botões maiores */
+      height: 6rem !important;
+      padding: 1rem !important;
+    }
+
+    .news-modal-mobile .action-button {
+      /* Botões maiores em mobile */
+      height: 3rem !important;
+      padding: 0 1rem !important;
+      font-size: 0.875rem !important;
+      font-weight: 500 !important;
+    }
+
+    .news-modal-mobile .action-button svg {
+      /* Ícones maiores em mobile */
+      width: 1.25rem !important;
+      height: 1.25rem !important;
+    }
+
+    /* Melhorias de acessibilidade para toque */
+    .news-modal-mobile button {
+      /* Área de toque mínima de 44px */
+      min-height: 44px !important;
+      min-width: 44px !important;
+    }
+
+    .news-modal-mobile .close-button {
+      /* Botão de fechar maior e mais acessível */
+      width: 3rem !important;
+      height: 3rem !important;
+      border-radius: 50% !important;
+      background: rgba(255, 255, 255, 0.95) !important;
+      backdrop-filter: blur(8px) !important;
+      border: 2px solid rgba(0, 0, 0, 0.1) !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    /* Scrollbar personalizada para mobile */
+    .news-modal-mobile .content-scroll::-webkit-scrollbar {
+      width: 4px !important;
+    }
+
+    .news-modal-mobile .content-scroll::-webkit-scrollbar-track {
+      background: transparent !important;
+    }
+
+    .news-modal-mobile .content-scroll::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.2) !important;
+      border-radius: 2px !important;
+    }
+
+    .news-modal-mobile .content-scroll::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 0, 0, 0.3) !important;
+    }
+
+    /* Animações suaves para mobile */
+    .news-modal-mobile * {
+      transition: all 0.2s ease !important;
+    }
+
+    /* Melhor contraste para mobile */
+    .news-modal-mobile .text-gray-600 {
+      color: rgb(75 85 99) !important;
+    }
+
+    .news-modal-mobile .text-gray-500 {
+      color: rgb(107 114 128) !important;
+    }
+
+    /* Espaçamento otimizado para mobile */
+    .news-modal-mobile .content-padding {
+      padding: 1rem !important;
+      padding-bottom: 5rem !important;
+    }
+
+    /* Badge de categoria otimizado para mobile */
+    .news-modal-mobile .category-badge {
+      font-size: 0.75rem !important;
+      padding: 0.25rem 0.5rem !important;
+      top: 0.75rem !important;
+      left: 0.75rem !important;
+    }
+
+    .news-modal-mobile .category-badge svg {
+      width: 0.75rem !important;
+      height: 0.75rem !important;
+      margin-right: 0.25rem !important;
+    }
+  }
+
+  /* Breakpoint específico para tablets */
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .news-modal-tablet .image-container {
+      height: 300px !important;
+    }
+
+    .news-modal-tablet .content-container {
+      padding: 1.5rem !important;
+    }
+
+    .news-modal-tablet .action-button {
+      height: 2.5rem !important;
+      padding: 0 1rem !important;
+    }
+  }
+
+  /* Melhorias para telas muito pequenas */
+  @media (max-width: 480px) {
+    .news-modal-mobile .image-container {
+      height: 180px !important;
+    }
+
+    .news-modal-mobile .content-padding {
+      padding: 0.75rem !important;
+      padding-bottom: 4.5rem !important;
+    }
+
+    .news-modal-mobile .modal-footer {
+      height: 5rem !important;
+      padding: 0.75rem !important;
+    }
+
+    .news-modal-mobile .action-button {
+      height: 2.5rem !important;
+      padding: 0 0.75rem !important;
+      font-size: 0.8rem !important;
+    }
+
+    .news-modal-mobile .news-content h1 {
+      font-size: 1.125rem !important;
+    }
+
+    .news-modal-mobile .news-content p {
+      font-size: 0.8rem !important;
     }
   }
 }

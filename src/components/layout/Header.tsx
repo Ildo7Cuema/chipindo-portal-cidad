@@ -1,4 +1,5 @@
 import { Navigation } from "@/components/ui/navigation";
+import { MobileNavigation } from "@/components/ui/mobile-navigation";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
@@ -23,9 +24,9 @@ export const Header = () => {
         ? "bg-background/95 backdrop-blur-lg border-b border-border/50 shadow-sm" 
         : "bg-background border-b border-border/30"
     )}>
-      <div className="container mx-auto container-padding">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo and Title - Compact Design */}
+          {/* Logo and Title - Mobile Optimized */}
           <div className="flex items-center space-x-2 group">
             <div className="w-8 h-8 bg-gradient-surface rounded-lg flex items-center justify-center shadow-sm border border-border/30 p-1 transition-all duration-300 group-hover:shadow-md">
               <img 
@@ -36,10 +37,10 @@ export const Header = () => {
             </div>
             
             <div className="space-y-0">
-              <h1 className="text-base font-bold text-foreground group-hover:text-primary transition-colors duration-300">
+              <h1 className="text-sm sm:text-base font-bold text-foreground group-hover:text-primary transition-colors duration-300">
                 Portal de Chipindo
               </h1>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-muted-foreground hidden sm:block">
                 Administração Municipal
               </p>
             </div>
@@ -52,8 +53,15 @@ export const Header = () => {
             </Badge>
           </div>
 
-          {/* Navigation */}
-          <Navigation />
+          {/* Desktop Navigation */}
+          <div className="hidden lg:block">
+            <Navigation />
+          </div>
+
+          {/* Mobile Navigation */}
+          <div className="lg:hidden">
+            <MobileNavigation />
+          </div>
         </div>
       </div>
     </header>

@@ -156,10 +156,10 @@ export default function AcervoDigitalManager() {
       const itemsWithViews = await Promise.all(
         (data || []).map(async (item) => {
           // Buscar contagem de visualizações
-          let viewsCount = 0;
+          const viewsCount = 0;
           try {
             // Mock views data since acervo_views table doesn't exist
-            let viewsCount = Math.floor(Math.random() * 100) + 1;
+            const viewsCount = Math.floor(Math.random() * 100) + 1;
 
             return {
               ...item, 

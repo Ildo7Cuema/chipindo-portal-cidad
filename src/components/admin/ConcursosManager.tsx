@@ -603,7 +603,7 @@ export const ConcursosManager = () => {
   };
 
   const sortInscricoes = (list: Inscricao[]) => {
-    let sorted = [...list];
+    const sorted = [...list];
     if (inscricoesSort === 'nome') {
       sorted.sort((a, b) => a.nome_completo.localeCompare(b.nome_completo));
     } else if (inscricoesSort === 'idade') {

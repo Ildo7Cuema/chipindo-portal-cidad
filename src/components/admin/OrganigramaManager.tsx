@@ -119,7 +119,7 @@ export function OrganigramaManager() {
 
     try {
       // Convert "none" back to null for superior_id
-      let submitData = {
+      const submitData = {
         ...formData,
         superior_id: formData.superior_id === 'none' ? null : formData.superior_id || null
       };

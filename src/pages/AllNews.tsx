@@ -117,7 +117,7 @@ const AllNews = () => {
   };
 
   const filterAndSortNews = () => {
-    let filtered = news.filter(item => {
+    const filtered = news.filter(item => {
       const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            item.excerpt?.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = categoryFilter === 'all' || item.category === categoryFilter;

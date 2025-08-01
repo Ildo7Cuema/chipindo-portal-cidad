@@ -64,8 +64,8 @@ export const BackupManager = () => {
           backup_id: 'backup_20241201_120000',
           size: 1024000,
           tables: ['news', 'hero_carousel'],
-          status: 'completed' as 'completed',
-          type: 'manual' as 'manual',
+          status: 'completed' as const,
+          type: 'manual' as const,
           created_at: new Date().toISOString(),
           completed_at: new Date().toISOString(),
           metadata: {}
