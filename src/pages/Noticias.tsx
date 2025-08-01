@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { 
   CalendarIcon, 
   ClockIcon, 
@@ -122,6 +123,7 @@ const Noticias = () => {
   const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9;
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     fetchNews();
@@ -610,12 +612,26 @@ const Noticias = () => {
                 </Button>
               </div>
               
-              <div className="flex h-full">
-                {/* Coluna da Imagem - Fixa à Esquerda */}
-                <div className="w-1/2 relative bg-gradient-to-br from-blue-50 to-purple-50 border-r border-gray-200">
+              <div className={cn(
+                "h-full",
+                isMobile ? "flex flex-col" : "flex"
+              )}>
+                {/* Coluna da Imagem - Responsiva */}
+                <div className={cn(
+                  "relative bg-gradient-to-br from-blue-50 to-purple-50",
+                  isMobile 
+                    ? "w-full h-64 border-b border-gray-200" 
+                    : "w-1/2 border-r border-gray-200"
+                )}>
                   {selectedNews.image_url ? (
-                    <div className="h-full w-full flex items-center justify-center p-8">
-                      <div className="relative w-full h-full max-w-md">
+                    <div className={cn(
+                      "w-full flex items-center justify-center",
+                      isMobile ? "h-full p-4" : "h-full p-8"
+                    )}>
+                      <div className={cn(
+                        "relative w-full h-full",
+                        isMobile ? "max-w-full" : "max-w-md"
+                      )}>
                         <img 
                           src={selectedNews.image_url} 
                           alt={selectedNews.title}
@@ -627,7 +643,10 @@ const Noticias = () => {
                       </div>
                     </div>
                   ) : (
-                    <div className="h-full w-full flex items-center justify-center p-8">
+                    <div className={cn(
+                      "w-full flex items-center justify-center",
+                      isMobile ? "h-full p-4" : "h-full p-8"
+                    )}>
                       <div className="text-center max-w-sm">
                         <div className="w-32 h-32 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-2xl bg-gradient-to-br from-blue-500 to-purple-600">
                           <BookOpenIcon className="w-16 h-16 text-white" />
@@ -639,7 +658,10 @@ const Noticias = () => {
                   )}
                   
                   {/* Badge de categoria sobre a imagem */}
-                  <div className="absolute top-6 left-6 z-20">
+                  <div className={cn(
+                    "absolute z-20",
+                    isMobile ? "top-4 left-4" : "top-6 left-6"
+                  )}>
                     <Badge className="text-sm font-medium shadow-xl backdrop-blur-sm bg-white/90 text-gray-800 border border-gray-200 px-4 py-2">
                       {React.createElement(getCategoryData(selectedNews.category || 'desenvolvimento').icon, { className: "w-4 h-4 mr-2" })}
                       {getCategoryData(selectedNews.category || 'desenvolvimento').name}
@@ -648,7 +670,10 @@ const Noticias = () => {
                   
                   {/* Featured badge */}
                   {selectedNews.featured && (
-                    <div className="absolute top-6 right-6 z-20">
+                    <div className={cn(
+                      "absolute z-20",
+                      isMobile ? "top-4 right-4" : "top-6 right-6"
+                    )}>
                       <Badge className="bg-yellow-500 text-white text-sm font-medium shadow-xl px-4 py-2">
                         <StarIcon className="w-4 h-4 mr-2" />
                         Destaque
@@ -658,18 +683,32 @@ const Noticias = () => {
                 </div>
                 
                 {/* Coluna do Conteúdo - Scrollável */}
-                <div className="w-1/2 flex flex-col h-full bg-white">
+                <div className={cn(
+                  "flex flex-col h-full bg-white",
+                  isMobile ? "w-full flex-1" : "w-1/2"
+                )}>
                   {/* Área de scroll do conteúdo */}
-                  <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100" style={{ maxHeight: 'calc(95vh - 120px)' }}>
-                    <div className="p-8 pb-32">
+                  <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100" style={{ 
+                    maxHeight: isMobile ? 'calc(95vh - 280px)' : 'calc(95vh - 120px)' 
+                  }}>
+                    <div className={cn(
+                      "pb-32",
+                      isMobile ? "p-4" : "p-8"
+                    )}>
                       {/* Header do conteúdo */}
                       <div className="mb-8">
-                        <h1 className="text-4xl font-bold leading-tight mb-6 text-gray-900">
+                        <h1 className={cn(
+                          "font-bold leading-tight mb-6 text-gray-900",
+                          isMobile ? "text-2xl" : "text-4xl"
+                        )}>
                           {selectedNews.title}
                         </h1>
                         
                         {/* Meta informações */}
-                        <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600 mb-6">
+                        <div className={cn(
+                          "flex flex-wrap items-center text-sm text-gray-600 mb-6",
+                          isMobile ? "gap-3" : "gap-6"
+                        )}>
                           <div className="flex items-center gap-2">
                             <CalendarIcon className="w-4 h-4 text-blue-500" />
                             <span className="font-medium">{formatDate(selectedNews.created_at)}</span>
@@ -772,8 +811,14 @@ const Noticias = () => {
                   
                   {/* Footer com ações - Fixo na parte inferior */}
                   <div className="bg-gradient-to-r from-blue-50 to-purple-50 border-t border-gray-200 p-6">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
+                    <div className={cn(
+                      "flex items-center",
+                      isMobile ? "flex-col gap-4" : "justify-between"
+                    )}>
+                      <div className={cn(
+                        "flex items-center",
+                        isMobile ? "gap-2 w-full justify-center" : "gap-4"
+                      )}>
                         <Button 
                           variant="outline" 
                           size="default" 
@@ -809,7 +854,10 @@ const Noticias = () => {
                         </Button>
                       </div>
                       
-                      <div className="flex items-center gap-4 text-sm text-gray-600">
+                      <div className={cn(
+                        "flex items-center text-sm text-gray-600",
+                        isMobile ? "gap-3 w-full justify-center" : "gap-4"
+                      )}>
                         <div className="flex items-center gap-1">
                           <EyeIcon className="w-4 h-4" />
                           {selectedNews.views || 0}
