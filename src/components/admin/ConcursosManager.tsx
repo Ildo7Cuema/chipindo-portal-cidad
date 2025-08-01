@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import ExportUtils from "@/lib/export-utils";
@@ -61,7 +62,9 @@ import {
   SortDesc,
   XIcon,
   UserIcon,
-  Tag
+  Tag,
+  Filter,
+  MenuIcon
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -120,6 +123,10 @@ export const ConcursosManager = () => {
   const [inscricoesConcurso, setInscricoesConcurso] = useState<ConcursoItem | null>(null);
   const [inscricoesSort, setInscricoesSort] = useState<'nome'|'idade'|'categoria'>('nome');
   const [inscricoesSortDir, setInscricoesSortDir] = useState<'asc'|'desc'>('asc');
+  
+  // Estados para responsividade
+  const [showFilters, setShowFilters] = useState(false);
+  const [showBulkActions, setShowBulkActions] = useState(false);
 
 
   const [formData, setFormData] = useState({
@@ -708,149 +715,211 @@ export const ConcursosManager = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold">Gestão de Concursos Públicos</h2>
-          <p className="text-muted-foreground">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex-1 min-w-0">
+          <h2 className="text-xl sm:text-2xl font-bold text-foreground">Gestão de Concursos Públicos</h2>
+          <p className="text-sm sm:text-base text-muted-foreground mt-1">
             Gerencie concursos públicos e processos de recrutamento municipal
           </p>
         </div>
         
-        <div className="flex items-center gap-3">
-          {/* Export Dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-            <Button 
-                variant="outline" 
-                size="sm" 
-                disabled={exportLoading !== null}
-                className="shadow-sm hover:shadow-md transition-all duration-200"
-              >
-                {exportLoading ? (
-                  <div className="w-4 h-4 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin mr-2" />
-                ) : (
-                  <Download className="w-4 h-4 mr-2" />
-                )}
-                Exportar
-                <ChevronDown className="w-4 h-4 ml-1" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-green-100 dark:bg-green-900/20 flex items-center justify-center">
-                  <Download className="w-4 h-4 text-green-600 dark:text-green-400" />
-                </div>
-                <span>Exportar Concursos</span>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem 
-                onClick={exportConcursosToCSV} 
-                disabled={exportLoading === 'csv'}
-                className="py-3"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center">
-                    <FileSpreadsheet className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                  </div>
-                  <div>
-                    <div className="font-medium">Formato CSV</div>
-                    <div className="text-xs text-muted-foreground">Para análise de dados</div>
-                  </div>
-                </div>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          {/* Bulk Actions */}
-          {selectedIds.length > 0 && (
+        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+          {/* Mobile Menu for Actions */}
+          <div className="sm:hidden">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  className="shadow-sm hover:shadow-md transition-all duration-200 bg-amber-50 dark:bg-amber-900/10 border-amber-200 dark:border-amber-800 hover:bg-amber-100 dark:hover:bg-amber-900/20"
-                >
-                  <MoreVertical className="w-4 h-4 mr-2" />
-                  Ações ({selectedIds.length})
+                <Button variant="outline" size="sm" className="h-9 w-9 p-0">
+                  <MoreVertical className="w-4 h-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/20 flex items-center justify-center">
-                    <TrendingUp className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                  <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center">
+                    <Trophy className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                   </div>
-                  <span>Ações em Lote</span>
+                  <span>Ações Rápidas</span>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem 
-                  onClick={() => handleBulkAction('publish')}
+                  onClick={exportConcursosToCSV} 
+                  disabled={exportLoading === 'csv'}
                   className="py-3"
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-green-100 dark:bg-green-900/20 flex items-center justify-center">
-                      <Send className="w-4 h-4 text-green-600 dark:text-green-400" />
+                      <Download className="w-4 h-4 text-green-600 dark:text-green-400" />
                     </div>
                     <div>
-                      <div className="font-medium">Publicar Selecionados</div>
-                      <div className="text-xs text-muted-foreground">{selectedIds.length} selecionados</div>
+                      <div className="font-medium">Exportar CSV</div>
+                      <div className="text-xs text-muted-foreground">Baixar dados</div>
                     </div>
                   </div>
                 </DropdownMenuItem>
+                {concursos.length === 0 && (
+                  <DropdownMenuItem 
+                    onClick={handleSeedSampleConcursos}
+                    disabled={loading}
+                    className="py-3"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-900/20 flex items-center justify-center">
+                        <Star className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                      </div>
+                      <div>
+                        <div className="font-medium">Criar Exemplos</div>
+                        <div className="text-xs text-muted-foreground">Dados de teste</div>
+                      </div>
+                    </div>
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
+          {/* Desktop Actions */}
+          <div className="hidden sm:flex items-center gap-3">
+            {/* Export Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  disabled={exportLoading !== null}
+                  className="shadow-sm hover:shadow-md transition-all duration-200"
+                >
+                  {exportLoading ? (
+                    <div className="w-4 h-4 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin mr-2" />
+                  ) : (
+                    <Download className="w-4 h-4 mr-2" />
+                  )}
+                  Exportar
+                  <ChevronDown className="w-4 h-4 ml-1" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-green-100 dark:bg-green-900/20 flex items-center justify-center">
+                    <Download className="w-4 h-4 text-green-600 dark:text-green-400" />
+                  </div>
+                  <span>Exportar Concursos</span>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem 
-                  onClick={() => handleBulkAction('unpublish')}
+                  onClick={exportConcursosToCSV} 
+                  disabled={exportLoading === 'csv'}
                   className="py-3"
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center">
-                      <Archive className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                      <FileSpreadsheet className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                     </div>
                     <div>
-                      <div className="font-medium">Despublicar Selecionados</div>
-                      <div className="text-xs text-muted-foreground">{selectedIds.length} selecionados</div>
-                    </div>
-                  </div>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem 
-                  className="text-destructive focus:text-destructive py-3"
-                  onClick={() => handleBulkAction('delete')}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-red-100 dark:bg-red-900/20 flex items-center justify-center">
-                      <Trash2 className="w-4 h-4 text-red-600 dark:text-red-400" />
-                    </div>
-                    <div>
-                      <div className="font-medium">Excluir Selecionados</div>
-                      <div className="text-xs text-muted-foreground">{selectedIds.length} selecionados</div>
+                      <div className="font-medium">Formato CSV</div>
+                      <div className="text-xs text-muted-foreground">Para análise de dados</div>
                     </div>
                   </div>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          )}
 
-          {/* Sample Concursos Button */}
-          {concursos.length === 0 && (
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={handleSeedSampleConcursos}
-              disabled={loading}
-              className="shadow-sm hover:shadow-md transition-all duration-200 bg-purple-50 dark:bg-purple-900/10 border-purple-200 dark:border-purple-800 hover:bg-purple-100 dark:hover:bg-purple-900/20"
-            >
-              <Star className="w-4 h-4 mr-2" />
-              Criar Exemplos
-            </Button>
-          )}
+            {/* Bulk Actions */}
+            {selectedIds.length > 0 && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className="shadow-sm hover:shadow-md transition-all duration-200 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/10 dark:to-orange-900/10 border-amber-200 dark:border-amber-800 hover:from-amber-100 hover:to-orange-100 dark:hover:from-amber-900/20 dark:hover:to-orange-900/20"
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div>
+                      <MoreVertical className="w-4 h-4" />
+                      <span className="font-medium">Ações ({selectedIds.length})</span>
+                    </div>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-64">
+                  <DropdownMenuLabel className="flex items-center gap-3 py-3">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-100 to-orange-100 dark:from-amber-900/20 dark:to-orange-900/20 flex items-center justify-center">
+                      <TrendingUp className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                    </div>
+                    <div>
+                      <div className="font-semibold">Ações em Lote</div>
+                      <div className="text-xs text-muted-foreground">{selectedIds.length} {selectedIds.length === 1 ? 'concurso selecionado' : 'concursos selecionados'}</div>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    onClick={() => handleBulkAction('publish')}
+                    className="py-4 cursor-pointer hover:bg-green-50 dark:hover:bg-green-900/10"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-100 to-emerald-100 dark:from-green-900/20 dark:to-emerald-900/20 flex items-center justify-center">
+                        <Send className="w-5 h-5 text-green-600 dark:text-green-400" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="font-semibold text-green-700 dark:text-green-300">Publicar Selecionados</div>
+                        <div className="text-xs text-muted-foreground mt-1">Tornar visíveis publicamente</div>
+                      </div>
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => handleBulkAction('unpublish')}
+                    className="py-4 cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/10"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-100 to-cyan-100 dark:from-blue-900/20 dark:to-cyan-900/20 flex items-center justify-center">
+                        <Archive className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="font-semibold text-blue-700 dark:text-blue-300">Despublicar Selecionados</div>
+                        <div className="text-xs text-muted-foreground mt-1">Ocultar da visualização pública</div>
+                      </div>
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    className="text-destructive focus:text-destructive py-4 cursor-pointer hover:bg-red-50 dark:hover:bg-red-900/10"
+                    onClick={() => handleBulkAction('delete')}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-100 to-pink-100 dark:from-red-900/20 dark:to-pink-900/20 flex items-center justify-center">
+                        <Trash2 className="w-5 h-5 text-red-600 dark:text-red-400" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="font-semibold text-red-700 dark:text-red-300">Excluir Selecionados</div>
+                        <div className="text-xs text-muted-foreground mt-1">Remover permanentemente</div>
+                      </div>
+                    </div>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+
+            {/* Sample Concursos Button */}
+            {concursos.length === 0 && (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleSeedSampleConcursos}
+                disabled={loading}
+                className="shadow-sm hover:shadow-md transition-all duration-200 bg-purple-50 dark:bg-purple-900/10 border-purple-200 dark:border-purple-800 hover:bg-purple-100 dark:hover:bg-purple-900/20"
+              >
+                <Star className="w-4 h-4 mr-2" />
+                Criar Exemplos
+              </Button>
+            )}
+          </div>
 
           {/* New Concurso Button */}
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button onClick={resetForm} className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg">
-              <Plus className="w-4 h-4 mr-2" />
-              Novo Concurso
-            </Button>
-          </DialogTrigger>
+              <Button onClick={resetForm} className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg w-full sm:w-auto">
+                <Plus className="w-4 h-4 mr-2" />
+                <span className="hidden sm:inline">Novo Concurso</span>
+                <span className="sm:hidden">Novo</span>
+              </Button>
+            </DialogTrigger>
           
             <DialogContent className="max-w-3xl max-h-[95vh] overflow-hidden flex flex-col">
               <DialogHeader className="pb-4 border-b border-border/50 flex-shrink-0">
@@ -1123,51 +1192,51 @@ export const ConcursosManager = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
         <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/20 dark:to-blue-900/20 border-blue-200 dark:border-blue-800">
-          <CardContent className="p-6">
+          <CardContent className="p-4 sm:p-6">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-blue-600 dark:text-blue-400 text-sm font-medium">Total</p>
-                <p className="text-2xl font-bold text-blue-900 dark:text-blue-100">{concursos.length}</p>
-        </div>
-              <Trophy className="w-8 h-8 text-blue-600" />
+              <div className="min-w-0 flex-1">
+                <p className="text-blue-600 dark:text-blue-400 text-xs sm:text-sm font-medium truncate">Total</p>
+                <p className="text-lg sm:text-2xl font-bold text-blue-900 dark:text-blue-100">{concursos.length}</p>
+              </div>
+              <Trophy className="w-6 h-6 sm:w-8 sm:h-8 text-blue-600 flex-shrink-0" />
             </div>
           </CardContent>
         </Card>
 
         <Card className="border-0 shadow-lg bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950/20 dark:to-green-900/20 border-green-200 dark:border-green-800">
-          <CardContent className="p-6">
+          <CardContent className="p-4 sm:p-6">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-green-600 dark:text-green-400 text-sm font-medium">Publicados</p>
-                <p className="text-2xl font-bold text-green-900 dark:text-green-100">{publishedCount}</p>
+              <div className="min-w-0 flex-1">
+                <p className="text-green-600 dark:text-green-400 text-xs sm:text-sm font-medium truncate">Publicados</p>
+                <p className="text-lg sm:text-2xl font-bold text-green-900 dark:text-green-100">{publishedCount}</p>
               </div>
-              <Send className="w-8 h-8 text-green-600" />
+              <Send className="w-6 h-6 sm:w-8 sm:h-8 text-green-600 flex-shrink-0" />
             </div>
           </CardContent>
         </Card>
 
         <Card className="border-0 shadow-lg bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-950/20 dark:to-emerald-900/20 border-emerald-200 dark:border-emerald-800">
-          <CardContent className="p-6">
+          <CardContent className="p-4 sm:p-6">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-emerald-600 dark:text-emerald-400 text-sm font-medium">Ativos</p>
-                <p className="text-2xl font-bold text-emerald-900 dark:text-emerald-100">{activeCount}</p>
+              <div className="min-w-0 flex-1">
+                <p className="text-emerald-600 dark:text-emerald-400 text-xs sm:text-sm font-medium truncate">Ativos</p>
+                <p className="text-lg sm:text-2xl font-bold text-emerald-900 dark:text-emerald-100">{activeCount}</p>
               </div>
-              <CheckCircle className="w-8 h-8 text-emerald-600" />
+              <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8 text-emerald-600 flex-shrink-0" />
             </div>
           </CardContent>
         </Card>
 
         <Card className="border-0 shadow-lg bg-gradient-to-br from-red-50 to-red-100 dark:from-red-950/20 dark:to-red-900/20 border-red-200 dark:border-red-800">
-          <CardContent className="p-6">
+          <CardContent className="p-4 sm:p-6">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-red-600 dark:text-red-400 text-sm font-medium">Fechados</p>
-                <p className="text-2xl font-bold text-red-900 dark:text-red-100">{closedCount}</p>
+              <div className="min-w-0 flex-1">
+                <p className="text-red-600 dark:text-red-400 text-xs sm:text-sm font-medium truncate">Fechados</p>
+                <p className="text-lg sm:text-2xl font-bold text-red-900 dark:text-red-100">{closedCount}</p>
               </div>
-              <Timer className="w-8 h-8 text-red-600" />
+              <Timer className="w-6 h-6 sm:w-8 sm:h-8 text-red-600 flex-shrink-0" />
             </div>
           </CardContent>
         </Card>
@@ -1175,82 +1244,248 @@ export const ConcursosManager = () => {
 
       {/* Filters and Search */}
       <Card className="border-0 shadow-sm">
-        <CardContent className="p-6">
-          <div className="flex flex-col lg:flex-row gap-4">
-            {/* Search */}
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                <Input
-                  placeholder="Pesquisar concursos..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
+        <CardContent className="p-4 sm:p-6">
+          <div className="space-y-4">
+            {/* Search Bar */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+              <Input
+                placeholder="Pesquisar concursos..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 h-10 sm:h-11"
+              />
             </div>
 
-            {/* Category Filter */}
-            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-              <SelectTrigger className="w-full lg:w-48">
-                <SelectValue placeholder="Filtrar por categoria" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todas as categorias</SelectItem>
-                {concursoCategories.map((category) => (
-                  <SelectItem key={category.value} value={category.value}>
-                    <div className="flex items-center gap-2">
-                      <category.icon className="w-4 h-4" />
-                      {category.label}
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            {/* Mobile Filter Toggle */}
+            <div className="flex items-center justify-between sm:hidden">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowFilters(!showFilters)}
+                className="flex items-center gap-2"
+              >
+                <Filter className="w-4 h-4" />
+                Filtros
+                <ChevronDown className={cn("w-4 h-4 transition-transform", showFilters && "rotate-180")} />
+              </Button>
+              
+              {selectedIds.length > 0 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowBulkActions(!showBulkActions)}
+                  className={cn(
+                    "bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/10 dark:to-orange-900/10 border-amber-200 dark:border-amber-800 hover:from-amber-100 hover:to-orange-100 dark:hover:from-amber-900/20 dark:hover:to-orange-900/20 shadow-sm transition-all duration-200",
+                    showBulkActions && "ring-2 ring-amber-300 dark:ring-amber-700"
+                  )}
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div>
+                    <MoreVertical className="w-4 h-4" />
+                    <span className="font-medium">{selectedIds.length} {selectedIds.length === 1 ? 'selecionado' : 'selecionados'}</span>
+                    <ChevronDown className={cn("w-3 h-3 transition-transform", showBulkActions && "rotate-180")} />
+                  </div>
+                </Button>
+              )}
+            </div>
 
-            {/* Status Filter */}
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-full lg:w-48">
-                <SelectValue placeholder="Filtrar por status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos os status</SelectItem>
-                <SelectItem value="active">Ativos</SelectItem>
-                <SelectItem value="closed">Fechados</SelectItem>
-                <SelectItem value="suspended">Suspensos</SelectItem>
-                <SelectItem value="draft">Rascunhos</SelectItem>
-              </SelectContent>
-            </Select>
+            {/* Mobile Filters */}
+            <div className={cn("space-y-3 sm:hidden", showFilters ? "block" : "hidden")}>
+              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Filtrar por categoria" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todas as categorias</SelectItem>
+                  {concursoCategories.map((category) => (
+                    <SelectItem key={category.value} value={category.value}>
+                      <div className="flex items-center gap-2">
+                        <category.icon className="w-4 h-4" />
+                        {category.label}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Filtrar por status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos os status</SelectItem>
+                  <SelectItem value="active">Ativos</SelectItem>
+                  <SelectItem value="closed">Fechados</SelectItem>
+                  <SelectItem value="suspended">Suspensos</SelectItem>
+                  <SelectItem value="draft">Rascunhos</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Desktop Filters */}
+            <div className="hidden sm:flex gap-4">
+              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                <SelectTrigger className="w-48">
+                  <SelectValue placeholder="Filtrar por categoria" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todas as categorias</SelectItem>
+                  {concursoCategories.map((category) => (
+                    <SelectItem key={category.value} value={category.value}>
+                      <div className="flex items-center gap-2">
+                        <category.icon className="w-4 h-4" />
+                        {category.label}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-48">
+                  <SelectValue placeholder="Filtrar por status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos os status</SelectItem>
+                  <SelectItem value="active">Ativos</SelectItem>
+                  <SelectItem value="closed">Fechados</SelectItem>
+                  <SelectItem value="suspended">Suspensos</SelectItem>
+                  <SelectItem value="draft">Rascunhos</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Mobile Bulk Actions */}
+            {selectedIds.length > 0 && showBulkActions && (
+              <div className="sm:hidden space-y-3 p-4 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/10 dark:to-orange-900/10 rounded-xl border border-amber-200 dark:border-amber-800 shadow-sm">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div>
+                    <span className="text-sm font-semibold text-amber-800 dark:text-amber-200">
+                      {selectedIds.length} {selectedIds.length === 1 ? 'concurso selecionado' : 'concursos selecionados'}
+                    </span>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setSelectedIds([])}
+                    className="h-8 w-8 p-0 hover:bg-amber-100 dark:hover:bg-amber-900/20"
+                  >
+                    <XIcon className="w-4 h-4" />
+                  </Button>
+                </div>
+                
+                <div className="grid grid-cols-1 gap-2">
+                  <Button
+                    variant="default"
+                    size="sm"
+                    onClick={() => handleBulkAction('publish')}
+                    className="h-10 bg-green-600 hover:bg-green-700 text-white font-medium shadow-sm"
+                  >
+                    <Send className="w-4 h-4 mr-2" />
+                    Publicar Selecionados
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleBulkAction('unpublish')}
+                    className="h-10 border-blue-300 text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/10 font-medium"
+                  >
+                    <Archive className="w-4 h-4 mr-2" />
+                    Despublicar Selecionados
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleBulkAction('delete')}
+                    className="h-10 border-red-300 text-red-700 hover:bg-red-50 dark:hover:bg-red-900/10 font-medium"
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Excluir Selecionados
+                  </Button>
+                </div>
+                
+                <div className="text-xs text-amber-700 dark:text-amber-300 text-center">
+                  Clique em "X" para cancelar a seleção
+                </div>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
 
       {/* Tabs and Concursos List */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="all" className="flex items-center gap-2">
-            <Trophy className="w-4 h-4" />
-            Todos ({concursos.length})
-          </TabsTrigger>
-          <TabsTrigger value="published" className="flex items-center gap-2">
-            <Send className="w-4 h-4" />
-            Publicados ({publishedCount})
-          </TabsTrigger>
-          <TabsTrigger value="active" className="flex items-center gap-2">
-            <CheckCircle className="w-4 h-4" />
-            Ativos ({activeCount})
-          </TabsTrigger>
-          <TabsTrigger value="closed" className="flex items-center gap-2">
-            <Timer className="w-4 h-4" />
-            Fechados ({closedCount})
-          </TabsTrigger>
-          <TabsTrigger value="draft" className="flex items-center gap-2">
-            <Archive className="w-4 h-4" />
-            Rascunhos ({concursos.length - publishedCount})
-          </TabsTrigger>
-        </TabsList>
+        <div className="overflow-x-auto">
+          <TabsList className="grid w-full grid-cols-5 min-w-[600px] sm:min-w-0">
+            <TabsTrigger value="all" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
+              <Trophy className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">Todos</span>
+              <span className="sm:hidden">Todos</span>
+              <span className="hidden sm:inline">({concursos.length})</span>
+              <span className="sm:hidden text-xs">({concursos.length})</span>
+            </TabsTrigger>
+            <TabsTrigger value="published" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
+              <Send className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">Publicados</span>
+              <span className="sm:hidden">Pub</span>
+              <span className="hidden sm:inline">({publishedCount})</span>
+              <span className="sm:hidden text-xs">({publishedCount})</span>
+            </TabsTrigger>
+            <TabsTrigger value="active" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
+              <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">Ativos</span>
+              <span className="sm:hidden">Ativos</span>
+              <span className="hidden sm:inline">({activeCount})</span>
+              <span className="sm:hidden text-xs">({activeCount})</span>
+            </TabsTrigger>
+            <TabsTrigger value="closed" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
+              <Timer className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">Fechados</span>
+              <span className="sm:hidden">Fech</span>
+              <span className="hidden sm:inline">({closedCount})</span>
+              <span className="sm:hidden text-xs">({closedCount})</span>
+            </TabsTrigger>
+            <TabsTrigger value="draft" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
+              <Archive className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">Rascunhos</span>
+              <span className="sm:hidden">Rasc</span>
+              <span className="hidden sm:inline">({concursos.length - publishedCount})</span>
+              <span className="sm:hidden text-xs">({concursos.length - publishedCount})</span>
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value={activeTab} className="space-y-4">
+          {/* Selection Indicator */}
+          {selectedIds.length > 0 && (
+            <div className="bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/10 dark:to-orange-900/10 border border-amber-200 dark:border-amber-800 rounded-lg p-3 sm:p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 bg-amber-500 rounded-full animate-pulse"></div>
+                  <div>
+                    <p className="text-sm font-semibold text-amber-800 dark:text-amber-200">
+                      {selectedIds.length} {selectedIds.length === 1 ? 'concurso selecionado' : 'concursos selecionados'}
+                    </p>
+                    <p className="text-xs text-amber-600 dark:text-amber-300">
+                      Use as ações abaixo para gerenciar os itens selecionados
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSelectedIds([])}
+                  className="text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/20"
+                >
+                  <XIcon className="w-4 h-4 mr-1" />
+                  Limpar
+                </Button>
+              </div>
+            </div>
+          )}
+
           {filteredConcursos.length === 0 ? (
             <Card>
               <CardContent className="py-12 text-center">
@@ -1273,10 +1508,10 @@ export const ConcursosManager = () => {
                   !concurso.published && "bg-gray-50/50 dark:bg-gray-950/10",
                   concurso.status === 'active' && concurso.published && "bg-green-50/30 dark:bg-green-950/10"
                 )}>
-                  <CardContent className="p-4">
-                    <div className="flex items-start gap-4">
+                  <CardContent className="p-3 sm:p-4">
+                    <div className="flex items-start gap-3 sm:gap-4">
                       {/* Selection Checkbox */}
-                      <div className="flex items-center">
+                      <div className="flex items-center flex-shrink-0">
                         <input
                           type="checkbox"
                           checked={selectedIds.includes(concurso.id)}
@@ -1287,13 +1522,13 @@ export const ConcursosManager = () => {
                               setSelectedIds(selectedIds.filter(id => id !== concurso.id));
                             }
                           }}
-                          className="rounded border-gray-300"
+                          className="rounded border-gray-300 w-4 h-4 sm:w-5 sm:h-5"
                         />
-                          </div>
+                      </div>
 
                       {/* Concurso Icon */}
                       <div className={cn(
-                        "w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0",
+                        "w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center flex-shrink-0",
                         getCategoryColor(concurso.category)
                       )}>
                         {getCategoryIcon(concurso.category)}
@@ -1301,33 +1536,37 @@ export const ConcursosManager = () => {
 
                       {/* Content */}
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between mb-2">
-                          <div className="flex items-center gap-3 flex-wrap">
-                            <h4 className={cn(
-                              "font-semibold truncate",
-                              concurso.published && "text-foreground font-bold"
-                            )}>
-                              {concurso.title}
-                            </h4>
-                            <Badge variant="outline" className="text-xs">
-                              {getCategoryLabel(concurso.category)}
-                            </Badge>
-                            <Badge className={cn("text-xs", getStatusColor(concurso.status))}>
-                              {getStatusLabel(concurso.status)}
-                            </Badge>
-                            {concurso.published && (
-                              <div className="w-2 h-2 bg-green-500 rounded-full" />
-                            )}
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4 mb-2">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start gap-2 flex-wrap mb-1">
+                              <h4 className={cn(
+                                "font-semibold text-sm sm:text-base leading-tight",
+                                concurso.published && "text-foreground font-bold"
+                              )}>
+                                {concurso.title}
+                              </h4>
+                              {concurso.published && (
+                                <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0 mt-1" />
+                              )}
+                            </div>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <Badge variant="outline" className="text-xs">
+                                {getCategoryLabel(concurso.category)}
+                              </Badge>
+                              <Badge className={cn("text-xs", getStatusColor(concurso.status))}>
+                                {getStatusLabel(concurso.status)}
+                              </Badge>
+                            </div>
                           </div>
                           
-                          <div className="flex items-center gap-2 ml-4">
-                            <span className="text-xs text-muted-foreground">
+                          <div className="flex items-center gap-2 flex-shrink-0">
+                            <span className="text-xs text-muted-foreground hidden sm:block">
                               {formatDate(concurso.created_at)}
-                          </span>
+                            </span>
                             
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="sm">
+                                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                                   <MoreVertical className="w-4 h-4" />
                                 </Button>
                               </DropdownMenuTrigger>
@@ -1413,48 +1652,48 @@ export const ConcursosManager = () => {
                         </div>
                         
                         <p className={cn(
-                          "text-sm text-muted-foreground leading-relaxed mb-3",
+                          "text-sm text-muted-foreground leading-relaxed mb-3 line-clamp-2",
                           concurso.published && "text-foreground/80"
                         )}>
                           {concurso.description}
                         </p>
 
                         {/* Additional Info */}
-                        <div className="flex flex-wrap gap-4 text-xs text-muted-foreground mb-3">
+                        <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 sm:gap-4 text-xs text-muted-foreground mb-3">
                           {concurso.positions_available && (
                             <div className="flex items-center gap-1">
-                              <Users className="w-3 h-3" />
-                              {concurso.positions_available} vagas
+                              <Users className="w-3 h-3 flex-shrink-0" />
+                              <span className="truncate">{concurso.positions_available} vagas</span>
                             </div>
                           )}
                           {concurso.location && (
                             <div className="flex items-center gap-1">
-                              <MapPin className="w-3 h-3" />
-                              {concurso.location}
-        </div>
-      )}
+                              <MapPin className="w-3 h-3 flex-shrink-0" />
+                              <span className="truncate">{concurso.location}</span>
+                            </div>
+                          )}
                           {concurso.deadline && (
                             <div className="flex items-center gap-1">
-                              <Calendar className="w-3 h-3" />
-                              Até {new Date(concurso.deadline).toLocaleDateString('pt-AO')}
+                              <Calendar className="w-3 h-3 flex-shrink-0" />
+                              <span className="truncate">Até {new Date(concurso.deadline).toLocaleDateString('pt-AO')}</span>
                             </div>
                           )}
                           {concurso.salary_range && (
                             <div className="flex items-center gap-1">
-                              <DollarSign className="w-3 h-3" />
-                              {concurso.salary_range}
+                              <DollarSign className="w-3 h-3 flex-shrink-0" />
+                              <span className="truncate">{concurso.salary_range}</span>
                             </div>
                           )}
                           {concurso.views_count && (
                             <div className="flex items-center gap-1">
-                              <Eye className="w-3 h-3" />
-                              {concurso.views_count} visualizações
+                              <Eye className="w-3 h-3 flex-shrink-0" />
+                              <span className="truncate">{concurso.views_count} visualizações</span>
                             </div>
                           )}
                           {concurso.applications_count && (
                             <div className="flex items-center gap-1">
-                              <UserCheck className="w-3 h-3" />
-                              {concurso.applications_count} candidaturas
+                              <UserCheck className="w-3 h-3 flex-shrink-0" />
+                              <span className="truncate">{concurso.applications_count} candidaturas</span>
                             </div>
                           )}
                         </div>
@@ -1468,15 +1707,15 @@ export const ConcursosManager = () => {
                               if (daysRemaining === 0) {
                                 return (
                                   <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
-                                    <AlertTriangle className="w-4 h-4" />
-                                    <span className="text-sm font-medium">Prazo expirado</span>
+                                    <AlertTriangle className="w-3 h-3 sm:w-4 sm:h-4" />
+                                    <span className="text-xs sm:text-sm font-medium">Prazo expirado</span>
                                   </div>
                                 );
                               } else if (daysRemaining <= 7) {
                                 return (
                                   <div className="flex items-center gap-2 text-orange-600 dark:text-orange-400">
-                                    <Clock className="w-4 h-4" />
-                                    <span className="text-sm font-medium">
+                                    <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
+                                    <span className="text-xs sm:text-sm font-medium">
                                       {daysRemaining === 1 ? 'Último dia' : `${daysRemaining} dias restantes`}
                                     </span>
                                   </div>
@@ -1484,8 +1723,8 @@ export const ConcursosManager = () => {
                               } else {
                                 return (
                                   <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
-                                    <CheckCircle className="w-4 h-4" />
-                                    <span className="text-sm font-medium">
+                                    <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4" />
+                                    <span className="text-xs sm:text-sm font-medium">
                                       {daysRemaining} dias restantes
                                     </span>
                                   </div>
@@ -1497,11 +1736,11 @@ export const ConcursosManager = () => {
 
                         {/* Requirements Preview */}
                         {concurso.requirements && (
-                          <div className="mt-3 p-3 bg-muted/50 rounded-lg">
-                            <p className="text-xs font-medium text-muted-foreground mb-2">Requisitos:</p>
-                            <p className="text-xs text-muted-foreground">
-                              {concurso.requirements.length > 100 
-                                ? concurso.requirements.substring(0, 100) + '...' 
+                          <div className="mt-3 p-2 sm:p-3 bg-muted/50 rounded-lg">
+                            <p className="text-xs font-medium text-muted-foreground mb-1 sm:mb-2">Requisitos:</p>
+                            <p className="text-xs text-muted-foreground line-clamp-2">
+                              {concurso.requirements.length > 80 
+                                ? concurso.requirements.substring(0, 80) + '...' 
                                 : concurso.requirements
                               }
                             </p>
@@ -1517,74 +1756,141 @@ export const ConcursosManager = () => {
         </TabsContent>
       </Tabs>
       {inscricoesModalOpen && inscricoesConcurso && (
-  <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
-    <Card className="max-w-4xl w-full max-h-[95vh] overflow-y-auto">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="text-xl flex items-center gap-2">
-              <ListOrdered className="w-6 h-6 text-blue-600" />
-              Lista de Inscritos
-            </CardTitle>
-            <p className="text-muted-foreground mt-1 font-medium">{inscricoesConcurso.title}</p>
-          </div>
-          <Button variant="ghost" size="sm" onClick={() => setInscricoesModalOpen(false)}>
-            <XIcon className="w-5 h-5" />
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-2">
-          <div className="flex gap-2 items-center">
-            <span className="text-sm text-muted-foreground">Ordenar por:</span>
-            <Button variant={inscricoesSort==='nome' ? 'default' : 'outline'} size="sm" onClick={()=>setInscricoesSort('nome')}><UserIcon className="w-4 h-4 mr-1"/>Nome</Button>
-            <Button variant={inscricoesSort==='idade' ? 'default' : 'outline'} size="sm" onClick={()=>setInscricoesSort('idade')}><Calendar className="w-4 h-4 mr-1"/>Idade</Button>
-            <Button variant={inscricoesSort==='categoria' ? 'default' : 'outline'} size="sm" onClick={()=>setInscricoesSort('categoria')}><Tag className="w-4 h-4 mr-1"/>Categoria</Button>
-            <Button variant="ghost" size="icon" onClick={()=>setInscricoesSortDir(inscricoesSortDir==='asc'?'desc':'asc')}><SortAsc className={inscricoesSortDir==='asc'?'':'hidden'} /><SortDesc className={inscricoesSortDir==='desc'?'':'hidden'} /></Button>
-          </div>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={()=>exportInscricoes('excel')}><FileSpreadsheet className="w-4 h-4 mr-1"/>Excel</Button>
-            <Button variant="outline" size="sm" onClick={()=>exportInscricoes('pdf')}><FileDown className="w-4 h-4 mr-1"/>PDF</Button>
-            <Button variant="outline" size="sm" onClick={printInscricoes}><Printer className="w-4 h-4 mr-1"/>Imprimir</Button>
-          </div>
-        </div>
-        {inscricoesLoading ? (
-          <div className="text-center py-8">Carregando inscritos...</div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-sm border rounded-lg">
-              <thead>
-                <tr className="bg-muted">
-                  <th className="p-2 text-left">#</th>
-                  <th className="p-2 text-left">Nome</th>
-                  <th className="p-2 text-left">Idade</th>
-                  <th className="p-2 text-left">Categoria</th>
-                  <th className="p-2 text-left">Email</th>
-                  <th className="p-2 text-left">Telefone</th>
-                  <th className="p-2 text-left">Data de Inscrição</th>
-                </tr>
-              </thead>
-              <tbody>
-                {sortInscricoes(inscricoes).map((i, idx) => (
-                  <tr key={i.id} className="border-b hover:bg-muted/30">
-                    <td className="p-2">{idx+1}</td>
-                    <td className="p-2 font-medium">{i.nome_completo}</td>
-                    <td className="p-2">{getIdade(i.data_nascimento)}</td>
-                    <td className="p-2">{i.categoria || '-'}</td>
-                    <td className="p-2">{i.email}</td>
-                    <td className="p-2">{i.telefone}</td>
-                    <td className="p-2">{new Date(i.created_at).toLocaleDateString('pt-AO')}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            {inscricoes.length === 0 && (
-              <div className="text-center text-muted-foreground py-8">Nenhum inscrito encontrado para este concurso.</div>
-            )}
-          </div>
-        )}
-      </CardContent>
-    </Card>
+        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-2 sm:p-4">
+          <Card className="max-w-4xl w-full max-h-[95vh] overflow-y-auto">
+            <CardHeader className="p-4 sm:p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex-1 min-w-0">
+                  <CardTitle className="text-lg sm:text-xl flex items-center gap-2">
+                    <ListOrdered className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
+                    Lista de Inscritos
+                  </CardTitle>
+                  <p className="text-sm sm:text-base text-muted-foreground mt-1 font-medium truncate">{inscricoesConcurso.title}</p>
+                </div>
+                <Button variant="ghost" size="sm" onClick={() => setInscricoesModalOpen(false)} className="flex-shrink-0">
+                  <XIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="p-4 sm:p-6 space-y-4">
+              <div className="flex flex-col gap-3">
+                {/* Mobile Controls */}
+                <div className="sm:hidden space-y-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground">Ordenar:</span>
+                    <Select value={inscricoesSort} onValueChange={(value: 'nome'|'idade'|'categoria') => setInscricoesSort(value)}>
+                      <SelectTrigger className="w-32">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="nome">Nome</SelectItem>
+                        <SelectItem value="idade">Idade</SelectItem>
+                        <SelectItem value="categoria">Categoria</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Button variant="ghost" size="icon" onClick={()=>setInscricoesSortDir(inscricoesSortDir==='asc'?'desc':'asc')} className="h-8 w-8">
+                      <SortAsc className={inscricoesSortDir==='asc'?'':'hidden'} />
+                      <SortDesc className={inscricoesSortDir==='desc'?'':'hidden'} />
+                    </Button>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" onClick={()=>exportInscricoes('excel')} className="flex-1 text-xs">
+                      <FileSpreadsheet className="w-3 h-3 mr-1"/>
+                      Excel
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={()=>exportInscricoes('pdf')} className="flex-1 text-xs">
+                      <FileDown className="w-3 h-3 mr-1"/>
+                      PDF
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={printInscricoes} className="flex-1 text-xs">
+                      <Printer className="w-3 h-3 mr-1"/>
+                      Imprimir
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Desktop Controls */}
+                <div className="hidden sm:flex sm:items-center sm:justify-between">
+                  <div className="flex gap-2 items-center">
+                    <span className="text-sm text-muted-foreground">Ordenar por:</span>
+                    <Button variant={inscricoesSort==='nome' ? 'default' : 'outline'} size="sm" onClick={()=>setInscricoesSort('nome')}>
+                      <UserIcon className="w-4 h-4 mr-1"/>
+                      Nome
+                    </Button>
+                    <Button variant={inscricoesSort==='idade' ? 'default' : 'outline'} size="sm" onClick={()=>setInscricoesSort('idade')}>
+                      <Calendar className="w-4 h-4 mr-1"/>
+                      Idade
+                    </Button>
+                    <Button variant={inscricoesSort==='categoria' ? 'default' : 'outline'} size="sm" onClick={()=>setInscricoesSort('categoria')}>
+                      <Tag className="w-4 h-4 mr-1"/>
+                      Categoria
+                    </Button>
+                    <Button variant="ghost" size="icon" onClick={()=>setInscricoesSortDir(inscricoesSortDir==='asc'?'desc':'asc')}>
+                      <SortAsc className={inscricoesSortDir==='asc'?'':'hidden'} />
+                      <SortDesc className={inscricoesSortDir==='desc'?'':'hidden'} />
+                    </Button>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" onClick={()=>exportInscricoes('excel')}>
+                      <FileSpreadsheet className="w-4 h-4 mr-1"/>
+                      Excel
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={()=>exportInscricoes('pdf')}>
+                      <FileDown className="w-4 h-4 mr-1"/>
+                      PDF
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={printInscricoes}>
+                      <Printer className="w-4 h-4 mr-1"/>
+                      Imprimir
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              {inscricoesLoading ? (
+                <div className="text-center py-8">Carregando inscritos...</div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="min-w-full text-xs sm:text-sm border rounded-lg">
+                    <thead>
+                      <tr className="bg-muted">
+                        <th className="p-2 text-left">#</th>
+                        <th className="p-2 text-left">Nome</th>
+                        <th className="p-2 text-left hidden sm:table-cell">Idade</th>
+                        <th className="p-2 text-left hidden sm:table-cell">Categoria</th>
+                        <th className="p-2 text-left hidden sm:table-cell">Email</th>
+                        <th className="p-2 text-left hidden sm:table-cell">Telefone</th>
+                        <th className="p-2 text-left">Data</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {sortInscricoes(inscricoes).map((i, idx) => (
+                        <tr key={i.id} className="border-b hover:bg-muted/30">
+                          <td className="p-2">{idx+1}</td>
+                          <td className="p-2 font-medium">
+                            <div>
+                              <div className="font-medium">{i.nome_completo}</div>
+                              <div className="text-xs text-muted-foreground sm:hidden">
+                                {getIdade(i.data_nascimento)} anos • {i.categoria || '-'}
+                              </div>
+                            </div>
+                          </td>
+                          <td className="p-2 hidden sm:table-cell">{getIdade(i.data_nascimento)}</td>
+                          <td className="p-2 hidden sm:table-cell">{i.categoria || '-'}</td>
+                          <td className="p-2 hidden sm:table-cell">{i.email}</td>
+                          <td className="p-2 hidden sm:table-cell">{i.telefone}</td>
+                          <td className="p-2">{new Date(i.created_at).toLocaleDateString('pt-AO')}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  {inscricoes.length === 0 && (
+                    <div className="text-center text-muted-foreground py-8">Nenhum inscrito encontrado para este concurso.</div>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
       )}
     </div>
