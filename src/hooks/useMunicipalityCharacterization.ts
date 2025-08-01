@@ -278,8 +278,8 @@ export const useMunicipalityCharacterization = () => {
 
       return true;
     } catch (err) {
-      console.error('Erro ao atualizar caracterização:', err);
-      setError('Erro ao atualizar dados de caracterização');
+      console.error('Erro ao actualizar caracterização:', err);
+      setError('Erro ao actualizar dados de caracterização');
       return false;
     } finally {
       setLoading(false);

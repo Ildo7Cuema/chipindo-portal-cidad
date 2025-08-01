@@ -110,7 +110,7 @@ export function BatchUploadModal({ open, onOpenChange, onUploadComplete, userId 
   // Função para upload em lote
   const handleBatchUpload = async () => {
     if (!department || files.length === 0) {
-      toast.error('Selecione uma direção e pelo menos um arquivo.');
+      toast.error('Selecione uma direcção e pelo menos um arquivo.');
       return;
     }
 
@@ -234,19 +234,19 @@ export function BatchUploadModal({ open, onOpenChange, onUploadComplete, userId 
                 Upload em Lote - Acervo Digital
               </DialogTitle>
               <DialogDescription className="text-sm text-muted-foreground">
-                Carregue múltiplos arquivos de uma vez para uma direção específica
+                Carregue múltiplos arquivos de uma vez para uma direcção específica
               </DialogDescription>
             </div>
           </div>
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
-          {/* Seleção de Direção */}
+          {/* Seleção de Direcção */}
           <div className="space-y-2">
-            <Label htmlFor="department">Direção/Área</Label>
+            <Label htmlFor="department">Direcção/Área</Label>
             <Select value={department} onValueChange={setDepartment}>
               <SelectTrigger>
-                <SelectValue placeholder="Selecione a direção para os arquivos" />
+                <SelectValue placeholder="Selecione a direcção para os arquivos" />
               </SelectTrigger>
               <SelectContent>
                 {departments.map(d => (

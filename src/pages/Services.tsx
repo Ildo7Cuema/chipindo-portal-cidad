@@ -115,7 +115,7 @@ const Services = () => {
   const setoresEstrategicos = [
     {
       title: "Educação",
-      description: "Informações detalhadas sobre o setor educacional, programas, oportunidades e infraestruturas",
+      description: "Informações detalhadas sobre o sector educacional, programas, oportunidades e infraestruturas",
       icon: GraduationCapIcon,
       color: "bg-blue-100 text-blue-800",
       path: "/educacao",
@@ -138,7 +138,7 @@ const Services = () => {
       stats: "1.245 agricultores, 8.750 ha cultivados"
     },
     {
-      title: "Setor Mineiro",
+      title: "Sector Mineiro",
       description: "Recursos minerais, programas de formação, oportunidades de emprego e infraestruturas mineiras",
       icon: PickaxeIcon,
       color: "bg-yellow-100 text-yellow-800",
@@ -250,15 +250,15 @@ const Services = () => {
           })}
         </div>
 
-        {/* Setores Estratégicos Section */}
+        {/* Sectores Estratégicos Section */}
         <section className="mb-16">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-foreground mb-4">
-              Setores Estratégicos
+              Sectores Estratégicos
             </h2>
             <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-              Explore informações detalhadas sobre os setores estratégicos do município de Chipindo. 
-              Cada setor possui sua própria página com programas, oportunidades e infraestruturas específicas.
+              Explore informações detalhadas sobre os sectores estratégicos do município de Chipindo. 
+              Cada sector possui sua própria página com programas, oportunidades e infraestruturas específicas.
             </p>
           </div>
           

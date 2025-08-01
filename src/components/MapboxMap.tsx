@@ -328,7 +328,7 @@ export const MapboxMap = ({ height = "400px", className = "" }: MapboxMapProps) 
     }
   }, [locations, showApiKeyInput]);
 
-  // Atualizar marcadores quando as localizações mudarem
+  // Actualizar marcadores quando as localizações mudarem
   useEffect(() => {
     if (map.current && locations.length > 0) {
       addLocationMarkers();

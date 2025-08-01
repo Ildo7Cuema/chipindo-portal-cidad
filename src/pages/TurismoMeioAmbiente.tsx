@@ -104,7 +104,7 @@ const TurismoMeioAmbiente = () => {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <p className="text-muted-foreground">Informações do setor não encontradas.</p>
+          <p className="text-muted-foreground">Informações do sector não encontradas.</p>
         </div>
       </div>
     );
@@ -118,7 +118,7 @@ const TurismoMeioAmbiente = () => {
         <SetorBreadcrumb 
           items={[
             { label: "Início", href: "/" },
-            { label: "Setores Estratégicos", href: "/setores" },
+            { label: "Sectores Estratégicos", href: "/setores" },
             { label: turismoInfo.nome, href: "#" }
           ]} 
         />
@@ -164,7 +164,7 @@ const TurismoMeioAmbiente = () => {
           </div>
         </section>
 
-        {/* Informações do Setor */}
+        {/* Informações do Sector */}
         <section className="mb-12">
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold mb-4" style={{ color: turismoInfo.cor_primaria }}>
@@ -204,7 +204,7 @@ const TurismoMeioAmbiente = () => {
 
         {/* Estatísticas */}
         <section className="mb-12">
-          <h2 className="text-3xl font-bold mb-6 text-center">Estatísticas do Setor</h2>
+          <h2 className="text-3xl font-bold mb-6 text-center">Estatísticas do Sector</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {estatisticas.map((estatistica) => {
               const IconComponent = getIconComponent(estatistica.icone);

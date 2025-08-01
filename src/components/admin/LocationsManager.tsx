@@ -567,7 +567,7 @@ export function LocationsManager() {
                         Cancelar
                       </Button>
                       <Button type="submit" className="bg-gradient-to-r from-primary to-primary/80">
-                        {editingLocation ? 'Atualizar' : 'Adicionar'}
+                        {editingLocation ? 'Actualizar' : 'Adicionar'}
                       </Button>
                     </div>
                   </form>

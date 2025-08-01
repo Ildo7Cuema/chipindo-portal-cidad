@@ -310,7 +310,7 @@ export const BackupManager = () => {
                   onClick={() => fetchBackups()}
                 >
                   <RefreshCw className="h-4 w-4 mr-2" />
-                  Atualizar Lista
+                  Actualizar Lista
                 </Button>
                 <Button
                   variant="outline"

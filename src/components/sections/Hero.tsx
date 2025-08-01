@@ -297,7 +297,7 @@ export const Hero = () => {
               <div className="grid grid-cols-2 gap-6">
                 <StatCard
                   icon={FileTextIcon}
-                  label="Projetos"
+                  label="Projectos"
                   value={heroStatsLoading ? '...' : `${projects}+`}
                   description="Iniciativas ativas"
                   variant="glass"

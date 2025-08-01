@@ -154,8 +154,8 @@ export function useDesenvolvimentoEconomicoData() {
   const [oportunidades, setOportunidades] = useState<OportunidadeEconomica[]>([
     {
       id: '1',
-      title: 'Gestor de Projetos Econômicos',
-      description: 'Gestão de projetos de desenvolvimento econômico do município',
+      title: 'Gestor de Projectos Econômicos',
+      description: 'Gestão de projectos de desenvolvimento econômico do município',
       vagas: '1 vaga',
       prazo: '31 de Outubro 2024',
       requisitos: ['Licenciatura em Economia', 'Experiência mínima 5 anos'],

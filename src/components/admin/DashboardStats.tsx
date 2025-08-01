@@ -390,7 +390,7 @@ export const DashboardStats = () => {
 
             <StatCard
               icon={Target}
-              label="Objetivos"
+              label="Objectivos"
               value="95%"
               description="Meta de transparência"
               trend={{ value: 4, isPositive: true }}

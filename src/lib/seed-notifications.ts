@@ -55,7 +55,7 @@ export async function seedSampleNotifications(): Promise<boolean> {
     },
     {
       type: 'system_update' as const,
-      title: 'Atualização do Sistema: Nova Funcionalidade',
+      title: 'Actualização do Sistema: Nova Funcionalidade',
       message: 'O sistema de notificações foi implementado com sucesso. Agora você pode acompanhar todas as atividades em tempo real.',
       data: {
         version: '1.2.0',
@@ -108,7 +108,7 @@ export async function seedSampleNotifications(): Promise<boolean> {
         profession: 'Engenheiro Civil',
         experience_years: 12,
         areasOfInterest: ['Infraestrutura', 'Obras Públicas'],
-        additional_info: 'Engenheiro Civil com vasta experiência em gestão de projetos de infraestrutura urbana e rural. Tenho interesse em contribuir para o desenvolvimento sustentável do município.',
+        additional_info: 'Engenheiro Civil com vasta experiência em gestão de projectos de infraestrutura urbana e rural. Tenho interesse em contribuir para o desenvolvimento sustentável do município.',
         timestamp: new Date(Date.now() - 7200000).toISOString() // 2 hours ago
       }
     }

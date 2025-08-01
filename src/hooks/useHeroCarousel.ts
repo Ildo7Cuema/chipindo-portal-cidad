@@ -83,7 +83,7 @@ export function useHeroCarousel() {
       return data;
     } catch (error) {
       console.error('Error updating hero carousel image:', error);
-      toast.error('Erro ao atualizar imagem');
+      toast.error('Erro ao actualizar imagem');
       throw error;
     }
   };

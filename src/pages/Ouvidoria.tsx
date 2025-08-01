@@ -248,7 +248,7 @@ const Ouvidoria = () => {
           <SectionHeader
             subtitle="Visão Geral"
             title="Estatísticas da Ouvidoria"
-            description="Dados atualizados sobre manifestações, tempo de resposta e satisfação dos cidadãos"
+            description="Dados actualizados sobre manifestações, tempo de resposta e satisfação dos cidadãos"
             centered={true}
           />
           

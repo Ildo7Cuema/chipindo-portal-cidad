@@ -96,7 +96,7 @@ export const useTransparency = () => {
     }
   };
 
-  // Carregar projetos
+  // Carregar projectos
   const loadProjects = async () => {
     try {
       const { data, error } = await supabase
@@ -107,7 +107,7 @@ export const useTransparency = () => {
       if (error) throw error;
       setProjects(data || []);
     } catch (err) {
-      console.error('Erro ao carregar projetos:', err);
+      console.error('Erro ao carregar projectos:', err);
     }
   };
 
@@ -134,7 +134,7 @@ export const useTransparency = () => {
 
       if (error) throw error;
       
-      // Atualizar estado local
+      // Actualizar estado local
       setDocuments(prev => 
         prev.map(doc => 
           doc.id === documentId 
@@ -157,7 +157,7 @@ export const useTransparency = () => {
 
       if (error) throw error;
       
-      // Atualizar estado local
+      // Actualizar estado local
       setDocuments(prev => 
         prev.map(doc => 
           doc.id === documentId 

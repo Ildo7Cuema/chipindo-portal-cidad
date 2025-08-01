@@ -63,7 +63,7 @@ export function useHeroStats() {
       return { success: true };
     } catch (err) {
       console.error('Error updating population:', err);
-      setError('Erro ao atualizar população');
+      setError('Erro ao actualizar população');
       return { success: false };
     } finally {
       setLoading(false);
@@ -79,7 +79,7 @@ export function useHeroStats() {
       return { success: true };
     } catch (err) {
       console.error('Error updating area total:', err);
-      setError('Erro ao atualizar área total');
+      setError('Erro ao actualizar área total');
       return { success: false };
     } finally {
       setLoading(false);

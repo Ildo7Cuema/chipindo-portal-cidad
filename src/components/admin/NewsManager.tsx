@@ -209,7 +209,7 @@ export const NewsManager = () => {
       };
 
       if (editingNews) {
-        // Para edição, removemos o author_id dos dados de atualização
+        // Para edição, removemos o author_id dos dados de actualização
         const { author_id, ...updateData } = newsData;
         const { error } = await supabase
           .from('news')
@@ -1134,7 +1134,7 @@ export const NewsManager = () => {
                       ) : (
                         <div className="flex items-center gap-2">
                           {editingNews ? <Edit className="w-3 h-3" /> : <Plus className="w-3 h-3" />}
-                          {editingNews ? "Atualizar" : "Criar"}
+                          {editingNews ? "Actualizar" : "Criar"}
                         </div>
                       )}
                     </Button>

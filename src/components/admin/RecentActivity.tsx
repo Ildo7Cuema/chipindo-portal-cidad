@@ -146,9 +146,9 @@ export const RecentActivity = () => {
           id: `org-${item.id}`,
           type: 'organigrama' as const,
           title: item.nome,
-          description: `${item.cargo} - Organigrama atualizado`,
+          description: `${item.cargo} - Organigrama actualizado`,
           created_at: item.created_at,
-          status: 'atualizado'
+          status: 'actualizado'
         })));
       }
 
@@ -211,7 +211,7 @@ export const RecentActivity = () => {
         return 'default';
       case 'user':
         return 'outline';
-      case 'atualizado':
+      case 'actualizado':
         return 'secondary';
       default:
         return 'outline';

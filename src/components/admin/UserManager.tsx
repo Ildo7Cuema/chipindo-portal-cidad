@@ -217,7 +217,7 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
 
       if (error) {
         console.error('Error updating user status:', error);
-        toast.error(`Erro ao atualizar status do utilizador: ${error.message}`);
+        toast.error(`Erro ao actualizar status do utilizador: ${error.message}`);
         return;
       }
 

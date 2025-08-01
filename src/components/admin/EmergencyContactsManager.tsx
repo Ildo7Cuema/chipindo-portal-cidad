@@ -245,7 +245,7 @@ export function EmergencyContactsManager() {
         description: "As alterações foram aplicadas."
       });
     } catch (error) {
-      toast.error("Erro ao atualizar contacto de emergência", {
+      toast.error("Erro ao actualizar contacto de emergência", {
         description: "Tente novamente ou contacte o administrador."
       });
     }
@@ -608,7 +608,7 @@ export function EmergencyContactsManager() {
                         Cancelar
                       </Button>
                       <Button type="submit" className="bg-gradient-to-r from-primary to-primary/80">
-                        {editingContact ? 'Atualizar' : 'Adicionar'}
+                        {editingContact ? 'Actualizar' : 'Adicionar'}
                       </Button>
                     </div>
                   </form>

@@ -124,7 +124,7 @@ export default function AcervoDigital() {
     try {
       await registerView(itemId);
       
-      // Atualizar a contagem de visualizações no item
+      // Actualizar a contagem de visualizações no item
       const updatedViews = await getViewsCount(itemId);
       setItems(prevItems => 
         prevItems.map(item => 
@@ -1302,7 +1302,7 @@ export default function AcervoDigital() {
                           <span className="font-medium">{formatDate(selectedItem.created_at)}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-muted-foreground">Direção:</span>
+                          <span className="text-muted-foreground">Direcção:</span>
                           <span className="font-medium">{getDirectionData(selectedItem.direction).label}</span>
                         </div>
                         {selectedItem.views && selectedItem.views > 0 && (

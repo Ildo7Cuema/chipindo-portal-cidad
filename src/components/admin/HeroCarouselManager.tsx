@@ -560,7 +560,7 @@ export const HeroCarouselManager = () => {
                         Cancelar
                       </Button>
                       <Button type="submit" disabled={uploading} className="bg-gradient-to-r from-primary to-primary/80">
-                        {uploading ? 'Carregando...' : selectedImage ? 'Atualizar' : 'Adicionar'}
+                        {uploading ? 'Carregando...' : selectedImage ? 'Actualizar' : 'Adicionar'}
                       </Button>
                     </div>
                   </form>

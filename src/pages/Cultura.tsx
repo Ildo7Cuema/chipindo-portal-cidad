@@ -488,7 +488,7 @@ const Cultura = () => {
       <CandidaturaForm
         open={openCandidatura}
         onOpenChange={setOpenCandidatura}
-        setor="Setor de Cultura"
+        setor="Sector de Cultura"
         oportunidade={oportunidadeSelecionada}
         onSuccess={() => {
           setOportunidadeSelecionada("");
@@ -497,7 +497,7 @@ const Cultura = () => {
       <InscricaoProgramaForm
         open={openInscricaoPrograma}
         onOpenChange={setOpenInscricaoPrograma}
-        setor="Setor de Cultura"
+        setor="Sector de Cultura"
         programa={programaSelecionado}
         onSuccess={() => {
           setProgramaSelecionado("");

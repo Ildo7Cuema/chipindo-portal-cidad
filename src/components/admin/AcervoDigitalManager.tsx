@@ -259,7 +259,7 @@ export default function AcervoDigitalManager() {
           .eq('id', editingItem.id);
 
         if (error) throw error;
-        toast.success('Item atualizado com sucesso!');
+        toast.success('Item actualizado com sucesso!');
       } else {
         // Para novo item, file_url deve ser obrigatório
         if (!fileUrl) {
@@ -449,7 +449,7 @@ export default function AcervoDigitalManager() {
     const exportData = {
       title: 'Acervo Digital',
       subtitle: 'Portal Municipal de Chipindo',
-      headers: ['Título', 'Tipo', 'Direção/Área', 'Categoria', 'Tamanho', 'Visibilidade', 'Data'],
+      headers: ['Título', 'Tipo', 'Direcção/Área', 'Categoria', 'Tamanho', 'Visibilidade', 'Data'],
       rows: sortedItems.map(item => [
         item.title,
         item.type,
@@ -611,7 +611,7 @@ export default function AcervoDigitalManager() {
   // Função para upload em lote
   const handleBatchUpload = async () => {
     if (!batchUploadDepartment || batchUploadFiles.length === 0) {
-      toast.error('Selecione uma direção e pelo menos um arquivo.');
+      toast.error('Selecione uma direcção e pelo menos um arquivo.');
       return;
     }
 
@@ -781,7 +781,7 @@ export default function AcervoDigitalManager() {
                       {editingItem ? "Editar Item do Acervo" : "Novo Item do Acervo"}
                     </DialogTitle>
                     <DialogDescription className="text-sm text-muted-foreground">
-                      {editingItem ? "Edite os detalhes do item do acervo" : "Cadastre um novo documento, imagem, vídeo ou áudio por Direção"}
+                      {editingItem ? "Edite os detalhes do item do acervo" : "Cadastre um novo documento, imagem, vídeo ou áudio por Direcção"}
                     </DialogDescription>
                   </div>
                 </div>
@@ -807,10 +807,10 @@ export default function AcervoDigitalManager() {
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="department">Direção/Área</Label>
+                    <Label htmlFor="department">Direcção/Área</Label>
                     <Select value={formData.department} onValueChange={v => setFormData({ ...formData, department: v })}>
                       <SelectTrigger className="h-10">
-                        <SelectValue placeholder="Selecione a direção" />
+                        <SelectValue placeholder="Selecione a direcção" />
                       </SelectTrigger>
                       <SelectContent>
                         {departments.map(d => (
@@ -840,7 +840,7 @@ export default function AcervoDigitalManager() {
                 <div className="flex gap-2 pt-4">
                   <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>Cancelar</Button>
                   <Button type="submit" disabled={uploading || !formData.title || !formData.type || !formData.department || (!editingItem && !formData.file)} className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg">
-                    {uploading ? 'Salvando...' : (editingItem ? 'Atualizar' : 'Cadastrar')}
+                    {uploading ? 'Salvando...' : (editingItem ? 'Actualizar' : 'Cadastrar')}
                   </Button>
                 </div>
               </form>
@@ -909,9 +909,9 @@ export default function AcervoDigitalManager() {
               </SelectContent>
             </Select>
             <Select value={filterDept} onValueChange={setFilterDept}>
-              <SelectTrigger className="w-44"><SelectValue placeholder="Direção/Área" /></SelectTrigger>
+              <SelectTrigger className="w-44"><SelectValue placeholder="Direcção/Área" /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todas as direções</SelectItem>
+                <SelectItem value="all">Todas as direcções</SelectItem>
                 {departments.map((dept) => (
                   <SelectItem key={dept.value} value={dept.value}>{dept.label}</SelectItem>
                 ))}
@@ -1292,7 +1292,7 @@ export default function AcervoDigitalManager() {
                   <div className="mt-1">{getTypeBadge(viewItemDetails.type)}</div>
                 </div>
                 <div>
-                  <Label className="text-sm font-medium">Direção/Área</Label>
+                  <Label className="text-sm font-medium">Direcção/Área</Label>
                   <p className="text-sm text-muted-foreground mt-1">
                     {departments.find(d => d.value === viewItemDetails.department)?.label}
                   </p>

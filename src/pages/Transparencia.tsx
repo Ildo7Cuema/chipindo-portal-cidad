@@ -119,7 +119,7 @@ const Transparencia = () => {
       if (budgetError) throw budgetError;
       setBudgetData(budget || []);
 
-      // Carregar projetos
+      // Carregar projectos
       const { data: projs, error: projsError } = await supabase
         .from('transparency_projects')
         .select('*')
@@ -242,7 +242,7 @@ const Transparencia = () => {
       // Simular download (em produção, seria o arquivo real)
       toast.success(`Download iniciado: ${documentItem.title}`);
       
-      // Recarregar dados para atualizar contadores
+      // Recarregar dados para actualizar contadores
       loadData();
     } catch (error) {
       console.error('Erro ao fazer download:', error);
@@ -370,7 +370,7 @@ const Transparencia = () => {
               </div>
               <div className="flex items-center gap-2 px-6 py-3 bg-yellow-500/20 rounded-full backdrop-blur-md border border-yellow-400/30">
                 <BuildingIcon className="w-5 h-5 text-yellow-100" />
-                <span className="text-yellow-100 font-medium">{totalProjects} Projetos</span>
+                <span className="text-yellow-100 font-medium">{totalProjects} Projectos</span>
               </div>
             </div>
           </div>
@@ -382,7 +382,7 @@ const Transparencia = () => {
         <SectionHeader
           subtitle="Visão Geral"
           title="Estatísticas de Transparência"
-          description="Dados atualizados sobre documentos, orçamento e projetos da Administração Municipal"
+          description="Dados actualizados sobre documentos, orçamento e projectos da Administração Municipal"
           centered={true}
         />
         
@@ -416,7 +416,7 @@ const Transparencia = () => {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-slate-600">Projetos Ativos</p>
+                    <p className="text-sm font-medium text-slate-600">Projectos Ativos</p>
                     <p className="text-2xl font-bold text-slate-900">{activeProjects}</p>
                   </div>
                   <TrendingUpIcon className="w-8 h-8 text-orange-600" />
@@ -448,9 +448,9 @@ const Transparencia = () => {
                 <DollarSignIcon className="w-4 h-4" />
                 Orçamento
               </TabsTrigger>
-              <TabsTrigger value="projetos" className="flex items-center gap-2">
+              <TabsTrigger value="projectos" className="flex items-center gap-2">
                 <BuildingIcon className="w-4 h-4" />
-                Projetos
+                Projectos
               </TabsTrigger>
               <TabsTrigger value="estatisticas" className="flex items-center gap-2">
                 <BarChartIcon className="w-4 h-4" />
@@ -711,8 +711,8 @@ const Transparencia = () => {
               </div>
             </TabsContent>
 
-            {/* Tab Projetos */}
-            <TabsContent value="projetos" className="space-y-6">
+            {/* Tab Projectos */}
+            <TabsContent value="projectos" className="space-y-6">
               <div className="grid gap-6">
                 {projects.map((project) => (
                   <Card key={project.id} className="bg-white shadow-lg border-0">
@@ -866,7 +866,7 @@ const Transparencia = () => {
                     </div>
                     <div className="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg">
                       <ClockIcon className="w-8 h-8 text-purple-600 mx-auto mb-3" />
-                      <h4 className="font-semibold text-slate-900 mb-2">Atualização Regular</h4>
+                      <h4 className="font-semibold text-slate-900 mb-2">Actualização Regular</h4>
                       <p className="text-sm text-slate-600">
                         Mantemos as informações atualizadas regularmente
                       </p>

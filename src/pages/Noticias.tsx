@@ -71,7 +71,7 @@ const categoryMapping = [
     color: 'bg-blue-500', 
     bgColor: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/20 dark:text-blue-300 dark:border-blue-800',
     icon: TrendingUpIcon,
-    description: 'Projetos e iniciativas de desenvolvimento municipal'
+    description: 'Projectos e iniciativas de desenvolvimento municipal'
   },
   { 
     id: 'educacao', 
@@ -158,7 +158,7 @@ const Noticias = () => {
     try {
       await registerView(newsId);
       
-      // Atualizar a contagem de visualizações na notícia
+      // Actualizar a contagem de visualizações na notícia
       const updatedViews = await getViewsCount(newsId);
       setNews(prevNews => 
         prevNews.map(item => 
@@ -381,7 +381,7 @@ const Noticias = () => {
               </div>
               
               <p className="text-xl text-primary-foreground/95 max-w-4xl mx-auto leading-relaxed">
-                Acompanhe os desenvolvimentos, projetos e conquistas que transformam 
+                Acompanhe os desenvolvimentos, projectos e conquistas que transformam 
                 nossa comunidade e impactam positivamente a vida dos cidadãos de Chipindo.
               </p>
               
@@ -396,7 +396,7 @@ const Noticias = () => {
                 </div>
                 <div className="flex items-center gap-2 px-6 py-3 bg-yellow-500/20 rounded-full backdrop-blur-md border border-yellow-400/30">
                   <ZapIcon className="w-5 h-5 text-yellow-100" />
-                  <span className="text-yellow-100 font-medium">Atualização Diária</span>
+                  <span className="text-yellow-100 font-medium">Actualização Diária</span>
                 </div>
               </div>
             </div>

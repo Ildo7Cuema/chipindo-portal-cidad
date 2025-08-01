@@ -21,7 +21,7 @@ export interface AreaTecnologica {
   nome: string;
   empresas: string;
   profissionais: string;
-  projetos: string;
+  projectos: string;
   estado: string;
 }
 
@@ -94,7 +94,7 @@ export function useTecnologiaData() {
     },
     {
       id: '3',
-      label: 'Projetos Digitais',
+      label: 'Projectos Digitais',
       value: '32',
       icon: 'Code'
     },
@@ -112,7 +112,7 @@ export function useTecnologiaData() {
       nome: 'Desenvolvimento de Software',
       empresas: '8 empresas',
       profissionais: '35 desenvolvedores',
-      projetos: '15 projetos ativos',
+      projectos: '15 projectos ativos',
       estado: 'Crescimento'
     },
     {
@@ -120,7 +120,7 @@ export function useTecnologiaData() {
       nome: 'Infraestrutura Digital',
       empresas: '3 empresas',
       profissionais: '20 técnicos',
-      projetos: '8 projetos',
+      projectos: '8 projectos',
       estado: 'Expansão'
     },
     {
@@ -128,7 +128,7 @@ export function useTecnologiaData() {
       nome: 'E-commerce',
       empresas: '2 empresas',
       profissionais: '15 especialistas',
-      projetos: '5 projetos',
+      projectos: '5 projectos',
       estado: 'Crescimento'
     },
     {
@@ -136,7 +136,7 @@ export function useTecnologiaData() {
       nome: 'Consultoria IT',
       empresas: '2 empresas',
       profissionais: '19 consultores',
-      projetos: '4 projetos',
+      projectos: '4 projectos',
       estado: 'Estável'
     }
   ]);
@@ -230,7 +230,7 @@ export function useTecnologiaData() {
       nome: 'Centro de Formação IT',
       localizacao: 'Centro da cidade',
       capacidade: '100 formandos',
-      equipamentos: ['Computadores', 'Projetores', 'Software licenciado'],
+      equipamentos: ['Computadores', 'Projectores', 'Software licenciado'],
       estado: 'Muito bom'
     },
     {

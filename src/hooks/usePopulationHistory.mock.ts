@@ -140,7 +140,7 @@ export function usePopulationHistory() {
       return { success: true };
     } catch (err) {
       console.error('Error updating growth rate:', err);
-      setError('Erro ao atualizar taxa de crescimento');
+      setError('Erro ao actualizar taxa de crescimento');
       return { success: false };
     } finally {
       setLoading(false);

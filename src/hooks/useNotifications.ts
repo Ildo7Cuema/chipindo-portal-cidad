@@ -148,7 +148,7 @@ export function useNotifications() {
       return true;
     } catch (error: any) {
       toast({
-        title: "Erro ao atualizar notificação",
+        title: "Erro ao actualizar notificação",
         description: error.message,
         variant: "destructive",
       });
@@ -312,7 +312,7 @@ export function useNotifications() {
       return true;
     } catch (error: any) {
       toast({
-        title: "Erro ao atualizar notificações",
+        title: "Erro ao actualizar notificações",
         description: error.message,
         variant: "destructive",
       });

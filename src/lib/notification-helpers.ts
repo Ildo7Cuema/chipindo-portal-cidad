@@ -105,7 +105,7 @@ export async function notifyConcursoCreated(concursoTitle: string, concursoId: s
 export async function notifySystemUpdate(updateTitle: string, updateDescription: string): Promise<boolean> {
   return createNotification({
     type: 'system_update',
-    title: `Atualização do Sistema: ${updateTitle}`,
+    title: `Actualização do Sistema: ${updateTitle}`,
     message: updateDescription,
     data: {
       updateTitle,

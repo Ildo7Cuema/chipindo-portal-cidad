@@ -33,9 +33,9 @@ import { InscricaoProgramaForm } from "@/components/ui/inscricao-programa-form";
 
 const SectorMineiro = () => {
   const mineiroInfo = {
-    title: "Setor Mineiro",
+    title: "Sector Mineiro",
     subtitle: "Explorando o potencial mineral de Chipindo de forma sustentável",
-    description: "O setor mineiro de Chipindo está comprometido em desenvolver a exploração mineral de forma responsável, sustentável e benéfica para a comunidade local.",
+    description: "O sector mineiro de Chipindo está comprometido em desenvolver a exploração mineral de forma responsável, sustentável e benéfica para a comunidade local.",
     vision: "Ser referência em mineração sustentável, contribuindo para o desenvolvimento económico local.",
     mission: "Promover a exploração mineral responsável, criando oportunidades de emprego e desenvolvimento económico."
   };
@@ -45,7 +45,7 @@ const SectorMineiro = () => {
     { label: "Empregos Diretos", value: "450", icon: UsersIcon },
     { label: "Produção Anual", value: "25.000 ton", icon: DiamondIcon },
     { label: "Investimento", value: "15M USD", icon: TrendingUpIcon },
-    { label: "Projetos", value: "12", icon: BuildingIcon },
+    { label: "Projectos", value: "12", icon: BuildingIcon },
     { label: "Exportações", value: "8.5M USD", icon: TruckIcon }
   ];
 
@@ -83,7 +83,7 @@ const SectorMineiro = () => {
   const programasMinerais = [
     {
       title: "Programa de Formação Mineira",
-      description: "Formação profissional para trabalhadores do setor mineiro",
+      description: "Formação profissional para trabalhadores do sector mineiro",
       beneficios: [
         "Formação gratuita",
         "Certificação reconhecida",
@@ -102,19 +102,19 @@ const SectorMineiro = () => {
         "Inspeções regulares",
         "Protocolos de emergência"
       ],
-      requisitos: ["Trabalhar no setor mineiro", "Participar em formações", "Cumprir protocolos"],
+      requisitos: ["Trabalhar no sector mineiro", "Participar em formações", "Cumprir protocolos"],
       contact: "Departamento de Segurança Mineira"
     },
     {
       title: "Programa de Desenvolvimento Comunitário",
-      description: "Projetos sociais financiados pelo setor mineiro",
+      description: "Projectos sociais financiados pelo sector mineiro",
       beneficios: [
         "Infraestruturas comunitárias",
         "Programas educativos",
         "Apoio à saúde",
         "Desenvolvimento económico local"
       ],
-      requisitos: ["Comunidades afetadas pela mineração", "Projetos aprovados", "Participação comunitária"],
+      requisitos: ["Comunidades afetadas pela mineração", "Projectos aprovados", "Participação comunitária"],
       contact: "Gabinete de Relações Comunitárias"
     }
   ];
@@ -126,7 +126,7 @@ const SectorMineiro = () => {
       requisitos: [
         "Licenciatura em Engenharia de Minas",
         "Experiência mínima de 5 anos",
-        "Conhecimentos em gestão de projetos"
+        "Conhecimentos em gestão de projectos"
       ],
       beneficios: [
         "Salário competitivo",
@@ -217,7 +217,7 @@ const SectorMineiro = () => {
       <Header />
       
       <div className="container mx-auto px-4 pt-6">
-        <SetorBreadcrumb setorName="Setor Mineiro" setorSlug="sector-mineiro" />
+        <SetorBreadcrumb setorName="Sector Mineiro" setorSlug="sector-mineiro" />
       </div>
       
       <section className="bg-gradient-primary py-20">
@@ -267,7 +267,7 @@ const SectorMineiro = () => {
         </div>
 
         <section className="mb-16">
-          <h2 className="text-3xl font-bold text-center mb-12">Estatísticas do Setor</h2>
+          <h2 className="text-3xl font-bold text-center mb-12">Estatísticas do Sector</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
             {estatisticas.map((stat, index) => {
               const IconComponent = stat.icon;
@@ -545,7 +545,7 @@ const SectorMineiro = () => {
       <CandidaturaForm
         open={openCandidatura}
         onOpenChange={setOpenCandidatura}
-        setor="Setor Mineiro"
+        setor="Sector Mineiro"
         oportunidade={oportunidadeSelecionada}
         onSuccess={() => {
           setOportunidadeSelecionada("");
@@ -575,7 +575,7 @@ const SectorMineiro = () => {
       <InscricaoProgramaForm
         open={openInscricaoPrograma}
         onOpenChange={setOpenInscricaoPrograma}
-        setor="Setor Mineiro"
+        setor="Sector Mineiro"
         programa={programaSelecionado}
         onSuccess={() => {
           setProgramaSelecionado("");

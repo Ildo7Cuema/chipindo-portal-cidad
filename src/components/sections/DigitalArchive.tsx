@@ -120,7 +120,7 @@ export const DigitalArchive = () => {
               Acervo Digital
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Documentos, imagens e vídeos oficiais organizados por direção municipal.
+              Documentos, imagens e vídeos oficiais organizados por direcção municipal.
               Acesso público ao patrimônio digital de Chipindo.
             </p>
           </div>
@@ -142,7 +142,7 @@ export const DigitalArchive = () => {
             Acervo Digital
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Documentos, imagens e vídeos oficiais organizados por direção municipal.
+            Documentos, imagens e vídeos oficiais organizados por direcção municipal.
             Acesso público ao patrimônio digital de Chipindo.
           </p>
         </div>

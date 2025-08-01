@@ -316,8 +316,8 @@ export const HelpPage = ({ open, onOpenChange }: HelpPageProps) => {
               </Button>
             </div>
             <div className="p-3 border rounded-lg">
-              <h5 className="font-medium mb-2">❌ Dados não estão a atualizar</h5>
-              <p className="text-sm text-muted-foreground mb-2">Tente atualizar a página ou fazer logout/login.</p>
+              <h5 className="font-medium mb-2">❌ Dados não estão a actualizar</h5>
+              <p className="text-sm text-muted-foreground mb-2">Tente actualizar a página ou fazer logout/login.</p>
               <Button variant="outline" size="sm">
                 <RefreshCw className="w-4 h-4 mr-2" />
                 Atualizar Página

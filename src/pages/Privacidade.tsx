@@ -115,7 +115,7 @@ const Privacidade = () => {
               <div className="flex items-center justify-center gap-4">
                 <Badge className="bg-white/20 text-white border-white/30 px-4 py-2">
                   <CalendarIcon className="w-4 h-4 mr-2" />
-                  Atualizado em {lastUpdated}
+                  Actualizado em {lastUpdated}
                 </Badge>
                 <Badge className="bg-green-500/20 text-green-100 border-green-400/30 px-4 py-2">
                   <ShieldCheckIcon className="w-4 h-4 mr-2" />

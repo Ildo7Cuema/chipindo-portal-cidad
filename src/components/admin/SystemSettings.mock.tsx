@@ -237,7 +237,7 @@ export const SystemSettings = () => {
                         type="email"
                         value={localConfig.contactEmail}
                         onChange={(e) => setLocalConfig({ ...localConfig, contactEmail: e.target.value })}
-                        placeholder="contato@chipindo.gov.ao"
+                        placeholder="contacto@chipindo.gov.ao"
                       />
                     </div>
                     

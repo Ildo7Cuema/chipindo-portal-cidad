@@ -90,7 +90,7 @@ export interface SetorCompleto extends SetorEstrategico {
   contactos: ContactoSetor[];
 }
 
-// Dados mock dos setores estratégicos
+// Dados mock dos sectores estratégicos
 const mockSetores: SetorEstrategico[] = [
   {
     id: '1',
@@ -139,11 +139,11 @@ const mockSetores: SetorEstrategico[] = [
   },
   {
     id: '4',
-    nome: 'Setor Mineiro',
+    nome: 'Sector Mineiro',
     slug: 'sector-mineiro',
     descricao: 'Exploração e gestão sustentável dos recursos minerais de Chipindo.',
     visao: 'Ser referência em mineração responsável e desenvolvimento comunitário.',
-    missao: 'Desenvolver o setor mineiro de forma sustentável, criando empregos e desenvolvimento local.',
+    missao: 'Desenvolver o sector mineiro de forma sustentável, criando empregos e desenvolvimento local.',
     cor_primaria: '#F59E0B',
     cor_secundaria: '#D97706',
     icone: 'Pickaxe',
@@ -231,7 +231,7 @@ export const useSetoresEstrategicos = () => {
       setSetores(mockSetores.filter(setor => setor.ativo));
       setError(null);
     } catch (err) {
-      setError('Erro ao carregar setores');
+      setError('Erro ao carregar sectores');
     } finally {
       setLoading(false);
     }
@@ -242,7 +242,7 @@ export const useSetoresEstrategicos = () => {
       const setor = mockSetores.find(s => s.slug === slug && s.ativo);
       if (!setor) return null;
 
-      // Dados mock para o setor completo
+      // Dados mock para o sector completo
       const estatisticas: EstatisticaSetor[] = [
         {
           id: '1',
@@ -261,10 +261,10 @@ export const useSetoresEstrategicos = () => {
           id: '1',
           setor_id: setor.id,
           titulo: 'Programa de Desenvolvimento',
-          descricao: 'Programa para desenvolvimento do setor.',
+          descricao: 'Programa para desenvolvimento do sector.',
           beneficios: ['Benefício 1', 'Benefício 2'],
           requisitos: ['Requisito 1', 'Requisito 2'],
-          contacto: 'Departamento do Setor',
+          contacto: 'Departamento do Sector',
           ativo: true,
           ordem: 1,
           created_at: '2024-01-01T00:00:00Z',
@@ -277,7 +277,7 @@ export const useSetoresEstrategicos = () => {
           id: '1',
           setor_id: setor.id,
           titulo: 'Vaga de Emprego',
-          descricao: 'Oportunidade de emprego no setor.',
+          descricao: 'Oportunidade de emprego no sector.',
           requisitos: ['Requisito 1', 'Requisito 2'],
           beneficios: ['Benefício 1', 'Benefício 2'],
           prazo: '2024-12-31',
@@ -328,7 +328,7 @@ export const useSetoresEstrategicos = () => {
         contactos
       };
     } catch (err) {
-      console.error('Erro ao buscar setor:', err);
+      console.error('Erro ao buscar sector:', err);
       return null;
     }
   };

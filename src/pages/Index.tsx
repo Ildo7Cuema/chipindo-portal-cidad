@@ -307,7 +307,7 @@ const Index = () => {
           </Section>
         )}
 
-        {/* Setores Estratégicos Section */}
+        {/* Sectores Estratégicos Section */}
         <Section variant="default" size="lg" className="relative overflow-hidden">
           <SectionContent>
             <SectionHeader className="text-center space-y-4">
@@ -324,7 +324,7 @@ const Index = () => {
                 </h2>
               </div>
               <p className="text-muted-foreground max-w-3xl mx-auto text-lg">
-                Explore os setores estratégicos do município de Chipindo e descubra oportunidades, 
+                Explore os sectores estratégicos do município de Chipindo e descubra oportunidades, 
                 programas e informações detalhadas sobre cada área
               </p>
             </SectionHeader>
@@ -398,7 +398,7 @@ const Index = () => {
                   <BuildingIcon className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
                   <h3 className="text-lg font-semibold mb-2">Nenhum setor encontrado</h3>
                   <p className="text-muted-foreground">
-                    Os setores estratégicos serão carregados em breve.
+                    Os sectores estratégicos serão carregados em breve.
                   </p>
                 </div>
               )}

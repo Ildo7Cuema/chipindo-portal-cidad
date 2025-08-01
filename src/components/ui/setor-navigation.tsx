@@ -45,7 +45,7 @@ const setores = [
     path: "/agricultura" 
   },
   { 
-    name: "Setor Mineiro", 
+    name: "Sector Mineiro", 
     slug: "sector-mineiro", 
     icon: PickaxeIcon, 
     color: "bg-yellow-100 text-yellow-800 border-yellow-200",
@@ -99,7 +99,7 @@ export const SetorNavigation = ({ className, showTitle = true }: SetorNavigation
             Navegar entre Setores
           </h3>
           <p className="text-sm text-muted-foreground">
-            Explore outros setores estratégicos do município
+            Explore outros sectores estratégicos do município
           </p>
         </div>
       )}

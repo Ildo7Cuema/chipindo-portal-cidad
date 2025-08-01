@@ -71,7 +71,7 @@ const Admin = () => {
     { id: "acervo", label: "Acervo Digital", icon: Archive, description: "Gerir acervo digital" },
     { id: "organigrama", label: "Organigrama", icon: Network, description: "Gerir estrutura organizacional" },
     { id: "departamentos", label: "Direcções", icon: Building2, description: "Gerir departamentos" },
-    { id: "setores", label: "Setores Estratégicos", icon: Building2, description: "Gerir setores estratégicos" },
+    { id: "setores", label: "Sectores Estratégicos", icon: Building2, description: "Gerir sectores estratégicos" },
     { id: "content", label: "Conteúdo", icon: FileText, description: "Gerir conteúdo do site" },
     { id: "carousel", label: "Carousel", icon: ImageUp, description: "Gerir imagens do carousel" },
     { id: "locations", label: "Localizações", icon: MapPin, description: "Gerir localizações" },
@@ -159,8 +159,8 @@ const Admin = () => {
 
   const handleRefreshData = () => {
     toast({
-      title: "Dados atualizados",
-      description: "Os dados foram atualizados com sucesso.",
+      title: "Dados actualizados",
+      description: "Os dados foram actualizados com sucesso.",
     });
     window.location.reload();
   };
@@ -353,7 +353,7 @@ const Admin = () => {
                       <DropdownMenuSeparator />
                       <DropdownMenuItem onClick={handleRefreshData}>
                         <RefreshCw className="w-4 h-4 mr-2" />
-                        Atualizar Dados
+                        Actualizar Dados
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={handleExportData}>
                         <Download className="w-4 h-4 mr-2" />

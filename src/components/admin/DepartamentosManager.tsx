@@ -491,7 +491,7 @@ export function DepartamentosManager() {
                       Cancelar
                     </Button>
                     <Button type="submit" disabled={loading} className="bg-gradient-to-r from-primary to-primary/80">
-                      {loading ? 'Salvando...' : editingDirecao ? 'Atualizar' : 'Adicionar'}
+                      {loading ? 'Salvando...' : editingDirecao ? 'Actualizar' : 'Adicionar'}
                     </Button>
                   </div>
                 </form>

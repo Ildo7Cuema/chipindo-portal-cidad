@@ -452,7 +452,7 @@ export default function Servicos() {
                     <SearchIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
                     <Input
                       type="text"
-                      placeholder="Pesquisar serviços por nome, descrição ou direção..."
+                      placeholder="Pesquisar serviços por nome, descrição ou direcção..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       className="pl-12 pr-4 py-3 text-lg border-2 border-border/50 focus:border-primary"
@@ -496,13 +496,13 @@ export default function Servicos() {
                       <Select value={selectedDirection} onValueChange={setSelectedDirection}>
                         <SelectTrigger className="w-48">
                           <BuildingIcon className="w-4 h-4 mr-2" />
-                          <SelectValue placeholder="Direção" />
+                          <SelectValue placeholder="Direcção" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="todos">
                             <div className="flex items-center gap-2">
                               <BuildingIcon className="w-4 h-4" />
-                              Todas as Direções
+                              Todas as Direcções
                             </div>
                           </SelectItem>
                           {departamentos.map(dept => {
@@ -595,7 +595,7 @@ export default function Servicos() {
                       </div>
 
                       <div>
-                        <p className="text-sm font-medium text-muted-foreground mb-3">Filtrar por direção:</p>
+                        <p className="text-sm font-medium text-muted-foreground mb-3">Filtrar por direcção:</p>
                         <div className="flex flex-wrap gap-2">
                           <Button
                             variant={selectedDirection === 'todos' ? "default" : "outline"}
@@ -841,8 +841,8 @@ export default function Servicos() {
         <Section variant="muted" size="md">
           <SectionHeader
             subtitle="Estatísticas"
-            title="Serviços por Direção"
-            description="Distribuição dos serviços pelas diferentes direções municipais"
+            title="Serviços por Direcção"
+            description="Distribuição dos serviços pelas diferentes direcções municipais"
             centered={true}
           />
           
@@ -975,7 +975,7 @@ export default function Servicos() {
                         <div className="flex items-center gap-3">
                           <BuildingIcon className="w-5 h-5 text-muted-foreground" />
                           <div>
-                            <span className="font-medium">Direção:</span>
+                            <span className="font-medium">Direcção:</span>
                             <p className="text-sm text-muted-foreground">{selectedService.direcao}</p>
                           </div>
                         </div>

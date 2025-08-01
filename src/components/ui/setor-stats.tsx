@@ -117,7 +117,7 @@ export const SetorStats = ({ setorSlug, className }: SetorStatsProps) => {
 
         <div className="mt-4 pt-4 border-t text-center">
           <p className="text-xs text-muted-foreground">
-            Última atualização: {stats.ultimaAtualizacao.toLocaleTimeString('pt-AO')}
+            Última actualização: {stats.ultimaAtualizacao.toLocaleTimeString('pt-AO')}
           </p>
         </div>
       </CardContent>

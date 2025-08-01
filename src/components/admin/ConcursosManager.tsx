@@ -255,8 +255,8 @@ export const ConcursosManager = () => {
         if (error) throw error;
 
         toast({
-          title: "Concurso atualizado",
-          description: "O concurso foi atualizado com sucesso.",
+          title: "Concurso actualizado",
+          description: "O concurso foi actualizado com sucesso.",
         });
       } else {
         const { error } = await supabase
@@ -276,7 +276,7 @@ export const ConcursosManager = () => {
       fetchConcursos();
     } catch (error: any) {
         toast({
-        title: "Erro ao salvar",
+        title: "Erro ao actualizar",
           description: error.message,
           variant: "destructive",
         });
@@ -902,13 +902,13 @@ export const ConcursosManager = () => {
               <div className="space-y-2">
                         <Label htmlFor="area" className="text-sm font-medium flex items-center gap-2">
                           <Building2 className="w-3 h-3" />
-                          Direção/Área Responsável
+                          Direcção/Área Responsável
                         </Label>
                         <Input
                           id="area"
                           value={formData.area}
                           onChange={e => setFormData({ ...formData, area: e.target.value })}
-                          placeholder="Ex: Direção de Educação, Direção de Saúde, etc."
+                          placeholder="Ex: Direcção de Educação, Direcção de Saúde, etc."
                           className="h-10"
                           required
                         />
@@ -924,7 +924,7 @@ export const ConcursosManager = () => {
                   id="description"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                        placeholder="Descreva detalhadamente o concurso, suas finalidades e objetivos..."
+                        placeholder="Descreva detalhadamente o concurso, suas finalidades e objectivos..."
                   rows={4}
                         className="resize-none"
                   required
@@ -1110,7 +1110,7 @@ export const ConcursosManager = () => {
                       ) : (
                         <div className="flex items-center gap-2">
                           {editingConcurso ? <Edit className="w-3 h-3" /> : <Plus className="w-3 h-3" />}
-                          {editingConcurso ? "Atualizar" : "Criar"}
+                          {editingConcurso ? "Actualizar" : "Criar"}
                         </div>
                       )}
                 </Button>

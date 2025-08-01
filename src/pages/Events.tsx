@@ -95,7 +95,7 @@ const Events = () => {
     {
       id: 3,
       title: "Conferência de Desenvolvimento Sustentável",
-      description: "Discussão sobre projetos de desenvolvimento sustentável, meio ambiente e crescimento económico do município.",
+      description: "Discussão sobre projectos de desenvolvimento sustentável, meio ambiente e crescimento económico do município.",
       date: "2025-07-30",
       event_time: "14:00 - 17:00",
       location: "Auditório Municipal",

@@ -219,7 +219,7 @@ export const SiteContentManager = () => {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-orange-600 dark:text-orange-400">Última Atualização</p>
+                <p className="text-sm font-medium text-orange-600 dark:text-orange-400">Última Actualização</p>
                 <p className="text-xs font-bold text-orange-900 dark:text-orange-100">
                   Recente
                 </p>

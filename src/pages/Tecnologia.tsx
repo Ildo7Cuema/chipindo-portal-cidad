@@ -33,9 +33,9 @@ import { InscricaoProgramaForm } from "@/components/ui/inscricao-programa-form";
 
 const Tecnologia = () => {
   const tecnologiaInfo = {
-    title: "Setor de Tecnologia",
+    title: "Sector de Tecnologia",
     subtitle: "Inovação e transformação digital para o futuro de Chipindo",
-    description: "O setor de tecnologia de Chipindo está focado em promover a inovação digital, modernizar os serviços públicos e criar oportunidades na área tecnológica.",
+    description: "O sector de tecnologia de Chipindo está focado em promover a inovação digital, modernizar os serviços públicos e criar oportunidades na área tecnológica.",
     vision: "Ser referência em inovação tecnológica e transformação digital municipal.",
     mission: "Promover a adoção de tecnologias inovadoras e criar um ecossistema digital sustentável."
   };
@@ -43,7 +43,7 @@ const Tecnologia = () => {
   const estatisticas = [
     { label: "Startups Tech", value: "15", icon: BuildingIcon },
     { label: "Profissionais IT", value: "89", icon: UsersIcon },
-    { label: "Projetos Digitais", value: "32", icon: CpuIcon },
+    { label: "Projectos Digitais", value: "32", icon: CpuIcon },
     { label: "Cobertura Internet", value: "85%", icon: WifiIcon },
     { label: "Serviços Online", value: "24", icon: GlobeIcon },
     { label: "Investimento Tech", value: "2.5M USD", icon: TrendingUpIcon }
@@ -54,28 +54,28 @@ const Tecnologia = () => {
       nome: "Desenvolvimento de Software",
       empresas: "8",
       profissionais: "45",
-      projetos: "18",
+      projectos: "18",
       estado: "Crescimento"
     },
     {
       nome: "Infraestrutura Digital",
       empresas: "5",
       profissionais: "25",
-      projetos: "12",
+      projectos: "12",
       estado: "Expansão"
     },
     {
       nome: "E-commerce",
       empresas: "12",
       profissionais: "35",
-      projetos: "8",
+      projectos: "8",
       estado: "Ativo"
     },
     {
       nome: "Consultoria IT",
       empresas: "6",
       profissionais: "28",
-      projetos: "15",
+      projectos: "15",
       estado: "Estável"
     }
   ];
@@ -336,8 +336,8 @@ const Tecnologia = () => {
                     <Badge variant="secondary">{area.profissionais}</Badge>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium">Projetos:</span>
-                    <Badge className="bg-green-100 text-green-800">{area.projetos}</Badge>
+                    <span className="text-sm font-medium">Projectos:</span>
+                    <Badge className="bg-green-100 text-green-800">{area.projectos}</Badge>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm font-medium">Estado:</span>
@@ -624,7 +624,7 @@ const Tecnologia = () => {
       <CandidaturaForm
         open={openCandidatura}
         onOpenChange={setOpenCandidatura}
-        setor="Setor de Tecnologia"
+        setor="Sector de Tecnologia"
         oportunidade={oportunidadeSelecionada}
         onSuccess={() => {
           setOportunidadeSelecionada("");
@@ -633,7 +633,7 @@ const Tecnologia = () => {
       <InscricaoProgramaForm
         open={openInscricaoPrograma}
         onOpenChange={setOpenInscricaoPrograma}
-        setor="Setor de Tecnologia"
+        setor="Sector de Tecnologia"
         programa={programaSelecionado}
         onSuccess={() => {
           setProgramaSelecionado("");
@@ -712,7 +712,7 @@ const Tecnologia = () => {
                         <ul className="space-y-1 text-sm text-muted-foreground">
                           <li>• Gestão de recursos humanos</li>
                           <li>• Controlo financeiro</li>
-                          <li>• Gestão de projetos</li>
+                          <li>• Gestão de projectos</li>
                           <li>• Relatórios automáticos</li>
                           <li>• Integração de dados</li>
                         </ul>

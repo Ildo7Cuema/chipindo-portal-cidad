@@ -31,9 +31,9 @@ import { InscricaoProgramaForm } from "@/components/ui/inscricao-programa-form";
 
 const Agricultura = () => {
   const agriculturaInfo = {
-    title: "Setor de Agricultura",
+    title: "Sector de Agricultura",
     subtitle: "Desenvolvendo a agricultura sustentável e moderna em Chipindo",
-    description: "O setor agrícola de Chipindo está focado em promover a agricultura sustentável, modernizar as técnicas de cultivo e apoiar os agricultores locais.",
+    description: "O sector agrícola de Chipindo está focado em promover a agricultura sustentável, modernizar as técnicas de cultivo e apoiar os agricultores locais.",
     vision: "Ser referência em agricultura sustentável e moderna, garantindo a segurança alimentar.",
     mission: "Promover o desenvolvimento agrícola sustentável e apoiar os agricultores locais."
   };
@@ -42,7 +42,7 @@ const Agricultura = () => {
     { label: "Agricultores", value: "1.245", icon: UsersIcon },
     { label: "Área Cultivada", value: "8.750 ha", icon: MapPinIcon },
     { label: "Produção Anual", value: "12.500 ton", icon: BuildingIcon },
-    { label: "Projetos Ativos", value: "18", icon: SproutIcon },
+    { label: "Projectos Ativos", value: "18", icon: SproutIcon },
     { label: "Crescimento", value: "15%", icon: TrendingUpIcon },
     { label: "Cooperativas", value: "6", icon: HeartHandshakeIcon }
   ];
@@ -145,7 +145,7 @@ const Agricultura = () => {
         </div>
 
         <section className="mb-16">
-          <h2 className="text-3xl font-bold text-center mb-12">Estatísticas do Setor</h2>
+          <h2 className="text-3xl font-bold text-center mb-12">Estatísticas do Sector</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
             {estatisticas.map((stat, index) => {
               const IconComponent = stat.icon;
@@ -341,7 +341,7 @@ const Agricultura = () => {
       <CandidaturaForm
         open={openCandidatura}
         onOpenChange={setOpenCandidatura}
-        setor="Setor de Agricultura"
+        setor="Sector de Agricultura"
         oportunidade={oportunidadeSelecionada}
         onSuccess={() => {
           setOportunidadeSelecionada("");
@@ -371,7 +371,7 @@ const Agricultura = () => {
       <InscricaoProgramaForm
         open={openInscricaoPrograma}
         onOpenChange={setOpenInscricaoPrograma}
-        setor="Setor de Agricultura"
+        setor="Sector de Agricultura"
         programa={programaSelecionado}
         onSuccess={() => {
           setProgramaSelecionado("");

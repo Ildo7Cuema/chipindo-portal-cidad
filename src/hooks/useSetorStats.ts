@@ -69,7 +69,7 @@ export const useSetorStats = ({ setorSlug }: UseSetorStatsProps) => {
 
     loadStats();
     
-    // Atualizar estatísticas a cada 30 segundos
+    // Actualizar estatísticas a cada 30 segundos
     const interval = setInterval(loadStats, 30000);
     
     return () => clearInterval(interval);

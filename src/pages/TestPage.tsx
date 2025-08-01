@@ -11,7 +11,7 @@ const TestPage = () => {
           O roteamento está funcionando corretamente.
         </p>
         <div className="space-y-4">
-          <h2 className="text-2xl font-semibold">Páginas Setoriais Disponíveis:</h2>
+          <h2 className="text-2xl font-semibold">Páginas Sectoriais Disponíveis:</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <a href="/educacao" className="p-4 bg-blue-100 rounded-lg hover:bg-blue-200 transition-colors">
               Educação
@@ -23,7 +23,7 @@ const TestPage = () => {
               Agricultura
             </a>
             <a href="/sector-mineiro" className="p-4 bg-yellow-100 rounded-lg hover:bg-yellow-200 transition-colors">
-              Setor Mineiro
+              Sector Mineiro
             </a>
             <a href="/desenvolvimento-economico" className="p-4 bg-emerald-100 rounded-lg hover:bg-emerald-200 transition-colors">
               Desenvolvimento Económico

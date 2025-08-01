@@ -63,7 +63,7 @@ const Educacao = () => {
         }
         setSetor(data);
       } catch (err) {
-        setError('Erro ao carregar dados do setor.');
+        setError('Erro ao carregar dados do sector.');
         setSetor(null);
       } finally {
         if (isMounted) setLoading(false);
@@ -92,10 +92,10 @@ const Educacao = () => {
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-muted-foreground mb-4">
-              {error || 'Setor não encontrado'}
+              {error || 'Sector não encontrado'}
             </h1>
             <p className="text-muted-foreground">
-              O setor de Educação não está disponível no momento.
+              O sector de Educação não está disponível no momento.
             </p>
           </div>
         </div>
@@ -170,7 +170,7 @@ const Educacao = () => {
           </Card>
         </div>
         <section className="mb-16">
-          <h2 className="text-3xl font-bold text-center mb-12">Estatísticas do Setor</h2>
+          <h2 className="text-3xl font-bold text-center mb-12">Estatísticas do Sector</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
             {(setor.estatisticas || []).map((stat, index) => {
               const IconComponent = getIconComponent(stat.icone);
@@ -420,7 +420,7 @@ const Educacao = () => {
           </section>
         )}
       </main>
-      {/* Navegação entre Setores */}
+      {/* Navegação entre Sectores */}
       <section className="bg-muted/30 py-12">
         <div className="container mx-auto px-4">
           <SetorNavigation />

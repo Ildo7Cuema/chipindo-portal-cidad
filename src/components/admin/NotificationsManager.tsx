@@ -89,7 +89,7 @@ export const NotificationsManager = () => {
     { value: 'new_user', label: 'Novo Utilizador', icon: User, color: 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400' },
     { value: 'news_published', label: 'Notícia Publicada', icon: FileText, color: 'bg-purple-100 text-purple-700 dark:bg-purple-900/20 dark:text-purple-400' },
     { value: 'concurso_created', label: 'Concurso Criado', icon: Trophy, color: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400' },
-    { value: 'system_update', label: 'Atualização do Sistema', icon: Zap, color: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/20 dark:text-indigo-400' },
+    { value: 'system_update', label: 'Actualização do Sistema', icon: Zap, color: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/20 dark:text-indigo-400' },
     { value: 'maintenance', label: 'Manutenção', icon: Clock, color: 'bg-orange-100 text-orange-700 dark:bg-orange-900/20 dark:text-orange-400' },
     { value: 'urgent', label: 'Urgente', icon: AlertTriangle, color: 'bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400' },
     { value: 'info', label: 'Informação', icon: Info, color: 'bg-gray-100 text-gray-700 dark:bg-gray-900/20 dark:text-gray-400' }
@@ -805,7 +805,7 @@ export const NotificationsManager = () => {
                           id="title"
                           value={formData.title}
                           onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                          placeholder="Ex: Nova atualização do sistema disponível"
+                          placeholder="Ex: Nova actualização do sistema disponível"
                           className="h-10"
                           required
                         />
@@ -914,7 +914,7 @@ export const NotificationsManager = () => {
                       ) : (
                         <div className="flex items-center gap-2">
                           {editingNotification ? <Edit className="w-3 h-3" /> : <Plus className="w-3 h-3" />}
-                          {editingNotification ? "Atualizar" : "Criar"}
+                          {editingNotification ? "Actualizar" : "Criar"}
                         </div>
                       )}
                     </Button>

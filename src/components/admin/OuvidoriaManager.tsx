@@ -216,11 +216,11 @@ export const OuvidoriaManager = () => {
     try {
       const result = await updateManifestacaoStatus(id, status);
       if (result) {
-        toast.success("Status atualizado com sucesso!");
+        toast.success("Status actualizado com sucesso!");
         fetchManifestacoes(searchTerm, selectedCategory, selectedStatus, sortBy, sortOrder);
       }
     } catch (error) {
-      toast.error("Erro ao atualizar status. Tente novamente.");
+      toast.error("Erro ao actualizar status. Tente novamente.");
     }
   };
 
@@ -298,7 +298,7 @@ export const OuvidoriaManager = () => {
         <div className="flex items-center gap-2">
           <Button variant="outline" onClick={() => fetchManifestacoes()}>
             <RefreshCw className="w-4 h-4 mr-2" />
-            Atualizar
+            Actualizar
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

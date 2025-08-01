@@ -111,7 +111,7 @@ export function PopulationHistoryManager() {
         toast.error("Não foi possível calcular a taxa automaticamente");
       }
     } catch (error) {
-      toast.error("Erro ao atualizar taxa automaticamente");
+      toast.error("Erro ao actualizar taxa automaticamente");
     }
   };
 
@@ -216,7 +216,7 @@ export function PopulationHistoryManager() {
                 ) : (
                   <Zap className="h-4 w-4 mr-2" />
                 )}
-                {calculating ? 'Calculando...' : 'Atualizar Taxa'}
+                {calculating ? 'Calculando...' : 'Actualizar Taxa'}
               </Button>
               <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild>
@@ -295,7 +295,7 @@ export function PopulationHistoryManager() {
                         Cancelar
                       </Button>
                       <Button type="submit">
-                        {editingRecord ? 'Atualizar' : 'Adicionar'}
+                        {editingRecord ? 'Actualizar' : 'Adicionar'}
                       </Button>
                     </div>
                   </form>

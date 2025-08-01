@@ -35,7 +35,7 @@ const EnergiaAgua = () => {
   const energiaAguaInfo = {
     title: "Energia e Água",
     subtitle: "Garantindo o fornecimento sustentável de energia e água para Chipindo",
-    description: "O setor de energia e água de Chipindo está comprometido em fornecer serviços de qualidade, promover a eficiência energética e garantir o acesso universal a estes recursos essenciais.",
+    description: "O sector de energia e água de Chipindo está comprometido em fornecer serviços de qualidade, promover a eficiência energética e garantir o acesso universal a estes recursos essenciais.",
     vision: "Ser referência em fornecimento sustentável de energia e água, garantindo qualidade e acessibilidade.",
     mission: "Proporcionar serviços de energia e água de qualidade, promovendo a sustentabilidade e eficiência."
   };
@@ -46,7 +46,7 @@ const EnergiaAgua = () => {
     { label: "Consumidores", value: "12.450", icon: UsersIcon },
     { label: "Centrais Elétricas", value: "3", icon: BuildingIcon },
     { label: "Estações de Água", value: "5", icon: GaugeIcon },
-    { label: "Projetos Ativos", value: "15", icon: HeartHandshakeIcon }
+    { label: "Projectos Ativos", value: "15", icon: HeartHandshakeIcon }
   ];
 
   const programasEnergiaAgua = [
@@ -64,7 +64,7 @@ const EnergiaAgua = () => {
     },
     {
       title: "Programa de Gestão da Água",
-      description: "Projetos para otimizar o uso da água e reduzir perdas",
+      description: "Projectos para otimizar o uso da água e reduzir perdas",
       beneficios: [
         "Detecção de fugas gratuita",
         "Instalação de contadores inteligentes",
@@ -79,7 +79,7 @@ const EnergiaAgua = () => {
   const oportunidades = [
     {
       title: "Engenheiro Eletrotécnico",
-      description: "Vaga para engenheiro especializado em sistemas elétricos",
+      description: "Vaga para engenheiro especializado em sistemas eléctricos",
       requisitos: [
         "Licenciatura em Engenharia Eletrotécnica",
         "Experiência de 4 anos",
@@ -196,7 +196,7 @@ const EnergiaAgua = () => {
         </div>
 
         <section className="mb-16">
-          <h2 className="text-3xl font-bold text-center mb-12">Estatísticas do Setor</h2>
+          <h2 className="text-3xl font-bold text-center mb-12">Estatísticas do Sector</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
             {estatisticas.map((stat, index) => {
               const IconComponent = stat.icon;
@@ -217,7 +217,7 @@ const EnergiaAgua = () => {
 
         <Tabs defaultValue="programas" className="mb-16">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="programas">Programas Setoriais</TabsTrigger>
+            <TabsTrigger value="programas">Programas Sectoriais</TabsTrigger>
             <TabsTrigger value="oportunidades">Oportunidades</TabsTrigger>
           </TabsList>
           

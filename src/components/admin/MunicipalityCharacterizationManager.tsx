@@ -67,7 +67,7 @@ export const MunicipalityCharacterizationManager = () => {
     try {
       setSyncing(true);
       
-      // Buscar dados populacionais atualizados
+      // Buscar dados populacionais actualizados
       const { data: populationData, error: populationError } = await supabase
         .from('population_history')
         .select('*')

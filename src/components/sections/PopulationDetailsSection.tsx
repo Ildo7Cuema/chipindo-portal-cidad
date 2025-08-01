@@ -220,7 +220,7 @@ export function PopulationDetailsSection() {
               <CheckCircle className="h-5 w-5 text-blue-600" />
               <div className="flex-1">
                 <h4 className="font-medium text-blue-800 dark:text-blue-200">
-                  Dados Atualizados
+                  Dados Actualizados
                 </h4>
                 <p className="text-sm text-blue-600 dark:text-blue-300 mt-1">
                   As informações populacionais são calculadas automaticamente com base em dados históricos oficiais.
@@ -233,7 +233,7 @@ export function PopulationDetailsSection() {
                 disabled={loading}
               >
                 <RefreshCw className={cn("h-4 w-4 mr-2", loading && "animate-spin")} />
-                Atualizar
+                Actualizar
               </Button>
             </div>
           </CardContent>

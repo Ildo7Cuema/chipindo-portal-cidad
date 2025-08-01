@@ -83,7 +83,7 @@ export const useNewsLikes = (): UseNewsLikesReturn => {
             .eq('user_id', user.id);
 
           if (!userError && userLikes) {
-            // Atualizar estado de curtidas do usuário
+            // Actualizar estado de curtidas do usuário
             const likedNewsSet = new Set(userLikes?.map((like: any) => like.news_id) || []);
             setLikedNews(likedNewsSet);
           }

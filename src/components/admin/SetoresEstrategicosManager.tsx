@@ -76,8 +76,8 @@ export const SetoresEstrategicosManager = () => {
       if (editingSetor) {
         await updateSetor(editingSetor.id, formData);
         toast({
-          title: "Setor atualizado",
-          description: "O setor foi atualizado com sucesso.",
+          title: "Setor actualizado",
+          description: "O setor foi actualizado com sucesso.",
         });
       } else {
         await createSetor(formData);
@@ -160,9 +160,9 @@ export const SetoresEstrategicosManager = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">Gestão de Setores Estratégicos</h2>
+          <h2 className="text-2xl font-bold">Gestão de Sectores Estratégicos</h2>
           <p className="text-muted-foreground">
-            Gerencie os setores estratégicos do município
+            Gerencie os sectores estratégicos do município
           </p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -283,7 +283,7 @@ export const SetoresEstrategicosManager = () => {
                   Cancelar
                 </Button>
                 <Button type="submit">
-                  {editingSetor ? 'Atualizar' : 'Criar'}
+                  {editingSetor ? 'Actualizar' : 'Criar'}
                 </Button>
               </div>
             </form>

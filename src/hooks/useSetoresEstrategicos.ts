@@ -241,14 +241,14 @@ export const useSetoresEstrategicos = () => {
         .single();
 
       if (error) {
-        console.error('Erro ao atualizar setor:', error);
+        console.error('Erro ao actualizar setor:', error);
         throw error;
       }
       
       await fetchSetores();
       return data;
     } catch (err) {
-      console.error('Erro ao atualizar setor:', err);
+      console.error('Erro ao actualizar setor:', err);
       throw err;
     }
   };

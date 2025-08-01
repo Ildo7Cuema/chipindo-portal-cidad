@@ -35,7 +35,7 @@ const DesenvolvimentoEconomico = () => {
   const economicoInfo = {
     title: "Desenvolvimento Económico",
     subtitle: "Impulsionando o crescimento económico e a prosperidade de Chipindo",
-    description: "O setor de desenvolvimento económico de Chipindo está focado em criar um ambiente favorável ao investimento, promover o empreendedorismo e diversificar a economia local.",
+    description: "O sector de desenvolvimento económico de Chipindo está focado em criar um ambiente favorável ao investimento, promover o empreendedorismo e diversificar a economia local.",
     vision: "Ser um centro económico dinâmico e sustentável, atrativo para investimentos e inovação.",
     mission: "Promover o desenvolvimento económico sustentável através do apoio ao empreendedorismo e atração de investimentos."
   };
@@ -45,7 +45,7 @@ const DesenvolvimentoEconomico = () => {
     { label: "Empregos Criados", value: "1.850", icon: UsersIcon },
     { label: "Investimento Total", value: "25M USD", icon: DollarSignIcon },
     { label: "Crescimento PIB", value: "8.5%", icon: TrendingUpIcon },
-    { label: "Projetos Ativos", value: "32", icon: BriefcaseIcon },
+    { label: "Projectos Ativos", value: "32", icon: BriefcaseIcon },
     { label: "Exportações", value: "12M USD", icon: GlobeIcon }
   ];
 
@@ -102,7 +102,7 @@ const DesenvolvimentoEconomico = () => {
         "Apoio logístico",
         "Infraestruturas"
       ],
-      requisitos: ["Investimento mínimo estabelecido", "Criação de empregos", "Projeto sustentável"],
+      requisitos: ["Investimento mínimo estabelecido", "Criação de empregos", "Projecto sustentável"],
       contact: "Gabinete de Investimentos"
     },
     {
@@ -121,12 +121,12 @@ const DesenvolvimentoEconomico = () => {
 
   const oportunidades = [
     {
-      title: "Gestor de Projetos Económicos",
-      description: "Vaga para gestor de projetos de desenvolvimento económico",
+      title: "Gestor de Projectos Económicos",
+      description: "Vaga para gestor de projectos de desenvolvimento económico",
       requisitos: [
         "Licenciatura em Economia/Gestão",
         "Experiência de 5 anos",
-        "Conhecimentos em gestão de projetos"
+        "Conhecimentos em gestão de projectos"
       ],
       beneficios: [
         "Salário competitivo",
@@ -283,7 +283,7 @@ const DesenvolvimentoEconomico = () => {
         </section>
 
         <section className="mb-16">
-          <h2 className="text-3xl font-bold text-center mb-12">Setores Económicos</h2>
+          <h2 className="text-3xl font-bold text-center mb-12">Sectores Económicos</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {setoresEconomicos.map((setor, index) => (
               <Card key={index} className="hover:shadow-elegant transition-all duration-300">

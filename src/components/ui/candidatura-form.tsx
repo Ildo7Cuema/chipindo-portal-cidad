@@ -37,7 +37,7 @@ const areasInteresse = [
   "Educação",
   "Energia e Água",
   "Saúde",
-  "Setor Mineiro",
+  "Sector Mineiro",
   "Tecnologia",
   "Outros"
 ];

@@ -185,8 +185,8 @@ export const TurismoAmbienteCarouselManager = () => {
           .eq('id', selectedImage.id);
 
         if (error) {
-          console.error('Erro ao atualizar imagem:', error);
-          toast.error('Erro ao atualizar imagem');
+          console.error('Erro ao actualizar imagem:', error);
+          toast.error('Erro ao actualizar imagem');
           return;
         }
 
@@ -592,7 +592,7 @@ export const TurismoAmbienteCarouselManager = () => {
                 Cancelar
               </Button>
               <Button type="submit">
-                {selectedImage ? 'Atualizar' : 'Criar'}
+                {selectedImage ? 'Actualizar' : 'Criar'}
               </Button>
             </div>
           </form>

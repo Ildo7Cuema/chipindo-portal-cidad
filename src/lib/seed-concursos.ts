@@ -22,7 +22,7 @@ export const seedSampleConcursos = async (): Promise<boolean> => {
       {
         title: 'Concurso para Engenheiro Civil Sénior',
         description: 'Abertura de vagas para Engenheiro Civil sénior para supervisão de obras de infraestrutura municipal, incluindo estradas, pontes, edifícios públicos e sistemas de abastecimento de água.',
-        requirements: 'Licenciatura em Engenharia Civil. Registro na Ordem dos Engenheiros de Angola. Experiência mínima de 5 anos em obras públicas. Conhecimento em softwares de projeto (AutoCAD, Civil 3D). Carta de condução categoria B.',
+        requirements: 'Licenciatura em Engenharia Civil. Registro na Ordem dos Engenheiros de Angola. Experiência mínima de 5 anos em obras públicas. Conhecimento em softwares de projecto (AutoCAD, Civil 3D). Carta de condução categoria B.',
         deadline: new Date(Date.now() + 20 * 24 * 60 * 60 * 1000).toISOString(), // 20 dias
         contact_info: 'Departamento de Obras Públicas - Email: obras@chipindo.gov.ao | Telefone: +244 261 456 789',
         published: true

@@ -51,7 +51,7 @@ export const Navigation = ({ className }: NavigationProps) => {
     { label: "Educação", href: "/educacao", icon: GraduationCapIcon },
     { label: "Saúde", href: "/saude", icon: HeartIcon },
     { label: "Agricultura", href: "/agricultura", icon: SproutIcon },
-    { label: "Setor Mineiro", href: "/sector-mineiro", icon: PickaxeIcon },
+    { label: "Sector Mineiro", href: "/sector-mineiro", icon: PickaxeIcon },
     { label: "Desenvolvimento Económico", href: "/desenvolvimento-economico", icon: TrendingUpIcon },
     { label: "Cultura", href: "/cultura", icon: PaletteIcon },
     { label: "Tecnologia", href: "/tecnologia", icon: CpuIcon },
@@ -109,7 +109,7 @@ export const Navigation = ({ className }: NavigationProps) => {
             onMouseLeave={() => setIsSetoresOpen(false)}
           >
             <BuildingIcon className="w-3 h-3 mr-1.5" />
-            Setores
+            Sectores
             <ChevronDownIcon className={cn(
               "w-3 h-3 ml-1 transition-transform duration-200",
               isSetoresOpen && "rotate-180"
@@ -125,7 +125,7 @@ export const Navigation = ({ className }: NavigationProps) => {
             >
               <div className="p-2">
                 <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  Setores Estratégicos
+                  Sectores Estratégicos
                 </div>
                 {setoresItems.map((item) => {
                   const IconComponent = item.icon;
@@ -206,7 +206,7 @@ export const Navigation = ({ className }: NavigationProps) => {
               {/* Setores Section in Mobile */}
               <div className="border-t border-border mt-2 pt-2">
                 <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  Setores Estratégicos
+                  Sectores Estratégicos
                 </div>
                 {setoresItems.map((item) => {
                   const IconComponent = item.icon;

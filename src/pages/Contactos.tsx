@@ -717,7 +717,7 @@ export default function Contactos() {
         <Section variant="muted" size="md">
           <SectionHeader
             subtitle="Contactos Específicos"
-            title="Contactos por Direção"
+            title="Contactos por Direcção"
             description="Entre em contacto directo com os departamentos municipais"
             centered={true}
           />
@@ -847,7 +847,7 @@ export default function Contactos() {
             ) : (
               <div className="text-center py-16">
                 <BuildingIcon className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-foreground mb-2">Nenhuma direção cadastrada</h3>
+                <h3 className="text-xl font-semibold text-foreground mb-2">Nenhuma direcção cadastrada</h3>
                 <p className="text-muted-foreground">As informações dos departamentos estão sendo organizadas.</p>
               </div>
             )}
@@ -1001,7 +1001,7 @@ export default function Contactos() {
                   <div>
                     <CardTitle className="text-2xl">Contactar {selectedDirecao.nome}</CardTitle>
                     <p className="text-muted-foreground mt-1">
-                      Envie sua mensagem diretamente para esta direção
+                      Envie sua mensagem diretamente para esta direcção
                     </p>
                   </div>
                 </div>
@@ -1023,7 +1023,7 @@ export default function Contactos() {
               <div className="bg-muted/30 rounded-lg p-4">
                 <div className="flex items-center gap-3 mb-3">
                   <InfoIcon className="w-5 h-5 text-primary" />
-                  <h4 className="font-semibold">Informações da Direção</h4>
+                  <h4 className="font-semibold">Informações da Direcção</h4>
                 </div>
                 <div className="grid md:grid-cols-2 gap-4 text-sm">
                   {selectedDirecao.descricao && (
