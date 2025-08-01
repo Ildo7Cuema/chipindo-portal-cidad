@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useNewsLikes } from "@/hooks/useNewsLikes";
 import { 
   CalendarIcon, 
   ClockIcon, 
@@ -124,6 +125,7 @@ const Noticias = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9;
   const isMobile = useIsMobile();
+  const { likedNews, newsLikes, handleLike: handleLikeNews, isLoading: isLiking } = useNewsLikes();
 
   useEffect(() => {
     fetchNews();
@@ -168,20 +170,8 @@ const Noticias = () => {
             console.error('Erro ao buscar visualizações:', error);
           }
 
-          // Buscar contagem de curtidas
-          let likesCount = 0;
-          try {
-            const { data: likesData, error: likesError } = await supabase
-              .from('news_likes')
-              .select('id')
-              .eq('news_id', item.id);
-
-            if (!likesError && likesData) {
-              likesCount = likesData.length;
-            }
-          } catch (error) {
-            console.error('Erro ao buscar curtidas:', error);
-          }
+          // Usar contagem de curtidas do hook
+          const likesCount = newsLikes[item.id] || 0;
 
           // Buscar nome do autor
           let authorName = 'Administração Municipal';
@@ -293,49 +283,7 @@ const Noticias = () => {
   };
 
   const handleLike = async (newsId: string) => {
-    try {
-      // Buscar usuário atual
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (user) {
-        // Verificar se já curtiu
-        const { data: existingLike } = await supabase
-          .from('news_likes')
-          .select('id')
-          .eq('news_id', newsId)
-          .eq('user_id', user.id)
-          .single();
-
-        if (existingLike) {
-          // Remover curtida
-          await supabase
-            .from('news_likes')
-            .delete()
-            .eq('news_id', newsId)
-            .eq('user_id', user.id);
-          
-          toast.success('Curtida removida!');
-        } else {
-          // Adicionar curtida
-          await supabase
-            .from('news_likes')
-            .insert({
-              news_id: newsId,
-              user_id: user.id
-            });
-          
-          toast.success('Notícia curtida!');
-        }
-
-        // Recarregar notícias para atualizar contadores
-        fetchNews();
-      } else {
-        toast.error('Faça login para curtir notícias');
-      }
-    } catch (error) {
-      console.error('Erro ao curtir notícia:', error);
-      toast.error('Erro ao curtir notícia');
-    }
+    await handleLikeNews(newsId);
   };
 
   const registerView = async (newsId: string) => {
@@ -511,17 +459,26 @@ const Noticias = () => {
                               </div>
                             </div>
                             
-                              <Button 
-                              variant="ghost" 
-                                size="sm" 
+                                                            <Button
+                                variant="ghost"
+                                size="sm"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   handleLike(item.id);
                                 }}
-                              className="h-6 px-2 text-xs hover:bg-red-50 hover:text-red-600"
-                            >
-                              <HeartIcon className="w-3 h-3 mr-1" />
-                              {item.likes || 0}
+                                disabled={isLiking}
+                                className={cn(
+                                  "h-6 px-2 text-xs",
+                                  likedNews.has(item.id)
+                                    ? "text-red-600 bg-red-50 hover:bg-red-100"
+                                    : "hover:bg-red-50 hover:text-red-600"
+                                )}
+                              >
+                                <HeartIcon className={cn(
+                                  "w-3 h-3 mr-1",
+                                  likedNews.has(item.id) && "fill-current"
+                                )} />
+                                {newsLikes[item.id] || 0}
                               </Button>
                             </div>
                         </CardContent>
@@ -823,10 +780,19 @@ const Noticias = () => {
                           variant="outline" 
                           size="default" 
                           onClick={() => handleLike(selectedNews.id)}
-                          className="bg-white hover:bg-red-50 hover:border-red-200 hover:text-red-600 shadow-lg border-2"
+                          disabled={isLiking}
+                          className={cn(
+                            "bg-white shadow-lg border-2",
+                            likedNews.has(selectedNews.id)
+                              ? "bg-red-50 border-red-200 text-red-600 hover:bg-red-100"
+                              : "hover:bg-red-50 hover:border-red-200 hover:text-red-600"
+                          )}
                         >
-                          <HeartIcon className="w-5 h-5 mr-2" />
-                          {selectedNews.likes || 0} curtidas
+                          <HeartIcon className={cn(
+                            "w-5 h-5 mr-2",
+                            likedNews.has(selectedNews.id) && "fill-current"
+                          )} />
+                          {newsLikes[selectedNews.id] || 0} curtidas
                         </Button>
                         
                         <Button
@@ -864,7 +830,7 @@ const Noticias = () => {
                         </div>
                         <div className="flex items-center gap-1">
                           <HeartIcon className="w-4 h-4" />
-                          {selectedNews.likes || 0}
+                          {newsLikes[selectedNews.id] || 0}
                         </div>
                       </div>
                     </div>
