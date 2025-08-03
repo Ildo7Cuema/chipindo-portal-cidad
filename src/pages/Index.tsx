@@ -50,7 +50,7 @@ const Index = () => {
   // Real data hooks
   const { settings } = useSiteSettings();
   const { stats, loading: statsLoading } = useMunicipalStats();
-  const { departamentos: direccoes, loading: direccoesLoading } = useDepartamentos();
+  const { direcoes: direccoes, loading: direccoesLoading } = useDepartamentos();
   const { contacts: emergencyContacts, loading: emergencyLoading } = useEmergencyContacts();
   const { 
     currentPopulation, 
@@ -107,7 +107,7 @@ const Index = () => {
   };
 
   // Filter main service departments (limit to 6)
-  const mainDirecoes = direccoes
+  const mainDirecoes = (direccoes || [])
     .filter(dept => ['EDU', 'SAU', 'OBR', 'AGR', 'FIN', 'CUL'].includes(dept.codigo || ''))
     .slice(0, 6);
 

@@ -1,28 +1,32 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
-// Interface para Direcções Municipais
-// Nota: Mantém nome "Departamento" para compatibilidade com banco de dados
-export interface Departamento {
+export interface Direccao {
   id: string;
   nome: string;
   descricao: string | null;
   codigo: string | null;
-  ativo: boolean | null;
-  ordem: number | null;
+  ativo: boolean;
+  ordem: number;
   created_at: string;
   updated_at: string;
+  responsavel?: string;
+  telefone?: string;
+  email?: string;
+  endereco?: string;
+  funcionarios?: number;
 }
 
 export const useDepartamentos = () => {
-  const [departamentos, setDepartamentos] = useState<Departamento[]>([]);
+  const [direcoes, setDirecoes] = useState<Direccao[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchDepartamentos = async () => {
+  const fetchDirecoes = async () => {
     try {
       setLoading(true);
-      
+      setError(null);
+
       const { data, error: fetchError } = await supabase
         .from('departamentos')
         .select('*')
@@ -33,35 +37,31 @@ export const useDepartamentos = () => {
         throw fetchError;
       }
 
-      setDepartamentos(data || []);
-      setError(null);
-    } catch (err: any) {
-      console.error('Error fetching departamentos:', err);
-      setError(err.message);
-      setDepartamentos([]);
+      setDirecoes(data || []);
+    } catch (err) {
+      console.error('Erro ao buscar direcções:', err);
+      setError(err instanceof Error ? err.message : 'Erro desconhecido');
     } finally {
       setLoading(false);
     }
   };
 
-  const getDepartamentoByCode = (codigo: string) => {
-    return departamentos.find(dept => dept.codigo === codigo);
-  };
-
-  const getDepartamentosByType = (prefix: string) => {
-    return departamentos.filter(dept => dept.codigo?.startsWith(prefix));
-  };
-
+  // Buscar direcções na inicialização
   useEffect(() => {
-    fetchDepartamentos();
+    fetchDirecoes();
   }, []);
 
-  return { 
-    departamentos, 
-    loading, 
-    error, 
-    refetch: fetchDepartamentos,
-    getDepartamentoByCode,
-    getDepartamentosByType
+  return {
+    direcoes,
+    loading,
+    error,
+    fetchDirecoes,
+    // Helper para obter apenas os nomes das direcções
+    direcaoNames: direcoes.map(direcao => direcao.nome),
+    // Helper para obter opções de dropdown
+    direcaoOptions: [
+      { value: "all", label: "Todas as áreas" },
+      ...direcoes.map(direcao => ({ value: direcao.nome, label: direcao.nome }))
+    ]
   };
 };

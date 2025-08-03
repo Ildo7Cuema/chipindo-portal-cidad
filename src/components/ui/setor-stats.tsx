@@ -2,62 +2,65 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { 
-  EyeIcon, 
-  ClockIcon, 
-  HeartIcon, 
   TrendingUpIcon,
-  RefreshCwIcon
+  RefreshCwIcon,
+  UsersIcon,
+  BuildingIcon,
+  HeartHandshakeIcon,
+  LightbulbIcon,
+  TargetIcon,
+  CalendarIcon,
+  MapPinIcon,
+  PhoneIcon,
+  MailIcon,
+  StarIcon
 } from "lucide-react";
-import { useSetorStats } from "@/hooks/useSetorStats";
+import { SetorCompleto } from "@/hooks/useSetoresEstrategicos";
 import { cn } from "@/lib/utils";
 
 interface SetorStatsProps {
-  setorSlug: string;
+  setor: SetorCompleto | null;
   className?: string;
 }
 
-export const SetorStats = ({ setorSlug, className }: SetorStatsProps) => {
-  const { stats, loading } = useSetorStats({ setorSlug });
-
-  const formatNumber = (num: number) => {
-    return new Intl.NumberFormat('pt-AO').format(num);
+export const SetorStats = ({ setor, className }: SetorStatsProps) => {
+  const getIconComponent = (iconName: string) => {
+    const iconMap: { [key: string]: any } = {
+      'Users': UsersIcon,
+      'Building': BuildingIcon,
+      'HeartHandshake': HeartHandshakeIcon,
+      'Lightbulb': LightbulbIcon,
+      'Target': TargetIcon,
+      'Calendar': CalendarIcon,
+      'MapPin': MapPinIcon,
+      'Phone': PhoneIcon,
+      'Mail': MailIcon,
+      'Star': StarIcon,
+      'TrendingUp': TrendingUpIcon
+    };
+    return iconMap[iconName] || TrendingUpIcon;
   };
 
-  const formatTime = (minutes: number) => {
-    const mins = Math.floor(minutes);
-    const secs = Math.round((minutes - mins) * 60);
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
-
-  const getSatisfactionColor = (satisfacao: number) => {
-    if (satisfacao >= 90) return "text-green-600";
-    if (satisfacao >= 80) return "text-yellow-600";
-    return "text-red-600";
-  };
-
-  const getSatisfactionIcon = (satisfacao: number) => {
-    if (satisfacao >= 90) return "😊";
-    if (satisfacao >= 80) return "🙂";
-    return "😐";
-  };
-
-  if (loading) {
+  if (!setor || !setor.estatisticas || setor.estatisticas.length === 0) {
     return (
-      <Card className={cn("animate-pulse", className)}>
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-muted rounded animate-pulse" />
-            <div className="h-4 bg-muted rounded w-32 animate-pulse" />
+      <Card className={cn("border-dashed", className)}>
+        <CardHeader className="pb-2 sm:pb-3">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-xs sm:text-sm font-medium flex items-center gap-1.5 sm:gap-2">
+              <TrendingUpIcon className="w-3 h-3 sm:w-4 sm:h-4" />
+              Estatísticas do Sector
+            </CardTitle>
+            <Badge variant="outline" className="text-xs">
+              <RefreshCwIcon className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-1" />
+              {!setor ? 'Carregando...' : 'Sem dados'}
+            </Badge>
           </div>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-3 gap-4">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="space-y-2">
-                <div className="h-8 bg-muted rounded animate-pulse" />
-                <div className="h-4 bg-muted rounded w-16 animate-pulse" />
-              </div>
-            ))}
+        <CardContent className="p-3 sm:p-6">
+          <div className="text-center py-4 sm:py-8">
+            <p className="text-muted-foreground text-xs sm:text-sm">
+              {!setor ? 'Carregando estatísticas...' : 'Nenhuma estatística disponível para este sector.'}
+            </p>
           </div>
         </CardContent>
       </Card>
@@ -66,58 +69,41 @@ export const SetorStats = ({ setorSlug, className }: SetorStatsProps) => {
 
   return (
     <Card className={cn("border-dashed", className)}>
-      <CardHeader className="pb-3">
+      <CardHeader className="pb-2 sm:pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-sm font-medium flex items-center gap-2">
-            <TrendingUpIcon className="w-4 h-4" />
-            Estatísticas em Tempo Real
+          <CardTitle className="text-xs sm:text-sm font-medium flex items-center gap-1.5 sm:gap-2">
+            <TrendingUpIcon className="w-3 h-3 sm:w-4 sm:h-4" />
+            Estatísticas do Sector
           </CardTitle>
           <Badge variant="outline" className="text-xs">
-            <RefreshCwIcon className="w-3 h-3 mr-1" />
-            Atualizado agora
+            <RefreshCwIcon className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-1" />
+            Dados Atuais
           </Badge>
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Visitas */}
-          <div className="text-center space-y-2">
-            <div className="flex items-center justify-center gap-2">
-              <EyeIcon className="w-5 h-5 text-blue-600" />
-              <span className="text-2xl font-bold text-blue-600">
-                {formatNumber(stats.visitas)}
-              </span>
-            </div>
-            <p className="text-xs text-muted-foreground">Visitas Hoje</p>
-          </div>
-
-          {/* Tempo Médio */}
-          <div className="text-center space-y-2">
-            <div className="flex items-center justify-center gap-2">
-              <ClockIcon className="w-5 h-5 text-orange-600" />
-              <span className="text-2xl font-bold text-orange-600">
-                {formatTime(stats.tempoMedio)}
-              </span>
-            </div>
-            <p className="text-xs text-muted-foreground">Tempo Médio</p>
-          </div>
-
-          {/* Satisfação */}
-          <div className="text-center space-y-2">
-            <div className="flex items-center justify-center gap-2">
-              <HeartIcon className="w-5 h-5 text-red-600" />
-              <span className={cn("text-2xl font-bold", getSatisfactionColor(stats.satisfacao))}>
-                {stats.satisfacao}%
-              </span>
-              <span className="text-lg">{getSatisfactionIcon(stats.satisfacao)}</span>
-            </div>
-            <p className="text-xs text-muted-foreground">Satisfação</p>
-          </div>
+      <CardContent className="p-3 sm:p-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4">
+          {setor.estatisticas.map((estatistica, index) => {
+            const IconComponent = getIconComponent(estatistica.icone || 'TrendingUp');
+            return (
+              <div key={index} className="text-center space-y-1 sm:space-y-2 p-2 sm:p-4 bg-muted/30 rounded-lg">
+                <div className="flex items-center justify-center gap-1 sm:gap-2">
+                  <IconComponent className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 text-primary" />
+                  <span className="text-lg sm:text-xl md:text-2xl font-bold text-primary">
+                    {estatistica.valor}
+                  </span>
+                </div>
+                <p className="text-xs sm:text-sm text-muted-foreground font-medium leading-tight">
+                  {estatistica.nome}
+                </p>
+              </div>
+            );
+          })}
         </div>
 
-        <div className="mt-4 pt-4 border-t text-center">
+        <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t text-center">
           <p className="text-xs text-muted-foreground">
-            Última actualização: {stats.ultimaAtualizacao.toLocaleTimeString('pt-AO')}
+            Última actualização: {new Date().toLocaleTimeString('pt-AO')}
           </p>
         </div>
       </CardContent>

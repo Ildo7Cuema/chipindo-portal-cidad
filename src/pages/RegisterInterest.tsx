@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { UserIcon, BriefcaseIcon, GraduationCapIcon, PhoneIcon, MailIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useInterestAreas } from "@/hooks/useInterestAreas";
 
 const RegisterInterest = () => {
   const { toast } = useToast();
@@ -28,20 +29,8 @@ const RegisterInterest = () => {
     acceptTerms: false
   });
 
-  const areasOptions = [
-    "Administração Pública",
-    "Recursos Humanos",
-    "Finanças e Contabilidade",
-    "Tecnologias de Informação",
-    "Engenharia Civil",
-    "Saúde Pública",
-    "Educação",
-    "Desenvolvimento Social",
-    "Meio Ambiente",
-    "Segurança Pública",
-    "Cultura e Turismo",
-    "Agricultura e Pecuária"
-  ];
+  // Usar hook para buscar áreas dinamicamente
+  const { areaNames: areasOptions, loading: areasLoading } = useInterestAreas();
 
   const handleAreaChange = (area: string, checked: boolean) => {
     setFormData(prev => ({

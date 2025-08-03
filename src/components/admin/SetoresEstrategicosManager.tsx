@@ -30,16 +30,35 @@ import {
   HeartHandshakeIcon,
   CalendarIcon,
   MapPinIcon,
-  PhoneIcon
+  PhoneIcon,
+  FileTextIcon,
+  SettingsIcon,
+  BookOpenIcon,
+  BriefcaseIcon
 } from 'lucide-react';
 import { useSetoresEstrategicos, SetorEstrategico } from '@/hooks/useSetoresEstrategicos';
+import { useServicos } from '@/hooks/useServicos';
 import { useToast } from '@/hooks/use-toast';
+import { ServicosSetorManager } from './ServicosSetorManager';
+import { SetoresEstatisticasManager } from './SetoresEstatisticasManager';
+import { SetoresProgramasManager } from './SetoresProgramasManager';
+import { SetoresOportunidadesManager } from './SetoresOportunidadesManager';
+import { SetoresInfraestruturasManager } from './SetoresInfraestruturasManager';
+import { SetoresContactosManager } from './SetoresContactosManager';
 
 export const SetoresEstrategicosManager = () => {
   const { setores, loading, error, createSetor, updateSetor, deleteSetor } = useSetoresEstrategicos();
+  const { servicos } = useServicos();
   const { toast } = useToast();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingSetor, setEditingSetor] = useState<SetorEstrategico | null>(null);
+  const [selectedSetor, setSelectedSetor] = useState<SetorEstrategico | null>(null);
+  const [showServicos, setShowServicos] = useState(false);
+  const [showEstatisticas, setShowEstatisticas] = useState(false);
+  const [showProgramas, setShowProgramas] = useState(false);
+  const [showOportunidades, setShowOportunidades] = useState(false);
+  const [showInfraestruturas, setShowInfraestruturas] = useState(false);
+  const [showContactos, setShowContactos] = useState(false);
   const [formData, setFormData] = useState({
     nome: '',
     slug: '',
@@ -138,6 +157,76 @@ export const SetoresEstrategicosManager = () => {
     setIsDialogOpen(true);
   };
 
+  const handleManageServicos = (setor: SetorEstrategico) => {
+    setSelectedSetor(setor);
+    setShowServicos(true);
+    setShowEstatisticas(false);
+    setShowProgramas(false);
+    setShowOportunidades(false);
+    setShowInfraestruturas(false);
+    setShowContactos(false);
+  };
+
+  const handleManageEstatisticas = (setor: SetorEstrategico) => {
+    setSelectedSetor(setor);
+    setShowEstatisticas(true);
+    setShowServicos(false);
+    setShowProgramas(false);
+    setShowOportunidades(false);
+    setShowInfraestruturas(false);
+    setShowContactos(false);
+  };
+
+  const handleManageProgramas = (setor: SetorEstrategico) => {
+    setSelectedSetor(setor);
+    setShowProgramas(true);
+    setShowServicos(false);
+    setShowEstatisticas(false);
+    setShowOportunidades(false);
+    setShowInfraestruturas(false);
+    setShowContactos(false);
+  };
+
+  const handleManageOportunidades = (setor: SetorEstrategico) => {
+    setSelectedSetor(setor);
+    setShowOportunidades(true);
+    setShowServicos(false);
+    setShowEstatisticas(false);
+    setShowProgramas(false);
+    setShowInfraestruturas(false);
+    setShowContactos(false);
+  };
+
+  const handleManageInfraestruturas = (setor: SetorEstrategico) => {
+    setSelectedSetor(setor);
+    setShowInfraestruturas(true);
+    setShowServicos(false);
+    setShowEstatisticas(false);
+    setShowProgramas(false);
+    setShowOportunidades(false);
+    setShowContactos(false);
+  };
+
+  const handleManageContactos = (setor: SetorEstrategico) => {
+    setSelectedSetor(setor);
+    setShowContactos(true);
+    setShowServicos(false);
+    setShowEstatisticas(false);
+    setShowProgramas(false);
+    setShowOportunidades(false);
+    setShowInfraestruturas(false);
+  };
+
+  const handleBackToSetores = () => {
+    setShowServicos(false);
+    setShowEstatisticas(false);
+    setShowProgramas(false);
+    setShowOportunidades(false);
+    setShowInfraestruturas(false);
+    setShowContactos(false);
+    setSelectedSetor(null);
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
@@ -153,6 +242,180 @@ export const SetoresEstrategicosManager = () => {
           <p className="text-red-600">Erro ao carregar setores: {error}</p>
         </CardContent>
       </Card>
+    );
+  }
+
+  if (showServicos && selectedSetor) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="outline"
+              onClick={handleBackToSetores}
+              className="flex items-center gap-2"
+            >
+              <BuildingIcon className="w-4 h-4" />
+              Voltar aos Setores
+            </Button>
+            <div>
+              <h2 className="text-2xl font-bold">Gestão de Serviços</h2>
+              <p className="text-muted-foreground">
+                Setor: {selectedSetor.nome}
+              </p>
+            </div>
+          </div>
+        </div>
+        <ServicosSetorManager 
+          setorNome={selectedSetor.nome} 
+          setorId={selectedSetor.id} 
+        />
+      </div>
+    );
+  }
+
+  if (showEstatisticas && selectedSetor) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="outline"
+              onClick={handleBackToSetores}
+              className="flex items-center gap-2"
+            >
+              <BuildingIcon className="w-4 h-4" />
+              Voltar aos Setores
+            </Button>
+            <div>
+              <h2 className="text-2xl font-bold">Gestão de Estatísticas</h2>
+              <p className="text-muted-foreground">
+                Setor: {selectedSetor.nome}
+              </p>
+            </div>
+          </div>
+        </div>
+        <SetoresEstatisticasManager 
+          setorNome={selectedSetor.nome} 
+          setorId={selectedSetor.id} 
+        />
+      </div>
+    );
+  }
+
+  if (showProgramas && selectedSetor) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="outline"
+              onClick={handleBackToSetores}
+              className="flex items-center gap-2"
+            >
+              <BuildingIcon className="w-4 h-4" />
+              Voltar aos Setores
+            </Button>
+            <div>
+              <h2 className="text-2xl font-bold">Gestão de Programas</h2>
+              <p className="text-muted-foreground">
+                Setor: {selectedSetor.nome}
+              </p>
+            </div>
+          </div>
+        </div>
+        <SetoresProgramasManager 
+          setorNome={selectedSetor.nome} 
+          setorId={selectedSetor.id} 
+        />
+      </div>
+    );
+  }
+
+  if (showOportunidades && selectedSetor) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="outline"
+              onClick={handleBackToSetores}
+              className="flex items-center gap-2"
+            >
+              <BuildingIcon className="w-4 h-4" />
+              Voltar aos Setores
+            </Button>
+            <div>
+              <h2 className="text-2xl font-bold">Gestão de Oportunidades</h2>
+              <p className="text-muted-foreground">
+                Setor: {selectedSetor.nome}
+              </p>
+            </div>
+          </div>
+        </div>
+        <SetoresOportunidadesManager 
+          setorNome={selectedSetor.nome} 
+          setorId={selectedSetor.id} 
+        />
+      </div>
+    );
+  }
+
+  if (showInfraestruturas && selectedSetor) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="outline"
+              onClick={handleBackToSetores}
+              className="flex items-center gap-2"
+            >
+              <BuildingIcon className="w-4 h-4" />
+              Voltar aos Setores
+            </Button>
+            <div>
+              <h2 className="text-2xl font-bold">Gestão de Infraestruturas</h2>
+              <p className="text-muted-foreground">
+                Setor: {selectedSetor.nome}
+              </p>
+            </div>
+          </div>
+        </div>
+        <SetoresInfraestruturasManager 
+          setorNome={selectedSetor.nome} 
+          setorId={selectedSetor.id} 
+        />
+      </div>
+    );
+  }
+
+  if (showContactos && selectedSetor) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="outline"
+              onClick={handleBackToSetores}
+              className="flex items-center gap-2"
+            >
+              <BuildingIcon className="w-4 h-4" />
+              Voltar aos Setores
+            </Button>
+            <div>
+              <h2 className="text-2xl font-bold">Gestão de Contactos</h2>
+              <p className="text-muted-foreground">
+                Setor: {selectedSetor.nome}
+              </p>
+            </div>
+          </div>
+        </div>
+        <SetoresContactosManager 
+          setorNome={selectedSetor.nome} 
+          setorId={selectedSetor.id} 
+        />
+      </div>
     );
   }
 
@@ -319,6 +582,13 @@ export const SetoresEstrategicosManager = () => {
                 <span>Ordem: {setor.ordem}</span>
               </div>
               
+              <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
+                <FileTextIcon className="w-4 h-4" />
+                <span>
+                  {servicos.filter(s => s.categoria === setor.nome && s.ativo).length} serviços ativos
+                </span>
+              </div>
+              
               <div className="flex flex-wrap gap-2 mt-2">
                 <Button
                   variant="outline"
@@ -328,6 +598,60 @@ export const SetoresEstrategicosManager = () => {
                 >
                   <EditIcon className="w-4 h-4 mr-1" />
                   Editar
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="sm:w-auto w-full"
+                  onClick={() => handleManageServicos(setor)}
+                >
+                  <FileTextIcon className="w-4 h-4 mr-1" />
+                  Serviços
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="sm:w-auto w-full"
+                  onClick={() => handleManageEstatisticas(setor)}
+                >
+                  <TrendingUpIcon className="w-4 h-4 mr-1" />
+                  Estatísticas
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="sm:w-auto w-full"
+                  onClick={() => handleManageProgramas(setor)}
+                >
+                  <BookOpenIcon className="w-4 h-4 mr-1" />
+                  Programas
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="sm:w-auto w-full"
+                  onClick={() => handleManageOportunidades(setor)}
+                >
+                  <BriefcaseIcon className="w-4 h-4 mr-1" />
+                  Oportunidades
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="sm:w-auto w-full"
+                  onClick={() => handleManageInfraestruturas(setor)}
+                >
+                  <BuildingIcon className="w-4 h-4 mr-1" />
+                  Infraestruturas
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="sm:w-auto w-full"
+                  onClick={() => handleManageContactos(setor)}
+                >
+                  <PhoneIcon className="w-4 h-4 mr-1" />
+                  Contactos
                 </Button>
                 <Button
                   variant="outline"

@@ -7,6 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import { useInterestAreas } from "@/hooks/useInterestAreas";
 import { supabase } from "@/integrations/supabase/client";
 import { notifyInterestRegistration } from "@/lib/notification-helpers";
 import { Loader2, CheckCircle, AlertCircle } from "lucide-react";
@@ -29,19 +30,6 @@ interface FormData {
   aceiteTermos: boolean;
 }
 
-const areasInteresse = [
-  "Administração Pública",
-  "Agricultura",
-  "Cultura",
-  "Desenvolvimento Económico",
-  "Educação",
-  "Energia e Água",
-  "Saúde",
-  "Sector Mineiro",
-  "Tecnologia",
-  "Outros"
-];
-
 export function CandidaturaForm({ 
   open, 
   onOpenChange, 
@@ -50,6 +38,8 @@ export function CandidaturaForm({
   onSuccess 
 }: CandidaturaFormProps) {
   const { toast } = useToast();
+  // Usar hook para buscar áreas dinamicamente
+  const { areaNames: areasInteresse, loading: areasLoading } = useInterestAreas();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     nomeCompleto: "",

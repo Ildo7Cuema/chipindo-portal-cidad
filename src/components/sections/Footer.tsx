@@ -61,25 +61,37 @@ export const Footer = () => {
       platform: "Facebook", 
       icon: FacebookIcon, 
       href: settings?.social_facebook || "#", 
-      color: "hover:bg-blue-600"
+      color: "hover:bg-blue-600 hover:shadow-blue-600/25",
+      bgColor: "bg-blue-600/10",
+      borderColor: "border-blue-600/20",
+      iconColor: "text-blue-400"
     },
     { 
       platform: "Instagram", 
       icon: InstagramIcon, 
       href: settings?.social_instagram || "#", 
-      color: "hover:bg-pink-600"
+      color: "hover:bg-gradient-to-br hover:from-pink-500 hover:to-purple-600 hover:shadow-pink-600/25",
+      bgColor: "bg-gradient-to-br from-pink-600/10 to-purple-600/10",
+      borderColor: "border-pink-600/20",
+      iconColor: "text-pink-400"
     },
     { 
       platform: "Twitter", 
       icon: TwitterIcon, 
       href: settings?.social_twitter || "#", 
-      color: "hover:bg-blue-400"
+      color: "hover:bg-sky-500 hover:shadow-sky-500/25",
+      bgColor: "bg-sky-600/10",
+      borderColor: "border-sky-600/20",
+      iconColor: "text-sky-400"
     },
     { 
       platform: "YouTube", 
       icon: YoutubeIcon, 
       href: settings?.social_youtube || "#", 
-      color: "hover:bg-red-600"
+      color: "hover:bg-red-600 hover:shadow-red-600/25",
+      bgColor: "bg-red-600/10",
+      borderColor: "border-red-600/20",
+      iconColor: "text-red-400"
     }
   ];
 
@@ -124,37 +136,78 @@ export const Footer = () => {
                 Conectando a Administração Municipal aos cidadãos através de informação transparente e serviços digitais de qualidade.
               </p>
               
-              {/* Social Media - Compact */}
-              <div className="space-y-2">
+              {/* Social Media - Modern Design */}
+              <div className="space-y-3">
                 <h4 className="text-sm font-semibold text-white flex items-center gap-2">
                   <Users2Icon className="w-4 h-4 text-yellow-500" />
                   Redes Sociais
                 </h4>
-                <div className="flex space-x-2">
+                <div className="flex flex-wrap justify-start sm:justify-start gap-3 sm:gap-2.5">
                   {socialLinks.map((social) => {
                     const IconComponent = social.icon;
                     return (
-                <Button 
+                      <Button 
                         key={social.platform}
-                  size="sm" 
+                        size="sm" 
                         variant="outline"
                         className={cn(
-                          "w-8 h-8 p-0 border-slate-600 hover:border-slate-500 text-slate-300 hover:text-white transition-all duration-300",
+                          "relative w-11 h-11 sm:w-12 sm:h-12 p-0 rounded-xl border-2 transition-all duration-300 ease-out group overflow-hidden",
+                          "bg-slate-800/60 backdrop-blur-sm",
+                          social.bgColor,
+                          social.borderColor,
+                          "hover:scale-110 hover:shadow-lg hover:shadow-slate-900/50",
+                          "focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:ring-offset-2 focus:ring-offset-slate-900",
+                          "active:scale-95",
                           social.color
                         )}
-                  asChild
-                >
-                  <a 
+                        asChild
+                      >
+                        <a 
                           href={social.href} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                          aria-label={social.platform}
-                  >
-                          <IconComponent className="w-4 h-4" />
-                  </a>
-                </Button>
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          aria-label={`Siga-nos no ${social.platform}`}
+                          className="w-full h-full flex items-center justify-center"
+                        >
+                          {/* Background gradient overlay on hover */}
+                          <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                          
+                          {/* Icon with enhanced styling */}
+                          <IconComponent className={cn(
+                            "w-4 h-4 sm:w-5 sm:h-5 relative z-10 transition-all duration-300",
+                            social.iconColor,
+                            "group-hover:text-white group-hover:scale-110"
+                          )} />
+                          
+                          {/* Subtle glow effect */}
+                          <div className={cn(
+                            "absolute inset-0 rounded-xl opacity-0 group-hover:opacity-20 transition-opacity duration-300",
+                            social.platform === "Facebook" && "bg-blue-600",
+                            social.platform === "Instagram" && "bg-gradient-to-br from-pink-500 to-purple-600",
+                            social.platform === "Twitter" && "bg-sky-500",
+                            social.platform === "YouTube" && "bg-red-600"
+                          )} />
+                        </a>
+                      </Button>
                     );
                   })}
+                </div>
+                
+                {/* Social media description */}
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  Siga-nos nas redes sociais para ficar atualizado sobre as últimas notícias e serviços municipais.
+                </p>
+                
+                {/* Social media stats */}
+                <div className="flex items-center gap-4 text-xs text-slate-500">
+                  <div className="flex items-center gap-1">
+                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                    <span>Ativo 24/7</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Users2Icon className="w-3 h-3" />
+                    <span>Comunidade Ativa</span>
+                  </div>
                 </div>
               </div>
             </div>

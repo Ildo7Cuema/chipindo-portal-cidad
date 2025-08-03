@@ -25,8 +25,14 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { CandidaturaForm } from "@/components/ui/candidatura-form";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { SendIcon, Loader2, CheckCircle, AlertCircle, User, Mail, Phone, FileText, MessageSquare } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import { useContactInfo } from "@/hooks/useContactInfo";
+import { useToast } from "@/hooks/use-toast";
 
 const Services = () => {
   const serviceCategories = [
@@ -111,6 +117,152 @@ const Services = () => {
   ];
 
   const { contactInfo, loading: contactLoading } = useContactInfo();
+  const { toast } = useToast();
+
+  const validateForm = () => {
+    const errors: {[key: string]: string} = {};
+    
+    // Validar nome
+    if (!contactForm.nome.trim()) {
+      errors.nome = "Nome completo é obrigatório";
+    } else if (contactForm.nome.trim().length < 3) {
+      errors.nome = "Nome deve ter pelo menos 3 caracteres";
+    }
+    
+    // Validar email
+    if (!contactForm.email.trim()) {
+      errors.email = "Email é obrigatório";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactForm.email)) {
+      errors.email = "Email inválido";
+    }
+    
+    // Validar telefone (opcional, mas se preenchido deve ser válido)
+    if (contactForm.telefone.trim() && !/^\+?[0-9\s\-\(\)]{8,}$/.test(contactForm.telefone)) {
+      errors.telefone = "Telefone inválido";
+    }
+    
+    // Validar assunto
+    if (!contactForm.assunto.trim()) {
+      errors.assunto = "Assunto é obrigatório";
+    } else if (contactForm.assunto.trim().length < 5) {
+      errors.assunto = "Assunto deve ter pelo menos 5 caracteres";
+    }
+    
+    // Validar mensagem
+    if (!contactForm.mensagem.trim()) {
+      errors.mensagem = "Mensagem é obrigatória";
+    } else if (contactForm.mensagem.trim().length < 10) {
+      errors.mensagem = "Mensagem deve ter pelo menos 10 caracteres";
+    }
+    
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleContactSubmit = async () => {
+    // Validar formulário
+    if (!validateForm()) {
+      toast({
+        title: "Erro de Validação",
+        description: "Por favor, corrija os erros no formulário.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!servicoSelecionado) {
+      toast({
+        title: "Erro",
+        description: "Nenhum serviço selecionado.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      // Create service request in database
+      const { data, error } = await supabase
+        .from('service_requests')
+        .insert([{
+          service_name: servicoSelecionado,
+          service_direction: "Serviços Municipais",
+          requester_name: contactForm.nome.trim(),
+          requester_email: contactForm.email.trim(),
+          requester_phone: contactForm.telefone.trim() || null,
+          subject: contactForm.assunto.trim(),
+          message: contactForm.mensagem.trim(),
+          priority: 'normal'
+        }])
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Database error:', error);
+        throw new Error(error.message);
+      }
+
+      // Sucesso
+      toast({
+        title: "✅ Solicitação Enviada com Sucesso!",
+        description: "Sua solicitação foi registrada. Entraremos em contacto em breve.",
+      });
+      
+      // Reset form
+      setOpenSolicitar(false);
+      setContactForm({
+        nome: "",
+        email: "",
+        telefone: "",
+        assunto: "",
+        mensagem: ""
+      });
+      setFormErrors({});
+      setServicoSelecionado("");
+      
+    } catch (error: any) {
+      console.error('Error submitting service request:', error);
+      
+      let errorMessage = "Erro ao enviar solicitação. Tente novamente.";
+      
+      if (error.message?.includes('row-level security')) {
+        errorMessage = "Erro de permissão. Verifique se as migrações foram aplicadas.";
+      } else if (error.message?.includes('network')) {
+        errorMessage = "Erro de conexão. Verifique sua internet.";
+      }
+      
+      toast({
+        title: "❌ Erro",
+        description: errorMessage,
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleInputChange = (field: string, value: string) => {
+    setContactForm(prev => ({ ...prev, [field]: value }));
+    
+    // Limpar erro do campo quando usuário começa a digitar
+    if (formErrors[field]) {
+      setFormErrors(prev => ({ ...prev, [field]: "" }));
+    }
+  };
+
+  const handleCloseModal = () => {
+    setOpenSolicitar(false);
+    setContactForm({
+      nome: "",
+      email: "",
+      telefone: "",
+      assunto: "",
+      mensagem: ""
+    });
+    setFormErrors({});
+    setServicoSelecionado("");
+  };
 
   const setoresEstrategicos = [
     {
@@ -181,6 +333,15 @@ const Services = () => {
 
   const [openSolicitar, setOpenSolicitar] = useState(false);
   const [servicoSelecionado, setServicoSelecionado] = useState<string>("");
+  const [contactForm, setContactForm] = useState({
+    nome: "",
+    email: "",
+    telefone: "",
+    assunto: "",
+    mensagem: ""
+  });
+  const [formErrors, setFormErrors] = useState<{[key: string]: string}>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   return (
     <div className="min-h-screen bg-background">
@@ -357,12 +518,210 @@ const Services = () => {
             </div>
           )}
         </div>
-        <CandidaturaForm
-          open={openSolicitar}
-          onOpenChange={setOpenSolicitar}
-          setor={servicoSelecionado}
-          onSuccess={() => setServicoSelecionado("")}
-        />
+        {/* Contact Form Modal */}
+        <Dialog open={openSolicitar} onOpenChange={handleCloseModal}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-green-600 rounded-lg flex items-center justify-center">
+                  <FileText className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <DialogTitle className="text-2xl">Solicitar Serviço</DialogTitle>
+                  <DialogDescription className="text-base">
+                    {servicoSelecionado && (
+                      <span className="font-medium text-primary">
+                        Serviço: {servicoSelecionado}
+                      </span>
+                    )}
+                  </DialogDescription>
+                </div>
+              </div>
+            </DialogHeader>
+            
+            <div className="space-y-6">
+              {/* Informações do Serviço */}
+              {servicoSelecionado && (
+                <div className="bg-gradient-to-r from-blue-50 to-green-50 border border-blue-200 rounded-lg p-4">
+                  <h3 className="font-semibold text-blue-900 mb-2 flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4" />
+                    Informações do Serviço
+                  </h3>
+                  <p className="text-sm text-blue-800">
+                    <strong>Serviço:</strong> {servicoSelecionado}
+                  </p>
+                  <p className="text-sm text-blue-800">
+                    <strong>Departamento:</strong> Serviços Municipais
+                  </p>
+                </div>
+              )}
+
+              {/* Formulário */}
+              <form onSubmit={(e) => { e.preventDefault(); handleContactSubmit(); }} className="space-y-6">
+                {/* Nome e Email */}
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="nome" className="flex items-center gap-2">
+                      <User className="w-4 h-4" />
+                      Nome Completo *
+                    </Label>
+                    <Input
+                      id="nome"
+                      value={contactForm.nome}
+                      onChange={(e) => handleInputChange('nome', e.target.value)}
+                      placeholder="Digite seu nome completo"
+                      className={formErrors.nome ? "border-red-500 focus:border-red-500" : ""}
+                      disabled={isSubmitting}
+                    />
+                    {formErrors.nome && (
+                      <p className="text-sm text-red-500 flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3" />
+                        {formErrors.nome}
+                      </p>
+                    )}
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="email" className="flex items-center gap-2">
+                      <Mail className="w-4 h-4" />
+                      Email *
+                    </Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={contactForm.email}
+                      onChange={(e) => handleInputChange('email', e.target.value)}
+                      placeholder="seuemail@exemplo.com"
+                      className={formErrors.email ? "border-red-500 focus:border-red-500" : ""}
+                      disabled={isSubmitting}
+                    />
+                    {formErrors.email && (
+                      <p className="text-sm text-red-500 flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3" />
+                        {formErrors.email}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Telefone e Assunto */}
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="telefone" className="flex items-center gap-2">
+                      <Phone className="w-4 h-4" />
+                      Telefone
+                    </Label>
+                    <Input
+                      id="telefone"
+                      value={contactForm.telefone}
+                      onChange={(e) => handleInputChange('telefone', e.target.value)}
+                      placeholder="+244 900 000 000"
+                      className={formErrors.telefone ? "border-red-500 focus:border-red-500" : ""}
+                      disabled={isSubmitting}
+                    />
+                    {formErrors.telefone && (
+                      <p className="text-sm text-red-500 flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3" />
+                        {formErrors.telefone}
+                      </p>
+                    )}
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="assunto" className="flex items-center gap-2">
+                      <FileText className="w-4 h-4" />
+                      Assunto *
+                    </Label>
+                    <Input
+                      id="assunto"
+                      value={contactForm.assunto}
+                      onChange={(e) => handleInputChange('assunto', e.target.value)}
+                      placeholder="Assunto da solicitação"
+                      className={formErrors.assunto ? "border-red-500 focus:border-red-500" : ""}
+                      disabled={isSubmitting}
+                    />
+                    {formErrors.assunto && (
+                      <p className="text-sm text-red-500 flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3" />
+                        {formErrors.assunto}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Mensagem */}
+                <div className="space-y-2">
+                  <Label htmlFor="mensagem" className="flex items-center gap-2">
+                    <MessageSquare className="w-4 h-4" />
+                    Mensagem *
+                  </Label>
+                  <Textarea
+                    id="mensagem"
+                    value={contactForm.mensagem}
+                    onChange={(e) => handleInputChange('mensagem', e.target.value)}
+                    placeholder="Descreva sua solicitação ou dúvida em detalhes..."
+                    rows={4}
+                    className={formErrors.mensagem ? "border-red-500 focus:border-red-500" : ""}
+                    disabled={isSubmitting}
+                  />
+                  {formErrors.mensagem && (
+                    <p className="text-sm text-red-500 flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3" />
+                      {formErrors.mensagem}
+                    </p>
+                  )}
+                  <p className="text-xs text-muted-foreground">
+                    Mínimo 10 caracteres. Descreva detalhadamente sua solicitação.
+                  </p>
+                </div>
+
+                {/* Informações Adicionais */}
+                <div className="bg-muted/50 rounded-lg p-4">
+                  <h4 className="font-medium text-foreground mb-2 flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    Informações Importantes
+                  </h4>
+                  <ul className="text-sm text-muted-foreground space-y-1">
+                    <li>• Sua solicitação será analisada pela equipe municipal</li>
+                    <li>• Entraremos em contacto através do email fornecido</li>
+                    <li>• O prazo de resposta depende da complexidade da solicitação</li>
+                    <li>• Mantenha seus dados atualizados para facilitar o contacto</li>
+                  </ul>
+                </div>
+
+                {/* Botões */}
+                <div className="flex gap-3 pt-4 border-t border-border">
+                  <Button 
+                    type="button"
+                    variant="outline" 
+                    onClick={handleCloseModal}
+                    className="flex-1"
+                    disabled={isSubmitting}
+                  >
+                    Cancelar
+                  </Button>
+                  <Button 
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="flex-1 bg-gradient-to-r from-blue-500 to-green-600 hover:from-blue-600 hover:to-green-700 text-white"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Enviando...
+                      </>
+                    ) : (
+                      <>
+                        <SendIcon className="w-4 h-4 mr-2" />
+                        Enviar Solicitação
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </form>
+            </div>
+          </DialogContent>
+        </Dialog>
       </main>
       
       <Footer />

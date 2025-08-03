@@ -48,6 +48,8 @@ import { SetoresEstrategicosManager } from "@/components/admin/SetoresEstrategic
 import { MunicipalityCharacterizationManager } from "@/components/admin/MunicipalityCharacterizationManager";
 import { EventsManager } from "@/components/admin/EventsManager";
 import { TurismoAmbienteCarouselManager } from "@/components/admin/TurismoAmbienteCarouselManager";
+import { ServiceRequestsManager } from "@/components/admin/ServiceRequestsManager";
+import { InterestRegistrationsManager } from "@/components/admin/InterestRegistrationsManager";
 
 interface NavigationItem {
   id: string;
@@ -98,6 +100,8 @@ const Admin = () => {
     { id: "emergency-contacts", label: "Contactos", icon: AlertTriangle, description: "Contactos de emergência", category: "Dados" },
     { id: "transparency", label: "Transparência", icon: EyeIcon, description: "Gerir documentos de transparência", category: "Dados" },
     { id: "ouvidoria", label: "Ouvidoria", icon: MessageSquare, description: "Gerir manifestações da ouvidoria", category: "Dados" },
+    { id: "service-requests", label: "Solicitações de Serviços", icon: MessageSquare, description: "Gerir solicitações de serviços municipais", category: "Dados" },
+    { id: "interest-registrations", label: "Registros de Interesse", icon: Users, description: "Gerir registros de interesse e programas", category: "Dados" },
     { id: "population", label: "População", icon: Users, description: "Gestão do histórico populacional", category: "Dados" },
     { id: "characterization", label: "Caracterização", icon: MapPin, description: "Caracterização do município", category: "Dados" },
     { id: "events", label: "Eventos", icon: Calendar, description: "Gerir eventos do município", category: "Conteúdo" },
@@ -482,8 +486,10 @@ const Admin = () => {
                 {activeTab === "locations" && <LocationsManager />}
                 {activeTab === "emergency-contacts" && <EmergencyContactsManager />}
                 {activeTab === "transparency" && <TransparencyManager />}
-                {activeTab === "ouvidoria" && <OuvidoriaManager />}
-                {activeTab === "population" && <PopulationHistoryManager />}
+                        {activeTab === "ouvidoria" && <OuvidoriaManager />}
+        {activeTab === "service-requests" && <ServiceRequestsManager />}
+        {activeTab === "interest-registrations" && <InterestRegistrationsManager />}
+        {activeTab === "population" && <PopulationHistoryManager />}
                 {activeTab === "characterization" && <MunicipalityCharacterizationManager />}
                 {activeTab === "events" && <EventsManager />}
                 {activeTab === "turismo-carousel" && <TurismoAmbienteCarouselManager />}

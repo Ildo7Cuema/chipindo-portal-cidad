@@ -2,22 +2,15 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/sections/Footer";
 import { SetorBreadcrumb } from "@/components/ui/setor-breadcrumb";
 import { SetorNavigation } from "@/components/ui/setor-navigation";
+import { SetorStats } from "@/components/ui/setor-stats";
+import { SectorHero } from "@/components/ui/sector-hero";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { 
-  ResponsiveContainer,
-  ResponsiveGrid,
-  ResponsiveCard,
-  ResponsiveSection,
-  ResponsiveText
-} from "@/components/layout/ResponsiveLayout";
-import { 
-  PickaxeIcon, 
-  DiamondIcon, 
-  UsersIcon, 
+import {
+  PickaxeIcon,
+  UsersIcon,
   BuildingIcon,
   HeartHandshakeIcon,
   LightbulbIcon,
@@ -30,354 +23,229 @@ import {
   CheckCircleIcon,
   StarIcon,
   TrendingUpIcon,
-  ShieldIcon,
-  TruckIcon,
-  HardHatIcon
+  SparklesIcon
 } from "lucide-react";
-import React from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import React, { useState, useEffect } from "react";
 import { CandidaturaForm } from "@/components/ui/candidatura-form";
 import { InscricaoProgramaForm } from "@/components/ui/inscricao-programa-form";
+import { useSetoresEstrategicos } from "@/hooks/useSetoresEstrategicos";
+import { SetorCompleto } from "@/hooks/useSetoresEstrategicos";
+import { cn } from "@/lib/utils";
 
 const SectorMineiro = () => {
-  const mineiroInfo = {
-    title: "Sector Mineiro",
-    subtitle: "Explorando o potencial mineral de Chipindo de forma sustentável",
-    description: "O sector mineiro de Chipindo está comprometido em desenvolver a exploração mineral de forma responsável, sustentável e benéfica para a comunidade local.",
-    vision: "Ser referência em mineração sustentável, contribuindo para o desenvolvimento económico local.",
-    mission: "Promover a exploração mineral responsável, criando oportunidades de emprego e desenvolvimento económico."
+  const { getSetorBySlug } = useSetoresEstrategicos();
+  const [setor, setSetor] = useState<SetorCompleto | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [openCandidatura, setOpenCandidatura] = useState(false);
+  const [openDetalhes, setOpenDetalhes] = useState(false);
+  const [detalheInfra, setDetalheInfra] = useState<any>(null);
+  const [oportunidadeSelecionada, setOportunidadeSelecionada] = useState<string>("");
+  const [openInscricaoPrograma, setOpenInscricaoPrograma] = useState(false);
+  const [programaSelecionado, setProgramaSelecionado] = useState<string>("");
+  const [activeTab, setActiveTab] = useState("programas");
+
+  // Função para scroll suave para as abas
+  const scrollToTabs = () => {
+    const tabsElement = document.querySelector('[data-tabs-container]');
+    if (tabsElement) {
+      tabsElement.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'start' 
+      });
+    }
   };
 
-  const estatisticas = [
-    { label: "Minas Ativas", value: "8", icon: PickaxeIcon },
-    { label: "Empregos Diretos", value: "450", icon: UsersIcon },
-    { label: "Produção Anual", value: "25.000 ton", icon: DiamondIcon },
-    { label: "Investimento", value: "15M USD", icon: TrendingUpIcon },
-    { label: "Projectos", value: "12", icon: BuildingIcon },
-    { label: "Exportações", value: "8.5M USD", icon: TruckIcon }
-  ];
-
-  const recursosMinerais = [
-    {
-      nome: "Ouro",
-      localizacao: "Zona Norte",
-      reservas: "2.5M onças",
-      producao: "15.000 onças/ano",
-      estado: "Ativo"
-    },
-    {
-      nome: "Diamantes",
-      localizacao: "Zona Leste",
-      reservas: "500.000 quilates",
-      producao: "25.000 quilates/ano",
-      estado: "Ativo"
-    },
-    {
-      nome: "Cobre",
-      localizacao: "Zona Oeste",
-      reservas: "50M ton",
-      producao: "2.500 ton/ano",
-      estado: "Exploração"
-    },
-    {
-      nome: "Manganês",
-      localizacao: "Zona Sul",
-      reservas: "10M ton",
-      producao: "1.200 ton/ano",
-      estado: "Ativo"
-    }
-  ];
-
-  const programasMinerais = [
-    {
-      title: "Programa de Formação Mineira",
-      description: "Formação profissional para trabalhadores do sector mineiro",
-      beneficios: [
-        "Formação gratuita",
-        "Certificação reconhecida",
-        "Apoio na inserção laboral",
-        "Formação contínua"
-      ],
-      requisitos: ["Idade mínima 18 anos", "Ensino básico completo", "Disponibilidade para formação"],
-      contact: "Centro de Formação Mineira"
-    },
-    {
-      title: "Programa de Segurança Mineira",
-      description: "Iniciativas para garantir segurança nas operações mineiras",
-      beneficios: [
-        "Equipamentos de segurança",
-        "Formação em segurança",
-        "Inspeções regulares",
-        "Protocolos de emergência"
-      ],
-      requisitos: ["Trabalhar no sector mineiro", "Participar em formações", "Cumprir protocolos"],
-      contact: "Departamento de Segurança Mineira"
-    },
-    {
-      title: "Programa de Desenvolvimento Comunitário",
-      description: "Projectos sociais financiados pelo sector mineiro",
-      beneficios: [
-        "Infraestruturas comunitárias",
-        "Programas educativos",
-        "Apoio à saúde",
-        "Desenvolvimento económico local"
-      ],
-      requisitos: ["Comunidades afetadas pela mineração", "Projectos aprovados", "Participação comunitária"],
-      contact: "Gabinete de Relações Comunitárias"
-    }
-  ];
-
-  const oportunidades = [
-    {
-      title: "Engenheiro de Minas",
-      description: "Vaga para engenheiro de minas com experiência",
-      requisitos: [
-        "Licenciatura em Engenharia de Minas",
-        "Experiência mínima de 5 anos",
-        "Conhecimentos em gestão de projectos"
-      ],
-      beneficios: [
-        "Salário competitivo",
-        "Plano de carreira",
-        "Formação contínua",
-        "Apoio habitacional"
-      ],
-      prazo: "25 de Março de 2025",
-      vagas: "2"
-    },
-    {
-      title: "Técnico de Segurança",
-      description: "Vaga para técnico de segurança mineira",
-      requisitos: [
-        "Formação em segurança mineira",
-        "Experiência de 3 anos",
-        "Certificação em segurança"
-      ],
-      beneficios: [
-        "Salário atrativo",
-        "Equipamentos fornecidos",
-        "Formação especializada",
-        "Plano de saúde"
-      ],
-      prazo: "30 de Março de 2025",
-      vagas: "4"
-    },
-    {
-      title: "Operador de Máquinas",
-      description: "Vagas para operadores de equipamentos mineiros",
-      requisitos: [
-        "Licença de condução pesada",
-        "Experiência em equipamentos mineiros",
-        "Disponibilidade para turnos"
-      ],
-      beneficios: [
-        "Salário base + prémios",
-        "Formação em equipamentos",
-        "Equipamentos de proteção",
-        "Plano de carreira"
-      ],
-      prazo: "5 de Abril de 2025",
-      vagas: "8"
-    }
-  ];
-
-  const infraestruturas = [
-    {
-      nome: "Centro de Formação Mineira",
-      localizacao: "Zona Industrial",
-      capacidade: "100 formandos",
-      equipamentos: ["Sala de Formação", "Simuladores", "Laboratório", "Oficinas"],
-      estado: "Excelente"
-    },
-    {
-      nome: "Laboratório de Análise Mineral",
-      localizacao: "Centro Científico",
-      capacidade: "50 análises/dia",
-      equipamentos: ["Espectrómetros", "Microscópios", "Equipamentos de Teste", "Sala Limpa"],
-      estado: "Excelente"
-    },
-    {
-      nome: "Centro de Segurança",
-      localizacao: "Zona Mineira",
-      capacidade: "200 trabalhadores",
-      equipamentos: ["Sala de Emergência", "Equipamentos de Resgate", "Centro de Controlo", "Hospital de Campanha"],
-      estado: "Bom"
-    }
-  ];
-
-  const contactInfo = {
-    endereco: "Rua da Mineração, Zona Industrial, Chipindo",
-    telefone: "+244 XXX XXX XXX",
-    email: "mineracao@chipindo.gov.ao",
-    horario: "Segunda a Sexta: 08:00 - 16:00",
-    responsavel: "Eng. Manuel Santos - Diretor Municipal de Mineração"
+  // Função para explorar programas
+  const handleExplorarProgramas = () => {
+    setActiveTab("programas");
+    scrollToTabs();
   };
 
-  const [openCandidatura, setOpenCandidatura] = React.useState(false);
-  const [openDetalhes, setOpenDetalhes] = React.useState(false);
-  const [detalheInfra, setDetalheInfra] = React.useState(null);
-  const [oportunidadeSelecionada, setOportunidadeSelecionada] = React.useState<string>("");
-  const [openInscricaoPrograma, setOpenInscricaoPrograma] = React.useState(false);
-  const [programaSelecionado, setProgramaSelecionado] = React.useState<string>("");
+  // Função para ver oportunidades
+  const handleVerOportunidades = () => {
+    setActiveTab("oportunidades");
+    scrollToTabs();
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+    const loadSetor = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await getSetorBySlug('sector-mineiro');
+        if (!isMounted) return;
+        // Garantir que arrays são arrays (parse se vierem como string)
+        if (data) {
+          data.estatisticas = Array.isArray(data.estatisticas) ? data.estatisticas : [];
+          data.programas = Array.isArray(data.programas) ? data.programas : [];
+          data.oportunidades = Array.isArray(data.oportunidades) ? data.oportunidades : [];
+          data.infraestruturas = Array.isArray(data.infraestruturas) ? data.infraestruturas : [];
+          data.contactos = Array.isArray(data.contactos) ? data.contactos : [];
+        }
+        setSetor(data);
+      } catch (err) {
+        setError('Erro ao carregar dados do sector.');
+        setSetor(null);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+    loadSetor();
+    return () => { isMounted = false; };
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error || !setor) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-muted-foreground mb-4">
+              {error || 'Sector não encontrado'}
+            </h1>
+            <p className="text-muted-foreground">
+              O sector de SectorMineiro não está disponível no momento.
+            </p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  const getIconComponent = (iconName: string) => {
+    const iconMap: { [key: string]: any } = {
+      'Pickaxe': PickaxeIcon,
+      'Users': UsersIcon,
+      'Building': BuildingIcon,
+      'HeartHandshake': HeartHandshakeIcon,
+      'Lightbulb': LightbulbIcon,
+      'Target': TargetIcon,
+      'Calendar': CalendarIcon,
+      'MapPin': MapPinIcon,
+      'Phone': PhoneIcon,
+      'Mail': MailIcon,
+      'ArrowRight': ArrowRightIcon,
+      'CheckCircle': CheckCircleIcon,
+      'Star': StarIcon,
+      'TrendingUp': TrendingUpIcon
+    };
+    return iconMap[iconName] || PickaxeIcon;
+  };
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
       
-      <ResponsiveContainer className="pt-6">
-        <SetorBreadcrumb setorName="Sector Mineiro" setorSlug="sector-mineiro" />
-      </ResponsiveContainer>
-      
-      <ResponsiveSection background="gradient" spacing="lg">
-        <ResponsiveContainer>
-          <div className="text-center">
-            <div className="flex justify-center mb-6">
-              <div className="p-4 bg-primary-foreground/20 rounded-full">
-                <PickaxeIcon className="w-12 h-12 text-primary-foreground" />
-              </div>
-            </div>
-            <ResponsiveText variant="h1" align="center" className="text-primary-foreground mb-6">
-              {mineiroInfo.title}
-            </ResponsiveText>
-            <ResponsiveText variant="lead" align="center" className="text-primary-foreground/90 max-w-3xl mx-auto mb-8">
-              {mineiroInfo.subtitle}
-            </ResponsiveText>
-            <ResponsiveText variant="body" align="center" className="text-primary-foreground/80 max-w-4xl mx-auto">
-              {mineiroInfo.description}
-            </ResponsiveText>
-          </div>
-        </ResponsiveContainer>
-      </ResponsiveSection>
+      <SectorHero 
+        setor={setor} 
+        onExplorarProgramas={handleExplorarProgramas}
+        onVerOportunidades={handleVerOportunidades}
+      />
 
-      <ResponsiveContainer spacing="lg">
-        <ResponsiveGrid cols={{ sm: 1, md: 2 }} gap="lg" className="mb-16">
-          <ResponsiveCard className="bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200">
-            <div className="flex items-center gap-3 mb-3">
-              <TargetIcon className="w-6 h-6 text-yellow-600" />
-              <ResponsiveText variant="h4" className="text-yellow-900">Nossa Visão</ResponsiveText>
-            </div>
-            <ResponsiveText variant="body" className="text-yellow-800">{mineiroInfo.vision}</ResponsiveText>
-          </ResponsiveCard>
-          
-          <ResponsiveCard className="bg-gradient-to-br from-gray-50 to-gray-100 border-gray-200">
-            <div className="flex items-center gap-3 mb-3">
-              <LightbulbIcon className="w-6 h-6 text-gray-600" />
-              <ResponsiveText variant="h4" className="text-gray-900">Nossa Missão</ResponsiveText>
-            </div>
-            <ResponsiveText variant="body" className="text-gray-800">{mineiroInfo.mission}</ResponsiveText>
-          </ResponsiveCard>
-        </ResponsiveGrid>
+      <main className="container mx-auto px-4 py-12">
+        {/* Breadcrumb */}
+        <SetorBreadcrumb setor={setor} />
 
-        <ResponsiveSection spacing="lg">
-          <ResponsiveText variant="h2" align="center" className="mb-12">Estatísticas do Sector</ResponsiveText>
-          <ResponsiveGrid cols={{ sm: 2, md: 3, lg: 6 }} gap="md">
-            {estatisticas.map((stat, index) => {
-              const IconComponent = stat.icon;
-              return (
-                <ResponsiveCard key={index} interactive elevated className="text-center">
-                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3">
-                    <IconComponent className="w-6 h-6 text-primary" />
-                  </div>
-                  <ResponsiveText variant="h3" className="text-primary mb-2">{stat.value}</ResponsiveText>
-                  <ResponsiveText variant="small" className="text-muted-foreground">{stat.label}</ResponsiveText>
-                </ResponsiveCard>
-              );
-            })}
-          </ResponsiveGrid>
-        </ResponsiveSection>
+        {/* Navigation */}
+        <SetorNavigation setor={setor} />
 
-        <ResponsiveSection spacing="lg">
-          <ResponsiveText variant="h2" align="center" className="mb-12">Recursos Minerais</ResponsiveText>
-          <ResponsiveGrid cols={{ sm: 1, md: 2, lg: 4 }} gap="md">
-            {recursosMinerais.map((recurso, index) => (
-              <ResponsiveCard key={index} interactive elevated>
-                <div className="flex items-center gap-2 mb-3">
-                  <DiamondIcon className="w-5 h-5 text-primary" />
-                  <ResponsiveText variant="h4">{recurso.nome}</ResponsiveText>
-                </div>
-                <div className="flex items-center gap-2 mb-4">
-                  <MapPinIcon className="w-4 h-4 text-muted-foreground" />
-                  <ResponsiveText variant="small" className="text-muted-foreground">{recurso.localizacao}</ResponsiveText>
-                </div>
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <ResponsiveText variant="small" className="font-medium">Reservas:</ResponsiveText>
-                    <Badge variant="outline">{recurso.reservas}</Badge>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <ResponsiveText variant="small" className="font-medium">Produção:</ResponsiveText>
-                    <Badge variant="secondary">{recurso.producao}</Badge>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <ResponsiveText variant="small" className="font-medium">Estado:</ResponsiveText>
-                    <Badge className={recurso.estado === "Ativo" ? "bg-green-100 text-green-800" : "bg-blue-100 text-blue-800"}>
-                      {recurso.estado}
-                    </Badge>
-                  </div>
-                </div>
-              </ResponsiveCard>
-            ))}
-          </ResponsiveGrid>
-        </ResponsiveSection>
+        {/* Statistics */}
+        <SetorStats setor={setor} />
 
-        <ResponsiveSection spacing="lg">
-          <Tabs defaultValue="programas" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="programas">Programas Mineiros</TabsTrigger>
-              <TabsTrigger value="oportunidades">Oportunidades</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="programas" className="mt-8">
-              <ResponsiveGrid cols={{ sm: 1, md: 2 }} gap="lg">
-                {programasMinerais.map((programa, index) => (
-                  <ResponsiveCard key={index} interactive elevated>
-                    <div className="flex items-center gap-2 mb-3">
-                      <PickaxeIcon className="w-5 h-5 text-primary" />
-                      <ResponsiveText variant="h4">{programa.title}</ResponsiveText>
+        {/* Content Tabs */}
+        <div data-tabs-container>
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-12">
+          <TabsList className="flex flex-wrap w-full gap-2 p-2 bg-muted/50">
+            <TabsTrigger value="programas" className="flex-1 min-w-0 text-xs sm:text-sm px-2 sm:px-3 py-2 sm:py-1.5">
+              <span className="truncate">Programas</span>
+            </TabsTrigger>
+            <TabsTrigger value="oportunidades" className="flex-1 min-w-0 text-xs sm:text-sm px-2 sm:px-3 py-2 sm:py-1.5">
+              <span className="truncate">Oportunidades</span>
+            </TabsTrigger>
+            <TabsTrigger value="infraestruturas" className="flex-1 min-w-0 text-xs sm:text-sm px-2 sm:px-3 py-2 sm:py-1.5">
+              <span className="truncate">Infraestruturas</span>
+            </TabsTrigger>
+            <TabsTrigger value="contactos" className="flex-1 min-w-0 text-xs sm:text-sm px-2 sm:px-3 py-2 sm:py-1.5">
+              <span className="truncate">Contactos</span>
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Programas */}
+          <TabsContent value="programas" className="mt-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {setor.programas.map((programa, index) => (
+                <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="p-2 bg-yellow-100 rounded-lg">
+                        <HeartHandshakeIcon className="w-5 h-5 text-yellow-600" />
+                      </div>
+                      <Badge className="bg-yellow-100 text-yellow-800">
+                        Programa
+                      </Badge>
                     </div>
-                    <ResponsiveText variant="body" className="text-muted-foreground mb-4">{programa.description}</ResponsiveText>
-                    
+                    <CardTitle className="text-lg">{programa.titulo}</CardTitle>
+                    <p className="text-sm text-muted-foreground">
+                      {programa.descricao}
+                    </p>
+                  </CardHeader>
+                  
+                  <CardContent>
                     <div className="space-y-4">
                       <div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <CheckCircleIcon className="w-4 h-4 text-green-600" />
-                          <ResponsiveText variant="h5">Benefícios</ResponsiveText>
-                        </div>
+                        <h4 className="font-medium text-sm mb-2">Benefícios:</h4>
                         <ul className="space-y-1">
-                          {programa.beneficios.map((beneficio, idx) => (
-                            <li key={idx} className="flex items-center gap-2">
-                              <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />
-                              <ResponsiveText variant="small" className="text-muted-foreground">{beneficio}</ResponsiveText>
+                          {programa.beneficios?.map((beneficio: string, idx: number) => (
+                            <li key={idx} className="text-sm text-muted-foreground flex items-center gap-2">
+                              <CheckCircleIcon className="w-3 h-3 text-green-500" />
+                              {beneficio}
                             </li>
                           ))}
                         </ul>
                       </div>
                       
                       <div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <StarIcon className="w-4 h-4 text-blue-600" />
-                          <ResponsiveText variant="h5">Requisitos</ResponsiveText>
-                        </div>
+                        <h4 className="font-medium text-sm mb-2">Requisitos:</h4>
                         <ul className="space-y-1">
-                          {programa.requisitos.map((requisito, idx) => (
-                            <li key={idx} className="flex items-center gap-2">
-                              <div className="w-1.5 h-1.5 bg-blue-500 rounded-full" />
-                              <ResponsiveText variant="small" className="text-muted-foreground">{requisito}</ResponsiveText>
+                          {programa.requisitos?.map((requisito: string, idx: number) => (
+                            <li key={idx} className="text-sm text-muted-foreground flex items-center gap-2">
+                              <div className="w-1.5 h-1.5 bg-yellow-500 rounded-full" />
+                              {requisito}
                             </li>
                           ))}
                         </ul>
                       </div>
                       
-                      <div className="pt-4 border-t">
-                        <ResponsiveText variant="small">
-                          <strong>Contacto:</strong> {programa.contact}
-                        </ResponsiveText>
-                      </div>
+                      {programa.contacto && (
+                        <div className="pt-2 border-t">
+                          <p className="text-sm text-muted-foreground">
+                            <strong>Contacto:</strong> {programa.contacto}
+                          </p>
+                        </div>
+                      )}
                       
                       <Button 
-                        variant="institutional" 
+                        variant="outline" 
+                        size="sm" 
                         className="w-full"
                         onClick={() => {
-                          setProgramaSelecionado(programa.title);
+                          setProgramaSelecionado(programa.titulo);
                           setOpenInscricaoPrograma(true);
                         }}
                       >
@@ -385,57 +253,60 @@ const SectorMineiro = () => {
                         <ArrowRightIcon className="w-4 h-4 ml-2" />
                       </Button>
                     </div>
-                  </ResponsiveCard>
-                ))}
-              </ResponsiveGrid>
-            </TabsContent>
-            
-            <TabsContent value="oportunidades" className="mt-8">
-              <ResponsiveGrid cols={{ sm: 1, md: 2, lg: 3 }} gap="lg">
-                {oportunidades.map((oportunidade, index) => (
-                  <ResponsiveCard key={index} interactive elevated>
-                    <div className="flex justify-between items-start mb-3">
-                      <Badge variant="secondary" className="mb-2">
-                        {oportunidade.vagas} vagas
-                      </Badge>
-                      <Badge variant="outline" className="text-xs">
-                        Prazo: {oportunidade.prazo}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+
+          {/* Oportunidades */}
+          <TabsContent value="oportunidades" className="mt-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {setor.oportunidades.map((oportunidade, index) => (
+                <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="p-2 bg-blue-100 rounded-lg">
+                        <LightbulbIcon className="w-5 h-5 text-blue-600" />
+                      </div>
+                      <Badge className="bg-blue-100 text-blue-800">
+                        Oportunidade
                       </Badge>
                     </div>
-                    <ResponsiveText variant="h4" className="mb-2">{oportunidade.title}</ResponsiveText>
-                    <ResponsiveText variant="body" className="text-muted-foreground mb-4">{oportunidade.description}</ResponsiveText>
-                    
+                    <CardTitle className="text-lg">{oportunidade.titulo}</CardTitle>
+                    <p className="text-sm text-muted-foreground">
+                      {oportunidade.descricao}
+                    </p>
+                  </CardHeader>
+                  
+                  <CardContent>
                     <div className="space-y-4">
                       <div>
-                        <ResponsiveText variant="h5" className="mb-2">Requisitos:</ResponsiveText>
+                        <h4 className="font-medium text-sm mb-2">Requisitos:</h4>
                         <ul className="space-y-1">
-                          {oportunidade.requisitos.map((req, idx) => (
-                            <li key={idx} className="flex items-center gap-2">
-                              <div className="w-1 h-1 bg-primary rounded-full" />
-                              <ResponsiveText variant="small" className="text-muted-foreground">{req}</ResponsiveText>
+                          {oportunidade.requisitos?.map((requisito: string, idx: number) => (
+                            <li key={idx} className="text-sm text-muted-foreground flex items-center gap-2">
+                              <div className="w-1.5 h-1.5 bg-blue-500 rounded-full" />
+                              {requisito}
                             </li>
                           ))}
                         </ul>
                       </div>
                       
-                      <div>
-                        <ResponsiveText variant="h5" className="mb-2">Benefícios:</ResponsiveText>
-                        <ul className="space-y-1">
-                          {oportunidade.beneficios.map((ben, idx) => (
-                            <li key={idx} className="flex items-center gap-2">
-                              <div className="w-1 h-1 bg-green-500 rounded-full" />
-                              <ResponsiveText variant="small" className="text-muted-foreground">{ben}</ResponsiveText>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
+                      {oportunidade.contacto && (
+                        <div className="pt-2 border-t">
+                          <p className="text-sm text-muted-foreground">
+                            <strong>Contacto:</strong> {oportunidade.contacto}
+                          </p>
+                        </div>
+                      )}
                       
                       <Button 
-                        variant="institutional" 
+                        variant="outline" 
                         size="sm" 
                         className="w-full"
                         onClick={() => {
-                          setOportunidadeSelecionada(oportunidade.title);
+                          setOportunidadeSelecionada(oportunidade.titulo);
                           setOpenCandidatura(true);
                         }}
                       >
@@ -443,147 +314,195 @@ const SectorMineiro = () => {
                         <ArrowRightIcon className="w-4 h-4 ml-2" />
                       </Button>
                     </div>
-                  </ResponsiveCard>
-                ))}
-              </ResponsiveGrid>
-            </TabsContent>
-          </Tabs>
-        </ResponsiveSection>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
 
-        <ResponsiveSection spacing="lg">
-          <ResponsiveText variant="h2" align="center" className="mb-12">Infraestruturas Mineiras</ResponsiveText>
-          <ResponsiveGrid cols={{ sm: 1, md: 2, lg: 3 }} gap="lg">
-            {infraestruturas.map((infra, index) => (
-              <ResponsiveCard key={index} interactive elevated>
-                <div className="flex items-center gap-2 mb-3">
-                  <BuildingIcon className="w-5 h-5 text-primary" />
-                  <ResponsiveText variant="h4">{infra.nome}</ResponsiveText>
-                </div>
-                <div className="flex items-center gap-2 mb-4">
-                  <MapPinIcon className="w-4 h-4 text-muted-foreground" />
-                  <ResponsiveText variant="small" className="text-muted-foreground">{infra.localizacao}</ResponsiveText>
-                </div>
-                
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <ResponsiveText variant="small" className="font-medium">Capacidade:</ResponsiveText>
-                    <Badge variant="outline">{infra.capacidade}</Badge>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <ResponsiveText variant="small" className="font-medium">Estado:</ResponsiveText>
-                    <Badge className={infra.estado === "Excelente" ? "bg-green-100 text-green-800" : "bg-blue-100 text-blue-800"}>
-                      {infra.estado}
-                    </Badge>
-                  </div>
-                  <div>
-                    <ResponsiveText variant="h5" className="mb-2">Equipamentos:</ResponsiveText>
-                    <div className="flex flex-wrap gap-1">
-                      {infra.equipamentos.map((equip, idx) => (
-                        <Badge key={idx} variant="secondary" className="text-xs">
-                          {equip}
-                        </Badge>
-                      ))}
+          {/* Infraestruturas */}
+          <TabsContent value="infraestruturas" className="mt-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {setor.infraestruturas.map((infraestrutura, index) => (
+                <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="p-2 bg-orange-100 rounded-lg">
+                        <BuildingIcon className="w-5 h-5 text-orange-600" />
+                      </div>
+                      <Badge className="bg-orange-100 text-orange-800">
+                        Infraestrutura
+                      </Badge>
                     </div>
-                  </div>
-                  <Button variant="outline" size="sm" className="w-full" onClick={() => { setDetalheInfra(infra); setOpenDetalhes(true); }}>
-                    Ver Detalhes
-                    <ArrowRightIcon className="w-4 h-4 ml-2" />
-                  </Button>
-                </div>
-              </ResponsiveCard>
-            ))}
-          </ResponsiveGrid>
-        </ResponsiveSection>
+                    <CardTitle className="text-lg">{infraestrutura.nome}</CardTitle>
+                    <p className="text-sm text-muted-foreground">
+                      {infraestrutura.descricao}
+                    </p>
+                  </CardHeader>
+                  
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div>
+                        <h4 className="font-medium text-sm mb-2">Características:</h4>
+                        <ul className="space-y-1">
+                          {infraestrutura.caracteristicas?.map((caracteristica: string, idx: number) => (
+                            <li key={idx} className="text-sm text-muted-foreground flex items-center gap-2">
+                              <CheckCircleIcon className="w-3 h-3 text-orange-500" />
+                              {caracteristica}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      
+                      {infraestrutura.localizacao && (
+                        <div className="pt-2 border-t">
+                          <p className="text-sm text-muted-foreground">
+                            <strong>Localização:</strong> {infraestrutura.localizacao}
+                          </p>
+                        </div>
+                      )}
+                      
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="w-full"
+                        onClick={() => {
+                          setDetalheInfra(infraestrutura);
+                          setOpenDetalhes(true);
+                        }}
+                      >
+                        Ver Detalhes
+                        <ArrowRightIcon className="w-4 h-4 ml-2" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
 
-        <ResponsiveSection background="muted" spacing="lg">
-          <ResponsiveText variant="h2" align="center" className="mb-8">Informações de Contacto</ResponsiveText>
-          
-          <ResponsiveGrid cols={{ sm: 1, md: 2, lg: 4 }} gap="md">
-            <div className="text-center">
-              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3">
-                <BuildingIcon className="w-6 h-6 text-primary" />
-              </div>
-              <ResponsiveText variant="h5" className="mb-2">Endereço</ResponsiveText>
-              <ResponsiveText variant="small" className="text-muted-foreground">{contactInfo.endereco}</ResponsiveText>
+          {/* Contactos */}
+          <TabsContent value="contactos" className="mt-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {setor.contactos.map((contacto, index) => (
+                <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="p-2 bg-purple-100 rounded-lg">
+                        <PhoneIcon className="w-5 h-5 text-purple-600" />
+                      </div>
+                      <Badge className="bg-purple-100 text-purple-800">
+                        Contacto
+                      </Badge>
+                    </div>
+                    <CardTitle className="text-lg">{contacto.nome}</CardTitle>
+                    <p className="text-sm text-muted-foreground">
+                      {contacto.cargo}
+                    </p>
+                  </CardHeader>
+                  
+                  <CardContent>
+                    <div className="space-y-3">
+                      {contacto.telefone && (
+                        <div className="flex items-center gap-2">
+                          <PhoneIcon className="w-4 h-4 text-muted-foreground" />
+                          <span className="text-sm">{contacto.telefone}</span>
+                        </div>
+                      )}
+                      
+                      {contacto.email && (
+                        <div className="flex items-center gap-2">
+                          <MailIcon className="w-4 h-4 text-muted-foreground" />
+                          <span className="text-sm">{contacto.email}</span>
+                        </div>
+                      )}
+                      
+                      {contacto.endereco && (
+                        <div className="flex items-center gap-2">
+                          <MapPinIcon className="w-4 h-4 text-muted-foreground" />
+                          <span className="text-sm">{contacto.endereco}</span>
+                        </div>
+                      )}
+                      
+                      {contacto.horario && (
+                        <div className="flex items-center gap-2">
+                          <CalendarIcon className="w-4 h-4 text-muted-foreground" />
+                          <span className="text-sm">{contacto.horario}</span>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
-            
-            <div className="text-center">
-              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3">
-                <PhoneIcon className="w-6 h-6 text-primary" />
-              </div>
-              <ResponsiveText variant="h5" className="mb-2">Telefone</ResponsiveText>
-              <ResponsiveText variant="small" className="text-muted-foreground">{contactInfo.telefone}</ResponsiveText>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3">
-                <MailIcon className="w-6 h-6 text-primary" />
-              </div>
-              <ResponsiveText variant="h5" className="mb-2">Email</ResponsiveText>
-              <ResponsiveText variant="small" className="text-muted-foreground">{contactInfo.email}</ResponsiveText>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3">
-                <CalendarIcon className="w-6 h-6 text-primary" />
-              </div>
-              <ResponsiveText variant="h5" className="mb-2">Horário</ResponsiveText>
-              <ResponsiveText variant="small" className="text-muted-foreground">{contactInfo.horario}</ResponsiveText>
-            </div>
-          </ResponsiveGrid>
-          
-          <div className="text-center mt-8 pt-6 border-t">
-            <ResponsiveText variant="small" className="text-muted-foreground">
-              <strong>Responsável:</strong> {contactInfo.responsavel}
-            </ResponsiveText>
-          </div>
-        </ResponsiveSection>
-      </ResponsiveContainer>
-      
-      <Footer />
+          </TabsContent>
+        </Tabs>
+        </div>
+      </main>
 
-      {/* Modais */}
-      <CandidaturaForm
-        open={openCandidatura}
+      {/* Modals */}
+      <CandidaturaForm 
+        open={openCandidatura} 
         onOpenChange={setOpenCandidatura}
-        setor="Sector Mineiro"
         oportunidade={oportunidadeSelecionada}
-        onSuccess={() => {
-          setOportunidadeSelecionada("");
-        }}
+        setor={setor.nome}
       />
+
+      <InscricaoProgramaForm 
+        open={openInscricaoPrograma} 
+        onOpenChange={setOpenInscricaoPrograma}
+        programa={programaSelecionado}
+        setor={setor.nome}
+      />
+
       <Dialog open={openDetalhes} onOpenChange={setOpenDetalhes}>
-        <DialogContent>
+        <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Detalhes da Infraestrutura</DialogTitle>
-            <DialogDescription>
-              {detalheInfra && (
-                <div className="space-y-2 mt-2">
-                  <div><b>Nome:</b> {detalheInfra.nome}</div>
-                  <div><b>Localização:</b> {detalheInfra.localizacao}</div>
-                  <div><b>Capacidade:</b> {detalheInfra.capacidade}</div>
-                  <div><b>Estado:</b> {detalheInfra.estado}</div>
-                  <div><b>Equipamentos:</b> {detalheInfra.equipamentos?.join(', ')}</div>
+            <DialogTitle>{detalheInfra?.nome}</DialogTitle>
+            <DialogDescription>{detalheInfra?.descricao}</DialogDescription>
+          </DialogHeader>
+          
+          {detalheInfra && (
+            <div className="space-y-4">
+              <div>
+                <h4 className="font-medium mb-2">Características:</h4>
+                <ul className="space-y-1">
+                  {detalheInfra.caracteristicas?.map((caracteristica: string, idx: number) => (
+                    <li key={idx} className="text-sm flex items-center gap-2">
+                      <CheckCircleIcon className="w-3 h-3 text-green-500" />
+                      {caracteristica}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              
+              {detalheInfra.localizacao && (
+                <div>
+                  <h4 className="font-medium mb-2">Localização:</h4>
+                  <p className="text-sm text-muted-foreground">{detalheInfra.localizacao}</p>
                 </div>
               )}
-            </DialogDescription>
-          </DialogHeader>
+              
+              {detalheInfra.observacoes && (
+                <div>
+                  <h4 className="font-medium mb-2">Observações:</h4>
+                  <p className="text-sm text-muted-foreground">{detalheInfra.observacoes}</p>
+                </div>
+              )}
+            </div>
+          )}
+          
           <DialogFooter>
-            <Button onClick={() => setOpenDetalhes(false)}>Fechar</Button>
+            <Button variant="outline" onClick={() => setOpenDetalhes(false)}>
+              Fechar
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      <InscricaoProgramaForm
-        open={openInscricaoPrograma}
-        onOpenChange={setOpenInscricaoPrograma}
-        setor="Sector Mineiro"
-        programa={programaSelecionado}
-        onSuccess={() => {
-          setProgramaSelecionado("");
-        }}
-      />
+      
+      <Footer />
     </div>
   );
 };
 
-export default SectorMineiro; 
+export default SectorMineiro;

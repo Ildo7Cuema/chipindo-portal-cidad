@@ -9,11 +9,11 @@ import {
   BreadcrumbSeparator
 } from "@/components/ui/breadcrumb";
 import { HomeIcon, BuildingIcon } from "lucide-react";
+import { SetorCompleto } from "@/hooks/useSetoresEstrategicos";
 import { cn } from "@/lib/utils";
 
 interface SetorBreadcrumbProps {
-  setorName: string;
-  setorSlug: string;
+  setor: SetorCompleto | null;
   className?: string;
 }
 
@@ -28,8 +28,52 @@ const setorIcons: { [key: string]: React.ComponentType<any> } = {
   'energia-agua': BuildingIcon,
 };
 
-export const SetorBreadcrumb = ({ setorName, setorSlug, className }: SetorBreadcrumbProps) => {
-  const SetorIcon = setorIcons[setorSlug] || BuildingIcon;
+export const SetorBreadcrumb = ({ setor, className }: SetorBreadcrumbProps) => {
+  // Se o setor não estiver carregado, mostrar apenas breadcrumb básico
+  if (!setor) {
+    return (
+      <Breadcrumb className={cn("mb-6", className)}>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link 
+                to="/" 
+                className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <HomeIcon className="w-4 h-4" />
+                Início
+              </Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          
+          <BreadcrumbSeparator />
+          
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link 
+                to="/services" 
+                className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <BuildingIcon className="w-4 h-4" />
+                Setores
+              </Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          
+          <BreadcrumbSeparator />
+          
+          <BreadcrumbItem>
+            <BreadcrumbPage className="flex items-center gap-2">
+              <BuildingIcon className="w-4 h-4" />
+              Carregando...
+            </BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+    );
+  }
+
+  const SetorIcon = setorIcons[setor.slug] || BuildingIcon;
 
   return (
     <Breadcrumb className={cn("mb-6", className)}>
@@ -65,7 +109,7 @@ export const SetorBreadcrumb = ({ setorName, setorSlug, className }: SetorBreadc
         <BreadcrumbItem>
           <BreadcrumbPage className="flex items-center gap-2">
             <SetorIcon className="w-4 h-4" />
-            {setorName}
+            {setor.nome}
           </BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>

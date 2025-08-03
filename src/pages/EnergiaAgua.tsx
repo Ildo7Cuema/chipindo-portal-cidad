@@ -2,14 +2,15 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/sections/Footer";
 import { SetorBreadcrumb } from "@/components/ui/setor-breadcrumb";
 import { SetorNavigation } from "@/components/ui/setor-navigation";
+import { SetorStats } from "@/components/ui/setor-stats";
+import { SectorHero } from "@/components/ui/sector-hero";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  ZapIcon, 
-  DropletsIcon, 
-  UsersIcon, 
+import {
+  ZapIcon,
+  UsersIcon,
   BuildingIcon,
   HeartHandshakeIcon,
   LightbulbIcon,
@@ -22,414 +23,486 @@ import {
   CheckCircleIcon,
   StarIcon,
   TrendingUpIcon,
-  BatteryIcon,
-  GaugeIcon,
-  WrenchIcon
+  SparklesIcon
 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { CandidaturaForm } from "@/components/ui/candidatura-form";
 import { InscricaoProgramaForm } from "@/components/ui/inscricao-programa-form";
+import { useSetoresEstrategicos } from "@/hooks/useSetoresEstrategicos";
+import { SetorCompleto } from "@/hooks/useSetoresEstrategicos";
+import { cn } from "@/lib/utils";
 
 const EnergiaAgua = () => {
-  const energiaAguaInfo = {
-    title: "Energia e Água",
-    subtitle: "Garantindo o fornecimento sustentável de energia e água para Chipindo",
-    description: "O sector de energia e água de Chipindo está comprometido em fornecer serviços de qualidade, promover a eficiência energética e garantir o acesso universal a estes recursos essenciais.",
-    vision: "Ser referência em fornecimento sustentável de energia e água, garantindo qualidade e acessibilidade.",
-    mission: "Proporcionar serviços de energia e água de qualidade, promovendo a sustentabilidade e eficiência."
+  const { getSetorBySlug } = useSetoresEstrategicos();
+  const [setor, setSetor] = useState<SetorCompleto | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [openCandidatura, setOpenCandidatura] = useState(false);
+  const [openDetalhes, setOpenDetalhes] = useState(false);
+  const [detalheInfra, setDetalheInfra] = useState<any>(null);
+  const [oportunidadeSelecionada, setOportunidadeSelecionada] = useState<string>("");
+  const [openInscricaoPrograma, setOpenInscricaoPrograma] = useState(false);
+  const [programaSelecionado, setProgramaSelecionado] = useState<string>("");
+  const [activeTab, setActiveTab] = useState("programas");
+
+  // Função para scroll suave para as abas
+  const scrollToTabs = () => {
+    const tabsElement = document.querySelector('[data-tabs-container]');
+    if (tabsElement) {
+      tabsElement.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'start' 
+      });
+    }
   };
 
-  const estatisticas = [
-    { label: "Cobertura Elétrica", value: "78%", icon: ZapIcon },
-    { label: "Cobertura de Água", value: "65%", icon: DropletsIcon },
-    { label: "Consumidores", value: "12.450", icon: UsersIcon },
-    { label: "Centrais Elétricas", value: "3", icon: BuildingIcon },
-    { label: "Estações de Água", value: "5", icon: GaugeIcon },
-    { label: "Projectos Ativos", value: "15", icon: HeartHandshakeIcon }
-  ];
-
-  const programasEnergiaAgua = [
-    {
-      title: "Programa de Eficiência Energética",
-      description: "Iniciativas para reduzir o consumo energético e promover energias renováveis",
-      beneficios: [
-        "Auditorias energéticas gratuitas",
-        "Substituição de equipamentos",
-        "Formação em eficiência energética",
-        "Incentivos fiscais"
-      ],
-      requisitos: ["Consumidor registado", "Interesse em eficiência", "Compromisso com sustentabilidade"],
-      contact: "Departamento de Eficiência Energética"
-    },
-    {
-      title: "Programa de Gestão da Água",
-      description: "Projectos para otimizar o uso da água e reduzir perdas",
-      beneficios: [
-        "Detecção de fugas gratuita",
-        "Instalação de contadores inteligentes",
-        "Formação em gestão hídrica",
-        "Redução de tarifas"
-      ],
-      requisitos: ["Consumidor de água", "Participação em auditorias", "Compromisso com poupança"],
-      contact: "Departamento de Gestão Hídrica"
-    }
-  ];
-
-  const oportunidades = [
-    {
-      title: "Engenheiro Eletrotécnico",
-      description: "Vaga para engenheiro especializado em sistemas eléctricos",
-      requisitos: [
-        "Licenciatura em Engenharia Eletrotécnica",
-        "Experiência de 4 anos",
-        "Conhecimentos em redes elétricas"
-      ],
-      beneficios: [
-        "Salário competitivo",
-        "Plano de carreira",
-        "Formação contínua",
-        "Benefícios sociais"
-      ],
-      prazo: "15 de Março de 2025",
-      vagas: "2"
-    },
-    {
-      title: "Técnico de Água e Saneamento",
-      description: "Vaga para técnico especializado em sistemas de água",
-      requisitos: [
-        "Formação técnica em Saneamento",
-        "Experiência de 3 anos",
-        "Conhecimentos em tratamento de água"
-      ],
-      beneficios: [
-        "Salário atrativo",
-        "Equipamentos fornecidos",
-        "Formação especializada",
-        "Plano de saúde"
-      ],
-      prazo: "20 de Março de 2025",
-      vagas: "3"
-    }
-  ];
-
-  const infraestruturas = [
-    {
-      nome: "Estação de Água Central",
-      localizacao: "Rua da Água, Bairro do Centro",
-      capacidade: "100.000 litros/dia",
-      estado: "Em Operação",
-      equipamentos: ["Bomba de água", "Reservatório", "Sistema de filtragem"]
-    },
-    {
-      nome: "Estação de Energia Elétrica",
-      localizacao: "Rua da Energia, Bairro do Norte",
-      capacidade: "500 kW",
-      estado: "Em Manutenção",
-      equipamentos: ["Gerador", "Transformador", "Sistema de distribuição"]
-    }
-  ];
-
-  const contactInfo = {
-    endereco: "Rua da Energia e Água, Centro de Serviços, Chipindo",
-    telefone: "+244 XXX XXX XXX",
-    email: "energia-agua@chipindo.gov.ao",
-    horario: "Segunda a Sexta: 08:00 - 16:00",
-    responsavel: "Eng. João Silva - Diretor Municipal de Energia e Água"
+  // Função para explorar programas
+  const handleExplorarProgramas = () => {
+    setActiveTab("programas");
+    scrollToTabs();
   };
 
-  const [openCandidatura, setOpenCandidatura] = React.useState(false);
-  const [openDetalhes, setOpenDetalhes] = React.useState(false);
-  const [detalheInfra, setDetalheInfra] = React.useState<any>(null);
-  const [oportunidadeSelecionada, setOportunidadeSelecionada] = React.useState<string>("");
-  const [openInscricaoPrograma, setOpenInscricaoPrograma] = React.useState(false);
-  const [programaSelecionado, setProgramaSelecionado] = React.useState<string>("");
+  // Função para ver oportunidades
+  const handleVerOportunidades = () => {
+    setActiveTab("oportunidades");
+    scrollToTabs();
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+    const loadSetor = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await getSetorBySlug('energia-agua');
+        if (!isMounted) return;
+        // Garantir que arrays são arrays (parse se vierem como string)
+        if (data) {
+          data.estatisticas = Array.isArray(data.estatisticas) ? data.estatisticas : [];
+          data.programas = Array.isArray(data.programas) ? data.programas : [];
+          data.oportunidades = Array.isArray(data.oportunidades) ? data.oportunidades : [];
+          data.infraestruturas = Array.isArray(data.infraestruturas) ? data.infraestruturas : [];
+          data.contactos = Array.isArray(data.contactos) ? data.contactos : [];
+        }
+        setSetor(data);
+      } catch (err) {
+        setError('Erro ao carregar dados do sector.');
+        setSetor(null);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+    loadSetor();
+    return () => { isMounted = false; };
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error || !setor) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-muted-foreground mb-4">
+              {error || 'Sector não encontrado'}
+            </h1>
+            <p className="text-muted-foreground">
+              O sector de EnergiaAgua não está disponível no momento.
+            </p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  const getIconComponent = (iconName: string) => {
+    const iconMap: { [key: string]: any } = {
+      'Zap': ZapIcon,
+      'Users': UsersIcon,
+      'Building': BuildingIcon,
+      'HeartHandshake': HeartHandshakeIcon,
+      'Lightbulb': LightbulbIcon,
+      'Target': TargetIcon,
+      'Calendar': CalendarIcon,
+      'MapPin': MapPinIcon,
+      'Phone': PhoneIcon,
+      'Mail': MailIcon,
+      'ArrowRight': ArrowRightIcon,
+      'CheckCircle': CheckCircleIcon,
+      'Star': StarIcon,
+      'TrendingUp': TrendingUpIcon
+    };
+    return iconMap[iconName] || ZapIcon;
+  };
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
       
-      <section className="bg-gradient-primary py-20">
-        <div className="container mx-auto px-4 text-center">
-          <div className="flex justify-center mb-6">
-            <div className="p-4 bg-primary-foreground/20 rounded-full">
-              <ZapIcon className="w-12 h-12 text-primary-foreground" />
-            </div>
-          </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-primary-foreground mb-6">
-            {energiaAguaInfo.title}
-          </h1>
-          <p className="text-xl text-primary-foreground/90 max-w-3xl mx-auto mb-8">
-            {energiaAguaInfo.subtitle}
-          </p>
-          <p className="text-lg text-primary-foreground/80 max-w-4xl mx-auto">
-            {energiaAguaInfo.description}
-          </p>
-        </div>
-      </section>
+      <SectorHero 
+        setor={setor} 
+        onExplorarProgramas={handleExplorarProgramas}
+        onVerOportunidades={handleVerOportunidades}
+      />
 
       <main className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
-          <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-            <CardHeader>
-              <div className="flex items-center gap-3 mb-3">
-                <TargetIcon className="w-6 h-6 text-blue-600" />
-                <CardTitle className="text-blue-900">Nossa Visão</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p className="text-blue-800">{energiaAguaInfo.vision}</p>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-gradient-to-br from-cyan-50 to-cyan-100 border-cyan-200">
-            <CardHeader>
-              <div className="flex items-center gap-3 mb-3">
-                <LightbulbIcon className="w-6 h-6 text-cyan-600" />
-                <CardTitle className="text-cyan-900">Nossa Missão</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p className="text-cyan-800">{energiaAguaInfo.mission}</p>
-            </CardContent>
-          </Card>
-        </div>
+        {/* Breadcrumb */}
+        <SetorBreadcrumb setor={setor} />
 
-        <section className="mb-16">
-          <h2 className="text-3xl font-bold text-center mb-12">Estatísticas do Sector</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-            {estatisticas.map((stat, index) => {
-              const IconComponent = stat.icon;
-              return (
-                <Card key={index} className="text-center hover:shadow-elegant transition-all duration-300">
-                  <CardContent className="pt-6">
-                    <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3">
-                      <IconComponent className="w-6 h-6 text-primary" />
-                    </div>
-                    <div className="text-2xl font-bold text-primary mb-2">{stat.value}</div>
-                    <p className="text-sm text-muted-foreground">{stat.label}</p>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        </section>
+        {/* Navigation */}
+        <SetorNavigation setor={setor} />
 
-        <Tabs defaultValue="programas" className="mb-16">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="programas">Programas Sectoriais</TabsTrigger>
-            <TabsTrigger value="oportunidades">Oportunidades</TabsTrigger>
+        {/* Statistics */}
+        <SetorStats setor={setor} />
+
+        {/* Content Tabs */}
+        <div data-tabs-container>
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-12">
+          <TabsList className="flex flex-wrap w-full gap-2 p-2 bg-muted/50">
+            <TabsTrigger value="programas" className="flex-1 min-w-0 text-xs sm:text-sm px-2 sm:px-3 py-2 sm:py-1.5">
+              <span className="truncate">Programas</span>
+            </TabsTrigger>
+            <TabsTrigger value="oportunidades" className="flex-1 min-w-0 text-xs sm:text-sm px-2 sm:px-3 py-2 sm:py-1.5">
+              <span className="truncate">Oportunidades</span>
+            </TabsTrigger>
+            <TabsTrigger value="infraestruturas" className="flex-1 min-w-0 text-xs sm:text-sm px-2 sm:px-3 py-2 sm:py-1.5">
+              <span className="truncate">Infraestruturas</span>
+            </TabsTrigger>
+            <TabsTrigger value="contactos" className="flex-1 min-w-0 text-xs sm:text-sm px-2 sm:px-3 py-2 sm:py-1.5">
+              <span className="truncate">Contactos</span>
+            </TabsTrigger>
           </TabsList>
-          
+
+          {/* Programas */}
           <TabsContent value="programas" className="mt-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {programasEnergiaAgua.map((programa, index) => (
-                <Card key={index} className="hover:shadow-elegant transition-all duration-300">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <BatteryIcon className="w-5 h-5 text-primary" />
-                      {programa.title}
-                    </CardTitle>
-                    <p className="text-muted-foreground">{programa.description}</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {setor.programas.map((programa, index) => (
+                <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="p-2 bg-cyan-100 rounded-lg">
+                        <HeartHandshakeIcon className="w-5 h-5 text-cyan-600" />
+                      </div>
+                      <Badge className="bg-cyan-100 text-cyan-800">
+                        Programa
+                      </Badge>
+                    </div>
+                    <CardTitle className="text-lg">{programa.titulo}</CardTitle>
+                    <p className="text-sm text-muted-foreground">
+                      {programa.descricao}
+                    </p>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div>
-                      <h4 className="font-semibold mb-2 flex items-center gap-2">
-                        <CheckCircleIcon className="w-4 h-4 text-green-600" />
-                        Benefícios
-                      </h4>
-                      <ul className="space-y-1">
-                        {programa.beneficios.map((beneficio, idx) => (
-                          <li key={idx} className="text-sm text-muted-foreground flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />
-                            {beneficio}
-                          </li>
-                        ))}
-                      </ul>
+                  
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div>
+                        <h4 className="font-medium text-sm mb-2">Benefícios:</h4>
+                        <ul className="space-y-1">
+                          {programa.beneficios?.map((beneficio: string, idx: number) => (
+                            <li key={idx} className="text-sm text-muted-foreground flex items-center gap-2">
+                              <CheckCircleIcon className="w-3 h-3 text-green-500" />
+                              {beneficio}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      
+                      <div>
+                        <h4 className="font-medium text-sm mb-2">Requisitos:</h4>
+                        <ul className="space-y-1">
+                          {programa.requisitos?.map((requisito: string, idx: number) => (
+                            <li key={idx} className="text-sm text-muted-foreground flex items-center gap-2">
+                              <div className="w-1.5 h-1.5 bg-cyan-500 rounded-full" />
+                              {requisito}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      
+                      {programa.contacto && (
+                        <div className="pt-2 border-t">
+                          <p className="text-sm text-muted-foreground">
+                            <strong>Contacto:</strong> {programa.contacto}
+                          </p>
+                        </div>
+                      )}
+                      
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="w-full"
+                        onClick={() => {
+                          setProgramaSelecionado(programa.titulo);
+                          setOpenInscricaoPrograma(true);
+                        }}
+                      >
+                        Inscrever-se
+                        <ArrowRightIcon className="w-4 h-4 ml-2" />
+                      </Button>
                     </div>
-                    <div>
-                      <h4 className="font-semibold mb-2 flex items-center gap-2">
-                        <StarIcon className="w-4 h-4 text-blue-600" />
-                        Requisitos
-                      </h4>
-                      <ul className="space-y-1">
-                        {programa.requisitos.map((requisito, idx) => (
-                          <li key={idx} className="text-sm text-muted-foreground flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-blue-500 rounded-full" />
-                            {requisito}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div className="pt-4 border-t">
-                      <p className="text-sm">
-                        <strong>Contacto:</strong> {programa.contact}
-                      </p>
-                    </div>
-                    <Button 
-                      variant="institutional" 
-                      className="w-full"
-                      onClick={() => {
-                        setProgramaSelecionado(programa.title);
-                        setOpenInscricaoPrograma(true);
-                      }}
-                    >
-                      Inscrever-se
-                      <ArrowRightIcon className="w-4 h-4 ml-2" />
-                    </Button>
                   </CardContent>
                 </Card>
               ))}
             </div>
           </TabsContent>
-          
+
+          {/* Oportunidades */}
           <TabsContent value="oportunidades" className="mt-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {oportunidades.map((oportunidade, index) => (
-                <Card key={index} className="hover:shadow-elegant transition-all duration-300">
-                  <CardHeader>
-                    <div className="flex justify-between items-start mb-2">
-                      <Badge variant="secondary" className="mb-2">
-                        {oportunidade.vagas} vagas
-                      </Badge>
-                      <Badge variant="outline" className="text-xs">
-                        Prazo: {oportunidade.prazo}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {setor.oportunidades.map((oportunidade, index) => (
+                <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="p-2 bg-blue-100 rounded-lg">
+                        <LightbulbIcon className="w-5 h-5 text-blue-600" />
+                      </div>
+                      <Badge className="bg-blue-100 text-blue-800">
+                        Oportunidade
                       </Badge>
                     </div>
-                    <CardTitle className="text-lg">{oportunidade.title}</CardTitle>
-                    <p className="text-muted-foreground text-sm">{oportunidade.description}</p>
+                    <CardTitle className="text-lg">{oportunidade.titulo}</CardTitle>
+                    <p className="text-sm text-muted-foreground">
+                      {oportunidade.descricao}
+                    </p>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div>
-                      <h4 className="font-semibold mb-2 text-sm">Requisitos:</h4>
-                      <ul className="space-y-1">
-                        {oportunidade.requisitos.map((req, idx) => (
-                          <li key={idx} className="text-xs text-muted-foreground flex items-center gap-2">
-                            <div className="w-1 h-1 bg-primary rounded-full" />
-                            {req}
-                          </li>
-                        ))}
-                      </ul>
+                  
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div>
+                        <h4 className="font-medium text-sm mb-2">Requisitos:</h4>
+                        <ul className="space-y-1">
+                          {oportunidade.requisitos?.map((requisito: string, idx: number) => (
+                            <li key={idx} className="text-sm text-muted-foreground flex items-center gap-2">
+                              <div className="w-1.5 h-1.5 bg-blue-500 rounded-full" />
+                              {requisito}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      
+                      {oportunidade.contacto && (
+                        <div className="pt-2 border-t">
+                          <p className="text-sm text-muted-foreground">
+                            <strong>Contacto:</strong> {oportunidade.contacto}
+                          </p>
+                        </div>
+                      )}
+                      
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="w-full"
+                        onClick={() => {
+                          setOportunidadeSelecionada(oportunidade.titulo);
+                          setOpenCandidatura(true);
+                        }}
+                      >
+                        Candidatar-se
+                        <ArrowRightIcon className="w-4 h-4 ml-2" />
+                      </Button>
                     </div>
-                    <div>
-                      <h4 className="font-semibold mb-2 text-sm">Benefícios:</h4>
-                      <ul className="space-y-1">
-                        {oportunidade.beneficios.map((ben, idx) => (
-                          <li key={idx} className="text-xs text-muted-foreground flex items-center gap-2">
-                            <div className="w-1 h-1 bg-green-500 rounded-full" />
-                            {ben}
-                          </li>
-                        ))}
-                      </ul>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+
+          {/* Infraestruturas */}
+          <TabsContent value="infraestruturas" className="mt-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {setor.infraestruturas.map((infraestrutura, index) => (
+                <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="p-2 bg-orange-100 rounded-lg">
+                        <BuildingIcon className="w-5 h-5 text-orange-600" />
+                      </div>
+                      <Badge className="bg-orange-100 text-orange-800">
+                        Infraestrutura
+                      </Badge>
                     </div>
-                    <Button 
-                      variant="institutional" 
-                      size="sm" 
-                      className="w-full"
-                      onClick={() => {
-                        setOportunidadeSelecionada(oportunidade.title);
-                        setOpenCandidatura(true);
-                      }}
-                    >
-                      Candidatar-se
-                      <ArrowRightIcon className="w-4 h-4 ml-2" />
-                    </Button>
+                    <CardTitle className="text-lg">{infraestrutura.nome}</CardTitle>
+                    <p className="text-sm text-muted-foreground">
+                      {infraestrutura.descricao}
+                    </p>
+                  </CardHeader>
+                  
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div>
+                        <h4 className="font-medium text-sm mb-2">Características:</h4>
+                        <ul className="space-y-1">
+                          {infraestrutura.caracteristicas?.map((caracteristica: string, idx: number) => (
+                            <li key={idx} className="text-sm text-muted-foreground flex items-center gap-2">
+                              <CheckCircleIcon className="w-3 h-3 text-orange-500" />
+                              {caracteristica}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      
+                      {infraestrutura.localizacao && (
+                        <div className="pt-2 border-t">
+                          <p className="text-sm text-muted-foreground">
+                            <strong>Localização:</strong> {infraestrutura.localizacao}
+                          </p>
+                        </div>
+                      )}
+                      
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="w-full"
+                        onClick={() => {
+                          setDetalheInfra(infraestrutura);
+                          setOpenDetalhes(true);
+                        }}
+                      >
+                        Ver Detalhes
+                        <ArrowRightIcon className="w-4 h-4 ml-2" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+
+          {/* Contactos */}
+          <TabsContent value="contactos" className="mt-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {setor.contactos.map((contacto, index) => (
+                <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="p-2 bg-purple-100 rounded-lg">
+                        <PhoneIcon className="w-5 h-5 text-purple-600" />
+                      </div>
+                      <Badge className="bg-purple-100 text-purple-800">
+                        Contacto
+                      </Badge>
+                    </div>
+                    <CardTitle className="text-lg">{contacto.nome}</CardTitle>
+                    <p className="text-sm text-muted-foreground">
+                      {contacto.cargo}
+                    </p>
+                  </CardHeader>
+                  
+                  <CardContent>
+                    <div className="space-y-3">
+                      {contacto.telefone && (
+                        <div className="flex items-center gap-2">
+                          <PhoneIcon className="w-4 h-4 text-muted-foreground" />
+                          <span className="text-sm">{contacto.telefone}</span>
+                        </div>
+                      )}
+                      
+                      {contacto.email && (
+                        <div className="flex items-center gap-2">
+                          <MailIcon className="w-4 h-4 text-muted-foreground" />
+                          <span className="text-sm">{contacto.email}</span>
+                        </div>
+                      )}
+                      
+                      {contacto.endereco && (
+                        <div className="flex items-center gap-2">
+                          <MapPinIcon className="w-4 h-4 text-muted-foreground" />
+                          <span className="text-sm">{contacto.endereco}</span>
+                        </div>
+                      )}
+                      
+                      {contacto.horario && (
+                        <div className="flex items-center gap-2">
+                          <CalendarIcon className="w-4 h-4 text-muted-foreground" />
+                          <span className="text-sm">{contacto.horario}</span>
+                        </div>
+                      )}
+                    </div>
                   </CardContent>
                 </Card>
               ))}
             </div>
           </TabsContent>
         </Tabs>
-
-        <section className="bg-muted/50 rounded-xl p-8">
-          <h2 className="text-2xl font-bold text-center mb-8">Informações de Contacto</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="text-center">
-              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3">
-                <BuildingIcon className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="font-semibold mb-2">Endereço</h3>
-              <p className="text-sm text-muted-foreground">{contactInfo.endereco}</p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3">
-                <PhoneIcon className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="font-semibold mb-2">Telefone</h3>
-              <p className="text-sm text-muted-foreground">{contactInfo.telefone}</p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3">
-                <MailIcon className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="font-semibold mb-2">Email</h3>
-              <p className="text-sm text-muted-foreground">{contactInfo.email}</p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3">
-                <CalendarIcon className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="font-semibold mb-2">Horário</h3>
-              <p className="text-sm text-muted-foreground">{contactInfo.horario}</p>
-            </div>
-          </div>
-          
-          <div className="text-center mt-8 pt-6 border-t">
-            <p className="text-sm text-muted-foreground">
-              <strong>Responsável:</strong> {contactInfo.responsavel}
-            </p>
-          </div>
-        </section>
+        </div>
       </main>
-      
-      <Footer />
 
-      {/* Modais */}
-      <CandidaturaForm
-        open={openCandidatura}
+      {/* Modals */}
+      <CandidaturaForm 
+        open={openCandidatura} 
         onOpenChange={setOpenCandidatura}
-        setor="Energia e Água"
         oportunidade={oportunidadeSelecionada}
-        onSuccess={() => {
-          setOportunidadeSelecionada("");
-        }}
+        setor={setor.nome}
       />
-      <InscricaoProgramaForm
-        open={openInscricaoPrograma}
+
+      <InscricaoProgramaForm 
+        open={openInscricaoPrograma} 
         onOpenChange={setOpenInscricaoPrograma}
-        setor="Energia e Água"
         programa={programaSelecionado}
-        onSuccess={() => {
-          setProgramaSelecionado("");
-        }}
+        setor={setor.nome}
       />
+
       <Dialog open={openDetalhes} onOpenChange={setOpenDetalhes}>
-        <DialogContent>
+        <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Detalhes da Infraestrutura</DialogTitle>
-            <DialogDescription>
-              {detalheInfra && (
-                <div className="space-y-2 mt-2">
-                  <div><b>Nome:</b> {detalheInfra.nome || detalheInfra.title}</div>
-                  <div><b>Localização:</b> {detalheInfra.localizacao}</div>
-                  <div><b>Capacidade:</b> {detalheInfra.capacidade}</div>
-                  <div><b>Estado:</b> {detalheInfra.estado}</div>
-                  <div><b>Equipamentos:</b> {detalheInfra.equipamentos?.join(', ')}</div>
+            <DialogTitle>{detalheInfra?.nome}</DialogTitle>
+            <DialogDescription>{detalheInfra?.descricao}</DialogDescription>
+          </DialogHeader>
+          
+          {detalheInfra && (
+            <div className="space-y-4">
+              <div>
+                <h4 className="font-medium mb-2">Características:</h4>
+                <ul className="space-y-1">
+                  {detalheInfra.caracteristicas?.map((caracteristica: string, idx: number) => (
+                    <li key={idx} className="text-sm flex items-center gap-2">
+                      <CheckCircleIcon className="w-3 h-3 text-green-500" />
+                      {caracteristica}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              
+              {detalheInfra.localizacao && (
+                <div>
+                  <h4 className="font-medium mb-2">Localização:</h4>
+                  <p className="text-sm text-muted-foreground">{detalheInfra.localizacao}</p>
                 </div>
               )}
-            </DialogDescription>
-          </DialogHeader>
+              
+              {detalheInfra.observacoes && (
+                <div>
+                  <h4 className="font-medium mb-2">Observações:</h4>
+                  <p className="text-sm text-muted-foreground">{detalheInfra.observacoes}</p>
+                </div>
+              )}
+            </div>
+          )}
+          
           <DialogFooter>
-            <Button onClick={() => setOpenDetalhes(false)}>Fechar</Button>
+            <Button variant="outline" onClick={() => setOpenDetalhes(false)}>
+              Fechar
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      
+      <Footer />
     </div>
   );
 };
 
-export default EnergiaAgua; 
+export default EnergiaAgua;

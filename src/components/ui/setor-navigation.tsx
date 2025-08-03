@@ -95,48 +95,59 @@ export const SetorNavigation = ({ className, showTitle = true }: SetorNavigation
     <div className={cn("space-y-4", className)}>
       {showTitle && (
         <div className="text-center">
-          <h3 className="text-lg font-semibold text-foreground mb-2">
+          <h3 className="text-base sm:text-lg font-semibold text-foreground mb-1 sm:mb-2">
             Navegar entre Setores
           </h3>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-xs sm:text-sm text-muted-foreground">
             Explore outros sectores estratégicos do município
           </p>
         </div>
       )}
       
       {/* Navegação Anterior/Próximo */}
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex items-center justify-between gap-2 sm:gap-4">
         {prevSetor ? (
           <Link to={prevSetor.path}>
-            <Button variant="outline" className="flex items-center gap-2">
-              <ChevronLeftIcon className="w-4 h-4" />
-              {prevSetor.name}
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3 py-2 h-auto min-w-0"
+            >
+              <ChevronLeftIcon className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+              <span className="truncate hidden sm:inline">{prevSetor.name}</span>
+              <span className="truncate sm:hidden">Anterior</span>
             </Button>
           </Link>
         ) : (
-          <div className="w-32" />
+          <div className="w-20 sm:w-32" />
         )}
         
-        <Badge variant="outline" className="px-4 py-2">
-          {currentIndex + 1} de {setores.length}
+        <Badge variant="outline" className="px-2 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm">
+          <span className="hidden sm:inline">{currentIndex + 1} de {setores.length}</span>
+          <span className="sm:hidden">{currentIndex + 1}/{setores.length}</span>
         </Badge>
         
         {nextSetor ? (
           <Link to={nextSetor.path}>
-            <Button variant="outline" className="flex items-center gap-2">
-              {nextSetor.name}
-              <ChevronRightIcon className="w-4 h-4" />
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3 py-2 h-auto min-w-0"
+            >
+              <span className="truncate hidden sm:inline">{nextSetor.name}</span>
+              <span className="truncate sm:hidden">Próximo</span>
+              <ChevronRightIcon className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
             </Button>
           </Link>
         ) : (
-          <div className="w-32" />
+          <div className="w-20 sm:w-32" />
         )}
       </div>
       
       {/* Grid de Todos os Setores */}
       <Card>
-        <CardContent className="p-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <CardContent className="p-2 sm:p-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3">
             {setores.map((setor) => {
               const IconComponent = setor.icon;
               const isActive = setor.path === location.pathname;
@@ -147,14 +158,14 @@ export const SetorNavigation = ({ className, showTitle = true }: SetorNavigation
                     variant={isActive ? "default" : "ghost"}
                     size="sm"
                     className={cn(
-                      "w-full h-auto p-3 flex flex-col items-center gap-2 transition-all duration-200",
+                      "w-full h-auto p-2 sm:p-3 flex flex-col items-center gap-1 sm:gap-2 transition-all duration-200",
                       isActive 
                         ? "bg-primary text-primary-foreground" 
                         : "hover:bg-muted"
                     )}
                   >
-                    <IconComponent className="w-5 h-5" />
-                    <span className="text-xs font-medium text-center leading-tight">
+                    <IconComponent className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span className="text-xs font-medium text-center leading-tight truncate w-full">
                       {setor.name}
                     </span>
                   </Button>

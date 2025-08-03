@@ -264,10 +264,29 @@ export default function Servicos() {
 
   const handleContactSubmit = async () => {
     try {
-      // Here you could save the contact form to the database
-      // For now, just show success message
+      if (!selectedService) return;
+
+      // Create service request in database
+      const { data, error } = await supabase
+        .from('service_requests')
+        .insert([{
+          service_id: selectedService.id,
+          service_name: selectedService.title,
+          service_direction: selectedService.direcao,
+          requester_name: contactForm.nome,
+          requester_email: contactForm.email,
+          requester_phone: contactForm.telefone,
+          subject: contactForm.assunto,
+          message: contactForm.mensagem,
+          priority: 'normal'
+        }])
+        .select()
+        .single();
+
+      if (error) throw error;
+
       toast({
-        title: "Mensagem Enviada!",
+        title: "Solicitação Enviada!",
         description: "Sua solicitação foi enviada com sucesso. Entraremos em contacto em breve.",
       });
       
@@ -281,23 +300,21 @@ export default function Servicos() {
       });
 
       // Update request count for the service
-      if (selectedService) {
-        const { error } = await supabase
-          .from('servicos')
-          .update({ requests: selectedService.requests + 1 })
-          .eq('id', selectedService.id);
+      const { error: updateError } = await supabase
+        .from('servicos')
+        .update({ requests: selectedService.requests + 1 })
+        .eq('id', selectedService.id);
 
-        if (!error) {
-          // Update local state
-          setServicos(prev => prev.map(s => 
-            s.id === selectedService.id 
-              ? { ...s, requests: s.requests + 1 }
-              : s
-          ));
-        }
+      if (!updateError) {
+        // Update local state
+        setServicos(prev => prev.map(s => 
+          s.id === selectedService.id 
+            ? { ...s, requests: s.requests + 1 }
+            : s
+        ));
       }
     } catch (error) {
-      console.error('Error submitting contact form:', error);
+      console.error('Error submitting service request:', error);
       toast({
         title: "Erro",
         description: "Erro ao enviar solicitação. Tente novamente.",
@@ -789,7 +806,7 @@ export default function Servicos() {
                               className="flex-1 bg-gradient-to-r from-blue-500 to-green-600 hover:from-blue-600 hover:to-green-700"
                             >
                               <PhoneIcon className="w-4 h-4 mr-2" />
-                              Contactar
+                              Solicitar Serviço
                             </Button>
                           </div>
                         </div>
@@ -1044,7 +1061,7 @@ export default function Servicos() {
                       className="flex-1 bg-gradient-to-r from-blue-500 to-green-600 hover:from-blue-600 hover:to-green-700"
                     >
                       <PhoneIcon className="w-4 h-4 mr-2" />
-                      Contactar
+                      Solicitar Serviço
                     </Button>
                   </div>
                 </div>
@@ -1057,9 +1074,9 @@ export default function Servicos() {
         <Dialog open={showContactForm} onOpenChange={() => setShowContactForm(false)}>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
-              <DialogTitle className="text-2xl">Contactar Serviço</DialogTitle>
+              <DialogTitle className="text-2xl">Solicitar Serviço</DialogTitle>
               <DialogDescription>
-                {selectedService && `Envie sua solicitação sobre: ${selectedService.title}`}
+                {selectedService && `Envie sua solicitação para: ${selectedService.title}`}
               </DialogDescription>
             </DialogHeader>
             
