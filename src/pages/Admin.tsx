@@ -479,14 +479,14 @@ const Admin = () => {
         <main className="flex-1 overflow-hidden">
           <ResponsiveContainer>
             {/* Content Header - Remove spacing for content management tabs */}
-            {activeTab !== "dashboard" && activeTab !== "notifications" && activeTab !== "news" && activeTab !== "concursos" && activeTab !== "acervo" && activeTab !== "organigrama" && activeTab !== "departamentos" && activeTab !== "setores" && activeTab !== "content" && activeTab !== "carousel" && <ResponsiveSection spacing="sm">
+            {activeTab !== "dashboard" && activeTab !== "notifications" && activeTab !== "news" && activeTab !== "concursos" && activeTab !== "acervo" && activeTab !== "organigrama" && activeTab !== "departamentos" && activeTab !== "setores" && activeTab !== "content" && activeTab !== "carousel" && activeTab !== "events" && <ResponsiveSection spacing="sm">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
                   
                 </div>
               </ResponsiveSection>}
 
             {/* Tab Content - Remove spacing for content management tabs */}
-            <ResponsiveSection spacing={activeTab === "dashboard" || activeTab === "notifications" || activeTab === "news" || activeTab === "concursos" || activeTab === "acervo" || activeTab === "organigrama" || activeTab === "departamentos" || activeTab === "setores" || activeTab === "content" || activeTab === "carousel" ? "none" : "lg"}>
+            <ResponsiveSection spacing={activeTab === "dashboard" || activeTab === "notifications" || activeTab === "news" || activeTab === "concursos" || activeTab === "acervo" || activeTab === "organigrama" || activeTab === "departamentos" || activeTab === "setores" || activeTab === "content" || activeTab === "carousel" || activeTab === "events" ? "none" : "lg"}>
               <div className="min-h-[calc(100vh-12rem)]">
                 {activeTab === "dashboard" && <ModernDashboardStats />}
                 {activeTab === "notifications" && <NotificationsManager />}
