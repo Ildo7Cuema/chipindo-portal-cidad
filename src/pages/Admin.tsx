@@ -28,7 +28,7 @@ import { useSafeScrollListener } from "@/hooks/useSafeEventListeners";
 import { MobileSidebar } from "@/components/ui/mobile-sidebar";
 
 // Component imports
-import { DashboardStats } from "@/components/admin/DashboardStats";
+import { ModernDashboardStats } from "@/components/admin/ModernDashboardStats";
 import { NewsManager } from "@/components/admin/NewsManager";
 import { NotificationsManager } from "@/components/admin/NotificationsManager";
 import { ConcursosManager } from "@/components/admin/ConcursosManager";
@@ -47,6 +47,7 @@ import { PopulationHistoryManager } from "@/components/admin/PopulationHistoryMa
 import { SetoresEstrategicosManager } from "@/components/admin/SetoresEstrategicosManager";
 import { MunicipalityCharacterizationManager } from "@/components/admin/MunicipalityCharacterizationManager";
 import { EventsManager } from "@/components/admin/EventsManager";
+import EventRegistrationsManager from "@/components/admin/EventRegistrationsManager";
 import { TurismoAmbienteCarouselManager } from "@/components/admin/TurismoAmbienteCarouselManager";
 import { ServiceRequestsManager } from "@/components/admin/ServiceRequestsManager";
 import { InterestRegistrationsManager } from "@/components/admin/InterestRegistrationsManager";
@@ -105,6 +106,7 @@ const Admin = () => {
     { id: "population", label: "População", icon: Users, description: "Gestão do histórico populacional", category: "Dados" },
     { id: "characterization", label: "Caracterização", icon: MapPin, description: "Caracterização do município", category: "Dados" },
     { id: "events", label: "Eventos", icon: Calendar, description: "Gerir eventos do município", category: "Conteúdo" },
+    { id: "event-registrations", label: "Inscrições em Eventos", icon: Users, description: "Gerir inscrições em eventos", category: "Serviços" },
     { id: "turismo-carousel", label: "Carrossel Turismo", icon: ImageIcon, description: "Gerir carrossel turístico e ambiental", category: "Conteúdo" },
     { id: "users", label: "Utilizadores", icon: Users, description: "Gerir utilizadores do sistema", category: "Sistema" }
   ];
@@ -419,61 +421,65 @@ const Admin = () => {
             {/* Content Header */}
             <ResponsiveSection spacing="sm">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-                <div>
-                  <ResponsiveText variant="h2" className="mb-2">{activeItem?.label}</ResponsiveText>
-                  <ResponsiveText variant="body" className="text-muted-foreground">
-                    {activeItem?.description}
-                  </ResponsiveText>
-                </div>
+                {activeTab !== "dashboard" && (
+                  <div>
+                    <ResponsiveText variant="h2" className="mb-2">{activeItem?.label}</ResponsiveText>
+                    <ResponsiveText variant="body" className="text-muted-foreground">
+                      {activeItem?.description}
+                    </ResponsiveText>
+                  </div>
+                )}
                 
-                <div className="flex items-center gap-2">
-                  <Button variant="outline" size="sm" className="hidden sm:flex">
-                    <Filter className="w-4 h-4 mr-2" />
-                    Filtros
-                  </Button>
+                {activeTab === "dashboard" && (
+                  <div className="flex items-center gap-2">
+                    <Button variant="outline" size="sm" className="hidden sm:flex">
+                      <Filter className="w-4 h-4 mr-2" />
+                      Filtros
+                    </Button>
 
-                  {/* More Options Dropdown */}
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="outline" size="sm">
-                        <MoreVertical className="w-4 h-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-48">
-                      <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={handleRefreshData}>
-                        <RefreshCw className="w-4 h-4 mr-2" />
-                        Actualizar Dados
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={handleExportData}>
-                        <Download className="w-4 h-4 mr-2" />
-                        Exportar Dados
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={handleArchiveItems}>
-                        <Archive className="w-4 h-4 mr-2" />
-                        Arquivar Selecionados
-                      </DropdownMenuItem>
-                      <DropdownMenuItem className="text-destructive">
-                        <Trash2 className="w-4 h-4 mr-2" />
-                        Excluir Selecionados
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={handleOpenHelp}>
-                        <HelpCircle className="w-4 h-4 mr-2" />
-                        Ajuda
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
+                    {/* More Options Dropdown */}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="sm">
+                          <MoreVertical className="w-4 h-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-48">
+                        <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={handleRefreshData}>
+                          <RefreshCw className="w-4 h-4 mr-2" />
+                          Actualizar Dados
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={handleExportData}>
+                          <Download className="w-4 h-4 mr-2" />
+                          Exportar Dados
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={handleArchiveItems}>
+                          <Archive className="w-4 h-4 mr-2" />
+                          Arquivar Selecionados
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="text-destructive">
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          Excluir Selecionados
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={handleOpenHelp}>
+                          <HelpCircle className="w-4 h-4 mr-2" />
+                          Ajuda
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                )}
               </div>
             </ResponsiveSection>
 
             {/* Tab Content */}
             <ResponsiveSection spacing="lg">
               <div className="min-h-[calc(100vh-12rem)]">
-                {activeTab === "dashboard" && <DashboardStats />}
+                {activeTab === "dashboard" && <ModernDashboardStats />}
                 {activeTab === "notifications" && <NotificationsManager />}
                 {activeTab === "news" && <NewsManager />}
                 {activeTab === "concursos" && <ConcursosManager />}
@@ -492,6 +498,7 @@ const Admin = () => {
         {activeTab === "population" && <PopulationHistoryManager />}
                 {activeTab === "characterization" && <MunicipalityCharacterizationManager />}
                 {activeTab === "events" && <EventsManager />}
+                {activeTab === "event-registrations" && <EventRegistrationsManager />}
                 {activeTab === "turismo-carousel" && <TurismoAmbienteCarouselManager />}
                 {activeTab === "users" && <UserManager currentUserRole={role} />}
                 {activeTab === "settings" && <SystemSettings />}

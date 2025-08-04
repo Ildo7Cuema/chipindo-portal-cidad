@@ -28,6 +28,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import EventRegistrationModal from "@/components/ui/event-registration-modal";
 
 interface Event {
   id: number;
@@ -45,6 +46,8 @@ interface Event {
   attendees: number;
   price: string;
   status: 'upcoming' | 'ongoing' | 'completed';
+  max_participants: number;
+  current_participants: number;
 }
 
 const Events = () => {
@@ -55,6 +58,8 @@ const Events = () => {
   const [participatingEvents, setParticipatingEvents] = useState<number[]>([]);
   const [loadingStates, setLoadingStates] = useState<{[key: string]: boolean}>({});
   const [showGuidelines, setShowGuidelines] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [showRegistrationModal, setShowRegistrationModal] = useState(false);
   const { toast } = useToast();
 
   // Dados de eventos do município
@@ -74,7 +79,9 @@ const Events = () => {
       isFeatured: true,
       attendees: 2500,
       price: "Gratuito",
-      status: 'upcoming'
+      status: 'upcoming',
+      max_participants: 3000,
+      current_participants: 1250
     },
     {
       id: 2,
@@ -90,7 +97,9 @@ const Events = () => {
       isFeatured: true,
       attendees: 800,
       price: "Gratuito",
-      status: 'upcoming'
+      status: 'upcoming',
+      max_participants: 1000,
+      current_participants: 450
     },
     {
       id: 3,
@@ -106,7 +115,9 @@ const Events = () => {
       attendees: 150,
       price: "Gratuito",
       status: 'upcoming',
-      isFeatured: false
+      isFeatured: false,
+      max_participants: 200,
+      current_participants: 180
     }
   ];
 
@@ -166,36 +177,9 @@ const Events = () => {
   };
 
   // Funções para gerenciar ações dos botões
-  const handleParticipate = async (event: Event) => {
-    setLoadingStates(prev => ({ ...prev, [`participate-${event.id}`]: true }));
-    
-    try {
-      // Simular chamada de API
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      setParticipatingEvents(prev => 
-        prev.includes(event.id) 
-          ? prev.filter(id => id !== event.id)
-          : [...prev, event.id]
-      );
-      
-      const isParticipating = participatingEvents.includes(event.id);
-      
-      toast({
-        title: isParticipating ? "Inscrição cancelada" : "Inscrição realizada!",
-        description: isParticipating 
-          ? `Cancelou a inscrição no evento "${event.title}"`
-          : `Inscrito com sucesso no evento "${event.title}"`
-      });
-    } catch (error) {
-      toast({
-        title: "Erro na inscrição",
-        description: "Não foi possível processar a inscrição. Tente novamente.",
-        variant: "destructive"
-      });
-    } finally {
-      setLoadingStates(prev => ({ ...prev, [`participate-${event.id}`]: false }));
-    }
+  const handleParticipate = (event: Event) => {
+    setSelectedEvent(event);
+    setShowRegistrationModal(true);
   };
 
   const handleFavorite = (event: Event) => {
@@ -273,6 +257,14 @@ const Events = () => {
     toast({
       title: "Email aberto",
       description: "Abrindo email para a administração municipal"
+    });
+  };
+
+  const handleRegistrationSuccess = () => {
+    // Atualizar o estado local se necessário
+    toast({
+      title: "Inscrição confirmada",
+      description: "A sua inscrição foi processada com sucesso!"
     });
   };
 
@@ -403,7 +395,10 @@ const Events = () => {
                         
                         <div className="flex items-center gap-2">
                           <Users className="w-4 h-4 text-purple-600" />
-                          <span>{event.attendees} participantes esperados</span>
+                          <span>
+                            {event.current_participants} inscritos
+                            {event.max_participants > 0 && ` / ${event.max_participants} vagas`}
+                          </span>
                         </div>
                         
                         <div className="flex items-center gap-2">
@@ -453,12 +448,12 @@ const Events = () => {
                         <Button 
                           className="flex-1"
                           onClick={() => handleParticipate(event)}
-                          disabled={loadingStates[`participate-${event.id}`]}
+                          disabled={event.max_participants > 0 && event.current_participants >= event.max_participants}
                         >
-                          {loadingStates[`participate-${event.id}`] ? (
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                          ) : null}
-                          {participatingEvents.includes(event.id) ? 'Cancelar Inscrição' : 'Participar'}
+                          {event.max_participants > 0 && event.current_participants >= event.max_participants 
+                            ? 'Evento Lotado' 
+                            : 'Participar'
+                          }
                         </Button>
                         <Button 
                           variant="outline" 
@@ -613,6 +608,17 @@ const Events = () => {
             </div>
           </DialogContent>
         </Dialog>
+
+        {/* Event Registration Modal */}
+        <EventRegistrationModal
+          event={selectedEvent}
+          isOpen={showRegistrationModal}
+          onClose={() => {
+            setShowRegistrationModal(false);
+            setSelectedEvent(null);
+          }}
+          onRegistrationSuccess={handleRegistrationSuccess}
+        />
       </main>
       
       <Footer />

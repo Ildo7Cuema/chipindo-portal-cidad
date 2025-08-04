@@ -35,7 +35,12 @@ import {
   SortDescIcon,
   SortAscIcon,
   InfoIcon,
-  CopyIcon
+  CopyIcon,
+  CheckCircle,
+  AlertCircle,
+  ZapIcon,
+  GlobeIcon,
+  BellIcon
 } from "lucide-react";
 
 interface NewsItem {
@@ -316,42 +321,168 @@ const Noticias = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
       <Header />
       
+      {/* Enhanced Hero Section */}
+      <section className="relative min-h-[600px] bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-30"></div>
+        
+        {/* Floating Elements */}
+        <div className="absolute top-20 left-10 w-24 h-24 bg-white/10 rounded-full blur-xl animate-pulse"></div>
+        <div className="absolute top-40 right-20 w-32 h-32 bg-blue-400/20 rounded-full blur-2xl animate-pulse delay-1000"></div>
+        <div className="absolute bottom-20 left-1/4 w-16 h-16 bg-white/5 rounded-full blur-lg animate-pulse delay-500"></div>
+        <div className="absolute top-1/2 right-1/3 w-20 h-20 bg-purple-400/15 rounded-full blur-xl animate-pulse delay-1500"></div>
+        
+        <div className="relative z-10 container mx-auto px-4 py-20">
+          <div className="text-center space-y-8">
+            {/* Header with Enhanced Icon */}
+            <div className="flex flex-col items-center gap-6 mb-8">
+              <div className="relative">
+                <div className="w-28 h-28 bg-gradient-to-br from-white/25 to-white/10 rounded-3xl flex items-center justify-center backdrop-blur-xl border border-white/20 shadow-2xl">
+                  <NewsIcon className="w-14 h-14 text-white drop-shadow-lg" />
+                </div>
+                <div className="absolute -top-2 -right-2 w-10 h-10 bg-green-400 rounded-full flex items-center justify-center border-2 border-white">
+                  <CheckCircle className="w-5 h-5 text-white" />
+                </div>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="flex items-center justify-center gap-2 mb-3">
+                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                  <span className="text-green-300 text-sm font-medium tracking-wide uppercase">Atualizado</span>
+                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                </div>
+                <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight">
+                  Notícias e
+                  <span className="block bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
+                    Comunicados
+                  </span>
+                </h1>
+                <p className="text-blue-100 text-xl font-medium">
+                  Município de Chipindo
+                </p>
+              </div>
+            </div>
+            
+            {/* Enhanced Description */}
+            <div className="max-w-4xl mx-auto space-y-8">
+              <p className="text-xl md:text-2xl text-white/95 leading-relaxed font-light">
+                Fique a par das <span className="font-semibold text-white">últimas notícias</span>, comunicados e desenvolvimentos 
+                do <span className="font-semibold text-white">Município de Chipindo</span> com informações atualizadas e transparentes.
+              </p>
+              
+              {/* News Stats Preview */}
+              <div className="flex flex-wrap justify-center gap-4">
+                <div className="group relative">
+                  <div className="bg-white/15 backdrop-blur-xl border border-white/20 rounded-2xl px-6 py-4 hover:bg-white/20 transition-all duration-300 hover:scale-105">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                        <NewsIcon className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="text-left">
+                        <div className="text-sm font-semibold text-white">{news.length} Notícias</div>
+                        <div className="text-blue-100 text-xs">Total disponível</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="group relative">
+                  <div className="bg-white/15 backdrop-blur-xl border border-white/20 rounded-2xl px-6 py-4 hover:bg-white/20 transition-all duration-300 hover:scale-105">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-yellow-500/30 rounded-xl flex items-center justify-center">
+                        <StarIcon className="w-5 h-5 text-yellow-100" />
+                      </div>
+                      <div className="text-left">
+                        <div className="text-sm font-semibold text-white">{news.filter(item => item.featured).length} Destaques</div>
+                        <div className="text-blue-100 text-xs">Notícias importantes</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="group relative">
+                  <div className="bg-white/15 backdrop-blur-xl border border-white/20 rounded-2xl px-6 py-4 hover:bg-white/20 transition-all duration-300 hover:scale-105">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-green-500/30 rounded-xl flex items-center justify-center">
+                        <GlobeIcon className="w-5 h-5 text-green-100" />
+                      </div>
+                      <div className="text-left">
+                        <div className="text-sm font-semibold text-white">7 Categorias</div>
+                        <div className="text-blue-100 text-xs">Temas organizados</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="group relative">
+                  <div className="bg-white/15 backdrop-blur-xl border border-white/20 rounded-2xl px-6 py-4 hover:bg-white/20 transition-all duration-300 hover:scale-105">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-purple-500/30 rounded-xl flex items-center justify-center">
+                        <BellIcon className="w-5 h-5 text-purple-100" />
+                      </div>
+                      <div className="text-left">
+                        <div className="text-sm font-semibold text-white">Tempo Real</div>
+                        <div className="text-blue-100 text-xs">Atualizações constantes</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Call to Action */}
+              <div className="pt-8">
+                <div className="flex items-center justify-center gap-6 text-white/80 text-sm">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                    <span>Informações Oficiais</span>
+                  </div>
+                  <div className="w-1 h-1 bg-white/40 rounded-full"></div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                    <span>Transparência Total</span>
+                  </div>
+                  <div className="w-1 h-1 bg-white/40 rounded-full"></div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                    <span>Atualizações Regulares</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <main className="flex-1">
         <Section variant="default" size="lg">
-            <SectionHeader
-            title="Notícias e Comunicados"
-            description="Fique a par das últimas notícias, comunicados e desenvolvimentos do Município de Chipindo"
-            badge="Atualizado"
-            />
-            
-            <SectionContent>
+          <SectionContent>
             {/* Filtros e Busca */}
             <div className="flex flex-col sm:flex-row gap-4 mb-8">
               <div className="relative flex-1">
                 <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                    <Input
+                <Input
                   placeholder="Pesquisar notícias..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
-                    />
-                  </div>
+                />
+              </div>
 
               <Select value={selectedCategory} onValueChange={setSelectedCategory}>
                 <SelectTrigger className="w-full sm:w-48">
                   <SelectValue placeholder="Categoria" />
-                        </SelectTrigger>
-                        <SelectContent>
+                </SelectTrigger>
+                <SelectContent>
                   {categoryMapping.map((category) => (
                     <SelectItem key={category.id} value={category.id}>
-                            <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2">
                         {React.createElement(category.icon, { className: "w-4 h-4" })}
                         {category.name}
-                            </div>
-                          </SelectItem>
+                      </div>
+                    </SelectItem>
                   ))}
-                        </SelectContent>
-                      </Select>
+                </SelectContent>
+              </Select>
               
               <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
                 <SelectTrigger className="w-full sm:w-40">
@@ -364,10 +495,10 @@ const Noticias = () => {
                   <SelectItem value="alphabetical">Alfabética</SelectItem>
                 </SelectContent>
               </Select>
-                  </div>
+            </div>
 
             {/* Loading State */}
-                    {loading ? (
+            {loading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {Array.from({ length: 6 }).map((_, i) => (
                   <Card key={i} className="overflow-hidden">
@@ -399,20 +530,20 @@ const Noticias = () => {
                       >
                         {/* Imagem */}
                         <div className="relative h-48 overflow-hidden">
-                            {item.image_url ? (
-                              <img 
-                                src={item.image_url} 
-                                alt={item.title}
+                          {item.image_url ? (
+                            <img 
+                              src={item.image_url} 
+                              alt={item.title}
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                              />
-                            ) : (
+                            />
+                          ) : (
                             <div className={cn(
                               "w-full h-full flex items-center justify-center",
                               categoryData.bgColor
                             )}>
                               <Icon className="w-16 h-16 text-white/80" />
-                              </div>
-                            )}
+                            </div>
+                          )}
                           
                           {/* Badge de categoria */}
                           <div className="absolute top-3 left-3">
@@ -459,28 +590,28 @@ const Noticias = () => {
                               </div>
                             </div>
                             
-                                                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleLike(item.id);
-                                }}
-                                disabled={isLiking}
-                                className={cn(
-                                  "h-6 px-2 text-xs",
-                                  likedNews.has(item.id)
-                                    ? "text-red-600 bg-red-50 hover:bg-red-100"
-                                    : "hover:bg-red-50 hover:text-red-600"
-                                )}
-                              >
-                                <HeartIcon className={cn(
-                                  "w-3 h-3 mr-1",
-                                  likedNews.has(item.id) && "fill-current"
-                                )} />
-                                {newsLikes[item.id] || 0}
-                              </Button>
-                            </div>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleLike(item.id);
+                              }}
+                              disabled={isLiking}
+                              className={cn(
+                                "h-6 px-2 text-xs",
+                                likedNews.has(item.id)
+                                  ? "text-red-600 bg-red-50 hover:bg-red-100"
+                                  : "hover:bg-red-50 hover:text-red-600"
+                              )}
+                            >
+                              <HeartIcon className={cn(
+                                "w-3 h-3 mr-1",
+                                likedNews.has(item.id) && "fill-current"
+                              )} />
+                              {newsLikes[item.id] || 0}
+                            </Button>
+                          </div>
                         </CardContent>
                       </Card>
                     );

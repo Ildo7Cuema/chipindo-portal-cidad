@@ -111,20 +111,20 @@ export const SetorNavigation = ({ className, showTitle = true }: SetorNavigation
             <Button 
               variant="outline" 
               size="sm"
-              className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3 py-2 h-auto min-w-0"
+              className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3 py-2 h-auto min-w-0 hover:bg-muted/80 hover:shadow-sm transition-all duration-200 group"
             >
-              <ChevronLeftIcon className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
-              <span className="truncate hidden sm:inline">{prevSetor.name}</span>
-              <span className="truncate sm:hidden">Anterior</span>
+              <ChevronLeftIcon className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0 group-hover:text-foreground transition-colors duration-200" />
+              <span className="truncate hidden sm:inline group-hover:font-medium transition-all duration-200">{prevSetor.name}</span>
+              <span className="truncate sm:hidden group-hover:font-medium transition-all duration-200">Anterior</span>
             </Button>
           </Link>
         ) : (
           <div className="w-20 sm:w-32" />
         )}
         
-        <Badge variant="outline" className="px-2 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm">
-          <span className="hidden sm:inline">{currentIndex + 1} de {setores.length}</span>
-          <span className="sm:hidden">{currentIndex + 1}/{setores.length}</span>
+        <Badge variant="outline" className="px-2 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm bg-background border-border shadow-sm">
+          <span className="hidden sm:inline font-medium">{currentIndex + 1} de {setores.length}</span>
+          <span className="sm:hidden font-medium">{currentIndex + 1}/{setores.length}</span>
         </Badge>
         
         {nextSetor ? (
@@ -132,11 +132,11 @@ export const SetorNavigation = ({ className, showTitle = true }: SetorNavigation
             <Button 
               variant="outline" 
               size="sm"
-              className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3 py-2 h-auto min-w-0"
+              className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3 py-2 h-auto min-w-0 hover:bg-muted/80 hover:shadow-sm transition-all duration-200 group"
             >
-              <span className="truncate hidden sm:inline">{nextSetor.name}</span>
-              <span className="truncate sm:hidden">Próximo</span>
-              <ChevronRightIcon className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+              <span className="truncate hidden sm:inline group-hover:font-medium transition-all duration-200">{nextSetor.name}</span>
+              <span className="truncate sm:hidden group-hover:font-medium transition-all duration-200">Próximo</span>
+              <ChevronRightIcon className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0 group-hover:text-foreground transition-colors duration-200" />
             </Button>
           </Link>
         ) : (
@@ -158,14 +158,24 @@ export const SetorNavigation = ({ className, showTitle = true }: SetorNavigation
                     variant={isActive ? "default" : "ghost"}
                     size="sm"
                     className={cn(
-                      "w-full h-auto p-2 sm:p-3 flex flex-col items-center gap-1 sm:gap-2 transition-all duration-200",
+                      "w-full h-auto p-2 sm:p-3 flex flex-col items-center gap-1 sm:gap-2 transition-all duration-200 group",
                       isActive 
-                        ? "bg-primary text-primary-foreground" 
-                        : "hover:bg-muted"
+                        ? "bg-primary text-primary-foreground shadow-md" 
+                        : "hover:bg-muted/80 hover:shadow-sm"
                     )}
                   >
-                    <IconComponent className="w-4 h-4 sm:w-5 sm:h-5" />
-                    <span className="text-xs font-medium text-center leading-tight truncate w-full">
+                    <IconComponent className={cn(
+                      "w-4 h-4 sm:w-5 sm:h-5 transition-colors duration-200",
+                      isActive 
+                        ? "text-primary-foreground" 
+                        : "text-muted-foreground group-hover:text-foreground"
+                    )} />
+                    <span className={cn(
+                      "text-xs font-medium text-center leading-tight truncate w-full transition-colors duration-200",
+                      isActive 
+                        ? "text-primary-foreground" 
+                        : "text-muted-foreground group-hover:text-foreground group-hover:font-semibold"
+                    )}>
                       {setor.name}
                     </span>
                   </Button>

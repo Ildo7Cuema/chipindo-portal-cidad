@@ -418,81 +418,160 @@ export default function Servicos() {
       
       <main>
         {/* Hero Section */}
-        <Section variant="primary" size="lg">
-          <SectionContent>
-            <div className="text-center space-y-6">
-              <div className="flex items-center justify-center gap-3 mb-6">
-                <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-xl">
-                  <BuildingIcon className="w-8 h-8 text-white" />
+        <section className="relative min-h-[500px] bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 overflow-hidden">
+          {/* Background Pattern */}
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-30"></div>
+          
+          {/* Floating Elements */}
+          <div className="absolute top-20 left-10 w-20 h-20 bg-white/10 rounded-full blur-xl animate-pulse"></div>
+          <div className="absolute top-40 right-20 w-32 h-32 bg-blue-400/20 rounded-full blur-2xl animate-pulse delay-1000"></div>
+          <div className="absolute bottom-20 left-1/4 w-16 h-16 bg-white/5 rounded-full blur-lg animate-pulse delay-500"></div>
+          
+          <div className="relative z-10 container mx-auto px-4 py-16">
+            <div className="text-center space-y-8">
+              {/* Header with Enhanced Icon */}
+              <div className="flex flex-col items-center gap-6 mb-8">
+                <div className="relative">
+                  <div className="w-24 h-24 bg-gradient-to-br from-white/25 to-white/10 rounded-3xl flex items-center justify-center backdrop-blur-xl border border-white/20 shadow-2xl">
+                    <BuildingIcon className="w-12 h-12 text-white drop-shadow-lg" />
+                  </div>
+                  <div className="absolute -top-2 -right-2 w-8 h-8 bg-green-400 rounded-full flex items-center justify-center border-2 border-white">
+                    <CheckCircleIcon className="w-4 h-4 text-white" />
+                  </div>
                 </div>
-                <div className="text-left">
-                  <h1 className="text-4xl md:text-5xl font-bold text-white">
-                    Serviços Municipais
+                
+                <div className="space-y-3">
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                    <span className="text-green-300 text-sm font-medium tracking-wide uppercase">Serviços Ativos</span>
+                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                  </div>
+                  <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight">
+                    Serviços
+                    <span className="block bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
+                      Municipais
+                    </span>
                   </h1>
-                  <p className="text-primary-foreground/90 text-lg">
+                  <p className="text-blue-100 text-xl font-medium">
                     Administração Municipal de Chipindo
                   </p>
                 </div>
               </div>
               
-              <p className="text-xl text-primary-foreground/95 max-w-3xl mx-auto leading-relaxed">
-                Acesso rápido e eficiente aos serviços oferecidos pela nossa administração. 
-                Facilitamos a vida dos cidadãos através de processos transparentes e ágeis.
-              </p>
+              {/* Enhanced Description */}
+              <div className="max-w-4xl mx-auto space-y-6">
+                <p className="text-xl md:text-2xl text-white/95 leading-relaxed font-light">
+                  Acesso <span className="font-semibold text-white">rápido e eficiente</span> aos serviços oferecidos pela nossa administração. 
+                  Facilitamos a vida dos cidadãos através de processos <span className="font-semibold text-white">transparentes e ágeis</span>.
+                </p>
+                
+                {/* Enhanced Stats */}
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-6 flex-wrap">
+                  <div className="group relative">
+                    <div className="bg-white/15 backdrop-blur-xl border border-white/20 rounded-2xl px-6 py-4 hover:bg-white/20 transition-all duration-300 hover:scale-105">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                          <BuildingIcon className="w-5 h-5 text-white" />
+                        </div>
+                        <div className="text-left">
+                          <div className="text-2xl font-bold text-white">{totalServices}</div>
+                          <div className="text-blue-100 text-sm">Serviços Disponíveis</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="group relative">
+                    <div className="bg-green-500/20 backdrop-blur-xl border border-green-400/30 rounded-2xl px-6 py-4 hover:bg-green-500/30 transition-all duration-300 hover:scale-105">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-green-400/30 rounded-xl flex items-center justify-center">
+                          <CheckCircleIcon className="w-5 h-5 text-white" />
+                        </div>
+                        <div className="text-left">
+                          <div className="text-2xl font-bold text-white">{digitalServices}</div>
+                          <div className="text-green-100 text-sm">Serviços Digitais</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="group relative">
+                    <div className="bg-yellow-500/20 backdrop-blur-xl border border-yellow-400/30 rounded-2xl px-6 py-4 hover:bg-yellow-500/30 transition-all duration-300 hover:scale-105">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-yellow-400/30 rounded-xl flex items-center justify-center">
+                          <StarIcon className="w-5 h-5 text-white" />
+                        </div>
+                        <div className="text-left">
+                          <div className="text-2xl font-bold text-white">{totalRequests}+</div>
+                          <div className="text-yellow-100 text-sm">Solicitações Atendidas</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
               
-              <div className="flex items-center justify-center gap-4 flex-wrap">
-                <Badge className="bg-white/20 text-white border-white/30 px-4 py-2">
-                  <BuildingIcon className="w-4 h-4 mr-2" />
-                  {totalServices} Serviços Disponíveis
-                </Badge>
-                <Badge className="bg-green-500/20 text-green-100 border-green-400/30 px-4 py-2">
-                  <CheckCircleIcon className="w-4 h-4 mr-2" />
-                  {digitalServices} Serviços Digitais
-                </Badge>
-                <Badge className="bg-yellow-500/20 text-yellow-100 border-yellow-400/30 px-4 py-2">
-                  <StarIcon className="w-4 h-4 mr-2" />
-                  {totalRequests}+ Solicitações Atendidas
-                </Badge>
+              {/* Call to Action */}
+              <div className="pt-8">
+                <div className="flex items-center justify-center gap-4 text-white/80 text-sm">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                    <span>Processos Simplificados</span>
+                  </div>
+                  <div className="w-1 h-1 bg-white/40 rounded-full"></div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                    <span>Atendimento 24/7</span>
+                  </div>
+                  <div className="w-1 h-1 bg-white/40 rounded-full"></div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                    <span>Transparência Total</span>
+                  </div>
+                </div>
               </div>
             </div>
-          </SectionContent>
-        </Section>
+          </div>
+        </section>
 
         {/* Search and Filters Section */}
-        <Section variant="muted" size="md">
-          <SectionContent>
-            <Card className="border-0 shadow-xl bg-white/50 dark:bg-gray-900/50 backdrop-blur-xl">
-              <CardContent className="p-6">
-                <div className="space-y-6">
-                  {/* Main Search */}
-                  <div className="relative">
-                    <SearchIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
-                    <Input
-                      type="text"
-                      placeholder="Pesquisar serviços por nome, descrição ou direcção..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-12 pr-4 py-3 text-lg border-2 border-border/50 focus:border-primary"
-                    />
+        <section className="relative -mt-8 z-20">
+          <div className="container mx-auto px-4">
+            <Card className="border-0 shadow-2xl bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl rounded-3xl border border-white/20">
+              <CardContent className="p-8">
+                <div className="space-y-8">
+                  {/* Enhanced Search */}
+                  <div className="relative group">
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-300"></div>
+                    <div className="relative">
+                      <SearchIcon className="absolute left-6 top-1/2 transform -translate-y-1/2 text-blue-600 w-6 h-6" />
+                      <Input
+                        type="text"
+                        placeholder="🔍 Pesquisar serviços por nome, descrição ou direcção..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-16 pr-6 py-4 text-lg border-2 border-blue-200/50 focus:border-blue-500 rounded-2xl bg-white/80 backdrop-blur-sm focus:bg-white transition-all duration-300 shadow-lg"
+                      />
+                    </div>
                   </div>
 
-                  {/* Filters Row */}
-                  <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
-                    <div className="flex flex-wrap gap-3 items-center">
+                  {/* Enhanced Filters Row */}
+                  <div className="flex flex-col lg:flex-row gap-6 items-center justify-between">
+                    <div className="flex flex-wrap gap-4 items-center">
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => setShowFilters(!showFilters)}
-                        className="flex items-center gap-2"
+                        className="flex items-center gap-2 bg-gradient-to-r from-blue-50 to-purple-50 hover:from-blue-100 hover:to-purple-100 border-blue-200 text-blue-700 rounded-xl px-4 py-2 transition-all duration-300 hover:scale-105"
                       >
                         <FilterIcon className="w-4 h-4" />
-                        Filtros
+                        {showFilters ? 'Ocultar' : 'Mostrar'} Filtros
                         {showFilters && <XIcon className="w-4 h-4" />}
                       </Button>
                       
                       <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                        <SelectTrigger className="w-48">
-                          <InfoIcon className="w-4 h-4 mr-2" />
+                        <SelectTrigger className="w-52 bg-white/80 border-blue-200 rounded-xl hover:bg-white transition-all duration-300">
+                          <InfoIcon className="w-4 h-4 mr-2 text-blue-600" />
                           <SelectValue placeholder="Categoria" />
                         </SelectTrigger>
                         <SelectContent>
@@ -511,8 +590,8 @@ export default function Servicos() {
                       </Select>
 
                       <Select value={selectedDirection} onValueChange={setSelectedDirection}>
-                        <SelectTrigger className="w-48">
-                          <BuildingIcon className="w-4 h-4 mr-2" />
+                        <SelectTrigger className="w-52 bg-white/80 border-blue-200 rounded-xl hover:bg-white transition-all duration-300">
+                          <BuildingIcon className="w-4 h-4 mr-2 text-blue-600" />
                           <SelectValue placeholder="Direcção" />
                         </SelectTrigger>
                         <SelectContent>
@@ -537,7 +616,7 @@ export default function Servicos() {
                       </Select>
 
                       <Select value={sortBy} onValueChange={setSortBy}>
-                        <SelectTrigger className="w-44">
+                        <SelectTrigger className="w-48 bg-white/80 border-blue-200 rounded-xl hover:bg-white transition-all duration-300">
                           <SelectValue placeholder="Ordenar por" />
                         </SelectTrigger>
                         <SelectContent>
@@ -569,39 +648,51 @@ export default function Servicos() {
                       </Select>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant={viewMode === 'grid' ? 'default' : 'outline'}
-                        size="sm"
-                        onClick={() => setViewMode('grid')}
-                      >
-                        <GridIcon className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant={viewMode === 'list' ? 'default' : 'outline'}
-                        size="sm"
-                        onClick={() => setViewMode('list')}
-                      >
-                        <ListIcon className="w-4 h-4" />
-                      </Button>
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-1 bg-gray-100 rounded-xl p-1">
+                        <Button
+                          variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                          size="sm"
+                          onClick={() => setViewMode('grid')}
+                          className={`rounded-lg transition-all duration-300 ${viewMode === 'grid' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-600 hover:text-blue-600'}`}
+                        >
+                          <GridIcon className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant={viewMode === 'list' ? 'default' : 'ghost'}
+                          size="sm"
+                          onClick={() => setViewMode('list')}
+                          className={`rounded-lg transition-all duration-300 ${viewMode === 'list' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-600 hover:text-blue-600'}`}
+                        >
+                          <ListIcon className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Category Filters */}
+                  {/* Enhanced Category Filters */}
                   {showFilters && (
-                    <div className="border-t border-border/50 pt-4 space-y-4">
+                    <div className="border-t border-blue-200/50 pt-6 space-y-6">
                       <div>
-                        <p className="text-sm font-medium text-muted-foreground mb-3">Filtrar por categoria:</p>
-                        <div className="flex flex-wrap gap-2">
+                        <p className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                          <FilterIcon className="w-4 h-4 text-blue-600" />
+                          Filtrar por categoria:
+                        </p>
+                        <div className="flex flex-wrap gap-3">
                           {categorias.map(categoria => {
                             const IconComponent = categoria.icon;
+                            const isSelected = selectedCategory === categoria.id;
                             return (
                               <Button
                                 key={categoria.id}
-                                variant={selectedCategory === categoria.id ? "default" : "outline"}
+                                variant={isSelected ? "default" : "outline"}
                                 size="sm"
                                 onClick={() => setSelectedCategory(categoria.id)}
-                                className="flex items-center gap-2"
+                                className={`flex items-center gap-2 rounded-xl px-4 py-2 transition-all duration-300 hover:scale-105 ${
+                                  isSelected 
+                                    ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg' 
+                                    : 'bg-white/80 border-blue-200 hover:bg-blue-50'
+                                }`}
                               >
                                 <IconComponent className="w-4 h-4" />
                                 {categoria.name}
@@ -612,26 +703,38 @@ export default function Servicos() {
                       </div>
 
                       <div>
-                        <p className="text-sm font-medium text-muted-foreground mb-3">Filtrar por direcção:</p>
-                        <div className="flex flex-wrap gap-2">
+                        <p className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                          <BuildingIcon className="w-4 h-4 text-blue-600" />
+                          Filtrar por direcção:
+                        </p>
+                        <div className="flex flex-wrap gap-3">
                           <Button
                             variant={selectedDirection === 'todos' ? "default" : "outline"}
                             size="sm"
                             onClick={() => setSelectedDirection('todos')}
-                            className="flex items-center gap-2"
+                            className={`flex items-center gap-2 rounded-xl px-4 py-2 transition-all duration-300 hover:scale-105 ${
+                              selectedDirection === 'todos'
+                                ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg'
+                                : 'bg-white/80 border-blue-200 hover:bg-blue-50'
+                            }`}
                           >
                             <BuildingIcon className="w-4 h-4" />
-                            Todas
+                            Todas as Direcções
                           </Button>
                           {departamentos.slice(0, 8).map(dept => {
                             const IconComponent = getDirectionData(dept.nome).icon;
+                            const isSelected = selectedDirection === dept.nome;
                             return (
                               <Button
                                 key={dept.id}
-                                variant={selectedDirection === dept.nome ? "default" : "outline"}
+                                variant={isSelected ? "default" : "outline"}
                                 size="sm"
                                 onClick={() => setSelectedDirection(dept.nome)}
-                                className="flex items-center gap-2"
+                                className={`flex items-center gap-2 rounded-xl px-4 py-2 transition-all duration-300 hover:scale-105 ${
+                                  isSelected 
+                                    ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg' 
+                                    : 'bg-white/80 border-blue-200 hover:bg-blue-50'
+                                }`}
                               >
                                 <IconComponent className="w-4 h-4" />
                                 {dept.nome}
@@ -643,61 +746,83 @@ export default function Servicos() {
                     </div>
                   )}
 
-                  {/* Results Summary */}
-                  <div className="text-sm text-muted-foreground">
-                    <span>
-                      {filteredServicos.length} serviço{filteredServicos.length !== 1 ? 's' : ''} encontrado{filteredServicos.length !== 1 ? 's' : ''}
-                      {searchTerm && ` para "${searchTerm}"`}
-                      {selectedCategory !== 'todos' && ` em ${getCategoryData(selectedCategory).name}`}
-                      {selectedDirection !== 'todos' && ` na ${selectedDirection}`}
-                    </span>
+                  {/* Enhanced Results Summary */}
+                  <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-4 border border-blue-200/50">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                          <SearchIcon className="w-4 h-4 text-white" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-gray-700">
+                            {filteredServicos.length} serviço{filteredServicos.length !== 1 ? 's' : ''} encontrado{filteredServicos.length !== 1 ? 's' : ''}
+                          </p>
+                          <p className="text-xs text-gray-600">
+                            {searchTerm && `Pesquisa: "${searchTerm}"`}
+                            {selectedCategory !== 'todos' && ` • Categoria: ${getCategoryData(selectedCategory).name}`}
+                            {selectedDirection !== 'todos' && ` • Direcção: ${selectedDirection}`}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-lg font-bold text-blue-600">{filteredServicos.length}</div>
+                        <div className="text-xs text-gray-500">Resultados</div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </CardContent>
             </Card>
-          </SectionContent>
-        </Section>
+          </div>
+        </section>
 
-        {/* Services Section */}
-        <Section variant="default" size="lg">
-          <SectionHeader
-            subtitle="Atendimento Municipal"
-            title={
-              <span>
+        {/* Enhanced Services Section */}
+        <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
+                <BuildingIcon className="w-4 h-4" />
+                Atendimento Municipal
+              </div>
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
                 Serviços{' '}
-                <span className="bg-gradient-to-r from-blue-500 via-green-500 to-purple-500 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent">
                   Disponíveis
                 </span>
-              </span>
-            }
-            description="Conheça todos os serviços oferecidos pela administração municipal"
-            centered={true}
-          />
-          
-          <SectionContent>
+              </h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                Conheça todos os serviços oferecidos pela administração municipal de Chipindo. 
+                Processos simplificados para melhor servir os nossos cidadãos.
+              </p>
+            </div>
             {filteredServicos.length === 0 ? (
-              <div className="text-center py-16">
-                <BuildingIcon className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-foreground mb-2">Nenhum serviço encontrado</h3>
-                <p className="text-muted-foreground mb-6">
-                  {searchTerm || selectedCategory !== 'todos' || selectedDirection !== 'todos'
-                    ? "Tente ajustar seus filtros de busca."
-                    : "Os serviços estão sendo organizados. Volte em breve."
-                  }
-                </p>
-                {(searchTerm || selectedCategory !== 'todos' || selectedDirection !== 'todos') && (
-                  <Button 
-                    onClick={() => {
-                      setSearchTerm("");
-                      setSelectedCategory("todos");
-                      setSelectedDirection("todos");
-                      setSortBy("popular");
-                    }}
-                    className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white"
-                  >
-                    Limpar Filtros
-                  </Button>
-                )}
+              <div className="text-center py-20">
+                <div className="max-w-md mx-auto">
+                  <div className="w-24 h-24 bg-gradient-to-br from-blue-100 to-purple-100 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                    <BuildingIcon className="w-12 h-12 text-blue-600" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-3">Nenhum serviço encontrado</h3>
+                  <p className="text-gray-600 mb-8 leading-relaxed">
+                    {searchTerm || selectedCategory !== 'todos' || selectedDirection !== 'todos'
+                      ? "Não encontramos serviços que correspondam aos seus critérios de busca. Tente ajustar os filtros."
+                      : "Os serviços estão sendo organizados e estarão disponíveis em breve."
+                    }
+                  </p>
+                  {(searchTerm || selectedCategory !== 'todos' || selectedDirection !== 'todos') && (
+                    <Button 
+                      onClick={() => {
+                        setSearchTerm("");
+                        setSelectedCategory("todos");
+                        setSelectedDirection("todos");
+                        setSortBy("popular");
+                      }}
+                      className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-xl px-8 py-3 transition-all duration-300 hover:scale-105 shadow-lg"
+                    >
+                      <XIcon className="w-4 h-4 mr-2" />
+                      Limpar Filtros
+                    </Button>
+                  )}
+                </div>
               </div>
             ) : (
               <>
@@ -851,20 +976,29 @@ export default function Servicos() {
                 )}
               </>
             )}
-          </SectionContent>
-        </Section>
+          </div>
+        </section>
 
-        {/* Statistics Section */}
-        <Section variant="muted" size="md">
-          <SectionHeader
-            subtitle="Estatísticas"
-            title="Serviços por Direcção"
-            description="Distribuição dos serviços pelas diferentes direcções municipais"
-            centered={true}
-          />
-          
-          <SectionContent>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {/* Enhanced Statistics Section */}
+        <section className="py-16 bg-gradient-to-br from-gray-100 to-blue-100">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
+                <TrendingUpIcon className="w-4 h-4" />
+                Estatísticas
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                Serviços por{' '}
+                <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  Direcção
+                </span>
+              </h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                Distribuição dos serviços pelas diferentes direcções municipais
+              </p>
+            </div>
+            
+                        <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {directionStats.filter(dept => dept.serviceCount > 0).map(dept => {
                 const directionData = getDirectionData(dept.nome);
                 const IconComponent = directionData.icon;
@@ -872,18 +1006,18 @@ export default function Servicos() {
                 return (
                   <Card 
                     key={dept.id} 
-                    className="hover:shadow-lg transition-shadow cursor-pointer"
+                    className="hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer bg-white/80 backdrop-blur-sm border border-white/20"
                     onClick={() => setSelectedDirection(dept.nome)}
                   >
                     <CardContent className="p-6 text-center">
-                      <div className={cn("w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4", directionData.color)}>
-                        <IconComponent className="w-6 h-6 text-white" />
+                      <div className={cn("w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg", directionData.color)}>
+                        <IconComponent className="w-8 h-8 text-white" />
                       </div>
-                      <h3 className="font-semibold text-foreground mb-2 text-sm leading-tight">
+                      <h3 className="font-semibold text-gray-900 mb-2 text-sm leading-tight">
                         {dept.nome}
                       </h3>
-                      <div className="text-2xl font-bold text-primary mb-1">{dept.serviceCount}</div>
-                      <p className="text-sm text-muted-foreground">
+                      <div className="text-3xl font-bold text-blue-600 mb-1">{dept.serviceCount}</div>
+                      <p className="text-sm text-gray-600">
                         {dept.serviceCount === 1 ? 'serviço' : 'serviços'}
                       </p>
                     </CardContent>
@@ -891,8 +1025,8 @@ export default function Servicos() {
                 );
               })}
             </div>
-          </SectionContent>
-        </Section>
+          </div>
+        </section>
 
         {/* Service Details Modal */}
         <Dialog open={!!selectedService && !showContactForm} onOpenChange={() => setSelectedService(null)}>

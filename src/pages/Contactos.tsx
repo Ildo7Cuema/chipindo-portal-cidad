@@ -91,7 +91,7 @@ const contactCategories = [
 export default function Contactos() {
   const { settings, loading: settingsLoading } = useSiteSettings();
   const { contacts: emergencyContacts, loading: emergencyLoading } = useEmergencyContacts();
-  const { departamentos: direccoes, loading: deptLoading } = useDepartamentos();
+  const { direcoes: direccoes, loading: deptLoading } = useDepartamentos();
   const { locations: municipalLocations, loading: locationsLoading } = useMunicipalityLocations();
   const [submitting, setSubmitting] = useState(false);
   const [totalMessages, setTotalMessages] = useState(0);
@@ -506,7 +506,7 @@ export default function Contactos() {
                               <SelectValue placeholder="Selecione a categoria" />
                             </SelectTrigger>
                             <SelectContent>
-                              {contactCategories.map(category => {
+                              {contactCategories?.map(category => {
                                 const IconComponent = category.icon;
                                 return (
                                   <SelectItem key={category.id} value={category.id}>
@@ -542,7 +542,7 @@ export default function Contactos() {
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="nenhum">Nenhum departamento específico</SelectItem>
-                              {direccoes.map(dept => (
+                              {direccoes?.map(dept => (
                                 <SelectItem key={dept.id} value={dept.nome}>
                                   <div className="flex items-center gap-2">
                                     <BuildingIcon className="w-4 h-4" />
@@ -655,7 +655,7 @@ export default function Contactos() {
                   </CardHeader>
                   <CardContent>
                     <div className="grid gap-3">
-                      {socialMediaLinks.length > 0 ? socialMediaLinks.map(social => {
+                      {socialMediaLinks && socialMediaLinks.length > 0 ? socialMediaLinks.map(social => {
                         const IconComponent = social.icon;
                         return (
                           <Button 
@@ -690,7 +690,7 @@ export default function Contactos() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
-                    {emergencyContacts.length > 0 ? emergencyContacts.map((contact) => (
+                    {emergencyContacts && emergencyContacts.length > 0 ? emergencyContacts.map((contact) => (
                       <div key={contact.id} className="flex items-center justify-between p-3 bg-red-50 dark:bg-red-950/30 rounded-lg">
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
@@ -723,7 +723,7 @@ export default function Contactos() {
           />
           
           <SectionContent>
-            {direccoes.length > 0 ? (
+            {direccoes && direccoes.length > 0 ? (
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {direccoes.map(direccao => {
                   const deptContact = getDepartmentContact(direccao.id);
@@ -875,7 +875,7 @@ export default function Contactos() {
               </Card>
 
               {/* Location Cards Grid */}
-              {municipalLocations.length > 0 && (
+              {municipalLocations && municipalLocations.length > 0 && (
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {municipalLocations.map(location => (
                     <Card 
@@ -937,7 +937,7 @@ export default function Contactos() {
               )}
 
               {/* No Locations Found */}
-              {municipalLocations.length === 0 && (
+              {(!municipalLocations || municipalLocations.length === 0) && (
                 <div className="text-center py-12">
                   <MapPinIcon className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
                   <h3 className="text-xl font-semibold text-foreground mb-2">Nenhuma localização cadastrada</h3>
@@ -955,7 +955,7 @@ export default function Contactos() {
               )}
 
               {/* Coordinates Info */}
-              {municipalLocations.length > 0 && (
+              {municipalLocations && municipalLocations.length > 0 && (
                 <Card className="border-0 shadow-lg bg-muted/30">
                   <CardContent className="p-4">
                     <div className="flex items-center gap-2 mb-3">

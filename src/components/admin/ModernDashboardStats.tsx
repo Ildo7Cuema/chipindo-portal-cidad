@@ -95,30 +95,12 @@ import {
   ChartBar,
   ChartLine,
   ChartPie,
-  ChartArea,
-  GitBranch,
-  GitCommit,
-  GitMerge,
-  GitPullRequest,
-  GitCompare,
-  GitFork
+  ChartArea
 } from "lucide-react";
 import { RecentActivity } from "./RecentActivity";
 import { useRealTimeStats } from "@/hooks/useRealTimeStats";
 import ExportUtils from "@/lib/export-utils";
 import { cn } from "@/lib/utils";
-
-interface DashboardData {
-  totalNews: number;
-  publishedNews: number;
-  totalConcursos: number;
-  activeConcursos: number;
-  totalUsers: number;
-  recentActivity: {
-    news: number;
-    concursos: number;
-  };
-}
 
 // Componente para gráfico de barras simples
 const SimpleBarChart = ({ data, height = 200 }: { data: { label: string; value: number; color: string }[]; height?: number }) => {
@@ -244,7 +226,7 @@ const PerformanceMetric = ({
   );
 };
 
-export const DashboardStats = () => {
+export const ModernDashboardStats = () => {
   const { stats } = useRealTimeStats();
   const [activeView, setActiveView] = useState("overview");
   const [exportLoading, setExportLoading] = useState<string | null>(null);
@@ -587,6 +569,13 @@ export const DashboardStats = () => {
         />
       </div>
 
+      {/* Performance Metrics Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {performanceMetrics.map((metric, index) => (
+          <PerformanceMetric key={index} {...metric} />
+        ))}
+      </div>
+
       {/* Enhanced Main Stats Grid with Tabs */}
       <Tabs value={activeView} onValueChange={setActiveView} className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -622,13 +611,6 @@ export const DashboardStats = () => {
         </div>
 
         <TabsContent value="overview" className="space-y-6">
-          {/* Performance Metrics Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {performanceMetrics.map((metric, index) => (
-              <PerformanceMetric key={index} {...metric} />
-            ))}
-          </div>
-
           {/* Enhanced Stats Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <StatCard
@@ -962,4 +944,4 @@ export const DashboardStats = () => {
       </div>
     </div>
   );
-};
+}; 
