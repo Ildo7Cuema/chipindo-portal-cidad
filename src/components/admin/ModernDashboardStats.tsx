@@ -431,42 +431,134 @@ export const ModernDashboardStats = () => {
   }
 
   return (
-    <div className="space-y-8">
-      {/* Enhanced Dashboard Header */}
+    <div className="space-y-6">
+      {/* Enhanced Dashboard Header - Responsive */}
       <div className="relative overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-blue-950/20 dark:to-indigo-950/20 rounded-2xl border border-border/50 shadow-lg">
         {/* Background Pattern */}
         <div className="absolute inset-0 bg-grid-slate-100 dark:bg-grid-slate-800 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] dark:[mask-image:linear-gradient(0deg,rgba(255,255,255,0.1),rgba(255,255,255,0.05))]" />
         
-        <div className="relative p-6 lg:p-8">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-            <div className="flex-1 min-w-0 flex items-center gap-6">
-              <div className="hidden sm:flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-primary/70 shadow-lg">
-                <BarChart3 className="w-8 h-8 text-primary-foreground" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-3 mb-2">
-                  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
+        <div className="relative p-4 sm:p-6 lg:p-8">
+          {/* Mobile Layout */}
+          <div className="block lg:hidden space-y-3">
+            {/* Mobile Header */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary/70 shadow-lg">
+                  <BarChart3 className="w-6 h-6 text-primary-foreground" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h1 className="text-xl font-extrabold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent leading-tight">
                     Dashboard Executivo
                   </h1>
-                  <div className="flex items-center gap-2">
-                    <Badge className="bg-primary/10 text-primary border-primary/20 px-3 py-1 font-semibold">
+                  <div className="flex items-center gap-2 mt-1">
+                    <Badge className="bg-primary/10 text-primary border-primary/20 px-2 py-0.5 text-xs font-semibold">
                       Admin
                     </Badge>
-                    <Badge className="bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400 px-3 py-1">
-                      <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse" />
+                    <Badge className="bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400 px-2 py-0.5 text-xs">
+                      <div className="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5 animate-pulse" />
                       Online
                     </Badge>
                   </div>
                 </div>
-                <p className="text-muted-foreground leading-relaxed text-sm lg:text-base font-medium max-w-2xl">
+              </div>
+              
+              {/* Mobile Status */}
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                  <span className="text-xs font-medium text-green-700 dark:text-green-400">Operacional</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Server className="w-3 h-3 text-muted-foreground" />
+                  <span className="text-xs text-muted-foreground">{responseTime}s</span>
+                </div>
+              </div>
+            </div>
+            
+            {/* Mobile Description */}
+            <p className="text-muted-foreground text-sm font-medium leading-normal">
+              Painel de controle executivo com métricas em tempo real
+            </p>
+            
+            {/* Mobile Export Buttons */}
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-1.5">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={exportToCSV}
+                  disabled={exportLoading === 'csv'}
+                  className="h-8 px-2.5 text-xs font-medium"
+                >
+                  {exportLoading === 'csv' ? (
+                    <div className="w-3 h-3 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin mr-1.5" />
+                  ) : (
+                    <FileSpreadsheet className="w-3 h-3 mr-1.5" />
+                  )}
+                  CSV
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={exportToExcel}
+                  disabled={exportLoading === 'excel'}
+                  className="h-8 px-2.5 text-xs font-medium"
+                >
+                  {exportLoading === 'excel' ? (
+                    <div className="w-3 h-3 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin mr-1.5" />
+                  ) : (
+                    <FileDown className="w-3 h-3 mr-1.5" />
+                  )}
+                  Excel
+                </Button>
+              </div>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={exportToPDF}
+                disabled={exportLoading === 'pdf'}
+                className="h-8 px-2.5 text-xs font-medium"
+              >
+                {exportLoading === 'pdf' ? (
+                  <div className="w-3 h-3 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin mr-1.5" />
+                ) : (
+                  <Download className="w-3 h-3 mr-1.5" />
+                )}
+                PDF
+              </Button>
+            </div>
+          </div>
+
+          {/* Desktop Layout */}
+          <div className="hidden lg:flex lg:items-center lg:justify-between gap-6">
+            <div className="flex-1 min-w-0 flex items-center gap-6">
+              <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-primary/70 shadow-lg">
+                <BarChart3 className="w-8 h-8 text-primary-foreground" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-4 mb-2">
+                  <h1 className="text-3xl lg:text-4xl font-extrabold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent leading-tight">
+                    Dashboard Executivo
+                  </h1>
+                  <div className="flex items-center gap-3">
+                    <Badge className="bg-primary/10 text-primary border-primary/20 px-3 py-1.5 font-semibold text-sm">
+                      Admin
+                    </Badge>
+                    <Badge className="bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400 px-3 py-1.5 text-sm">
+                      <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse" />
+                      Sistema Online
+                    </Badge>
+                  </div>
+                </div>
+                <p className="text-muted-foreground leading-normal text-base font-medium max-w-2xl">
                   Painel de controle executivo com métricas em tempo real, análise de performance e gestão estratégica do portal municipal
                 </p>
               </div>
             </div>
             
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 flex-shrink-0">
-              {/* System Status */}
-              <div className="flex items-center gap-3">
+            <div className="flex flex-col items-end gap-4 flex-shrink-0">
+              {/* Desktop System Status */}
+              <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
                   <span className="text-sm font-medium text-green-700 dark:text-green-400">Sistema Operacional</span>
@@ -477,49 +569,49 @@ export const ModernDashboardStats = () => {
                 </div>
               </div>
               
-              {/* Export Buttons */}
-              <div className="flex items-center gap-2">
+              {/* Desktop Export Buttons */}
+              <div className="flex items-center gap-3">
                 <Button 
                   variant="outline" 
                   size="sm" 
                   onClick={exportToCSV}
                   disabled={exportLoading === 'csv'}
-                  className="h-9 px-3 hover:bg-muted/60 text-xs font-medium"
+                  className="h-10 px-4 hover:bg-muted/60 text-sm font-medium"
                 >
                   {exportLoading === 'csv' ? (
                     <div className="w-4 h-4 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin mr-2" />
                   ) : (
                     <FileSpreadsheet className="w-4 h-4 mr-2" />
                   )}
-                  CSV
+                  Exportar CSV
                 </Button>
                 <Button 
                   variant="outline" 
                   size="sm" 
                   onClick={exportToExcel}
                   disabled={exportLoading === 'excel'}
-                  className="h-9 px-3 hover:bg-muted/60 text-xs font-medium"
+                  className="h-10 px-4 hover:bg-muted/60 text-sm font-medium"
                 >
                   {exportLoading === 'excel' ? (
                     <div className="w-4 h-4 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin mr-2" />
                   ) : (
                     <FileDown className="w-4 h-4 mr-2" />
                   )}
-                  Excel
+                  Exportar Excel
                 </Button>
                 <Button 
                   variant="outline" 
                   size="sm" 
                   onClick={exportToPDF}
                   disabled={exportLoading === 'pdf'}
-                  className="h-9 px-3 hover:bg-muted/60 text-xs font-medium"
+                  className="h-10 px-4 hover:bg-muted/60 text-sm font-medium"
                 >
                   {exportLoading === 'pdf' ? (
                     <div className="w-4 h-4 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin mr-2" />
                   ) : (
                     <Download className="w-4 h-4 mr-2" />
                   )}
-                  PDF
+                  Exportar PDF
                 </Button>
               </div>
             </div>
@@ -576,31 +668,70 @@ export const ModernDashboardStats = () => {
         ))}
       </div>
 
-      {/* Enhanced Main Stats Grid with Tabs */}
-      <Tabs value={activeView} onValueChange={setActiveView} className="space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <TabsList className="grid w-full sm:w-auto grid-cols-3">
-            <TabsTrigger value="overview" className="flex items-center gap-2">
+      {/* Enhanced Main Stats Grid with Tabs - Responsive */}
+      <Tabs value={activeView} onValueChange={setActiveView} className="space-y-5">
+        {/* Mobile Tabs Layout */}
+        <div className="block lg:hidden space-y-3">
+          <TabsList className="grid w-full grid-cols-3 h-12">
+            <TabsTrigger value="overview" className="flex items-center gap-1.5 text-xs font-medium">
+              <PieChart className="w-3.5 h-3.5" />
+              <span className="hidden xs:inline">Visão Geral</span>
+              <span className="xs:hidden">Geral</span>
+            </TabsTrigger>
+            <TabsTrigger value="content" className="flex items-center gap-1.5 text-xs font-medium">
+              <FileText className="w-3.5 h-3.5" />
+              <span className="hidden xs:inline">Conteúdo</span>
+              <span className="xs:hidden">Cont.</span>
+            </TabsTrigger>
+            <TabsTrigger value="engagement" className="flex items-center gap-1.5 text-xs font-medium">
+              <Heart className="w-3.5 h-3.5" />
+              <span className="hidden xs:inline">Engajamento</span>
+              <span className="xs:hidden">Eng.</span>
+            </TabsTrigger>
+          </TabsList>
+          
+          {/* Mobile Time Range Selector */}
+          <div className="flex items-center">
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground font-medium">Período:</span>
+              <select 
+                value={timeRange} 
+                onChange={(e) => setTimeRange(e.target.value)}
+                className="text-xs border border-border rounded-md px-2 py-1.5 bg-background font-medium"
+              >
+                <option value="1d">1 dia</option>
+                <option value="7d">1 semana</option>
+                <option value="30d">1 mês</option>
+                <option value="90d">3 meses</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* Desktop Tabs Layout */}
+        <div className="hidden lg:flex lg:items-center lg:justify-between gap-6">
+          <TabsList className="grid grid-cols-3 h-12">
+            <TabsTrigger value="overview" className="flex items-center gap-3 text-sm font-medium px-6">
               <PieChart className="w-4 h-4" />
               Visão Geral
             </TabsTrigger>
-            <TabsTrigger value="content" className="flex items-center gap-2">
+            <TabsTrigger value="content" className="flex items-center gap-3 text-sm font-medium px-6">
               <FileText className="w-4 h-4" />
               Conteúdo
             </TabsTrigger>
-            <TabsTrigger value="engagement" className="flex items-center gap-2">
+            <TabsTrigger value="engagement" className="flex items-center gap-3 text-sm font-medium px-6">
               <Heart className="w-4 h-4" />
               Engajamento
             </TabsTrigger>
           </TabsList>
           
-          {/* Time Range Selector */}
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Período:</span>
+          {/* Desktop Time Range Selector */}
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-muted-foreground font-medium">Período de Análise:</span>
             <select 
               value={timeRange} 
               onChange={(e) => setTimeRange(e.target.value)}
-              className="text-sm border border-border rounded-md px-3 py-1.5 bg-background"
+              className="text-sm border border-border rounded-lg px-4 py-2 bg-background font-medium hover:border-primary/50 transition-colors"
             >
               <option value="1d">Último dia</option>
               <option value="7d">Última semana</option>
@@ -610,7 +741,7 @@ export const ModernDashboardStats = () => {
           </div>
         </div>
 
-        <TabsContent value="overview" className="space-y-6">
+        <TabsContent value="overview" className="space-y-5">
           {/* Enhanced Stats Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <StatCard
@@ -741,7 +872,7 @@ export const ModernDashboardStats = () => {
           </div>
         </TabsContent>
 
-        <TabsContent value="content" className="space-y-6">
+        <TabsContent value="content" className="space-y-5">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Enhanced Content Performance */}
             <Card className="border-0 shadow-lg bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
@@ -829,7 +960,7 @@ export const ModernDashboardStats = () => {
           </div>
         </TabsContent>
 
-        <TabsContent value="engagement" className="space-y-6">
+        <TabsContent value="engagement" className="space-y-5">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <StatCard
               icon={Heart}
@@ -928,18 +1059,34 @@ export const ModernDashboardStats = () => {
         </TabsContent>
       </Tabs>
       
-      {/* Enhanced Recent Activity */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
+      {/* Enhanced Recent Activity - Responsive */}
+      <div className="space-y-3">
+        {/* Mobile Activity Header */}
+        <div className="block lg:hidden">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <Clock className="w-4 h-4 text-muted-foreground" />
+              <h3 className="text-base font-semibold">Atividade Recente</h3>
+            </div>
+            <Button variant="outline" size="sm" className="h-8 px-3 text-xs">
+              <RotateCcw className="w-3 h-3 mr-1.5" />
+              Actualizar
+            </Button>
+          </div>
+        </div>
+
+        {/* Desktop Activity Header */}
+        <div className="hidden lg:flex lg:items-center lg:justify-between">
+          <div className="flex items-center gap-3">
             <Clock className="w-5 h-5 text-muted-foreground" />
             <h3 className="text-lg font-semibold">Atividade Recente</h3>
           </div>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" className="h-9 px-4 text-sm font-medium">
             <RotateCcw className="w-4 h-4 mr-2" />
-            Actualizar
+            Actualizar Dados
           </Button>
         </div>
+        
         <RecentActivity />
       </div>
     </div>
