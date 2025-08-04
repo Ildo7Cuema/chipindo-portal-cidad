@@ -478,15 +478,15 @@ const Admin = () => {
         {/* Main Content */}
         <main className="flex-1 overflow-hidden">
           <ResponsiveContainer>
-            {/* Content Header - Remove spacing for dashboard, notifications, news, concursos and acervo */}
-            {activeTab !== "dashboard" && activeTab !== "notifications" && activeTab !== "news" && activeTab !== "concursos" && activeTab !== "acervo" && <ResponsiveSection spacing="sm">
+            {/* Content Header - Remove spacing for content management tabs */}
+            {activeTab !== "dashboard" && activeTab !== "notifications" && activeTab !== "news" && activeTab !== "concursos" && activeTab !== "acervo" && activeTab !== "organigrama" && activeTab !== "departamentos" && activeTab !== "setores" && activeTab !== "content" && activeTab !== "carousel" && <ResponsiveSection spacing="sm">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
                   
                 </div>
               </ResponsiveSection>}
 
-            {/* Tab Content - Remove spacing for dashboard, notifications, news, concursos and acervo */}
-            <ResponsiveSection spacing={activeTab === "dashboard" || activeTab === "notifications" || activeTab === "news" || activeTab === "concursos" || activeTab === "acervo" ? "none" : "lg"}>
+            {/* Tab Content - Remove spacing for content management tabs */}
+            <ResponsiveSection spacing={activeTab === "dashboard" || activeTab === "notifications" || activeTab === "news" || activeTab === "concursos" || activeTab === "acervo" || activeTab === "organigrama" || activeTab === "departamentos" || activeTab === "setores" || activeTab === "content" || activeTab === "carousel" ? "none" : "lg"}>
               <div className="min-h-[calc(100vh-12rem)]">
                 {activeTab === "dashboard" && <ModernDashboardStats />}
                 {activeTab === "notifications" && <NotificationsManager />}
