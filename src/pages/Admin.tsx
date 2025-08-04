@@ -479,18 +479,11 @@ const Admin = () => {
         <main className="flex-1 overflow-hidden">
           <ResponsiveContainer>
             {/* Content Header - Remove spacing for dashboard and notifications */}
-            {activeTab !== "dashboard" && activeTab !== "notifications" && (
-              <ResponsiveSection spacing="sm">
+            {activeTab !== "dashboard" && activeTab !== "notifications" && <ResponsiveSection spacing="sm">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-                  <div>
-                    <ResponsiveText variant="h2" className="mb-2">{activeItem?.label}</ResponsiveText>
-                    <ResponsiveText variant="body" className="text-muted-foreground">
-                      {activeItem?.description}
-                    </ResponsiveText>
-                  </div>
+                  
                 </div>
-              </ResponsiveSection>
-            )}
+              </ResponsiveSection>}
 
             {/* Tab Content - Remove spacing for dashboard and notifications */}
             <ResponsiveSection spacing={activeTab === "dashboard" || activeTab === "notifications" ? "none" : "lg"}>
