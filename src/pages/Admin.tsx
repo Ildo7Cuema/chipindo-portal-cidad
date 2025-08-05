@@ -11,6 +11,7 @@ import { LogOut, Home, Bell, FileText, Trophy, FolderOpen, Network, Building2, B
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AdminLoading } from "@/components/ui/loading";
 import { useUserRole } from "@/hooks/useUserRole";
+import { useAccessControl } from "@/hooks/useAccessControl";
 import { useNotifications } from "@/hooks/useNotifications";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
@@ -42,6 +43,9 @@ import EventRegistrationsManager from "@/components/admin/EventRegistrationsMana
 import { TurismoAmbienteCarouselManager } from "@/components/admin/TurismoAmbienteCarouselManager";
 import { ServiceRequestsManager } from "@/components/admin/ServiceRequestsManager";
 import { InterestRegistrationsManager } from "@/components/admin/InterestRegistrationsManager";
+import { SectorAccessManager } from "@/components/admin/SectorAccessManager";
+import { AuditLogsManager } from "@/components/admin/AuditLogsManager";
+import { AccessDenied } from "@/components/ui/access-denied";
 interface NavigationItem {
   id: string;
   label: string;
@@ -71,6 +75,17 @@ const Admin = () => {
     canManageContent,
     role
   } = useUserRole(user);
+
+  // Get access control
+  const {
+    canManageUsers,
+    canViewAuditLogs,
+    canAccessSystemSettings,
+    canAccessItem,
+    getFilteredMenuItems,
+    getCurrentSector,
+    getCurrentSectorName
+  } = useAccessControl();
 
   // Get notifications data
   const {
@@ -219,6 +234,18 @@ const Admin = () => {
     icon: Users,
     description: "Gerir utilizadores do sistema",
     category: "Sistema"
+  }, {
+    id: "sector-access",
+    label: "Acesso por Setor",
+    icon: Building2,
+    description: "Gestão de acesso por setor estratégico",
+    category: "Sistema"
+  }, {
+    id: "audit-logs",
+    label: "Logs de Auditoria",
+    icon: Activity,
+    description: "Visualizar logs de auditoria dos utilizadores",
+    category: "Sistema"
   }];
   const adminOnlyItems: NavigationItem[] = [{
     id: "settings",
@@ -227,10 +254,13 @@ const Admin = () => {
     description: "Configurações do sistema",
     category: "Sistema"
   }];
-  const allItems = isAdmin ? [...navigationItems, ...adminOnlyItems] : navigationItems;
+  
+  // Filtrar itens baseado nas permissões do utilizador
+  const allItems = [...navigationItems, ...adminOnlyItems];
+  const filteredItems = getFilteredMenuItems(allItems);
 
-  // Agrupar itens por categoria
-  const groupedItems = allItems.reduce((acc, item) => {
+  // Agrupar itens por categoria (usando itens filtrados)
+  const groupedItems = filteredItems.reduce((acc, item) => {
     const category = item.category || 'Geral';
     if (!acc[category]) {
       acc[category] = [];
@@ -377,7 +407,7 @@ const Admin = () => {
           </Sheet>
           
           {/* Mobile Sidebar Component */}
-          <MobileSidebar open={sidebarOpen} onOpenChange={setSidebarOpen} navigationItems={allItems} activeTab={activeTab} onTabChange={setActiveTab} profile={profile} role={role} onSignOut={handleSignOut} getRoleLabel={getRoleLabel} getRoleBadgeVariant={getRoleBadgeVariant} />
+          <MobileSidebar open={sidebarOpen} onOpenChange={setSidebarOpen} navigationItems={filteredItems} activeTab={activeTab} onTabChange={setActiveTab} profile={profile} role={role} onSignOut={handleSignOut} getRoleLabel={getRoleLabel} getRoleBadgeVariant={getRoleBadgeVariant} />
 
           {/* Current Section */}
           <div className="flex-1 min-w-0">
@@ -509,8 +539,10 @@ const Admin = () => {
                 {activeTab === "events" && <EventsManager />}
                 {activeTab === "event-registrations" && <EventRegistrationsManager />}
                 {activeTab === "turismo-carousel" && <TurismoAmbienteCarouselManager />}
-                {activeTab === "users" && <UserManager currentUserRole={role} />}
-                {activeTab === "settings" && <SystemSettings />}
+                {activeTab === "users" && (canManageUsers ? <UserManager currentUserRole={role} /> : <AccessDenied title="Gestão de Utilizadores" message="Apenas administradores podem gerir utilizadores do sistema." />)}
+                {activeTab === "sector-access" && (canManageUsers ? <SectorAccessManager currentUserRole={role} currentUserSetorId={profile?.setor_id} /> : <AccessDenied title="Acesso por Setor" message="Apenas administradores podem configurar acesso por setor." />)}
+                {activeTab === "audit-logs" && (canViewAuditLogs ? <AuditLogsManager currentUserRole={role} /> : <AccessDenied title="Logs de Auditoria" message="Apenas administradores podem visualizar logs de auditoria." />)}
+                {activeTab === "settings" && (canAccessSystemSettings ? <SystemSettings /> : <AccessDenied title="Configurações do Sistema" message="Apenas administradores podem aceder às configurações do sistema." />)}
                 {/* Other tabs would be added here */}
                 {activeTab !== "dashboard" && activeTab !== "notifications" && activeTab !== "news" && activeTab !== "concursos" && activeTab !== "acervo" && activeTab !== "organigrama" && activeTab !== "departamentos" && activeTab !== "content" && activeTab !== "carousel" && activeTab !== "locations" && activeTab !== "emergency-contacts" && activeTab !== "transparency" && activeTab !== "ouvidoria" && activeTab !== "users" && activeTab !== "settings" && <ResponsiveCard className="text-center py-12">
                     <div className="w-16 h-16 bg-muted/20 rounded-xl flex items-center justify-center mx-auto mb-4">

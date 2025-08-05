@@ -1,1 +1,1 @@
-export * from './useHeroStats.mock';
+export * from './useHeroStats.real';

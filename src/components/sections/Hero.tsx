@@ -271,7 +271,7 @@ export const Hero = () => {
                   icon={UsersIcon}
                   label="População"
                   value={heroStatsLoading ? '...' : populationFormatted}
-                  description={heroStatsLoading ? 'Carregando...' : 'Habitantes prósperos'}
+                  description={heroStatsLoading ? 'Carregando...' : 'Habitantes registados'}
                   variant="glass"
                   size="lg"
                   className="hover:scale-105 transition-all duration-500 hover:shadow-2xl hover:shadow-yellow-500/10"

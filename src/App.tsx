@@ -17,7 +17,7 @@ import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import AllNews from "./pages/AllNews";
-import Services from "./pages/Services";
+
 import ConcursosHistory from "./pages/ConcursosHistory";
 import RegisterInterest from "./pages/RegisterInterest";
 import Privacidade from "./pages/Privacidade";
@@ -72,7 +72,7 @@ const App = () => (
                 <Route path="/acervo" element={<AcervoDigital />} />
                 <Route path="/organigrama" element={<Organigrama />} />
                 <Route path="/servicos" element={<Servicos />} />
-                <Route path="/services" element={<Services />} />
+
                 <Route path="/contactos" element={<Contactos />} />
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/admin" element={<Admin />} />

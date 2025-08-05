@@ -59,7 +59,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({ className })
 
   const secondaryNavItems = [
     { label: "Organigrama", href: "/organigrama", icon: UserIcon },
-    { label: "Serviços", href: "/services", icon: WrenchIcon },
+    { label: "Serviços", href: "/servicos", icon: WrenchIcon },
     { label: "Contactos", href: "/contactos", icon: PhoneIcon },
   ];
 

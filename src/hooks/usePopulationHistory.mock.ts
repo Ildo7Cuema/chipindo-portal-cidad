@@ -8,6 +8,7 @@ export interface PopulationRecord {
   area_total: number;
   density: number;
   source: string;
+  notes?: string;
   created_at: string;
   updated_at: string;
 }
@@ -29,6 +30,7 @@ const mockRecords: PopulationRecord[] = [
     area_total: 9532,
     density: 8.9,
     source: 'Censo Municipal',
+    notes: 'Dados do censo municipal realizado em 2024',
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z'
   },
@@ -40,6 +42,7 @@ const mockRecords: PopulationRecord[] = [
     area_total: 9532,
     density: 8.7,
     source: 'Estimativa INE',
+    notes: 'Estimativa baseada em projeções demográficas',
     created_at: '2023-01-01T00:00:00Z',
     updated_at: '2023-01-01T00:00:00Z'
   },
@@ -51,6 +54,7 @@ const mockRecords: PopulationRecord[] = [
     area_total: 9532,
     density: 8.5,
     source: 'Estimativa INE',
+    notes: 'Dados preliminares do INE',
     created_at: '2022-01-01T00:00:00Z',
     updated_at: '2022-01-01T00:00:00Z'
   }
@@ -147,6 +151,32 @@ export function usePopulationHistory() {
     }
   };
 
+  const updateRecord = async (id: string, updatedData: Partial<PopulationRecord>) => {
+    setLoading(true);
+    try {
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      setRecords(prev => prev.map(record => 
+        record.id === id 
+          ? { 
+              ...record, 
+              ...updatedData, 
+              updated_at: new Date().toISOString() 
+            }
+          : record
+      ));
+      
+      setError(null);
+      return { success: true };
+    } catch (err) {
+      console.error('Error updating record:', err);
+      setError('Erro ao atualizar registro');
+      return { success: false };
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const deleteRecord = async (id: string) => {
     setLoading(true);
     try {
@@ -176,6 +206,7 @@ export function usePopulationHistory() {
     fetchRecords,
     fetchGrowthCalculation,
     addRecord,
+    updateRecord,
     updateGrowthRateAutomatically,
     deleteRecord
   };

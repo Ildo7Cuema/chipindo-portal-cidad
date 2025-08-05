@@ -67,6 +67,8 @@ import {
   MenuIcon
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAccessControl } from "@/hooks/useAccessControl";
+import { SectorFilter } from "@/components/admin/SectorFilter";
 
 interface ConcursoItem {
   id: string;
@@ -101,7 +103,7 @@ interface Inscricao {
   telefone: string;
   email: string;
   observacoes?: string;
-  arquivos: any[];
+  arquivos: unknown[];
   created_at: string;
   categoria?: string;
 }
@@ -127,6 +129,131 @@ export const ConcursosManager = () => {
   // Estados para responsividade
   const [showFilters, setShowFilters] = useState(false);
   const [showBulkActions, setShowBulkActions] = useState(false);
+  const [novaCategoria, setNovaCategoria] = useState("");
+
+  // Controle de acesso
+  const { isAdmin, getCurrentSector, getCurrentSectorName } = useAccessControl();
+
+  // Função para obter placeholders específicos do setor
+  const getSectorPlaceholders = () => {
+    const currentSector = getCurrentSector();
+    const currentSectorName = getCurrentSectorName();
+    
+    const placeholders = {
+      title: "Ex: Concurso Público para Professor de Educação Primária",
+      area: "Ex: Direcção de Educação, Direcção de Saúde, etc.",
+      description: "Descreva detalhadamente o concurso, suas finalidades e objectivos...",
+      requirements: "Liste os requisitos necessários para o concurso...",
+      contact_info: "Telefone, email, endereço para mais informações...",
+      location: "Ex: Chipindo Sede",
+      salary_range: "Ex: 150.000 - 200.000 Kz",
+      nova_categoria: "Digite uma categoria (ex: Professor Primário, Enfermeiro, etc.)"
+    };
+
+    // Personalizar placeholders baseado no setor
+    switch (currentSector) {
+      case 'educacao':
+        return {
+          title: "Ex: Concurso Público para Professor de Matemática",
+          area: "Ex: Direcção de Educação e Ensino",
+          description: "Descreva o cargo de professor, disciplinas, nível de ensino...",
+          requirements: "Licenciatura em Educação, experiência em ensino, conhecimentos pedagógicos...",
+          contact_info: "Direcção de Educação, telefone: 123-456-789, email: educacao@chipindo.ao",
+          location: "Ex: Escola Primária de Chipindo",
+          salary_range: "Ex: 200.000 - 300.000 Kz",
+          nova_categoria: "Ex: Professor de Matemática, Professor de Português, Director de Escola"
+        };
+      
+      case 'saude':
+        return {
+          title: "Ex: Concurso Público para Enfermeiro",
+          area: "Ex: Direcção de Saúde Pública",
+          description: "Descreva o cargo na área da saúde, responsabilidades, horários...",
+          requirements: "Licenciatura em Enfermagem, registro profissional, experiência clínica...",
+          contact_info: "Direcção de Saúde, telefone: 123-456-789, email: saude@chipindo.ao",
+          location: "Ex: Hospital Municipal de Chipindo",
+          salary_range: "Ex: 250.000 - 350.000 Kz",
+          nova_categoria: "Ex: Enfermeiro, Médico, Técnico de Laboratório, Farmacêutico"
+        };
+      
+      case 'agricultura':
+        return {
+          title: "Ex: Concurso Público para Técnico Agrícola",
+          area: "Ex: Direcção de Agricultura e Desenvolvimento Rural",
+          description: "Descreva o cargo na área agrícola, responsabilidades técnicas...",
+          requirements: "Licenciatura em Agronomia, experiência em extensão rural...",
+          contact_info: "Direcção de Agricultura, telefone: 123-456-789, email: agricultura@chipindo.ao",
+          location: "Ex: Centro de Extensão Agrícola",
+          salary_range: "Ex: 180.000 - 250.000 Kz",
+          nova_categoria: "Ex: Técnico Agrícola, Engenheiro Agrónomo, Extensionista Rural"
+        };
+      
+      case 'sector-mineiro':
+        return {
+          title: "Ex: Concurso Público para Técnico de Minas",
+          area: "Ex: Direcção de Recursos Minerais",
+          description: "Descreva o cargo na área mineira, responsabilidades técnicas...",
+          requirements: "Licenciatura em Engenharia de Minas, experiência em exploração...",
+          contact_info: "Direcção de Recursos Minerais, telefone: 123-456-789, email: minerais@chipindo.ao",
+          location: "Ex: Centro de Recursos Minerais",
+          salary_range: "Ex: 300.000 - 400.000 Kz",
+          nova_categoria: "Ex: Técnico de Minas, Engenheiro de Minas, Geólogo"
+        };
+      
+      case 'desenvolvimento-economico':
+        return {
+          title: "Ex: Concurso Público para Economista",
+          area: "Ex: Direcção de Desenvolvimento Económico",
+          description: "Descreva o cargo na área económica, responsabilidades de planeamento...",
+          requirements: "Licenciatura em Economia, experiência em planeamento económico...",
+          contact_info: "Direcção de Desenvolvimento Económico, telefone: 123-456-789, email: economia@chipindo.ao",
+          location: "Ex: Centro de Desenvolvimento Económico",
+          salary_range: "Ex: 250.000 - 350.000 Kz",
+          nova_categoria: "Ex: Economista, Analista Económico, Técnico de Planeamento"
+        };
+      
+      case 'cultura':
+        return {
+          title: "Ex: Concurso Público para Animador Cultural",
+          area: "Ex: Direcção de Cultura e Turismo",
+          description: "Descreva o cargo na área cultural, responsabilidades de animação...",
+          requirements: "Licenciatura em Artes ou Cultura, experiência em animação cultural...",
+          contact_info: "Direcção de Cultura, telefone: 123-456-789, email: cultura@chipindo.ao",
+          location: "Ex: Centro Cultural de Chipindo",
+          salary_range: "Ex: 150.000 - 220.000 Kz",
+          nova_categoria: "Ex: Animador Cultural, Técnico de Museu, Gestor Cultural"
+        };
+      
+      case 'tecnologia':
+        return {
+          title: "Ex: Concurso Público para Técnico de Informática",
+          area: "Ex: Direcção de Tecnologia e Inovação",
+          description: "Descreva o cargo na área tecnológica, responsabilidades técnicas...",
+          requirements: "Licenciatura em Informática, experiência em desenvolvimento...",
+          contact_info: "Direcção de Tecnologia, telefone: 123-456-789, email: tecnologia@chipindo.ao",
+          location: "Ex: Centro de Tecnologia de Chipindo",
+          salary_range: "Ex: 200.000 - 300.000 Kz",
+          nova_categoria: "Ex: Técnico de Informática, Desenvolvedor, Analista de Sistemas"
+        };
+      
+      case 'energia-agua':
+        return {
+          title: "Ex: Concurso Público para Técnico de Energia",
+          area: "Ex: Direcção de Energia e Águas",
+          description: "Descreva o cargo na área de energia e águas, responsabilidades técnicas...",
+          requirements: "Licenciatura em Engenharia Electrotécnica, experiência em distribuição...",
+          contact_info: "Direcção de Energia e Águas, telefone: 123-456-789, email: energia@chipindo.ao",
+          location: "Ex: Central de Distribuição de Energia",
+          salary_range: "Ex: 220.000 - 320.000 Kz",
+          nova_categoria: "Ex: Técnico de Energia, Técnico de Águas, Engenheiro Electrotécnico"
+        };
+      
+      default:
+        return placeholders;
+    }
+  };
+
+  const sectorPlaceholders = getSectorPlaceholders();
 
 
   const [formData, setFormData] = useState({
@@ -168,33 +295,54 @@ export const ConcursosManager = () => {
 
   const fetchConcursos = async () => {
     try {
+      // Simplificar a query para evitar problemas com colunas inexistentes
       const { data, error } = await supabase
         .from('concursos')
         .select('*')
         .order('created_at', { ascending: false });
 
       if (error) {
+        console.error('Erro na query de concursos:', error);
         toast({
           title: "Erro ao carregar concursos",
           description: error.message,
           variant: "destructive",
         });
-      } else {
-        // Simular campos adicionais baseados no ID
-        const enrichedData = (data || []).map((item, index) => ({
-          ...item,
-          category: getCategoryByIndex(index),
-          location: getLocationByIndex(index),
-          salary_range: getSalaryRangeByIndex(index),
-          positions_available: getPositionsAvailableByIndex(index),
-          status: getStatusByDeadline(item.deadline),
-          priority: getPriorityByIndex(index),
-          views_count: Math.floor(Math.random() * 1000) + 50,
-          applications_count: Math.floor(Math.random() * 200) + 10
-        }));
-        setConcursos(enrichedData);
+        return;
       }
+
+      // Filtrar por setor no frontend se não for admin
+      let filteredData = data || [];
+      if (!isAdmin) {
+        const currentSector = getCurrentSector();
+        const currentSectorName = getCurrentSectorName();
+        
+        if (currentSector && currentSectorName) {
+          // Filtrar no frontend por título ou descrição
+          filteredData = filteredData.filter(concurso => 
+            (concurso.title && concurso.title.toLowerCase().includes(currentSectorName.toLowerCase())) ||
+            (concurso.description && concurso.description.toLowerCase().includes(currentSectorName.toLowerCase()))
+          );
+        }
+      }
+
+      // Simular campos adicionais baseados no ID
+      const enrichedData = filteredData.map((item, index) => ({
+        ...item,
+        category: getCategoryByIndex(index),
+        location: getLocationByIndex(index),
+        salary_range: getSalaryRangeByIndex(index),
+        positions_available: getPositionsAvailableByIndex(index),
+        status: getStatusByDeadline(item.deadline),
+        priority: getPriorityByIndex(index),
+        views_count: Math.floor(Math.random() * 1000) + 50,
+        applications_count: Math.floor(Math.random() * 200) + 10,
+        categorias_disponiveis: parseCategoriasDisponiveis(item.categorias_disponiveis)
+      }));
+      
+      setConcursos(enrichedData);
     } catch (error) {
+      console.error('Erro inesperado ao carregar concursos:', error);
       toast({
         title: "Erro inesperado",
         description: "Não foi possível carregar os concursos.",
@@ -235,6 +383,38 @@ export const ConcursosManager = () => {
     const now = new Date();
     const deadlineDate = new Date(deadline);
     return deadlineDate > now ? 'active' : 'closed';
+  };
+
+  const parseCategoriasDisponiveis = (categorias: unknown): string[] => {
+    if (!categorias) return [];
+    if (Array.isArray(categorias)) return categorias;
+    if (typeof categorias === 'string') {
+      try {
+        const parsed = JSON.parse(categorias);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    }
+    return [];
+  };
+
+  const adicionarCategoria = () => {
+    if (novaCategoria.trim() && !formData.categorias_disponiveis.includes(novaCategoria.trim())) {
+      setFormData({
+        ...formData,
+        categorias_disponiveis: [...formData.categorias_disponiveis, novaCategoria.trim()]
+      });
+      setNovaCategoria("");
+    }
+  };
+
+  const removerCategoria = (index: number) => {
+    const novasCategorias = formData.categorias_disponiveis.filter((_, i) => i !== index);
+    setFormData({
+      ...formData,
+      categorias_disponiveis: novasCategorias
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -281,10 +461,10 @@ export const ConcursosManager = () => {
       setIsDialogOpen(false);
       resetForm();
       fetchConcursos();
-    } catch (error: any) {
+    } catch (error: unknown) {
         toast({
         title: "Erro ao actualizar",
-          description: error.message,
+          description: error instanceof Error ? error.message : "Erro desconhecido",
           variant: "destructive",
         });
     } finally {
@@ -308,6 +488,7 @@ export const ConcursosManager = () => {
       area: "",
       categorias_disponiveis: []
     });
+    setNovaCategoria("");
     setEditingConcurso(null);
   };
 
@@ -325,9 +506,10 @@ export const ConcursosManager = () => {
       salary_range: concurso.salary_range || "",
       positions_available: concurso.positions_available || 1,
       priority: concurso.priority || 'normal',
-      area: "",
-      categorias_disponiveis: []
+      area: concurso.area || "",
+      categorias_disponiveis: parseCategoriasDisponiveis(concurso.categorias_disponiveis)
     });
+    setNovaCategoria("");
     setIsDialogOpen(true);
   };
 
@@ -374,10 +556,10 @@ export const ConcursosManager = () => {
         description: `Concurso ${published ? 'publicado' : 'despublicado'} com sucesso.`,
       });
       fetchConcursos();
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erro ao atualizar",
-        description: error.message,
+        description: error instanceof Error ? error.message : "Erro desconhecido",
         variant: "destructive",
       });
     }
@@ -422,10 +604,10 @@ export const ConcursosManager = () => {
 
       setSelectedIds([]);
       fetchConcursos();
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erro na operação",
-        description: error.message,
+        description: error instanceof Error ? error.message : "Erro desconhecido",
         variant: "destructive",
       });
     }
@@ -591,19 +773,23 @@ export const ConcursosManager = () => {
     setInscricoesModalOpen(true);
     setInscricoesLoading(true);
     try {
-      // Commented out since inscricoes table doesn't exist
-      // const { data, error } = await supabase
-      //   .from('inscricoes')
-      //   .select('*')
-      //   .eq('concurso_id', concurso.id);
-      // if (error) throw error;
-      setInscricoes([]);
+      const { data, error } = await supabase
+        .from('inscricoes')
+        .select('*')
+        .eq('concurso_id', concurso.id)
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      
+      setInscricoes(data || []);
     } catch (error) {
+      console.error('Erro ao carregar inscrições:', error);
       toast({
         title: "Erro ao carregar inscritos",
         description: "Não foi possível carregar a lista de inscritos.",
         variant: "destructive"
       });
+      setInscricoes([]);
     } finally {
       setInscricoesLoading(false);
     }
@@ -642,9 +828,10 @@ export const ConcursosManager = () => {
     const exportData = {
       title: `Lista de Inscritos - ${inscricoesConcurso.title}`,
       subtitle: 'Portal Municipal de Chipindo',
-      headers: ['Nome', 'Idade', 'Categoria', 'Email', 'Telefone', 'Data de Inscrição'],
+      headers: ['Nome', 'Nº Do Bilhete', 'Idade', 'Categoria', 'Email', 'Telefone', 'Data de Inscrição'],
       rows: sorted.map(i => [
         i.nome_completo,
+        i.bilhete_identidade,
         getIdade(i.data_nascimento).toString(),
         i.categoria || '-',
         i.email,
@@ -714,6 +901,9 @@ export const ConcursosManager = () => {
 
   return (
     <div className="space-y-6">
+      {/* Sector Filter */}
+      <SectorFilter />
+      
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex-1 min-w-0">
@@ -962,7 +1152,7 @@ export const ConcursosManager = () => {
                   id="title"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                          placeholder="Ex: Concurso Público para Professor de Educação Primária"
+                          placeholder={sectorPlaceholders.title}
                           className="h-10"
                   required
                 />
@@ -977,7 +1167,7 @@ export const ConcursosManager = () => {
                           id="area"
                           value={formData.area}
                           onChange={e => setFormData({ ...formData, area: e.target.value })}
-                          placeholder="Ex: Direcção de Educação, Direcção de Saúde, etc."
+                          placeholder={sectorPlaceholders.area}
                           className="h-10"
                           required
                         />
@@ -993,7 +1183,7 @@ export const ConcursosManager = () => {
                   id="description"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                        placeholder="Descreva detalhadamente o concurso, suas finalidades e objectivos..."
+                        placeholder={sectorPlaceholders.description}
                   rows={4}
                         className="resize-none"
                   required
@@ -1037,7 +1227,7 @@ export const ConcursosManager = () => {
                           id="location"
                           value={formData.location}
                           onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                          placeholder="Ex: Chipindo Sede"
+                          placeholder={sectorPlaceholders.location}
                           className="h-10"
                         />
                       </div>
@@ -1051,7 +1241,7 @@ export const ConcursosManager = () => {
                           id="salary_range"
                           value={formData.salary_range}
                           onChange={(e) => setFormData({ ...formData, salary_range: e.target.value })}
-                          placeholder="Ex: 150.000 - 200.000 Kz"
+                          placeholder={sectorPlaceholders.salary_range}
                           className="h-10"
                         />
                       </div>
@@ -1093,7 +1283,7 @@ export const ConcursosManager = () => {
                           id="requirements"
                           value={formData.requirements}
                           onChange={(e) => setFormData({ ...formData, requirements: e.target.value })}
-                          placeholder="Liste os requisitos necessários para o concurso..."
+                          placeholder={sectorPlaceholders.requirements}
                           rows={4}
                           className="resize-none"
                         />
@@ -1108,7 +1298,7 @@ export const ConcursosManager = () => {
                   id="contact_info"
                   value={formData.contact_info}
                   onChange={(e) => setFormData({ ...formData, contact_info: e.target.value })}
-                          placeholder="Telefone, email, endereço para mais informações..."
+                          placeholder={sectorPlaceholders.contact_info}
                           rows={3}
                           className="resize-none"
                 />
@@ -1116,6 +1306,86 @@ export const ConcursosManager = () => {
                     </div>
               </div>
               
+                  <Separator />
+
+                  {/* Categorias Disponíveis Section */}
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-lg bg-purple-100 dark:bg-purple-900/20 flex items-center justify-center">
+                        <Tag className="w-3 h-3 text-purple-600 dark:text-purple-400" />
+                      </div>
+                      <h3 className="text-base font-semibold">Categorias Disponíveis</h3>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="categorias_disponiveis" className="text-sm font-medium flex items-center gap-2">
+                          <Tag className="w-3 h-3" />
+                          Categorias para Candidatura
+                        </Label>
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-2">
+                            <Input
+                              id="nova_categoria"
+                              placeholder={sectorPlaceholders.nova_categoria}
+                              value={novaCategoria}
+                              onChange={(e) => setNovaCategoria(e.target.value)}
+                              className="flex-1"
+                              onKeyPress={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  adicionarCategoria();
+                                }
+                              }}
+                            />
+                            <Button
+                              type="button"
+                              onClick={adicionarCategoria}
+                              disabled={!novaCategoria.trim()}
+                              size="sm"
+                              className="bg-purple-600 hover:bg-purple-700"
+                            >
+                              <Plus className="w-3 h-3" />
+                            </Button>
+                          </div>
+                          
+                          {formData.categorias_disponiveis.length > 0 && (
+                            <div className="space-y-2">
+                              <Label className="text-xs font-medium text-muted-foreground">
+                                Categorias adicionadas:
+                              </Label>
+                              <div className="flex flex-wrap gap-2">
+                                {formData.categorias_disponiveis.map((categoria, index) => (
+                                  <div
+                                    key={index}
+                                    className="flex items-center gap-1 bg-purple-100 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 px-2 py-1 rounded-md text-sm"
+                                  >
+                                    <span>{categoria}</span>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => removerCategoria(index)}
+                                      className="h-4 w-4 p-0 hover:bg-purple-200 dark:hover:bg-purple-800"
+                                    >
+                                      <XIcon className="w-3 h-3" />
+                                    </Button>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          
+                          {formData.categorias_disponiveis.length === 0 && (
+                            <p className="text-xs text-muted-foreground">
+                              Adicione categorias para que os candidatos possam escolher ao se inscrever.
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
                   <Separator />
 
                   {/* Status Section */}
@@ -1856,6 +2126,7 @@ export const ConcursosManager = () => {
                       <tr className="bg-muted">
                         <th className="p-2 text-left">#</th>
                         <th className="p-2 text-left">Nome</th>
+                        <th className="p-2 text-left hidden sm:table-cell">Nº Do Bilhete</th>
                         <th className="p-2 text-left hidden sm:table-cell">Idade</th>
                         <th className="p-2 text-left hidden sm:table-cell">Categoria</th>
                         <th className="p-2 text-left hidden sm:table-cell">Email</th>
@@ -1871,10 +2142,11 @@ export const ConcursosManager = () => {
                             <div>
                               <div className="font-medium">{i.nome_completo}</div>
                               <div className="text-xs text-muted-foreground sm:hidden">
-                                {getIdade(i.data_nascimento)} anos • {i.categoria || '-'}
+                                BI: {i.bilhete_identidade} • {getIdade(i.data_nascimento)} anos • {i.categoria || '-'}
                               </div>
                             </div>
                           </td>
+                          <td className="p-2 hidden sm:table-cell">{i.bilhete_identidade}</td>
                           <td className="p-2 hidden sm:table-cell">{getIdade(i.data_nascimento)}</td>
                           <td className="p-2 hidden sm:table-cell">{i.categoria || '-'}</td>
                           <td className="p-2 hidden sm:table-cell">{i.email}</td>

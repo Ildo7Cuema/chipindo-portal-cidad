@@ -408,7 +408,7 @@ const Index = () => {
               <Button 
                 variant="institutional" 
                 size="lg"
-                onClick={() => window.location.href = '/services'}
+                onClick={() => window.location.href = '/servicos'}
                 className="group"
               >
                 Ver Todos os Serviços

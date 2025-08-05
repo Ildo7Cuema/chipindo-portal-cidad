@@ -1,5 +1,7 @@
-import { useState, useEffect } from 'react';
+// ARQUIVO MOCK DESABILITADO - USANDO DADOS REAIS DO BANCO
+// Este arquivo foi substituído por useOuvidoria.ts que se conecta ao Supabase
 
+/*
 export interface OuvidoriaCategory {
   id: string;
   nome: string;
@@ -67,8 +69,128 @@ const mockManifestacoes: OuvidoriaItem[] = [
     telefone: '923456789',
     categoria_id: '1',
     tipo: 'reclamacao',
-    assunto: 'Problema na estrada',
-    descricao: 'Buraco na estrada principal causando acidentes',
+    assunto: 'Problema na estrada - Infraestrutura',
+    descricao: 'Buraco na estrada principal causando acidentes. Necessita intervenção urgente do setor de infraestrutura.',
+    status: 'em_analise',
+    anexos: [],
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  },
+  {
+    id: '2',
+    protocolo: 'OUV-2024-002',
+    nome: 'Maria Santos',
+    email: 'maria@exemplo.com',
+    telefone: '934567890',
+    categoria_id: '2',
+    tipo: 'sugestao',
+    assunto: 'Melhoria na escola municipal - Educação',
+    descricao: 'Sugestão para instalar ventiladores nas salas de aula da escola municipal. Setor de educação precisa de melhorias.',
+    status: 'pendente',
+    anexos: [],
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  },
+  {
+    id: '3',
+    protocolo: 'OUV-2024-003',
+    nome: 'Pedro Costa',
+    email: 'pedro@exemplo.com',
+    telefone: '945678901',
+    categoria_id: '3',
+    tipo: 'elogio',
+    assunto: 'Excelente atendimento no hospital - Saúde',
+    descricao: 'Quero elogiar o atendimento recebido no hospital municipal. O setor de saúde está funcionando muito bem.',
+    status: 'resolvido',
+    anexos: [],
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  },
+  {
+    id: '4',
+    protocolo: 'OUV-2024-004',
+    nome: 'Ana Oliveira',
+    email: 'ana@exemplo.com',
+    telefone: '956789012',
+    categoria_id: '1',
+    tipo: 'reclamacao',
+    assunto: 'Falta de água no bairro - Energia e Água',
+    descricao: 'Há 3 dias sem água no bairro central. O setor de energia e água precisa resolver este problema urgentemente.',
+    status: 'em_analise',
+    anexos: [],
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  },
+  {
+    id: '5',
+    protocolo: 'OUV-2024-005',
+    nome: 'Carlos Mendes',
+    email: 'carlos@exemplo.com',
+    telefone: '967890123',
+    categoria_id: '2',
+    tipo: 'sugestao',
+    assunto: 'Melhoria na agricultura local - Agricultura',
+    descricao: 'Sugestão para implementar programa de apoio aos agricultores locais. O setor de agricultura precisa de mais investimento.',
+    status: 'pendente',
+    anexos: [],
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  },
+  {
+    id: '6',
+    protocolo: 'OUV-2024-006',
+    nome: 'Lucia Ferreira',
+    email: 'lucia@exemplo.com',
+    telefone: '978901234',
+    categoria_id: '1',
+    tipo: 'reclamacao',
+    assunto: 'Problema na mina - Setor Mineiro',
+    descricao: 'Reclamação sobre condições de segurança na mina local. O setor mineiro precisa de mais fiscalização.',
+    status: 'em_analise',
+    anexos: [],
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  },
+  {
+    id: '7',
+    protocolo: 'OUV-2024-007',
+    nome: 'Roberto Alves',
+    email: 'roberto@exemplo.com',
+    telefone: '989012345',
+    categoria_id: '3',
+    tipo: 'elogio',
+    assunto: 'Evento cultural excelente - Cultura',
+    descricao: 'Elogio ao evento cultural realizado no centro da cidade. O setor de cultura está fazendo um excelente trabalho.',
+    status: 'resolvido',
+    anexos: [],
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  },
+  {
+    id: '8',
+    protocolo: 'OUV-2024-008',
+    nome: 'Sofia Martins',
+    email: 'sofia@exemplo.com',
+    telefone: '990123456',
+    categoria_id: '2',
+    tipo: 'sugestao',
+    assunto: 'Melhoria na tecnologia municipal - Tecnologia',
+    descricao: 'Sugestão para modernizar os sistemas da prefeitura. O setor de tecnologia precisa de atualizações.',
+    status: 'pendente',
+    anexos: [],
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  },
+  {
+    id: '9',
+    protocolo: 'OUV-2024-009',
+    nome: 'Antonio Silva',
+    email: 'antonio@exemplo.com',
+    telefone: '901234567',
+    categoria_id: '1',
+    tipo: 'reclamacao',
+    assunto: 'Problema no desenvolvimento económico - Desenvolvimento Económico',
+    descricao: 'Reclamação sobre falta de oportunidades de emprego. O setor de desenvolvimento económico precisa de mais iniciativas.',
     status: 'em_analise',
     anexos: [],
     created_at: new Date().toISOString(),
@@ -96,11 +218,47 @@ export function useOuvidoria() {
     }
   };
 
-  const fetchManifestacoes = async () => {
+  const fetchManifestacoes = async (sectorFilter?: string) => {
     setLoading(true);
     try {
       await new Promise(resolve => setTimeout(resolve, 100));
-      setManifestacoes(mockManifestacoes);
+      
+      let filteredManifestacoes = mockManifestacoes;
+      
+      // Filtrar por setor se especificado
+      if (sectorFilter && sectorFilter !== 'all') {
+        console.log('Ouvidoria - Aplicando filtro para setor:', sectorFilter);
+        
+        filteredManifestacoes = mockManifestacoes.filter(manifestacao => {
+          const assunto = manifestacao.assunto.toLowerCase();
+          const descricao = manifestacao.descricao.toLowerCase();
+          const sectorName = sectorFilter.toLowerCase();
+          
+          // Mapeamento de setores para palavras-chave
+          const sectorKeywords: Record<string, string[]> = {
+            'educação': ['educação', 'escola', 'escolar', 'académico', 'professor', 'aluno'],
+            'saúde': ['saúde', 'hospital', 'médico', 'enfermeiro', 'clínica', 'atendimento médico'],
+            'agricultura': ['agricultura', 'agricultor', 'fazenda', 'colheita', 'campo'],
+            'setor mineiro': ['mina', 'mineiro', 'mineração', 'mineral'],
+            'desenvolvimento económico': ['desenvolvimento económico', 'emprego', 'economia', 'negócio'],
+            'cultura': ['cultura', 'cultural', 'arte', 'evento cultural', 'teatro'],
+            'tecnologia': ['tecnologia', 'tecnológico', 'sistema', 'digital', 'computador'],
+            'energia e água': ['energia', 'água', 'eletricidade', 'abastecimento de água']
+          };
+          
+          // Verificar se o setor tem palavras-chave específicas
+          const keywords = sectorKeywords[sectorName] || [sectorName];
+          
+          // Filtrar baseado no conteúdo da manifestação
+          return keywords.some(keyword => 
+            assunto.includes(keyword) || descricao.includes(keyword)
+          );
+        });
+        
+        console.log('Ouvidoria - Total filtrado:', filteredManifestacoes.length);
+      }
+      
+      setManifestacoes(filteredManifestacoes);
       setError(null);
     } catch (err) {
       console.error('Error fetching manifestações:', err);
@@ -144,7 +302,8 @@ export function useOuvidoria() {
 
   useEffect(() => {
     fetchCategories();
-    fetchManifestacoes();
+    // Removido fetchManifestacoes() daqui para evitar conflito
+    // As manifestações serão carregadas pelo componente
   }, []);
 
   return {
@@ -157,3 +316,7 @@ export function useOuvidoria() {
     submitManifestacao
   };
 }
+*/
+
+// Re-export do hook real
+export * from './useOuvidoria';

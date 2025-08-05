@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { 
@@ -19,17 +18,22 @@ import {
   Crown, 
   Lock,
   Mail,
-  Phone,
   Building2,
   Calendar,
-  Clock,
-  Briefcase,
   X,
   Save,
-  Loader2
+  Loader2,
+  GraduationCap,
+  Heart,
+  Sprout,
+  Pickaxe,
+  TrendingUp,
+  Palette,
+  Cpu,
+  Zap
 } from "lucide-react";
 import { toast } from "sonner";
-import { UserRole } from "@/hooks/useUserRole";
+import { UserRole, isSectorRole, getSectorName } from "@/hooks/useUserRole";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -39,8 +43,15 @@ interface UserProfile {
   email: string;
   full_name: string | null;
   role: string | null;
+  setor_id: string | null;
   created_at: string;
   updated_at: string;
+}
+
+interface SetorEstrategico {
+  id: string;
+  nome: string;
+  slug: string;
 }
 
 interface UserManagerProps {
@@ -51,22 +62,59 @@ interface FormData {
   email: string;
   full_name: string;
   role: UserRole;
+  setor_id?: string;
+  customPassword?: string;
 }
 
 const userRoles = [
   { value: 'user', label: 'Usuário', icon: Users, color: 'gray', description: 'Acesso básico ao sistema' },
   { value: 'editor', label: 'Editor', icon: Edit, color: 'blue', description: 'Pode editar conteúdo' },
-  { value: 'admin', label: 'Administrador', icon: Crown, color: 'red', description: 'Acesso total ao sistema' }
+  { value: 'admin', label: 'Administrador', icon: Crown, color: 'red', description: 'Acesso total ao sistema' },
+  { value: 'educacao', label: 'Direção de Educação', icon: GraduationCap, color: 'blue', description: 'Acesso à área de Educação' },
+  { value: 'saude', label: 'Direção de Saúde', icon: Heart, color: 'red', description: 'Acesso à área de Saúde' },
+  { value: 'agricultura', label: 'Direção de Agricultura', icon: Sprout, color: 'green', description: 'Acesso à área de Agricultura' },
+  { value: 'sector-mineiro', label: 'Direção do Setor Mineiro', icon: Pickaxe, color: 'yellow', description: 'Acesso ao Setor Mineiro' },
+  { value: 'desenvolvimento-economico', label: 'Direção de Desenvolvimento Económico', icon: TrendingUp, color: 'emerald', description: 'Acesso ao Desenvolvimento Económico' },
+  { value: 'cultura', label: 'Direção de Cultura', icon: Palette, color: 'purple', description: 'Acesso à área de Cultura' },
+  { value: 'tecnologia', label: 'Direção de Tecnologia', icon: Cpu, color: 'indigo', description: 'Acesso à área de Tecnologia' },
+  { value: 'energia-agua', label: 'Direção de Energia e Água', icon: Zap, color: 'cyan', description: 'Acesso à área de Energia e Água' }
+];
+
+// Dados mockados para demonstração
+const mockSetores: SetorEstrategico[] = [
+  { id: '1', nome: 'Educação', slug: 'educacao' },
+  { id: '2', nome: 'Saúde', slug: 'saude' },
+  { id: '3', nome: 'Agricultura', slug: 'agricultura' },
+  { id: '4', nome: 'Setor Mineiro', slug: 'sector-mineiro' },
+  { id: '5', nome: 'Desenvolvimento Económico', slug: 'desenvolvimento-economico' },
+  { id: '6', nome: 'Cultura', slug: 'cultura' },
+  { id: '7', nome: 'Tecnologia', slug: 'tecnologia' },
+  { id: '8', nome: 'Energia e Água', slug: 'energia-agua' }
+];
+
+const mockUsers: UserProfile[] = [
+  { id: '1', user_id: 'auth-1', email: 'admin@chipindo.gov.ao', full_name: 'Administrador', role: 'admin', setor_id: null, created_at: '2024-01-01', updated_at: '2024-01-01' },
+  { id: '2', user_id: 'auth-2', email: 'joao.silva@chipindo.gov.ao', full_name: 'João Silva', role: 'educacao', setor_id: '1', created_at: '2024-01-15', updated_at: '2024-01-15' },
+  { id: '3', user_id: 'auth-3', email: 'maria.santos@chipindo.gov.ao', full_name: 'Maria Santos', role: 'saude', setor_id: '2', created_at: '2024-01-20', updated_at: '2024-01-20' },
+  { id: '4', user_id: 'auth-4', email: 'carlos.ferreira@chipindo.gov.ao', full_name: 'Carlos Ferreira', role: 'agricultura', setor_id: '3', created_at: '2024-01-25', updated_at: '2024-01-25' },
+  { id: '5', user_id: 'auth-5', email: 'editor@chipindo.gov.ao', full_name: 'Editor', role: 'editor', setor_id: null, created_at: '2024-01-10', updated_at: '2024-01-10' }
 ];
 
 export function UserManager({ currentUserRole }: UserManagerProps) {
   const [users, setUsers] = useState<UserProfile[]>([]);
+  const [setores, setSetores] = useState<SetorEstrategico[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRole, setFilterRole] = useState('all');
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'inactive'>('all');
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showRoleDialog, setShowRoleDialog] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null);
+  const [editFormData, setEditFormData] = useState({ email: '', full_name: '' });
+  const [newRole, setNewRole] = useState<UserRole>('user');
   const [saving, setSaving] = useState(false);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [stats, setStats] = useState({
     total: 0,
     active: 0,
@@ -77,10 +125,33 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
   const [formData, setFormData] = useState<FormData>({
     email: '',
     full_name: '',
-    role: 'user'
+    role: 'user',
+    customPassword: ''
   });
 
-  // Fetch real users from Supabase
+  // Fetch setores estratégicos
+  const fetchSetores = async () => {
+    try {
+      const { data: setoresData, error } = await supabase
+        .from('setores_estrategicos')
+        .select('id, nome, slug')
+        .eq('ativo', true)
+        .order('ordem, nome');
+
+      if (error) {
+        console.error('Error fetching setores:', error);
+        toast.error('Erro ao carregar setores');
+        return;
+      }
+
+      setSetores(setoresData || []);
+    } catch (error) {
+      console.error('Error fetching setores:', error);
+      toast.error('Erro ao carregar setores');
+    }
+  };
+
+  // Fetch users
   const fetchUsers = async () => {
     try {
       setLoading(true);
@@ -96,7 +167,11 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
         return;
       }
 
-      setUsers(profiles || []);
+      const validUsers = profiles?.filter(user => 
+        user.email && user.full_name
+      ) || [];
+
+      setUsers(validUsers);
     } catch (error) {
       console.error('Error fetching users:', error);
       toast.error('Erro ao carregar utilizadores');
@@ -106,6 +181,7 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
   };
 
   useEffect(() => {
+    fetchSetores();
     fetchUsers();
   }, []);
 
@@ -138,7 +214,8 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
 
   const getRoleLabel = (role: string | null) => {
     if (!role) return 'Usuário';
-    return userRoles.find(r => r.value === role)?.label || role;
+    const roleConfig = userRoles.find(r => r.value === role);
+    return roleConfig?.label || role;
   };
 
   const getRoleBadgeVariant = (role: string | null) => {
@@ -148,55 +225,109 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
       case 'editor':
         return 'default' as const;
       default:
+        if (isSectorRole(role as UserRole)) {
+          return 'outline' as const;
+        }
         return 'secondary' as const;
     }
+  };
+
+  const getSetorName = (setorId: string | null) => {
+    if (!setorId) return '';
+    const setor = setores.find(s => s.id === setorId);
+    return setor?.nome || '';
   };
 
   const handleAddUser = async () => {
     try {
       setSaving(true);
 
-      // First create the user in auth
-      const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+      // Determinar o setor_id baseado no role selecionado
+      let setorId = null;
+      if (isSectorRole(formData.role)) {
+        const setor = setores.find(s => s.slug === formData.role);
+        setorId = setor?.id || null;
+      }
+
+      // Verificar se o email já existe na tabela profiles
+      const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('email', formData.email)
+        .single();
+
+      if (existingProfile) {
+        toast.error('Já existe um utilizador com este email');
+        return;
+      }
+
+      // Gerar uma senha temporária
+                  const tempPassword = formData.customPassword || Math.random().toString(36).slice(-8) + '!1A';
+
+      // 1. Criar utilizador no Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
-        password: 'tempPassword123!', // Temporary password
-        email_confirm: true,
-        user_metadata: {
-          full_name: formData.full_name,
-          role: formData.role
+        password: tempPassword,
+        options: {
+          data: {
+            full_name: formData.full_name,
+            role: formData.role
+          }
         }
       });
 
       if (authError) {
         console.error('Error creating auth user:', authError);
-        toast.error('Erro ao criar utilizador');
+        toast.error(`Erro ao criar utilizador: ${authError.message}`);
         return;
       }
 
-      // Then create the profile
+      if (!authData.user) {
+        toast.error('Erro: Utilizador não foi criado no sistema de autenticação');
+        return;
+      }
+
+      // 2. Criar perfil na tabela profiles
       const { error: profileError } = await supabase
         .from('profiles')
         .insert({
           user_id: authData.user.id,
           email: formData.email,
           full_name: formData.full_name,
-          role: formData.role
+          role: formData.role,
+          setor_id: setorId
         });
 
       if (profileError) {
         console.error('Error creating profile:', profileError);
-        toast.error('Erro ao criar perfil do utilizador');
+        toast.error(`Erro ao criar perfil: ${profileError.message}`);
         return;
       }
 
-      toast.success('Utilizador criado com sucesso!');
+                  toast.success('Utilizador criado com sucesso!');
+            
+            if (formData.customPassword) {
+              toast.info(`Senha personalizada definida: ${tempPassword}`, {
+                duration: 10000,
+                description: 'O utilizador deve alterar esta senha no primeiro login'
+              });
+            } else {
+              toast.info(`Senha temporária gerada: ${tempPassword}`, {
+                duration: 10000,
+                description: 'O utilizador deve alterar esta senha no primeiro login'
+              });
+            }
+      
       setShowAddDialog(false);
-      setFormData({
-        email: '',
-        full_name: '',
-        role: 'user'
-      });
-      fetchUsers(); // Refresh the list
+                  setFormData({
+              email: '',
+              full_name: '',
+              role: 'user',
+              customPassword: ''
+            });
+      
+      // Recarregar a lista de utilizadores
+      fetchUsers();
     } catch (error) {
       console.error('Error adding user:', error);
       toast.error('Erro ao adicionar utilizador');
@@ -207,7 +338,10 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
 
   const handleToggleStatus = async (userId: string, currentStatus: boolean) => {
     try {
-      // Since we can't use 'inactive' due to constraint, we'll use null for inactive users
+      setActionLoading(`toggle-${userId}`);
+      
+      // Se está ativo (role !== null), desativar (role = null)
+      // Se está inativo (role === null), ativar (role = 'user')
       const newRole = currentStatus ? null : 'user';
       
       const { error } = await supabase
@@ -226,31 +360,154 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
     } catch (error) {
       console.error('Error toggling user status:', error);
       toast.error('Erro ao alterar status do utilizador');
+    } finally {
+      setActionLoading(null);
     }
   };
 
-  const handleDeleteUser = async (userId: string) => {
-    if (!confirm('Tem certeza que deseja excluir este utilizador?')) {
+  const handleChangeRole = async (userId: string, newRole: UserRole) => {
+    try {
+      setActionLoading(`role-${userId}`);
+      
+      // Validação básica
+      if (!newRole) {
+        toast.error('Role é obrigatório');
+        return;
+      }
+
+      // Determinar o setor_id baseado no novo role
+      let setorId = null;
+      if (isSectorRole(newRole)) {
+        const setor = setores.find(s => s.slug === newRole);
+        setorId = setor?.id || null;
+        
+        if (!setorId) {
+          toast.error(`Setor não encontrado para o role ${newRole}`);
+          return;
+        }
+      }
+
+      const { error } = await supabase
+        .from('profiles')
+        .update({ 
+          role: newRole,
+          setor_id: setorId
+        })
+        .eq('id', userId);
+
+      if (error) {
+        console.error('Error updating user role:', error);
+        toast.error(`Erro ao actualizar role do utilizador: ${error.message}`);
+        return;
+      }
+
+      const roleLabel = getRoleLabel(newRole);
+      toast.success(`Role do utilizador alterado para ${roleLabel} com sucesso!`);
+      fetchUsers(); // Refresh the list
+    } catch (error) {
+      console.error('Error changing user role:', error);
+      toast.error('Erro ao alterar role do utilizador');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleEditUser = async (userId: string, updatedData: { full_name: string; email: string }) => {
+    try {
+      setActionLoading(`edit-${userId}`);
+      
+      // Validações básicas
+      if (!updatedData.email || !updatedData.full_name) {
+        toast.error('Email e nome são obrigatórios');
+        return;
+      }
+
+      if (updatedData.email.length < 3 || updatedData.full_name.length < 2) {
+        toast.error('Email e nome devem ter pelo menos 3 e 2 caracteres respectivamente');
+        return;
+      }
+
+      // Verificar se o email já existe (exceto para o utilizador atual)
+      const { data: existingUser } = await supabase
+        .from('profiles')
+        .select('id, email')
+        .eq('email', updatedData.email)
+        .neq('id', userId)
+        .single();
+
+      if (existingUser) {
+        toast.error('Este email já está em uso por outro utilizador');
+        return;
+      }
+
+      const { error } = await supabase
+        .from('profiles')
+        .update({ 
+          full_name: updatedData.full_name.trim(),
+          email: updatedData.email.trim().toLowerCase()
+        })
+        .eq('id', userId);
+
+      if (error) {
+        console.error('Error updating user:', error);
+        toast.error(`Erro ao actualizar utilizador: ${error.message}`);
+        return;
+      }
+
+      toast.success('Utilizador actualizado com sucesso!');
+      fetchUsers(); // Refresh the list
+    } catch (error) {
+      console.error('Error editing user:', error);
+      toast.error('Erro ao editar utilizador');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+    const handleDeleteUser = async (userId: string) => {
+    if (!confirm('Tem certeza que deseja excluir este utilizador? Esta ação não pode ser desfeita.')) {
       return;
     }
 
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .delete()
-        .eq('id', userId);
-
+      setActionLoading(`delete-${userId}`);
+      
+      console.log('Iniciando exclusão do utilizador:', userId);
+      
+      // Usar a função SQL completa para exclusão
+      const { data: result, error } = await supabase.rpc('delete_user_complete', {
+        user_profile_id: userId
+      });
+      
       if (error) {
-        console.error('Error deleting user:', error);
-        toast.error('Erro ao excluir utilizador');
+        console.error('Erro na exclusão:', error);
+        toast.error(`Erro ao excluir utilizador: ${error.message}. Execute o script de correção RLS.`);
+        return;
+      }
+      
+      console.log('Resultado da exclusão:', result);
+      
+      if (result && result.success) {
+        // Mostrar mensagem baseada no resultado
+        if (result.auth_deleted) {
+          toast.success(`Utilizador ${result.user_email} excluído completamente do sistema!`);
+        } else {
+          toast.warning(`Utilizador ${result.user_email} excluído do sistema, mas pode permanecer no sistema de autenticação`);
+        }
+        
+        // Log do resultado completo
+        console.log('Resultado completo da exclusão:', result);
+      } else {
+        toast.error(`Falha na exclusão: ${result?.message || 'Erro desconhecido'}`);
         return;
       }
 
-      toast.success('Utilizador excluído com sucesso!');
       fetchUsers(); // Refresh the list
     } catch (error) {
       console.error('Error deleting user:', error);
       toast.error('Erro ao excluir utilizador');
+    } finally {
+      setActionLoading(null);
     }
   };
 
@@ -407,13 +664,58 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
                               <SelectItem key={role.value} value={role.value}>
                                 <div className="flex items-center gap-2">
                                   <role.icon className="h-4 w-4" />
-                                  {role.label}
+                                  <div className="flex flex-col">
+                                    <span>{role.label}</span>
+                                    <span className="text-xs text-muted-foreground">{role.description}</span>
+                                  </div>
                                 </div>
                               </SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
                       </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="customPassword">
+                          Senha Personalizada (Opcional)
+                          <span className="text-xs text-muted-foreground ml-1">
+                            Deixe em branco para gerar senha automática
+                          </span>
+                        </Label>
+                        <Input
+                          id="customPassword"
+                          type="password"
+                          placeholder="Senha personalizada (mín. 8 caracteres)"
+                          value={formData.customPassword}
+                          onChange={(e) => setFormData({ ...formData, customPassword: e.target.value })}
+                        />
+                        {formData.customPassword && formData.customPassword.length < 8 && (
+                          <p className="text-xs text-red-600">
+                            A senha deve ter pelo menos 8 caracteres
+                          </p>
+                        )}
+                        {formData.customPassword && formData.customPassword.length >= 8 && (
+                          <p className="text-xs text-green-600">
+                            ✓ Senha válida
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Mostrar informações sobre o setor selecionado */}
+                      {isSectorRole(formData.role) && (
+                        <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Building2 className="h-4 w-4 text-blue-600" />
+                            <span className="font-medium text-blue-900 dark:text-blue-100">
+                              Acesso à {getSectorName(formData.role)}
+                            </span>
+                          </div>
+                          <p className="text-sm text-blue-700 dark:text-blue-300">
+                            Este utilizador terá acesso exclusivo às informações e funcionalidades da {getSectorName(formData.role)}. 
+                            Poderá visualizar inscrições, candidaturas e receber notificações relacionadas com esta área.
+                          </p>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -509,6 +811,7 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {filteredUsers.map((user) => {
               const roleBadgeVariant = getRoleBadgeVariant(user.role);
+              const isSectorUser = isSectorRole(user.role as UserRole);
               
               return (
                 <Card key={user.id} className={cn(
@@ -525,22 +828,79 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
                           </Badge>
                         </div>
                         <p className="text-sm text-muted-foreground truncate">{user.email}</p>
+                        {isSectorUser && user.setor_id && (
+                          <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                            {getSetorName(user.setor_id)}
+                          </p>
+                        )}
                       </div>
                       <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         <Button 
                           size="sm" 
                           variant="outline"
                           onClick={() => handleToggleStatus(user.id, user.role !== null)}
+                          title={user.role !== null ? "Bloquear utilizador" : "Desbloquear utilizador"}
+                          disabled={actionLoading === `toggle-${user.id}`}
                         >
-                          {user.role !== null ? <UserX className="h-3 w-3" /> : <UserCheck className="h-3 w-3" />}
+                          {actionLoading === `toggle-${user.id}` ? (
+                            <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-current" />
+                          ) : (
+                            user.role !== null ? <UserX className="h-3 w-3" /> : <UserCheck className="h-3 w-3" />
+                          )}
                         </Button>
+                        
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => {
+                            setSelectedUser(user);
+                            setEditFormData({
+                              email: user.email || '',
+                              full_name: user.full_name || ''
+                            });
+                            setShowEditDialog(true);
+                          }}
+                          title="Editar utilizador"
+                          disabled={actionLoading === `edit-${user.id}`}
+                        >
+                          {actionLoading === `edit-${user.id}` ? (
+                            <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-current" />
+                          ) : (
+                            <Edit className="h-3 w-3" />
+                          )}
+                        </Button>
+                        
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => {
+                            setSelectedUser(user);
+                            setNewRole((user.role as UserRole) || 'user');
+                            setShowRoleDialog(true);
+                          }}
+                          title="Alterar role"
+                          disabled={actionLoading === `role-${user.id}`}
+                        >
+                          {actionLoading === `role-${user.id}` ? (
+                            <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-current" />
+                          ) : (
+                            <Shield className="h-3 w-3" />
+                          )}
+                        </Button>
+                        
                         <Button 
                           size="sm" 
                           variant="outline" 
                           className="text-destructive hover:text-destructive"
                           onClick={() => handleDeleteUser(user.id)}
+                          title="Excluir utilizador"
+                          disabled={actionLoading === `delete-${user.id}`}
                         >
-                          <Trash2 className="h-3 w-3" />
+                          {actionLoading === `delete-${user.id}` ? (
+                            <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-current" />
+                          ) : (
+                            <Trash2 className="h-3 w-3" />
+                          )}
                         </Button>
                       </div>
                     </div>
@@ -577,6 +937,109 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
           </div>
         )}
       </div>
+
+      {/* Modal de Edição */}
+      <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Editar Utilizador</DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="edit-email">Email</Label>
+              <Input
+                id="edit-email"
+                value={editFormData.email}
+                onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="edit-full_name">Nome Completo</Label>
+              <Input
+                id="edit-full_name"
+                value={editFormData.full_name}
+                onChange={(e) => setEditFormData({ ...editFormData, full_name: e.target.value })}
+              />
+            </div>
+          </div>
+          
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setShowEditDialog(false)}>
+              Cancelar
+            </Button>
+            <Button 
+              onClick={() => {
+                if (selectedUser) {
+                  handleEditUser(selectedUser.id, editFormData);
+                  setShowEditDialog(false);
+                }
+              }}
+              disabled={!editFormData.email || !editFormData.full_name}
+            >
+              Guardar Alterações
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal de Alteração de Role */}
+      <Dialog open={showRoleDialog} onOpenChange={setShowRoleDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Alterar Role do Utilizador</DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>Novo Role</Label>
+              <Select value={newRole} onValueChange={(value: UserRole) => setNewRole(value)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {userRoles.map((role) => (
+                    <SelectItem key={role.value} value={role.value}>
+                      <div className="flex items-center gap-2">
+                        <role.icon className="h-4 w-4" />
+                        <div className="flex flex-col">
+                          <span>{role.label}</span>
+                          <span className="text-xs text-muted-foreground">{role.description}</span>
+                        </div>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            {isSectorRole(newRole) && (
+              <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                <p className="text-sm text-blue-700 dark:text-blue-300">
+                  Este utilizador terá acesso exclusivo à {getSectorName(newRole)}.
+                </p>
+              </div>
+            )}
+          </div>
+          
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setShowRoleDialog(false)}>
+              Cancelar
+            </Button>
+            <Button 
+              onClick={() => {
+                if (selectedUser) {
+                  handleChangeRole(selectedUser.id, newRole);
+                  setShowRoleDialog(false);
+                }
+              }}
+            >
+              Alterar Role
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

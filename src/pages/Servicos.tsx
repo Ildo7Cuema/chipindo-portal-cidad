@@ -134,6 +134,7 @@ export default function Servicos() {
   const [error, setError] = useState<string | null>(null);
   const [selectedService, setSelectedService] = useState<Servico | null>(null);
   const [showContactForm, setShowContactForm] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("todos");
   const [selectedDirection, setSelectedDirection] = useState("todos");
@@ -266,6 +267,8 @@ export default function Servicos() {
     try {
       if (!selectedService) return;
 
+      setIsSubmitting(true);
+
       // Create service request in database
       const { data, error } = await supabase
         .from('service_requests')
@@ -320,6 +323,8 @@ export default function Servicos() {
         description: "Erro ao enviar solicitação. Tente novamente.",
         variant: "destructive"
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -1044,7 +1049,7 @@ export default function Servicos() {
                       </div>
                       <div>
                         <DialogTitle className="text-2xl">{selectedService.title}</DialogTitle>
-                        <DialogDescription className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 mt-2">
                           <Badge className={cn(getCategoryData(selectedService.categoria).color, "text-white")}>
                             {selectedService.categoria}
                           </Badge>
@@ -1052,7 +1057,7 @@ export default function Servicos() {
                           {selectedService.digital && (
                             <Badge className="bg-green-500">Serviço Digital</Badge>
                           )}
-                        </DialogDescription>
+                        </div>
                       </div>
                     </div>
                     <Button
@@ -1223,6 +1228,7 @@ export default function Servicos() {
                     value={contactForm.nome}
                     onChange={(e) => setContactForm({...contactForm, nome: e.target.value})}
                     placeholder="Digite seu nome completo"
+                    disabled={isSubmitting}
                   />
                 </div>
                 <div>
@@ -1233,6 +1239,7 @@ export default function Servicos() {
                     value={contactForm.email}
                     onChange={(e) => setContactForm({...contactForm, email: e.target.value})}
                     placeholder="seuemail@exemplo.com"
+                    disabled={isSubmitting}
                   />
                 </div>
               </div>
@@ -1245,6 +1252,7 @@ export default function Servicos() {
                     value={contactForm.telefone}
                     onChange={(e) => setContactForm({...contactForm, telefone: e.target.value})}
                     placeholder="+244 900 000 000"
+                    disabled={isSubmitting}
                   />
                 </div>
                 <div>
@@ -1254,6 +1262,7 @@ export default function Servicos() {
                     value={contactForm.assunto}
                     onChange={(e) => setContactForm({...contactForm, assunto: e.target.value})}
                     placeholder="Assunto da solicitação"
+                    disabled={isSubmitting}
                   />
                 </div>
               </div>
@@ -1265,6 +1274,7 @@ export default function Servicos() {
                   onChange={(e) => setContactForm({...contactForm, mensagem: e.target.value})}
                   placeholder="Descreva sua solicitação ou dúvida em detalhes..."
                   rows={4}
+                  disabled={isSubmitting}
                 />
               </div>
 
@@ -1272,16 +1282,27 @@ export default function Servicos() {
                 <Button 
                   variant="outline" 
                   onClick={() => setShowContactForm(false)}
-                  className="flex-1"
+                  disabled={isSubmitting}
+                  className="flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Cancelar
                 </Button>
                 <Button 
                   onClick={handleContactSubmit}
-                  className="flex-1 bg-gradient-to-r from-blue-500 to-green-600 hover:from-blue-600 hover:to-green-700"
+                  disabled={isSubmitting}
+                  className="flex-1 bg-gradient-to-r from-blue-500 to-green-600 hover:from-blue-600 hover:to-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <SendIcon className="w-4 h-4 mr-2" />
-                  Enviar Solicitação
+                  {isSubmitting ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin mr-2" />
+                      Enviando...
+                    </>
+                  ) : (
+                    <>
+                      <SendIcon className="w-4 h-4 mr-2" />
+                      Enviar Solicitação
+                    </>
+                  )}
                 </Button>
               </div>
             </div>

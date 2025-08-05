@@ -31,17 +31,16 @@ import { cn } from "@/lib/utils";
 
 export function PopulationHistoryManager() {
   const {
-    populationHistory,
+    records,
+    growthCalculation,
     loading,
-    currentGrowthRate,
-    calculating,
-    addPopulationRecord,
-    updatePopulationRecord,
-    deletePopulationRecord,
+    error,
+    fetchRecords,
+    fetchGrowthCalculation,
+    addRecord,
+    updateRecord,
     updateGrowthRateAutomatically,
-    getPopulationTrend,
-    getLatestPopulation,
-    getPopulationChange
+    deleteRecord
   } = usePopulationHistory();
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -55,16 +54,107 @@ export function PopulationHistoryManager() {
     notes: ''
   });
 
+  // Função para calcular campos derivados
+  const calculateDerivedFields = (year: number, population_count: number) => {
+    const area_total = 9532; // Área total fixa do município
+    const density = population_count / area_total;
+    
+    // Calcular growth_rate baseado no registro anterior
+    let growth_rate = 0;
+    if (records && records.length > 0) {
+      const previousRecord = records.find(r => r.year === year - 1);
+      if (previousRecord) {
+        growth_rate = ((population_count - previousRecord.population_count) / previousRecord.population_count) * 100;
+      }
+    }
+    
+    return {
+      growth_rate: Math.round(growth_rate * 100) / 100,
+      area_total,
+      density: Math.round(density * 100) / 100
+    };
+  };
+
+  // Funções utilitárias locais
+  const getLatestPopulation = () => {
+    if (!records || records.length === 0) return 0;
+    return records[0].population_count;
+  };
+
+  const getPopulationChange = () => {
+    if (!records || records.length < 2) return 0;
+    return records[0].population_count - records[1].population_count;
+  };
+
+  const getPopulationTrend = () => {
+    if (!records || records.length < 2) return 'stable';
+    const change = getPopulationChange();
+    if (change > 0) return 'increasing';
+    if (change < 0) return 'decreasing';
+    return 'stable';
+  };
+
+  const currentGrowthRate = growthCalculation?.growth_rate || 0;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Validação dos campos obrigatórios
+    if (!formData.year || !formData.population_count || !formData.source) {
+      toast.error("Por favor, preencha todos os campos obrigatórios");
+      return;
+    }
+    
+    // Validação de valores mínimos
+    if (formData.year < 1900 || formData.year > new Date().getFullYear() + 10) {
+      toast.error("Ano deve estar entre 1900 e " + (new Date().getFullYear() + 10));
+      return;
+    }
+    
+    if (formData.population_count <= 0) {
+      toast.error("População deve ser maior que zero");
+      return;
+    }
+    
     try {
       if (editingRecord) {
-        await updatePopulationRecord(editingRecord.id, formData);
-        toast.success("Registo populacional atualizado com sucesso!");
+        // Calcular campos derivados para atualização
+        const derivedFields = calculateDerivedFields(formData.year, formData.population_count);
+        const updateData = {
+          year: formData.year,
+          population_count: formData.population_count,
+          source: formData.source,
+          notes: formData.notes,
+          ...derivedFields
+        };
+        
+        const result = await updateRecord(editingRecord.id, updateData);
+        
+        if (result && result.success) {
+          toast.success("Registo populacional atualizado com sucesso!");
+        } else {
+          toast.error("Erro ao atualizar registo populacional");
+          return;
+        }
       } else {
-        await addPopulationRecord(formData);
-        toast.success("Registo populacional adicionado com sucesso!");
+        // Calcular campos derivados para novo registro
+        const derivedFields = calculateDerivedFields(formData.year, formData.population_count);
+        const newRecord = {
+          ...formData,
+          ...derivedFields
+        };
+        
+        console.log('Tentando adicionar novo registro:', newRecord);
+        
+        const result = await addRecord([newRecord]);
+        console.log('Resultado da adição:', result);
+        
+        if (result && result.success) {
+          toast.success("Registo populacional adicionado com sucesso!");
+        } else {
+          toast.error("Erro ao adicionar registo populacional");
+          return;
+        }
       }
       
       setIsDialogOpen(false);
@@ -94,7 +184,7 @@ export function PopulationHistoryManager() {
   const handleDelete = async (id: string) => {
     if (confirm("Tem certeza que deseja eliminar este registo?")) {
       try {
-        await deletePopulationRecord(id);
+        await deleteRecord(id);
         toast.success("Registo eliminado com sucesso!");
       } catch (error) {
         toast.error("Erro ao eliminar registo");
@@ -115,9 +205,7 @@ export function PopulationHistoryManager() {
     }
   };
 
-  const populationChange = getPopulationChange();
-  const latestPopulation = getLatestPopulation();
-  const trend = getPopulationTrend();
+  // Variáveis calculadas para uso no template
 
   if (loading) {
     return (
@@ -140,7 +228,7 @@ export function PopulationHistoryManager() {
               <div>
                 <p className="text-sm font-medium text-blue-600 dark:text-blue-400">Registos</p>
                 <p className="text-2xl font-bold text-blue-900 dark:text-blue-100">
-                  {populationHistory.length}
+                  {records.length}
                 </p>
               </div>
               <Users className="h-8 w-8 text-blue-600 dark:text-blue-400" />
@@ -154,7 +242,7 @@ export function PopulationHistoryManager() {
               <div>
                 <p className="text-sm font-medium text-green-600 dark:text-green-400">População Atual</p>
                 <p className="text-2xl font-bold text-green-900 dark:text-green-100">
-                  {latestPopulation?.population_count.toLocaleString('pt-AO') || 'N/A'}
+                  {getLatestPopulation().toLocaleString('pt-AO') || 'N/A'}
                 </p>
               </div>
               <TrendingUp className="h-8 w-8 text-green-600 dark:text-green-400" />
@@ -168,7 +256,7 @@ export function PopulationHistoryManager() {
               <div>
                 <p className="text-sm font-medium text-purple-600 dark:text-purple-400">Taxa Atual</p>
                 <p className="text-2xl font-bold text-purple-900 dark:text-purple-100">
-                  {currentGrowthRate?.growth_rate || 'N/A'}%
+                  {currentGrowthRate}%
                 </p>
               </div>
               <Calculator className="h-8 w-8 text-purple-600 dark:text-purple-400" />
@@ -182,7 +270,7 @@ export function PopulationHistoryManager() {
               <div>
                 <p className="text-sm font-medium text-orange-600 dark:text-orange-400">Crescimento Total</p>
                 <p className="text-2xl font-bold text-orange-900 dark:text-orange-100">
-                  {populationChange?.percentageChange || 'N/A'}%
+                  {getPopulationChange().toLocaleString('pt-AO')}
                 </p>
               </div>
               <BarChart3 className="h-8 w-8 text-orange-600 dark:text-orange-400" />
@@ -207,16 +295,16 @@ export function PopulationHistoryManager() {
             <div className="flex items-center gap-2">
               <Button
                 onClick={handleAutoUpdate}
-                disabled={calculating}
+                disabled={loading}
                 variant="outline"
                 size="sm"
               >
-                {calculating ? (
+                {loading ? (
                   <LoaderIcon className="h-4 w-4 mr-2 animate-spin" />
                 ) : (
                   <Zap className="h-4 w-4 mr-2" />
                 )}
-                {calculating ? 'Calculando...' : 'Actualizar Taxa'}
+                {loading ? 'Calculando...' : 'Actualizar Taxa'}
               </Button>
               <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild>
@@ -314,7 +402,7 @@ export function PopulationHistoryManager() {
 
             <TabsContent value="history" className="space-y-4">
               <div className="space-y-4">
-                {populationHistory.map((record) => (
+                {records.map((record) => (
                   <Card key={record.id} className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
@@ -383,10 +471,10 @@ export function PopulationHistoryManager() {
                           <div>
                             <p className="text-sm font-medium text-muted-foreground">Taxa Atual</p>
                             <p className="text-2xl font-bold">
-                              {currentGrowthRate?.growth_rate || 'N/A'}%
+                              {currentGrowthRate}%
                             </p>
                             <p className="text-xs text-muted-foreground">
-                              {currentGrowthRate?.current_year} vs {currentGrowthRate?.previous_year}
+                              Última atualização: {new Date().toLocaleDateString('pt-AO')}
                             </p>
                           </div>
                         </div>
@@ -400,10 +488,10 @@ export function PopulationHistoryManager() {
                           <div>
                             <p className="text-sm font-medium text-muted-foreground">Crescimento Total</p>
                             <p className="text-2xl font-bold">
-                              {populationChange?.percentageChange || 'N/A'}%
+                              {getPopulationChange().toLocaleString('pt-AO')}
                             </p>
                             <p className="text-xs text-muted-foreground">
-                              {populationChange?.years || 0} anos
+                              {records.length} registos
                             </p>
                           </div>
                         </div>
@@ -411,27 +499,27 @@ export function PopulationHistoryManager() {
                     </div>
 
                     {/* Growth Details */}
-                    {currentGrowthRate && (
+                    {records && records.length >= 2 && (
                       <Card className="p-4">
                         <h4 className="font-semibold mb-3">Detalhes do Cálculo</h4>
                         <div className="grid gap-3 text-sm">
                           <div className="flex justify-between">
-                            <span>População {currentGrowthRate.previous_year}:</span>
+                            <span>População {records[1].year}:</span>
                             <span className="font-medium">
-                              {currentGrowthRate.previous_population?.toLocaleString('pt-AO')}
+                              {records[1].population_count.toLocaleString('pt-AO')}
                             </span>
                           </div>
                           <div className="flex justify-between">
-                            <span>População {currentGrowthRate.current_year}:</span>
+                            <span>População {records[0].year}:</span>
                             <span className="font-medium">
-                              {currentGrowthRate.current_population?.toLocaleString('pt-AO')}
+                              {records[0].population_count.toLocaleString('pt-AO')}
                             </span>
                           </div>
                           <Separator />
                           <div className="flex justify-between font-semibold">
                             <span>Diferença:</span>
                             <span>
-                              {(currentGrowthRate.current_population - currentGrowthRate.previous_population).toLocaleString('pt-AO')}
+                              {getPopulationChange().toLocaleString('pt-AO')}
                             </span>
                           </div>
                         </div>
@@ -455,25 +543,39 @@ export function PopulationHistoryManager() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {trend.map((item, index) => (
-                      <div key={item.year} className="flex items-center gap-4">
-                        <div className="w-16 text-sm font-medium">{item.year}</div>
-                        <div className="flex-1 bg-muted rounded-full h-2">
-                          <div 
-                            className="bg-primary h-2 rounded-full transition-all duration-300"
-                            style={{ 
-                              width: `${((item.population - trend[0].population) / (trend[trend.length - 1].population - trend[0].population)) * 100}%` 
-                            }}
-                          />
-                        </div>
-                        <div className="w-24 text-sm text-right">
-                          {item.population.toLocaleString('pt-AO')}
-                        </div>
-                        <Badge variant="outline" className="text-xs">
-                          {item.source}
-                        </Badge>
+                    {records && records.length > 0 ? (
+                      records.map((record, index) => {
+                        const firstRecord = records[0];
+                        const lastRecord = records[records.length - 1];
+                        const percentage = lastRecord.population_count !== firstRecord.population_count 
+                          ? ((record.population_count - firstRecord.population_count) / (lastRecord.population_count - firstRecord.population_count)) * 100
+                          : 0;
+                        
+                        return (
+                          <div key={record.id} className="flex items-center gap-4">
+                            <div className="w-16 text-sm font-medium">{record.year}</div>
+                            <div className="flex-1 bg-muted rounded-full h-2">
+                              <div 
+                                className="bg-primary h-2 rounded-full transition-all duration-300"
+                                style={{ 
+                                  width: `${Math.max(0, Math.min(100, percentage))}%` 
+                                }}
+                              />
+                            </div>
+                            <div className="w-24 text-sm text-right">
+                              {record.population_count.toLocaleString('pt-AO')}
+                            </div>
+                            <Badge variant="outline" className="text-xs">
+                              {record.source}
+                            </Badge>
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <div className="text-center py-8 text-muted-foreground">
+                        Nenhum registo populacional encontrado
                       </div>
-                    ))}
+                    )}
                   </div>
                 </CardContent>
               </Card>

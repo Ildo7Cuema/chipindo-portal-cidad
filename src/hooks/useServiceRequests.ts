@@ -55,7 +55,7 @@ export function useServiceRequests() {
   const { toast } = useToast();
 
   // Fetch all service requests
-  const fetchRequests = async () => {
+  const fetchRequests = async (sectorFilter?: string) => {
     try {
       setLoading(true);
       const { data, error } = await supabase
@@ -65,8 +65,57 @@ export function useServiceRequests() {
 
       if (error) throw error;
 
-      setRequests(data || []);
-      calculateStats(data || []);
+      let filteredRequests = data || [];
+      
+      // Filtrar por setor se especificado
+      if (sectorFilter && sectorFilter !== 'all') {
+        console.log('ServiceRequests - Aplicando filtro para setor:', sectorFilter);
+        filteredRequests = (data || []).filter(request => {
+          const serviceName = request.service_name?.toLowerCase() || '';
+          const serviceDirection = request.service_direction?.toLowerCase() || '';
+          const subject = request.subject?.toLowerCase() || '';
+          const message = request.message?.toLowerCase() || '';
+          const sectorName = sectorFilter.toLowerCase();
+          
+          // Mapeamento de setores para palavras-chave
+          const sectorKeywords: Record<string, string[]> = {
+            'educação': ['educação', 'escola', 'escolar', 'académico', 'professor', 'aluno'],
+            'saúde': ['saúde', 'hospital', 'médico', 'enfermeiro', 'clínica', 'atendimento médico'],
+            'agricultura': ['agricultura', 'agricultor', 'fazenda', 'colheita', 'campo'],
+            'setor mineiro': ['mina', 'mineiro', 'mineração', 'mineral'],
+            'desenvolvimento económico': ['desenvolvimento económico', 'emprego', 'economia', 'negócio'],
+            'cultura': ['cultura', 'cultural', 'arte', 'evento cultural', 'teatro'],
+            'tecnologia': ['tecnologia', 'tecnológico', 'sistema', 'digital', 'computador'],
+            'energia e água': ['energia', 'água', 'eletricidade', 'abastecimento de água']
+          };
+          
+          // Verificar se o setor tem palavras-chave específicas
+          const keywords = sectorKeywords[sectorName] || [sectorName];
+          
+          // Filtrar baseado no serviço ou conteúdo da solicitação
+          const matches = keywords.some(keyword => 
+            serviceName.includes(keyword) || 
+            serviceDirection.includes(keyword) ||
+            subject.includes(keyword) ||
+            message.includes(keyword)
+          );
+          
+          if (matches) {
+            console.log('ServiceRequests - Match encontrado:', {
+              serviceName,
+              subject,
+              sectorName,
+              keywords
+            });
+          }
+          
+          return matches;
+        });
+        console.log('ServiceRequests - Total filtrado:', filteredRequests.length);
+      }
+
+      setRequests(filteredRequests);
+      calculateStats(filteredRequests);
     } catch (error: any) {
       console.error('Error fetching service requests:', error);
       toast({
@@ -252,7 +301,8 @@ export function useServiceRequests() {
   };
 
   useEffect(() => {
-    fetchRequests();
+    // Removido fetchRequests() daqui para evitar conflito
+    // As solicitações serão carregadas pelo componente
   }, []);
 
   return {

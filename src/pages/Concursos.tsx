@@ -55,7 +55,7 @@ interface Concurso {
   category?: string;
   views?: number;
   applications?: number;
-  categorias_disponiveis?: string[]; // Added for modal
+  categorias_disponiveis?: string[] | null; // Added for modal
 }
 
 const categoryMapping = [
@@ -130,7 +130,8 @@ export default function Concursos() {
         ...item,
         category: getCategoryByIndex(index),
         views: Math.floor(Math.random() * 1000) + 50,
-        applications: Math.floor(Math.random() * 200) + 10
+        applications: Math.floor(Math.random() * 200) + 10,
+        categorias_disponiveis: parseCategoriasDisponiveis(item.categorias_disponiveis)
       })) || [];
 
       setConcursos(concursosWithCategories);
@@ -149,6 +150,20 @@ export default function Concursos() {
   const getCategoryByIndex = (index: number) => {
     const categories = ['administracao', 'educacao', 'saude', 'obras', 'tecnico', 'seguranca'];
     return categories[index % categories.length];
+  };
+
+  const parseCategoriasDisponiveis = (categorias: any): string[] => {
+    if (!categorias) return [];
+    if (Array.isArray(categorias)) return categorias;
+    if (typeof categorias === 'string') {
+      try {
+        const parsed = JSON.parse(categorias);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    }
+    return [];
   };
 
   const filterAndSortConcursos = () => {
@@ -1022,13 +1037,13 @@ export default function Concursos() {
                   <Select
                     value={formData.categoria}
                     onValueChange={value => setFormData({ ...formData, categoria: value })}
-                    disabled={!selectedConcurso.categorias_disponiveis || selectedConcurso.categorias_disponiveis.length === 0}
+                    disabled={!selectedConcurso?.categorias_disponiveis || !Array.isArray(selectedConcurso.categorias_disponiveis) || selectedConcurso.categorias_disponiveis.length === 0}
                   >
                     <SelectTrigger className="pl-10 h-10">
-                      <SelectValue placeholder={selectedConcurso.categorias_disponiveis && selectedConcurso.categorias_disponiveis.length > 0 ? "Categoria a que se candidata *" : "Nenhuma categoria cadastrada para este concurso"} />
+                      <SelectValue placeholder={selectedConcurso?.categorias_disponiveis && Array.isArray(selectedConcurso.categorias_disponiveis) && selectedConcurso.categorias_disponiveis.length > 0 ? "Categoria a que se candidata *" : "Nenhuma categoria cadastrada para este concurso"} />
                     </SelectTrigger>
                     <SelectContent>
-                      {selectedConcurso.categorias_disponiveis && selectedConcurso.categorias_disponiveis.length > 0 ? (
+                      {selectedConcurso?.categorias_disponiveis && Array.isArray(selectedConcurso.categorias_disponiveis) && selectedConcurso.categorias_disponiveis.length > 0 ? (
                         selectedConcurso.categorias_disponiveis.map((cat: string) => (
                           <SelectItem key={cat} value={cat}>{cat}</SelectItem>
                         ))
@@ -1037,7 +1052,7 @@ export default function Concursos() {
                       )}
                     </SelectContent>
                   </Select>
-                  {(!selectedConcurso.categorias_disponiveis || selectedConcurso.categorias_disponiveis.length === 0) && (
+                  {(!selectedConcurso?.categorias_disponiveis || !Array.isArray(selectedConcurso.categorias_disponiveis) || selectedConcurso.categorias_disponiveis.length === 0) && (
                     <p className="text-xs text-muted-foreground mt-1">O administrador ainda não cadastrou categorias para este concurso.</p>
                   )}
                 </div>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -38,6 +38,8 @@ import {
 import { useServiceRequests, ServiceRequest } from '@/hooks/useServiceRequests';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { useAccessControl } from '@/hooks/useAccessControl';
+import { SectorFilter } from '@/components/admin/SectorFilter';
 
 export const ServiceRequestsManager = () => {
   const {
@@ -54,7 +56,22 @@ export const ServiceRequestsManager = () => {
   } = useServiceRequests();
 
   const { toast } = useToast();
+  
+  // Controle de acesso
+  const { isAdmin, getCurrentSector, getCurrentSectorName } = useAccessControl();
+  
+  // Estado para filtro de setor
+  const [sectorFilter, setSectorFilter] = useState<string>('all');
   const [selectedRequest, setSelectedRequest] = useState<ServiceRequest | null>(null);
+  
+  // Carregar solicitações com filtro de setor (apenas uma vez)
+  useEffect(() => {
+    const currentSectorName = getCurrentSectorName();
+    const filter = isAdmin ? 'all' : (currentSectorName || 'all');
+    console.log('ServiceRequests - Setor atual:', currentSectorName, 'Filtro:', filter, 'isAdmin:', isAdmin);
+    setSectorFilter(filter);
+    fetchRequests(filter);
+  }, [isAdmin]); // Removido getCurrentSectorName e fetchRequests das dependências
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
   const [showUpdateDialog, setShowUpdateDialog] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -160,6 +177,9 @@ export const ServiceRequestsManager = () => {
 
   return (
     <div className="space-y-6">
+      {/* Sector Filter */}
+      <SectorFilter />
+      
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
@@ -267,6 +287,11 @@ export const ServiceRequestsManager = () => {
           <CardTitle>Solicitações de Serviços</CardTitle>
           <CardDescription>
             Gerencie todas as solicitações de serviços municipais
+            {!isAdmin && getCurrentSectorName() && (
+              <span className="ml-2 text-sm font-medium text-blue-600">
+                • Setor: {getCurrentSectorName()}
+              </span>
+            )}
           </CardDescription>
         </CardHeader>
         <CardContent>

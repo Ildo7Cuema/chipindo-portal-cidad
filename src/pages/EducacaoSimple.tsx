@@ -49,7 +49,7 @@ const EducacaoSimple = () => {
         </div>
 
         <div className="text-center mt-8">
-          <a href="/services" className="text-primary hover:underline">
+          <a href="/servicos" className="text-primary hover:underline">
             ← Voltar para Serviços
           </a>
         </div>

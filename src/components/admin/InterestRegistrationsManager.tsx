@@ -10,6 +10,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { toast } from "@/hooks/use-toast";
 import { useInterestAreas } from "@/hooks/useInterestAreas";
 import { supabase } from "@/integrations/supabase/client";
+import { useAccessControl } from "@/hooks/useAccessControl";
+import { SectorFilter } from "@/components/admin/SectorFilter";
 import { Users, Search, Bell, Calendar, TrendingUp, Clock, Trash2, MoreVertical, Eye } from "lucide-react";
 import { ExportRegistrationsList } from "./ExportRegistrationsList";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -49,6 +51,9 @@ export const InterestRegistrationsManager = () => {
   // Usar hook para buscar áreas dinamicamente
   const { areaOptions, loading: areasLoading } = useInterestAreas();
 
+  // Controle de acesso
+  const { isAdmin, getCurrentSector, getCurrentSectorName } = useAccessControl();
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -56,10 +61,15 @@ export const InterestRegistrationsManager = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const { data: registrationsData, error: registrationsError } = await supabase
+      let registrationsQuery = supabase
         .from('interest_registrations' as any)
         .select('*')
         .order('created_at', { ascending: false });
+
+      // Filtrar por setor se não for admin - será feito no frontend
+      // Removido filtro da query para evitar problemas com colunas inexistentes
+
+      const { data: registrationsData, error: registrationsError } = await registrationsQuery;
 
       if (registrationsError) throw registrationsError;
 
@@ -71,7 +81,20 @@ export const InterestRegistrationsManager = () => {
 
       if (notificationsError) throw notificationsError;
 
-      setRegistrations((registrationsData as unknown as InterestRegistration[]) || []);
+      // Filtrar por setor no frontend se não for admin
+      let filteredRegistrations = (registrationsData as unknown as InterestRegistration[]) || [];
+      if (!isAdmin) {
+        const currentSectorName = getCurrentSectorName();
+        if (currentSectorName) {
+          // Filtrar no frontend por nome ou profissão
+          filteredRegistrations = filteredRegistrations.filter(registration => 
+            (registration.full_name && registration.full_name.toLowerCase().includes(currentSectorName.toLowerCase())) ||
+            (registration.profession && registration.profession.toLowerCase().includes(currentSectorName.toLowerCase()))
+          );
+        }
+      }
+      
+      setRegistrations(filteredRegistrations);
       setNotifications((notificationsData as unknown as NotificationItem[]) || []);
     } catch (error) {
       console.error('Erro ao buscar dados:', error);
@@ -190,6 +213,9 @@ export const InterestRegistrationsManager = () => {
 
   return (
     <div className="space-y-6">
+      {/* Sector Filter */}
+      <SectorFilter />
+      
       {/* Header com estatísticas */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>

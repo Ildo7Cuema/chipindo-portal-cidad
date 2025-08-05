@@ -40,7 +40,7 @@ const TestPage = () => {
           </div>
         </div>
         <div className="mt-8">
-          <a href="/services" className="text-primary hover:underline">
+          <a href="/servicos" className="text-primary hover:underline">
             ← Voltar para Serviços
           </a>
         </div>
