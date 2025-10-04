@@ -33,13 +33,16 @@ import {
   Users,
   Activity,
   Star,
-  Bell
+  Bell,
+  MessageCircle,
+  Smartphone
 } from 'lucide-react';
 import { useServiceRequests, ServiceRequest } from '@/hooks/useServiceRequests';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { useAccessControl } from '@/hooks/useAccessControl';
 import { SectorFilter } from '@/components/admin/SectorFilter';
+import { ForwardService } from '@/lib/forward-service';
 
 export const ServiceRequestsManager = () => {
   const {
@@ -81,6 +84,14 @@ export const ServiceRequestsManager = () => {
     status: '',
     adminNotes: ''
   });
+
+  // Estados para reencaminhamento
+  const [isForwardModalOpen, setIsForwardModalOpen] = useState(false);
+  const [forwardType, setForwardType] = useState<'sms' | 'whatsapp'>('whatsapp');
+  const [forwardPhone, setForwardPhone] = useState("");
+  const [forwardMessage, setForwardMessage] = useState("");
+  const [forwardLoading, setForwardLoading] = useState(false);
+  const [selectedRequestForForward, setSelectedRequestForForward] = useState<ServiceRequest | null>(null);
 
   const filteredRequests = requests.filter(request => {
     const matchesSearch = 
@@ -160,6 +171,70 @@ export const ServiceRequestsManager = () => {
       hour: '2-digit',
       minute: '2-digit'
     });
+  };
+
+  // Função para abrir modal de reencaminhamento
+  const handleForwardRequest = (request: ServiceRequest) => {
+    setSelectedRequestForForward(request);
+    
+    // Gerar mensagem padrão usando o serviço
+    const defaultMessage = ForwardService.generateServiceRequestMessage(
+      request, 
+      request.service_direction
+    );
+
+    setForwardMessage(defaultMessage);
+    setIsForwardModalOpen(true);
+  };
+
+  // Função para reencaminhar mensagem
+  const handleForwardMessage = async () => {
+    if (!selectedRequestForForward || !forwardPhone.trim() || !forwardMessage.trim()) {
+      toast({
+        title: "Erro",
+        description: "Por favor, preencha todos os campos.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setForwardLoading(true);
+
+    try {
+      const result = await ForwardService.forwardServiceRequest({
+        request_id: selectedRequestForForward.id,
+        forward_type: forwardType,
+        recipient_phone: forwardPhone,
+        message: forwardMessage,
+        forwarded_by: 'admin' // ou o ID do usuário atual
+      });
+
+      if (result.success) {
+        toast({
+          title: "Sucesso",
+          description: result.message,
+        });
+        setIsForwardModalOpen(false);
+        setSelectedRequestForForward(null);
+        setForwardPhone("");
+        setForwardMessage("");
+      } else {
+        toast({
+          title: "Erro",
+          description: result.error || "Erro ao reencaminhar mensagem",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error('Erro ao reencaminhar:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao reencaminhar mensagem. Tente novamente.",
+        variant: "destructive"
+      });
+    } finally {
+      setForwardLoading(false);
+    }
   };
 
   if (loading) {
@@ -359,6 +434,33 @@ export const ServiceRequestsManager = () => {
                             </div>
                           )}
                         </div>
+
+                        {/* Botões de ação rápida */}
+                        <div className="flex items-center gap-2 pt-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setSelectedRequest(request);
+                              setUpdateForm({ status: request.status, adminNotes: request.admin_notes || '' });
+                              setShowUpdateDialog(true);
+                            }}
+                            className="flex items-center gap-2"
+                          >
+                            <Edit className="w-4 h-4" />
+                            Atualizar
+                          </Button>
+                          
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleForwardRequest(request)}
+                            className="flex items-center gap-2 bg-green-50 hover:bg-green-100 text-green-700 border-green-200"
+                          >
+                            <MessageCircle className="w-4 h-4" />
+                            Reencaminhar
+                          </Button>
+                        </div>
                       </div>
 
                       <div className="flex flex-col gap-2 ml-4">
@@ -517,6 +619,17 @@ export const ServiceRequestsManager = () => {
                     <Edit className="w-4 h-4 mr-2" />
                     Atualizar Status
                   </Button>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => {
+                      setShowDetailsDialog(false);
+                      handleForwardRequest(selectedRequest);
+                    }}
+                    className="flex-1 bg-green-50 hover:bg-green-100 text-green-700 border-green-200"
+                  >
+                    <MessageCircle className="w-4 h-4 mr-2" />
+                    Reencaminhar
+                  </Button>
                 </div>
               </div>
             </>
@@ -576,6 +689,93 @@ export const ServiceRequestsManager = () => {
               >
                 <CheckCircle className="w-4 h-4 mr-2" />
                 Atualizar
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Forward Message Modal */}
+      <Dialog open={isForwardModalOpen} onOpenChange={setIsForwardModalOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Reencaminhar Solicitação de Serviço</DialogTitle>
+            <DialogDescription>
+              Reencaminhe esta solicitação via SMS ou WhatsApp para a direção ou diretor responsável.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="forward-type">Tipo de Envio</Label>
+                <Select value={forwardType} onValueChange={(value: 'sms' | 'whatsapp') => setForwardType(value)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="whatsapp">
+                      <div className="flex items-center gap-2">
+                        <MessageCircle className="w-4 h-4" />
+                        WhatsApp
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="sms">
+                      <div className="flex items-center gap-2">
+                        <Smartphone className="w-4 h-4" />
+                        SMS
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div>
+                <Label htmlFor="forward-phone">Telefone do Destinatário</Label>
+                <Input
+                  id="forward-phone"
+                  placeholder="+244 123 456 789"
+                  value={forwardPhone}
+                  onChange={(e) => setForwardPhone(e.target.value)}
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Inclua o código do país (+244)
+                </p>
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="forward-message">Mensagem</Label>
+              <Textarea
+                id="forward-message"
+                placeholder="Digite a mensagem a ser enviada..."
+                value={forwardMessage}
+                onChange={(e) => setForwardMessage(e.target.value)}
+                rows={8}
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                A mensagem inclui automaticamente os detalhes da solicitação.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2 pt-4">
+              <Button 
+                onClick={handleForwardMessage}
+                disabled={forwardLoading}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                {forwardLoading ? (
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                ) : (
+                  forwardType === 'whatsapp' ? (
+                    <MessageCircle className="w-4 h-4 mr-2" />
+                  ) : (
+                    <Smartphone className="w-4 h-4 mr-2" />
+                  )
+                )}
+                {forwardType === 'whatsapp' ? 'Abrir WhatsApp' : 'Enviar SMS'}
+              </Button>
+              <Button variant="outline" onClick={() => setIsForwardModalOpen(false)}>
+                Cancelar
               </Button>
             </div>
           </div>

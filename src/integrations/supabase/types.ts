@@ -45,6 +45,69 @@ export type Database = {
         }
         Relationships: []
       }
+      events: {
+        Row: {
+          id: number
+          title: string
+          description: string | null
+          date: string
+          event_time: string | null
+          location: string | null
+          organizer: string | null
+          contact: string | null
+          email: string | null
+          website: string | null
+          price: string
+          max_participants: number
+          current_participants: number
+          category: string
+          status: string
+          featured: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: number
+          title: string
+          description?: string | null
+          date: string
+          event_time?: string | null
+          location?: string | null
+          organizer?: string | null
+          contact?: string | null
+          email?: string | null
+          website?: string | null
+          price?: string
+          max_participants?: number
+          current_participants?: number
+          category?: string
+          status?: string
+          featured?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: number
+          title?: string
+          description?: string | null
+          date?: string
+          event_time?: string | null
+          location?: string | null
+          organizer?: string | null
+          contact?: string | null
+          email?: string | null
+          website?: string | null
+          price?: string
+          max_participants?: number
+          current_participants?: number
+          category?: string
+          status?: string
+          featured?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       // Outras tabelas existentes podem ser adicionadas aqui
     }
     Views: {

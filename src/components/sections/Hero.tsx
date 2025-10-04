@@ -284,7 +284,7 @@ export const Hero = () => {
                 
                 <StatCard
                   icon={BuildingIcon}
-                  label="Setores"
+                  label="Sectores"
                   value={heroStatsLoading ? '...' : `${sectors}+`}
                   description="Áreas de potencial"
                   variant="glass"

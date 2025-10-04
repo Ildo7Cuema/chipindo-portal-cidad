@@ -18,6 +18,7 @@ import { supabase } from "@/integrations/supabase/client";
 import ExportUtils from "@/lib/export-utils";
 import { seedSampleNotifications } from "@/lib/seed-notifications";
 import { NotificationDetails } from "./NotificationDetails";
+import { AdminHeroHeader } from "./AdminHeroHeader";
 import { 
   Bell, 
   Plus, 
@@ -536,89 +537,65 @@ export const NotificationsManager = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 p-6 bg-white/50 dark:bg-slate-900/50 rounded-xl border border-border/50 shadow-sm">
-        <div className="flex-1 min-w-0">
-          <h2 className="text-2xl font-bold text-foreground mb-2">Gestão de Notificações</h2>
-          <p className="text-muted-foreground leading-relaxed">
-            Gerencie notificações do sistema e comunicações administrativas
-          </p>
-        </div>
+      {/* Admin Hero Header */}
+      <AdminHeroHeader
+        title="Gestão de Notificações"
+        subtitle="Gerencie notificações do sistema e comunicações administrativas"
+        icon={Bell}
+        badges={[
+          {
+            label: "Admin",
+            variant: "outline",
+            color: "bg-primary/10 text-primary border-primary/20"
+          },
+          {
+            label: "Sistema Online",
+            variant: "outline", 
+            color: "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400",
+            icon: CheckCircle,
+            pulse: true
+          }
+        ]}
+        actions={[
+          {
+            label: "Nova Notificação",
+            icon: Plus,
+            variant: "default",
+            onClick: resetForm,
+            className: "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg"
+          }
+        ]}
+        exportActions={[
+          {
+            label: "Exportar CSV",
+            icon: FileSpreadsheet,
+            onClick: exportNotificationsToCSV,
+            disabled: exportLoading === 'csv',
+            loading: exportLoading === 'csv'
+          },
+          {
+            label: "Exportar Excel", 
+            icon: FileDown,
+            onClick: exportNotificationsToExcel,
+            disabled: exportLoading === 'excel',
+            loading: exportLoading === 'excel'
+          },
+          {
+            label: "Exportar PDF",
+            icon: Download,
+            onClick: exportNotificationsToPDF,
+            disabled: exportLoading === 'pdf',
+            loading: exportLoading === 'pdf'
+          }
+        ]}
+        systemStatus={{
+          online: true,
+          responseTime: 0.8,
+          statusText: "Sistema Operacional"
+        }}
+      />
         
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 flex-shrink-0">
-          {/* Export Dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                disabled={exportLoading !== null}
-                className="h-9 px-4 hover:bg-muted/60 shadow-sm hover:shadow-md transition-all duration-200"
-              >
-                {exportLoading ? (
-                  <div className="w-4 h-4 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin mr-2" />
-                ) : (
-                  <Download className="w-4 h-4 mr-2" />
-                )}
-                Exportar
-                <ChevronDown className="w-4 h-4 ml-1" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel className="flex items-center gap-2 font-semibold">
-                <div className="w-8 h-8 rounded-lg bg-green-100 dark:bg-green-900/20 flex items-center justify-center">
-                  <Download className="w-4 h-4 text-green-600 dark:text-green-400" />
-                </div>
-                <span>Exportar Notificações</span>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem 
-                onClick={exportNotificationsToCSV} 
-                disabled={exportLoading === 'csv'}
-                className="py-3 cursor-pointer"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center">
-                    <FileSpreadsheet className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                  </div>
-                  <div>
-                    <div className="font-medium">Formato CSV</div>
-                    <div className="text-xs text-muted-foreground">Para análise de dados</div>
-                  </div>
-                </div>
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={exportNotificationsToExcel} 
-                disabled={exportLoading === 'excel'}
-                className="py-3 cursor-pointer"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-green-100 dark:bg-green-900/20 flex items-center justify-center">
-                    <FileDown className="w-4 h-4 text-green-600 dark:text-green-400" />
-                  </div>
-                  <div>
-                    <div className="font-medium">Formato Excel</div>
-                    <div className="text-xs text-muted-foreground">Relatório completo</div>
-                  </div>
-                </div>
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={exportNotificationsToPDF} 
-                disabled={exportLoading === 'pdf'}
-                className="py-3 cursor-pointer"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-red-100 dark:bg-red-900/20 flex items-center justify-center">
-                    <Download className="w-4 h-4 text-red-600 dark:text-red-400" />
-                  </div>
-                  <div>
-                    <div className="font-medium">Formato PDF</div>
-                    <div className="text-xs text-muted-foreground">Documento oficial</div>
-                  </div>
-                </div>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+
 
           {/* Bulk Actions */}
           {selectedIds.length > 0 && (
@@ -702,14 +679,13 @@ export const NotificationsManager = () => {
             </Button>
           )}
 
-          {/* New Notification Button */}
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button onClick={resetForm} className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg">
-                <Plus className="w-4 h-4 mr-2" />
-                Nova Notificação
-              </Button>
-            </DialogTrigger>
+      {/* New Notification Dialog */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogTrigger asChild>
+          <div className="hidden">
+            {/* Hidden trigger - button is now in AdminHeroHeader */}
+          </div>
+        </DialogTrigger>
             
             <DialogContent className="max-w-3xl max-h-[95vh] overflow-hidden flex flex-col">
               <DialogHeader className="pb-4 border-b border-border/50 flex-shrink-0">
@@ -923,8 +899,6 @@ export const NotificationsManager = () => {
               </div>
             </DialogContent>
           </Dialog>
-        </div>
-      </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">

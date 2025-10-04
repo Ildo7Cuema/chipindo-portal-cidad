@@ -172,7 +172,7 @@ export const SiteContentManager = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-24 lg:pb-6">
       {/* Header with Stats */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20">
@@ -637,6 +637,58 @@ export const SiteContentManager = () => {
                         placeholder="© 2024 Administração Municipal de Chipindo. Todos os direitos reservados."
                       />
                     </div>
+                    
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Label htmlFor="contact_address" className="flex items-center gap-2">
+                          <MapPin className="h-4 w-4" />
+                          Endereço
+                        </Label>
+                        {getStatusIcon(getFieldStatus('contact_address'))}
+                      </div>
+                      <Textarea
+                        id="contact_address"
+                        value={formData.contact_address || ''}
+                        onChange={(e) => handleInputChange('contact_address', e.target.value)}
+                        placeholder="Rua Principal, Bairro Central, Chipindo, Província de Huíla, Angola"
+                        rows={2}
+                      />
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Label htmlFor="contact_phone" className="flex items-center gap-2">
+                            <Phone className="h-4 w-4" />
+                            Telefone
+                          </Label>
+                          {getStatusIcon(getFieldStatus('contact_phone'))}
+                        </div>
+                        <Input
+                          id="contact_phone"
+                          value={formData.contact_phone || ''}
+                          onChange={(e) => handleInputChange('contact_phone', e.target.value)}
+                          placeholder="+244 XXX XXX XXX"
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Label htmlFor="contact_email" className="flex items-center gap-2">
+                            <Mail className="h-4 w-4" />
+                            Email
+                          </Label>
+                          {getStatusIcon(getFieldStatus('contact_email'))}
+                        </div>
+                        <Input
+                          id="contact_email"
+                          type="email"
+                          value={formData.contact_email || ''}
+                          onChange={(e) => handleInputChange('contact_email', e.target.value)}
+                          placeholder="admin@chipindo.gov.ao"
+                        />
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
 
@@ -902,6 +954,53 @@ export const SiteContentManager = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Mobile Floating Action Button */}
+      {hasChanges && (
+        <div className="fixed bottom-20 left-4 right-4 z-50 lg:hidden">
+          <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg border border-border/50 shadow-lg rounded-lg p-4">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="text-orange-600 border-orange-600 text-xs">
+                  <AlertCircle className="h-3 w-3 mr-1" />
+                  Alterações não guardadas
+                </Badge>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleReset}
+                  disabled={!hasChanges}
+                  className="h-8 px-3"
+                >
+                  <RotateCcw className="h-3 w-3 mr-1" />
+                  Reverter
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={handleSave}
+                  disabled={saving || !hasChanges}
+                  className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 h-8 px-3"
+                >
+                  {saving ? (
+                    <>
+                      <LoaderIcon className="w-3 h-3 mr-1 animate-spin" />
+                      Guardar
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-3 h-3 mr-1" />
+                      Guardar
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

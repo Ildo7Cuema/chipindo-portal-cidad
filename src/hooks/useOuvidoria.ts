@@ -1,8 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 
 export interface OuvidoriaCategory {
   id: string;
@@ -58,6 +57,7 @@ export function useOuvidoria() {
   const fetchCategories = async () => {
     setLoading(true);
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data, error } = await supabase
         .from('ouvidoria_categorias' as any)
         .select('*')
@@ -84,6 +84,7 @@ export function useOuvidoria() {
   const fetchManifestacoes = async (sectorFilter?: string) => {
     setLoading(true);
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data, error } = await supabase
         .from('ouvidoria_manifestacoes' as any)
         .select('*')
@@ -178,8 +179,8 @@ export function useOuvidoria() {
 
   const fetchStats = async () => {
     try {
-      const { data, error } = await supabase
-        .rpc('get_ouvidoria_stats' as any);
+      const { data, error } = await (supabase as any)
+        .rpc('get_ouvidoria_stats');
 
       if (error) throw error;
 
@@ -247,41 +248,67 @@ export function useOuvidoria() {
 
   const updateManifestacaoStatus = async (id: string, status: string, resposta?: string) => {
     try {
-      const updateData: any = { 
-        status,
-        updated_at: new Date().toISOString()
-      };
+      console.log('Tentando atualizar manifestação:', { id, status, resposta });
+      
+      // Usar a função RPC que contorna as políticas RLS
+      const { data, error } = await (supabase as any).rpc('update_manifestacao_status', {
+        p_id: id,
+        p_status: status,
+        p_resposta: resposta || null
+      });
 
-      if (resposta) {
-        updateData.resposta = resposta;
-        updateData.data_resposta = new Date().toISOString();
+      if (error) {
+        console.error('Erro na função RPC:', error);
+        throw error;
       }
 
-      const { data, error } = await supabase
+      console.log('Resultado da função RPC:', data);
+
+      if (!data || !data.success) {
+        throw new Error(data?.error || 'Erro desconhecido ao atualizar manifestação');
+      }
+
+      // Buscar a manifestação atualizada para atualizar a lista local
+      const { data: updatedManifestacao, error: fetchError } = await supabase
         .from('ouvidoria_manifestacoes' as any)
-        .update(updateData)
+        .select('*')
         .eq('id', id)
-        .select()
         .single();
 
-      if (error) throw error;
-
-      // Atualizar lista local
-      setManifestacoes(prev => 
-        prev.map(m => m.id === id ? data as unknown as OuvidoriaItem : m)
-      );
+      if (fetchError) {
+        console.error('Erro ao buscar manifestação atualizada:', fetchError);
+        // Não falhar aqui, apenas logar o erro
+      } else if (updatedManifestacao) {
+        // Atualizar lista local
+        setManifestacoes(prev => 
+          prev.map(m => m.id === id ? updatedManifestacao as unknown as OuvidoriaItem : m)
+        );
+      }
 
       toast({
         title: "Status Atualizado",
         description: "Status da manifestação atualizado com sucesso",
       });
 
-      return data;
+      return updatedManifestacao || data;
     } catch (err) {
       console.error('Error updating manifestação:', err);
+      
+      // Mensagem de erro mais específica
+      let errorMessage = "Erro ao atualizar status da manifestação";
+      if (err instanceof Error) {
+        if (err.message.includes('PGRST116')) {
+          errorMessage = "Manifestação não encontrada ou sem permissão para atualizar";
+        } else if (err.message.includes('JWT')) {
+          errorMessage = "Sessão expirada. Faça login novamente.";
+        } else {
+          errorMessage = err.message;
+        }
+      }
+      
       toast({
         title: "Erro",
-        description: "Erro ao atualizar status da manifestação",
+        description: errorMessage,
         variant: "destructive"
       });
       throw err;
@@ -290,30 +317,49 @@ export function useOuvidoria() {
 
   const rateManifestacao = async (id: string, avaliacao: number, comentario?: string) => {
     try {
-      const { data, error } = await supabase
+      console.log('Tentando avaliar manifestação:', { id, avaliacao, comentario });
+      
+      // Usar a função RPC que contorna as políticas RLS
+      const { data, error } = await (supabase as any).rpc('rate_manifestacao', {
+        p_id: id,
+        p_avaliacao: avaliacao,
+        p_comentario: comentario || null
+      });
+
+      if (error) {
+        console.error('Erro na função RPC:', error);
+        throw error;
+      }
+
+      console.log('Resultado da função RPC:', data);
+
+      if (!data || !data.success) {
+        throw new Error(data?.error || 'Erro desconhecido ao avaliar manifestação');
+      }
+
+      // Buscar a manifestação atualizada para atualizar a lista local
+      const { data: updatedManifestacao, error: fetchError } = await supabase
         .from('ouvidoria_manifestacoes' as any)
-        .update({
-          avaliacao,
-          comentario_avaliacao: comentario,
-          updated_at: new Date().toISOString()
-        })
+        .select('*')
         .eq('id', id)
-        .select()
         .single();
 
-      if (error) throw error;
-
-      // Atualizar lista local
-      setManifestacoes(prev => 
-        prev.map(m => m.id === id ? data as unknown as OuvidoriaItem : m)
-      );
+      if (fetchError) {
+        console.error('Erro ao buscar manifestação atualizada:', fetchError);
+        // Não falhar aqui, apenas logar o erro
+      } else if (updatedManifestacao) {
+        // Atualizar lista local
+        setManifestacoes(prev => 
+          prev.map(m => m.id === id ? updatedManifestacao as unknown as OuvidoriaItem : m)
+        );
+      }
 
       toast({
         title: "Avaliação Enviada",
         description: "Obrigado pela sua avaliação!",
       });
 
-      return data;
+      return updatedManifestacao || data;
     } catch (err) {
       console.error('Error rating manifestação:', err);
       toast({

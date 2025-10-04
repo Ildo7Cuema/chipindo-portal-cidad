@@ -18,6 +18,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useOuvidoria, type OuvidoriaItem } from "@/hooks/useOuvidoria";
 import { useAccessControl } from "@/hooks/useAccessControl";
 import { SectorFilter } from "@/components/admin/SectorFilter";
+import { ForwardService } from "@/lib/forward-service";
 import { 
   MessageSquare, 
   Plus, 
@@ -53,7 +54,9 @@ import {
   Zap,
   Target,
   Activity,
-  SendIcon
+  SendIcon,
+  MessageCircle,
+  Smartphone
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -83,7 +86,8 @@ export const OuvidoriaManager = () => {
     error,
     fetchManifestacoes,
     fetchCategories,
-    submitManifestacao
+    submitManifestacao,
+    updateManifestacaoStatus
   } = useOuvidoria();
 
   // Controle de acesso
@@ -97,7 +101,7 @@ export const OuvidoriaManager = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
-  const [sortBy, setSortBy] = useState("created_at");
+  const [sortBy, setSortBy] = useState("data_abertura");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [selectedManifestacao, setSelectedManifestacao] = useState<OuvidoriaItem | null>(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
@@ -105,6 +109,14 @@ export const OuvidoriaManager = () => {
   const [responseText, setResponseText] = useState("");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [exportLoading, setExportLoading] = useState<string | null>(null);
+
+  // Estados para reencaminhamento
+  const [isForwardModalOpen, setIsForwardModalOpen] = useState(false);
+  const [forwardType, setForwardType] = useState<'sms' | 'whatsapp'>('whatsapp');
+  const [forwardPhone, setForwardPhone] = useState("");
+  const [forwardMessage, setForwardMessage] = useState("");
+  const [forwardLoading, setForwardLoading] = useState(false);
+  const [selectedManifestacaoForForward, setSelectedManifestacaoForForward] = useState<OuvidoriaItem | null>(null);
 
   // Carregar manifestações com filtro de setor (apenas uma vez)
   useEffect(() => {
@@ -204,16 +216,30 @@ export const OuvidoriaManager = () => {
       return;
     }
 
-    // Implementar quando necessário
-    toast.success("Resposta enviada com sucesso!");
-    setIsResponseModalOpen(false);
-    setSelectedManifestacao(null);
-    setResponseText("");
+    try {
+      await updateManifestacaoStatus(selectedManifestacao.id, 'respondido', responseText);
+      // Atualizar a lista de manifestações após a resposta
+      fetchManifestacoes();
+      toast.success("Resposta enviada com sucesso!");
+      setIsResponseModalOpen(false);
+      setSelectedManifestacao(null);
+      setResponseText("");
+    } catch (error) {
+      console.error('Erro ao enviar resposta:', error);
+      toast.error("Erro ao enviar resposta. Tente novamente.");
+    }
   };
 
   const handleUpdateStatus = async (id: string, status: string) => {
-    // Implementar quando necessário
-    toast.success("Status actualizado com sucesso!");
+    try {
+      await updateManifestacaoStatus(id, status);
+      // Atualizar a lista de manifestações após a mudança
+      fetchManifestacoes();
+      toast.success("Status actualizado com sucesso!");
+    } catch (error) {
+      console.error('Erro ao atualizar status:', error);
+      toast.error("Erro ao actualizar status. Tente novamente.");
+    }
   };
 
   const handleBulkAction = async (action: 'respond' | 'archive' | 'delete') => {
@@ -243,7 +269,7 @@ export const OuvidoriaManager = () => {
     const matchesSearch = manifestacao.assunto.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          manifestacao.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          manifestacao.protocolo.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || manifestacao.categoria_id === selectedCategory;
+    const matchesCategory = selectedCategory === 'all' || manifestacao.categoria === selectedCategory;
     const matchesStatus = selectedStatus === 'all' || manifestacao.status === selectedStatus;
     
     return matchesSearch && matchesCategory && matchesStatus;
@@ -258,6 +284,55 @@ export const OuvidoriaManager = () => {
     tempo_medio_resposta: 2.5,
     satisfacao_geral: 4.2,
     categorias_mais_comuns: ['Reclamação', 'Sugestão']
+  };
+
+  // Função para abrir modal de reencaminhamento
+  const handleForwardManifestacao = (manifestacao: OuvidoriaItem) => {
+    setSelectedManifestacaoForForward(manifestacao);
+    
+    // Gerar mensagem padrão usando o serviço
+    const defaultMessage = ForwardService.generateDefaultMessage(
+      manifestacao, 
+      getCategoryData(manifestacao.categoria).name
+    );
+
+    setForwardMessage(defaultMessage);
+    setIsForwardModalOpen(true);
+  };
+
+  // Função para reencaminhar mensagem
+  const handleForwardMessage = async () => {
+    if (!selectedManifestacaoForForward || !forwardPhone.trim() || !forwardMessage.trim()) {
+      toast.error("Por favor, preencha todos os campos.");
+      return;
+    }
+
+    setForwardLoading(true);
+
+    try {
+      const result = await ForwardService.forwardMessage({
+        manifestacao_id: selectedManifestacaoForForward.id,
+        forward_type: forwardType,
+        recipient_phone: forwardPhone,
+        message: forwardMessage,
+        forwarded_by: 'admin' // ou o ID do usuário atual
+      });
+
+      if (result.success) {
+        toast.success(result.message);
+        setIsForwardModalOpen(false);
+        setSelectedManifestacaoForForward(null);
+        setForwardPhone("");
+        setForwardMessage("");
+      } else {
+        toast.error(result.error || "Erro ao reencaminhar mensagem");
+      }
+    } catch (error) {
+      console.error('Erro ao reencaminhar:', error);
+      toast.error("Erro ao reencaminhar mensagem. Tente novamente.");
+    } finally {
+      setForwardLoading(false);
+    }
   };
 
   return (
@@ -436,10 +511,10 @@ export const OuvidoriaManager = () => {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                                              <SelectItem value="created_at-desc">Data (Mais Recente)</SelectItem>
-                        <SelectItem value="created_at-asc">Data (Mais Antiga)</SelectItem>
-                                      <SelectItem value="tipo-desc">Tipo (A-Z)</SelectItem>
-                <SelectItem value="tipo-asc">Tipo (Z-A)</SelectItem>
+                      <SelectItem value="data_abertura-desc">Data (Mais Recente)</SelectItem>
+                      <SelectItem value="data_abertura-asc">Data (Mais Antiga)</SelectItem>
+                      <SelectItem value="tipo-desc">Tipo (A-Z)</SelectItem>
+                      <SelectItem value="tipo-asc">Tipo (Z-A)</SelectItem>
                       <SelectItem value="protocolo-asc">Protocolo (A-Z)</SelectItem>
                     </SelectContent>
                   </Select>
@@ -502,7 +577,7 @@ export const OuvidoriaManager = () => {
               </Card>
             ) : (
               filteredManifestacoes.map((manifestacao) => {
-                const categoryData = getCategoryData(manifestacao.categoria_id);
+                const categoryData = getCategoryData(manifestacao.categoria);
                 return (
                   <Card key={manifestacao.id} className="hover:shadow-md transition-shadow">
                     <CardContent className="p-6">
@@ -516,15 +591,15 @@ export const OuvidoriaManager = () => {
                               {getStatusIcon(manifestacao.status)}
                               <span className="ml-1 capitalize">{manifestacao.status.replace('_', ' ')}</span>
                             </Badge>
-                            <Badge variant="outline" className={cn("text-xs", getPriorityColor(manifestacao.tipo))}>
-                              <span className="capitalize">{manifestacao.tipo}</span>
+                            <Badge variant="outline" className={cn("text-xs", getPriorityColor(manifestacao.prioridade))}>
+                              <span className="capitalize">{manifestacao.prioridade}</span>
                             </Badge>
                           </div>
 
                           <div>
                             <h3 className="font-semibold text-lg">{manifestacao.assunto}</h3>
                             <p className="text-sm text-muted-foreground mt-1">
-                              Protocolo: {manifestacao.protocolo} • {formatDate(manifestacao.created_at)}
+                              Protocolo: {manifestacao.protocolo} • {formatDate(manifestacao.data_abertura)}
                             </p>
                           </div>
 
@@ -557,7 +632,28 @@ export const OuvidoriaManager = () => {
                             </div>
                           )}
 
-                          {/* Avaliação será implementada quando necessário */}
+                          {/* Botões de ação rápida */}
+                          <div className="flex items-center gap-2 pt-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleRespondManifestacao(manifestacao)}
+                              className="flex items-center gap-2"
+                            >
+                              <Reply className="w-4 h-4" />
+                              Responder
+                            </Button>
+                            
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleForwardManifestacao(manifestacao)}
+                              className="flex items-center gap-2 bg-green-50 hover:bg-green-100 text-green-700 border-green-200"
+                            >
+                              <MessageCircle className="w-4 h-4" />
+                              Reencaminhar
+                            </Button>
+                          </div>
                         </div>
 
                         <div className="flex items-center gap-2 ml-4">
@@ -588,6 +684,10 @@ export const OuvidoriaManager = () => {
                               <DropdownMenuItem onClick={() => handleRespondManifestacao(manifestacao)}>
                                 <Reply className="w-4 h-4 mr-2" />
                                 Responder
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handleForwardManifestacao(manifestacao)}>
+                                <MessageCircle className="w-4 h-4 mr-2" />
+                                Reencaminhar
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem onClick={() => handleUpdateStatus(manifestacao.id, 'em_analise')}>
@@ -756,7 +856,7 @@ export const OuvidoriaManager = () => {
                 </div>
                 <div>
                   <Label className="text-sm font-medium">Data de Abertura</Label>
-                  <p className="text-sm text-muted-foreground">{formatDate(selectedManifestacao.created_at)}</p>
+                  <p className="text-sm text-muted-foreground">{formatDate(selectedManifestacao.data_abertura)}</p>
                 </div>
                 <div>
                   <Label className="text-sm font-medium">Nome</Label>
@@ -785,10 +885,10 @@ export const OuvidoriaManager = () => {
                   </Badge>
                 </div>
                 <div>
-                                  <Label className="text-sm font-medium">Tipo</Label>
-                <Badge variant="outline" className={cn("mt-1", getPriorityColor(selectedManifestacao.tipo))}>
-                  {selectedManifestacao.tipo}
-                </Badge>
+                  <Label className="text-sm font-medium">Tipo</Label>
+                  <Badge variant="outline" className={cn("mt-1", getPriorityColor(selectedManifestacao.prioridade))}>
+                    {selectedManifestacao.prioridade}
+                  </Badge>
                 </div>
               </div>
 
@@ -808,18 +908,24 @@ export const OuvidoriaManager = () => {
                   <div className="bg-muted/50 p-4 rounded-lg mt-1">
                     <p className="text-sm whitespace-pre-wrap">{selectedManifestacao.resposta}</p>
                     <p className="text-xs text-muted-foreground mt-2">
-                      Respondido em: {formatDate(selectedManifestacao.updated_at)}
+                      Respondido em: {selectedManifestacao.data_resposta ? formatDate(selectedManifestacao.data_resposta) : formatDate(selectedManifestacao.updated_at)}
                     </p>
                   </div>
                 </div>
               )}
 
-              {/* Avaliação será implementada quando necessário */}
-
               <div className="flex items-center gap-2 pt-4">
                 <Button onClick={() => handleRespondManifestacao(selectedManifestacao)}>
                   <Reply className="w-4 h-4 mr-2" />
                   Responder
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => handleForwardManifestacao(selectedManifestacao)}
+                  className="bg-green-50 hover:bg-green-100 text-green-700 border-green-200"
+                >
+                  <MessageCircle className="w-4 h-4 mr-2" />
+                  Reencaminhar
                 </Button>
                 <Button variant="outline" onClick={handleCloseModal}>
                   Fechar
@@ -856,6 +962,93 @@ export const OuvidoriaManager = () => {
                 Enviar Resposta
               </Button>
               <Button variant="outline" onClick={() => setIsResponseModalOpen(false)}>
+                Cancelar
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Forward Message Modal */}
+      <Dialog open={isForwardModalOpen} onOpenChange={setIsForwardModalOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Reencaminhar Manifestação</DialogTitle>
+            <DialogDescription>
+              Reencaminhe esta manifestação via SMS ou WhatsApp para a direção ou diretor responsável.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="forward-type">Tipo de Envio</Label>
+                <Select value={forwardType} onValueChange={(value: 'sms' | 'whatsapp') => setForwardType(value)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="whatsapp">
+                      <div className="flex items-center gap-2">
+                        <MessageCircle className="w-4 h-4" />
+                        WhatsApp
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="sms">
+                      <div className="flex items-center gap-2">
+                        <Smartphone className="w-4 h-4" />
+                        SMS
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div>
+                <Label htmlFor="forward-phone">Telefone do Destinatário</Label>
+                <Input
+                  id="forward-phone"
+                  placeholder="+244 123 456 789"
+                  value={forwardPhone}
+                  onChange={(e) => setForwardPhone(e.target.value)}
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Inclua o código do país (+244)
+                </p>
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="forward-message">Mensagem</Label>
+              <Textarea
+                id="forward-message"
+                placeholder="Digite a mensagem a ser enviada..."
+                value={forwardMessage}
+                onChange={(e) => setForwardMessage(e.target.value)}
+                rows={8}
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                A mensagem inclui automaticamente os detalhes da manifestação.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2 pt-4">
+              <Button 
+                onClick={handleForwardMessage}
+                disabled={forwardLoading}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                {forwardLoading ? (
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                ) : (
+                  forwardType === 'whatsapp' ? (
+                    <MessageCircle className="w-4 h-4 mr-2" />
+                  ) : (
+                    <Smartphone className="w-4 h-4 mr-2" />
+                  )
+                )}
+                {forwardType === 'whatsapp' ? 'Abrir WhatsApp' : 'Enviar SMS'}
+              </Button>
+              <Button variant="outline" onClick={() => setIsForwardModalOpen(false)}>
                 Cancelar
               </Button>
             </div>

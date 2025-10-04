@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/sections/Footer";
 import { EventsHero } from "@/components/sections/EventsHero";
@@ -29,26 +29,7 @@ import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import EventRegistrationModal from "@/components/ui/event-registration-modal";
-
-interface Event {
-  id: number;
-  title: string;
-  description: string;
-  date: string;
-  event_time: string;
-  location: string;
-  category: string;
-  organizer: string;
-  contact: string;
-  email: string;
-  website?: string;
-  isFeatured: boolean;
-  attendees: number;
-  price: string;
-  status: 'upcoming' | 'ongoing' | 'completed';
-  max_participants: number;
-  current_participants: number;
-}
+import { useEvents, type Event } from "@/hooks/useEvents";
 
 const Events = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -62,72 +43,21 @@ const Events = () => {
   const [showRegistrationModal, setShowRegistrationModal] = useState(false);
   const { toast } = useToast();
 
-  // Dados de eventos do município
-  const events: Event[] = [
-    {
-      id: 1,
-      title: "Festival Cultural de Chipindo",
-      description: "Celebração anual da cultura local com danças tradicionais, música, artesanato e gastronomia típica da região.",
-      date: "2025-08-15",
-      event_time: "09:00 - 18:00",
-      location: "Praça Central de Chipindo",
-      category: "Cultura",
-      organizer: "Câmara Municipal",
-      contact: "+244 123 456 789",
-      email: "cultura@chipindo.gov.ao",
-      website: "https://festival.chipindo.gov.ao",
-      isFeatured: true,
-      attendees: 2500,
-      price: "Gratuito",
-      status: 'upcoming',
-      max_participants: 3000,
-      current_participants: 1250
-    },
-    {
-      id: 2,
-      title: "Feira Agrícola e Comercial",
-      description: "Exposição de produtos agrícolas locais, artesanato e oportunidades de negócio para agricultores e comerciantes.",
-      date: "2025-09-20",
-      event_time: "08:00 - 17:00",
-      location: "Mercado Municipal",
-      category: "Comércio",
-      organizer: "Direcção de Agricultura",
-      contact: "+244 123 456 790",
-      email: "agricultura@chipindo.gov.ao",
-      isFeatured: true,
-      attendees: 800,
-      price: "Gratuito",
-      status: 'upcoming',
-      max_participants: 1000,
-      current_participants: 450
-    },
-    {
-      id: 3,
-      title: "Conferência de Desenvolvimento Sustentável",
-      description: "Discussão sobre projectos de desenvolvimento sustentável, meio ambiente e crescimento económico do município.",
-      date: "2025-07-30",
-      event_time: "14:00 - 17:00",
-      location: "Auditório Municipal",
-      category: "Educação",
-      organizer: "Direcção de Educação",
-      contact: "+244 123 456 791",
-      email: "educacao@chipindo.gov.ao",
-      attendees: 150,
-      price: "Gratuito",
-      status: 'upcoming',
-      isFeatured: false,
-      max_participants: 200,
-      current_participants: 180
-    }
-  ];
+  // Usar hook para buscar eventos do banco de dados
+  const { events, loading: eventsLoading } = useEvents({
+    category: selectedCategory === 'all' ? undefined : selectedCategory,
+    status: selectedStatus === 'all' ? undefined : selectedStatus,
+    search: searchTerm
+  });
 
   const categories = [
     { value: 'all', label: 'Todas as Categorias' },
-    { value: 'Cultura', label: 'Cultura' },
-    { value: 'Comércio', label: 'Comércio' },
-    { value: 'Educação', label: 'Educação' },
-    { value: 'Saúde', label: 'Saúde' },
-    { value: 'Desporto', label: 'Desporto' }
+    { value: 'cultural', label: 'Cultura' },
+    { value: 'business', label: 'Comércio' },
+    { value: 'educational', label: 'Educação' },
+    { value: 'health', label: 'Saúde' },
+    { value: 'sports', label: 'Desporto' },
+    { value: 'community', label: 'Comunidade' }
   ];
 
   const statusOptions = [
@@ -137,17 +67,8 @@ const Events = () => {
     { value: 'completed', label: 'Concluídos' }
   ];
 
-  // Filtrar eventos
-  const filteredEvents = events.filter(event => {
-    const matchesSearch = event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         event.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         event.location.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesCategory = selectedCategory === 'all' || event.category === selectedCategory;
-    const matchesStatus = selectedStatus === 'all' || event.status === selectedStatus;
-    
-    return matchesSearch && matchesCategory && matchesStatus;
-  });
+  // Usar eventos diretamente do hook (já filtrados)
+  const filteredEvents = events;
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -274,7 +195,7 @@ const Events = () => {
 
   // Calcular estatísticas dos eventos
   const totalEvents = events.length;
-  const featuredEvents = events.filter(event => event.isFeatured).length;
+  const featuredEvents = events.filter(event => event.featured).length;
   const upcomingEvents = events.filter(event => event.status === 'upcoming').length;
 
   return (
@@ -338,7 +259,13 @@ const Events = () => {
         {/* Events Grid */}
         <section id="events-list" className="py-12">
           <div className="container mx-auto px-4">
-            {filteredEvents.length === 0 ? (
+            {eventsLoading ? (
+              <div className="text-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                <h3 className="text-xl font-semibold text-gray-600 mb-2">Carregando eventos...</h3>
+                <p className="text-gray-500">Aguarde enquanto buscamos os eventos</p>
+              </div>
+            ) : filteredEvents.length === 0 ? (
               <div className="text-center py-12">
                 <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-gray-600 mb-2">Nenhum evento encontrado</h3>
@@ -351,10 +278,10 @@ const Events = () => {
                     key={event.id} 
                     className={cn(
                       "overflow-hidden hover:shadow-lg transition-all duration-300",
-                      event.isFeatured && "ring-2 ring-yellow-400"
+                      event.featured && "ring-2 ring-yellow-400"
                     )}
                   >
-                    {event.isFeatured && (
+                    {event.featured && (
                       <div className="bg-yellow-400 text-yellow-900 px-3 py-1 text-xs font-semibold text-center">
                         ⭐ Evento Destacado
                       </div>

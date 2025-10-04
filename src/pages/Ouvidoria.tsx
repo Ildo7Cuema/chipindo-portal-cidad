@@ -62,11 +62,11 @@ const Ouvidoria = () => {
   const { 
     manifestacoes, 
     stats, 
-    categorias, 
+    categories, 
     loading, 
-    submitting,
+    error,
     fetchManifestacoes,
-    createManifestacao,
+    submitManifestacao,
     updateManifestacaoStatus,
     rateManifestacao
   } = useOuvidoria();
@@ -93,17 +93,17 @@ const Ouvidoria = () => {
 
   // Buscar manifestações quando filtros mudarem
   useEffect(() => {
-    fetchManifestacoes(searchTerm, selectedCategory, selectedStatus, sortBy, sortOrder);
-  }, [searchTerm, selectedCategory, selectedStatus, sortBy, sortOrder]);
+    fetchManifestacoes();
+  }, []);
 
   // Função para obter dados da categoria
   const getCategoryData = (categoryId: string) => {
-    const category = categorias.find(cat => cat.id === categoryId);
+    const category = categories?.find(cat => cat.id === categoryId);
     if (category) {
       return {
-        name: category.name,
-        color: category.color,
-        bgColor: category.bgColor
+        name: category.nome,
+        color: category.cor,
+        bgColor: category.bg_color
       };
     }
     return {
@@ -116,10 +116,10 @@ const Ouvidoria = () => {
   // Opções de filtro baseadas nas categorias reais
   const categoriaOptions = [
     { value: 'all', label: 'Todas as Categorias' },
-    ...categorias.map(cat => ({
+    ...(categories?.map(cat => ({
       value: cat.id,
-      label: cat.name
-    }))
+      label: cat.nome
+    })) || [])
   ];
 
   const formatDate = (dateString: string) => {
@@ -169,9 +169,9 @@ const Ouvidoria = () => {
       return;
     }
 
-    const result = await createManifestacao(formData);
+    const result = await submitManifestacao(formData);
     
-    if (result) {
+    if (result.success) {
       // Limpar formulário
       setFormData({
         nome: "",
@@ -304,7 +304,7 @@ const Ouvidoria = () => {
             </div>
 
             {/* Tabs Principais */}
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full max-h-[70vh] overflow-y-auto">
               <TabsList className="grid w-full grid-cols-3 mb-8">
                 <TabsTrigger value="manifestacoes" className="flex items-center gap-2">
                   <MessageSquareIcon className="w-4 h-4" />
@@ -321,7 +321,7 @@ const Ouvidoria = () => {
               </TabsList>
 
               {/* Tab Manifestações */}
-              <TabsContent value="manifestacoes" className="space-y-6">
+              <TabsContent value="manifestacoes" className="space-y-6 max-h-[60vh] overflow-y-auto">
                 {/* Filtros e Busca */}
                 <Card className="bg-white shadow-lg border-0">
                   <CardContent className="p-6">
@@ -471,7 +471,7 @@ const Ouvidoria = () => {
               </TabsContent>
 
               {/* Tab Nova Manifestação */}
-              <TabsContent value="nova-manifestacao" className="space-y-6">
+              <TabsContent value="nova-manifestacao" className="space-y-6 max-h-[60vh] overflow-y-auto">
                 <Card className="bg-white shadow-lg border-0">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
@@ -528,11 +528,11 @@ const Ouvidoria = () => {
                               <SelectValue placeholder="Selecione uma categoria" />
                             </SelectTrigger>
                             <SelectContent>
-                              {categorias.map((category) => (
+                              {categories?.map((category) => (
                                 <SelectItem key={category.id} value={category.id}>
                                   <div className="flex items-center gap-2">
-                                    <div className={`w-3 h-3 rounded-full`} style={{ backgroundColor: category.color }}></div>
-                                    {category.name}
+                                    <div className={`w-3 h-3 rounded-full`} style={{ backgroundColor: category.cor }}></div>
+                                    {category.nome}
                                   </div>
                                 </SelectItem>
                               ))}
@@ -568,8 +568,8 @@ const Ouvidoria = () => {
                         <Button type="button" variant="outline" onClick={() => setActiveTab("manifestacoes")}>
                           Cancelar
                         </Button>
-                        <Button type="submit" className="flex items-center gap-2" disabled={submitting}>
-                          {submitting ? (
+                        <Button type="submit" className="flex items-center gap-2" disabled={loading}>
+                          {loading ? (
                             <>
                               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                               Enviando...
@@ -588,7 +588,7 @@ const Ouvidoria = () => {
               </TabsContent>
 
               {/* Tab Estatísticas */}
-              <TabsContent value="estatisticas" className="space-y-6">
+              <TabsContent value="estatisticas" className="space-y-6 max-h-[60vh] overflow-y-auto">
                 <div className="grid gap-6">
                   <Card className="bg-white shadow-lg border-0">
                     <CardHeader>
@@ -662,8 +662,8 @@ const Ouvidoria = () => {
 
       {/* Modal de Visualização de Manifestação */}
       <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
-        <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden">
-          <DialogHeader>
+        <DialogContent className="max-w-4xl h-[90vh] overflow-hidden p-0">
+          <DialogHeader className="p-6 pb-4 border-b border-slate-200">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <MessageSquareIcon className="w-8 h-8 text-blue-600" />
@@ -687,7 +687,7 @@ const Ouvidoria = () => {
             </div>
           </DialogHeader>
           
-          <ScrollArea className="max-h-[60vh]">
+          <div className="flex-1 overflow-y-auto p-6">
             <div className="space-y-6">
               {/* Informações da Manifestação */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-slate-50 rounded-lg">
@@ -744,7 +744,7 @@ const Ouvidoria = () => {
               <div className="space-y-4">
                 <h4 className="text-lg font-semibold text-slate-900">Descrição da Manifestação</h4>
                 <div className="p-6 bg-white border border-slate-200 rounded-lg">
-                  <p className="text-slate-700 leading-relaxed">
+                  <p className="text-slate-700 leading-relaxed whitespace-pre-wrap">
                     {selectedManifestacao?.descricao}
                   </p>
                 </div>
@@ -761,7 +761,7 @@ const Ouvidoria = () => {
                         Respondido em {selectedManifestacao.data_resposta && formatDate(selectedManifestacao.data_resposta)}
                       </span>
                     </div>
-                    <p className="text-slate-700 leading-relaxed">
+                    <p className="text-slate-700 leading-relaxed whitespace-pre-wrap">
                       {selectedManifestacao.resposta}
                     </p>
                   </div>
@@ -804,10 +804,10 @@ const Ouvidoria = () => {
                 </div>
               )}
             </div>
-          </ScrollArea>
+          </div>
 
           {/* Ações do Modal */}
-          <div className="flex items-center justify-between pt-4 border-t border-slate-200">
+          <div className="flex items-center justify-between p-6 border-t border-slate-200 bg-white">
             <div className="flex items-center gap-2 text-sm text-slate-600">
               <MessageSquareIcon className="w-4 h-4" />
               <span>Visualizando manifestação</span>

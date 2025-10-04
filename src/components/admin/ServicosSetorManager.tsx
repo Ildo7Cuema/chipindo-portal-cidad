@@ -12,7 +12,8 @@ import {
   DialogContent, 
   DialogHeader, 
   DialogTitle, 
-  DialogTrigger 
+  DialogTrigger,
+  DialogDescription
 } from '@/components/ui/dialog';
 import { 
   PlusIcon, 
@@ -30,7 +31,15 @@ import {
   StarIcon,
   TrendingUpIcon,
   UsersIcon,
-  BuildingIcon
+  BuildingIcon,
+  SettingsIcon,
+  CalendarIcon,
+  TagIcon,
+  HashIcon,
+  BriefcaseIcon,
+  GlobeIcon,
+  ShieldIcon,
+  ZapIcon
 } from 'lucide-react';
 import { useServicos, Servico } from '@/hooks/useServicos';
 import { useToast } from '@/hooks/use-toast';
@@ -272,298 +281,435 @@ export const ServicosSetorManager = ({ setorNome, setorId }: ServicosSetorManage
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={handleNewServico}>
+            <Button onClick={handleNewServico} className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg">
               <PlusIcon className="w-4 h-4 mr-2" />
               Novo Serviço
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>
-                {editingServico ? 'Editar Serviço' : 'Novo Serviço'}
-              </DialogTitle>
+          <DialogContent className="max-w-5xl max-h-[95vh] overflow-hidden flex flex-col">
+            <DialogHeader className="pb-4 border-b border-border/50 flex-shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900/20 dark:to-blue-800/20 flex items-center justify-center">
+                  <SettingsIcon className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                </div>
+                <div>
+                  <DialogTitle className="text-lg font-semibold">
+                    {editingServico ? "Editar Serviço" : "Novo Serviço"}
+                  </DialogTitle>
+                  <DialogDescription className="text-sm text-muted-foreground">
+                    {editingServico 
+                      ? "Edite os detalhes do serviço existente" 
+                      : "Cadastre um novo serviço para o setor"
+                    }
+                  </DialogDescription>
+                </div>
+              </div>
             </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="title">Título do Serviço</Label>
-                  <Input
-                    id="title"
-                    value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="direcao">Direção Responsável</Label>
-                  <Input
-                    id="direcao"
-                    value={formData.direcao}
-                    onChange={(e) => setFormData({ ...formData, direcao: e.target.value })}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="description">Descrição</Label>
-                <Textarea
-                  id="description"
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  rows={3}
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <Label htmlFor="icon">Ícone</Label>
-                  <Select value={formData.icon} onValueChange={(value) => setFormData({ ...formData, icon: value })}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {iconOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          <div className="flex items-center gap-2">
-                            <option.icon className="w-4 h-4" />
-                            {option.label}
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="prioridade">Prioridade</Label>
-                  <Select value={formData.prioridade} onValueChange={(value: 'baixa' | 'media' | 'alta') => setFormData({ ...formData, prioridade: value })}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {prioridadeOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="ordem">Ordem</Label>
-                  <Input
-                    id="ordem"
-                    type="number"
-                    value={formData.ordem}
-                    onChange={(e) => setFormData({ ...formData, ordem: parseInt(e.target.value) })}
-                    min="0"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="horario">Horário de Funcionamento</Label>
-                  <Input
-                    id="horario"
-                    value={formData.horario}
-                    onChange={(e) => setFormData({ ...formData, horario: e.target.value })}
-                    placeholder="Ex: Segunda a Sexta: 8h00 - 15h00"
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="localizacao">Localização</Label>
-                  <Input
-                    id="localizacao"
-                    value={formData.localizacao}
-                    onChange={(e) => setFormData({ ...formData, localizacao: e.target.value })}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="contacto">Contacto</Label>
-                  <Input
-                    id="contacto"
-                    value={formData.contacto}
-                    onChange={(e) => setFormData({ ...formData, contacto: e.target.value })}
-                    placeholder="Ex: +244 123 456 789"
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="prazo">Prazo de Processamento</Label>
-                  <Input
-                    id="prazo"
-                    value={formData.prazo}
-                    onChange={(e) => setFormData({ ...formData, prazo: e.target.value })}
-                    placeholder="Ex: 3 dias úteis"
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="taxa">Taxa/Custo</Label>
-                  <Input
-                    id="taxa"
-                    value={formData.taxa}
-                    onChange={(e) => setFormData({ ...formData, taxa: e.target.value })}
-                    placeholder="Ex: Gratuito ou 15.000 Kz"
-                    required
-                  />
-                </div>
-              </div>
-
-              {/* Requisitos */}
-              <div>
-                <Label>Requisitos</Label>
-                <div className="space-y-2">
-                  {formData.requisitos.map((req, index) => (
-                    <div key={index} className="flex gap-2">
+            
+            <div className="flex-1 overflow-y-auto py-4">
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Informações Básicas */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 pb-2 border-b border-border/50">
+                    <FileTextIcon className="w-5 h-5 text-blue-600" />
+                    <h3 className="font-semibold text-lg">Informações Básicas</h3>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="title" className="flex items-center gap-2">
+                        <TagIcon className="w-4 h-4 text-muted-foreground" />
+                        Título do Serviço *
+                      </Label>
                       <Input
-                        value={req}
-                        onChange={(e) => {
-                          const newRequisitos = [...formData.requisitos];
-                          newRequisitos[index] = e.target.value;
-                          setFormData({ ...formData, requisitos: newRequisitos });
-                        }}
+                        id="title"
+                        value={formData.title}
+                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                        placeholder="Digite o título do serviço"
+                        className="h-11"
+                        required
                       />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => removeArrayItem('requisitos', index)}
-                      >
-                        <TrashIcon className="w-4 h-4" />
-                      </Button>
                     </div>
-                  ))}
-                  <div className="flex gap-2">
-                    <Input
-                      placeholder="Adicionar requisito"
-                      onKeyPress={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          addArrayItem('requisitos', e.currentTarget.value);
-                          e.currentTarget.value = '';
-                        }
-                      }}
+                    <div className="space-y-2">
+                      <Label htmlFor="direcao" className="flex items-center gap-2">
+                        <BuildingIcon className="w-4 h-4 text-muted-foreground" />
+                        Direção Responsável *
+                      </Label>
+                      <Input
+                        id="direcao"
+                        value={formData.direcao}
+                        onChange={(e) => setFormData({ ...formData, direcao: e.target.value })}
+                        placeholder="Ex: Direção de Serviços Municipais"
+                        className="h-11"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="description" className="flex items-center gap-2">
+                      <FileTextIcon className="w-4 h-4 text-muted-foreground" />
+                      Descrição do Serviço *
+                    </Label>
+                    <Textarea
+                      id="description"
+                      value={formData.description}
+                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                      placeholder="Descreva detalhadamente o serviço oferecido..."
+                      rows={4}
+                      className="resize-none"
+                      required
                     />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={(e) => {
-                        const input = e.currentTarget.previousElementSibling as HTMLInputElement;
-                        addArrayItem('requisitos', input.value);
-                        input.value = '';
-                      }}
-                    >
-                      <PlusIcon className="w-4 h-4" />
-                    </Button>
                   </div>
                 </div>
-              </div>
 
-              {/* Documentos */}
-              <div>
-                <Label>Documentos Necessários</Label>
-                <div className="space-y-2">
-                  {formData.documentos.map((doc, index) => (
-                    <div key={index} className="flex gap-2">
-                      <Input
-                        value={doc}
-                        onChange={(e) => {
-                          const newDocumentos = [...formData.documentos];
-                          newDocumentos[index] = e.target.value;
-                          setFormData({ ...formData, documentos: newDocumentos });
-                        }}
-                      />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => removeArrayItem('documentos', index)}
-                      >
-                        <TrashIcon className="w-4 h-4" />
-                      </Button>
+                {/* Configurações */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 pb-2 border-b border-border/50">
+                    <SettingsIcon className="w-5 h-5 text-green-600" />
+                    <h3 className="font-semibold text-lg">Configurações</h3>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="icon" className="flex items-center gap-2">
+                        <HashIcon className="w-4 h-4 text-muted-foreground" />
+                        Ícone do Serviço
+                      </Label>
+                      <Select value={formData.icon} onValueChange={(value) => setFormData({ ...formData, icon: value })}>
+                        <SelectTrigger className="h-11">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {iconOptions.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              <div className="flex items-center gap-2">
+                                <option.icon className="w-4 h-4" />
+                                {option.label}
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
-                  ))}
-                  <div className="flex gap-2">
-                    <Input
-                      placeholder="Adicionar documento"
-                      onKeyPress={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          addArrayItem('documentos', e.currentTarget.value);
-                          e.currentTarget.value = '';
-                        }
-                      }}
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={(e) => {
-                        const input = e.currentTarget.previousElementSibling as HTMLInputElement;
-                        addArrayItem('documentos', input.value);
-                        input.value = '';
-                      }}
-                    >
-                      <PlusIcon className="w-4 h-4" />
-                    </Button>
+                    <div className="space-y-2">
+                      <Label htmlFor="prioridade" className="flex items-center gap-2">
+                        <StarIcon className="w-4 h-4 text-muted-foreground" />
+                        Prioridade
+                      </Label>
+                      <Select value={formData.prioridade} onValueChange={(value: 'baixa' | 'media' | 'alta') => setFormData({ ...formData, prioridade: value })}>
+                        <SelectTrigger className="h-11">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {prioridadeOptions.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="ordem" className="flex items-center gap-2">
+                        <TrendingUpIcon className="w-4 h-4 text-muted-foreground" />
+                        Ordem de Exibição
+                      </Label>
+                      <Input
+                        id="ordem"
+                        type="number"
+                        value={formData.ordem}
+                        onChange={(e) => setFormData({ ...formData, ordem: parseInt(e.target.value) })}
+                        min="0"
+                        className="h-11"
+                        placeholder="0"
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="ativo"
-                    checked={formData.ativo}
-                    onCheckedChange={(checked) => setFormData({ ...formData, ativo: checked })}
-                  />
-                  <Label htmlFor="ativo">Ativo</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="digital"
-                    checked={formData.digital}
-                    onCheckedChange={(checked) => setFormData({ ...formData, digital: checked })}
-                  />
-                  <Label htmlFor="digital">Serviço Digital</Label>
-                </div>
-              </div>
+                {/* Informações de Funcionamento */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 pb-2 border-b border-border/50">
+                    <ClockIcon className="w-5 h-5 text-orange-600" />
+                    <h3 className="font-semibold text-lg">Informações de Funcionamento</h3>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="horario" className="flex items-center gap-2">
+                        <ClockIcon className="w-4 h-4 text-muted-foreground" />
+                        Horário de Funcionamento *
+                      </Label>
+                      <Input
+                        id="horario"
+                        value={formData.horario}
+                        onChange={(e) => setFormData({ ...formData, horario: e.target.value })}
+                        placeholder="Ex: Segunda a Sexta: 8h00 - 15h00"
+                        className="h-11"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="localizacao" className="flex items-center gap-2">
+                        <MapPinIcon className="w-4 h-4 text-muted-foreground" />
+                        Localização *
+                      </Label>
+                      <Input
+                        id="localizacao"
+                        value={formData.localizacao}
+                        onChange={(e) => setFormData({ ...formData, localizacao: e.target.value })}
+                        placeholder="Ex: Edifício Municipal, 1º Andar"
+                        className="h-11"
+                        required
+                      />
+                    </div>
+                  </div>
 
-              <div className="flex justify-end space-x-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setIsDialogOpen(false)}
-                >
-                  Cancelar
-                </Button>
-                <Button type="submit">
-                  {editingServico ? 'Actualizar' : 'Criar'}
-                </Button>
-              </div>
-            </form>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="contacto" className="flex items-center gap-2">
+                        <PhoneIcon className="w-4 h-4 text-muted-foreground" />
+                        Contacto *
+                      </Label>
+                      <Input
+                        id="contacto"
+                        value={formData.contacto}
+                        onChange={(e) => setFormData({ ...formData, contacto: e.target.value })}
+                        placeholder="Ex: +244 123 456 789"
+                        className="h-11"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="email" className="flex items-center gap-2">
+                        <MailIcon className="w-4 h-4 text-muted-foreground" />
+                        Email *
+                      </Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        placeholder="Ex: servicos@municipio.ao"
+                        className="h-11"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="prazo" className="flex items-center gap-2">
+                        <CalendarIcon className="w-4 h-4 text-muted-foreground" />
+                        Prazo de Processamento *
+                      </Label>
+                      <Input
+                        id="prazo"
+                        value={formData.prazo}
+                        onChange={(e) => setFormData({ ...formData, prazo: e.target.value })}
+                        placeholder="Ex: 3 dias úteis"
+                        className="h-11"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="taxa" className="flex items-center gap-2">
+                        <DollarSignIcon className="w-4 h-4 text-muted-foreground" />
+                        Taxa/Custo *
+                      </Label>
+                      <Input
+                        id="taxa"
+                        value={formData.taxa}
+                        onChange={(e) => setFormData({ ...formData, taxa: e.target.value })}
+                        placeholder="Ex: Gratuito ou 15.000 Kz"
+                        className="h-11"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Requisitos e Documentos */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 pb-2 border-b border-border/50">
+                    <CheckCircleIcon className="w-5 h-5 text-green-600" />
+                    <h3 className="font-semibold text-lg">Requisitos e Documentos</h3>
+                  </div>
+                  
+                  {/* Requisitos */}
+                  <div className="space-y-3">
+                    <Label className="flex items-center gap-2">
+                      <ShieldIcon className="w-4 h-4 text-muted-foreground" />
+                      Requisitos Necessários
+                    </Label>
+                    <div className="space-y-2">
+                      {formData.requisitos.map((req, index) => (
+                        <div key={index} className="flex gap-2">
+                          <Input
+                            value={req}
+                            onChange={(e) => {
+                              const newRequisitos = [...formData.requisitos];
+                              newRequisitos[index] = e.target.value;
+                              setFormData({ ...formData, requisitos: newRequisitos });
+                            }}
+                            className="h-10"
+                            placeholder="Digite o requisito"
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => removeArrayItem('requisitos', index)}
+                            className="h-10 px-3"
+                          >
+                            <TrashIcon className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      ))}
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="Adicionar novo requisito"
+                          className="h-10"
+                          onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              addArrayItem('requisitos', e.currentTarget.value);
+                              e.currentTarget.value = '';
+                            }
+                          }}
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => {
+                            const input = e.currentTarget.previousElementSibling as HTMLInputElement;
+                            addArrayItem('requisitos', input.value);
+                            input.value = '';
+                          }}
+                          className="h-10 px-3"
+                        >
+                          <PlusIcon className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Documentos */}
+                  <div className="space-y-3">
+                    <Label className="flex items-center gap-2">
+                      <BriefcaseIcon className="w-4 h-4 text-muted-foreground" />
+                      Documentos Necessários
+                    </Label>
+                    <div className="space-y-2">
+                      {formData.documentos.map((doc, index) => (
+                        <div key={index} className="flex gap-2">
+                          <Input
+                            value={doc}
+                            onChange={(e) => {
+                              const newDocumentos = [...formData.documentos];
+                              newDocumentos[index] = e.target.value;
+                              setFormData({ ...formData, documentos: newDocumentos });
+                            }}
+                            className="h-10"
+                            placeholder="Digite o documento necessário"
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => removeArrayItem('documentos', index)}
+                            className="h-10 px-3"
+                          >
+                            <TrashIcon className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      ))}
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="Adicionar novo documento"
+                          className="h-10"
+                          onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              addArrayItem('documentos', e.currentTarget.value);
+                              e.currentTarget.value = '';
+                            }
+                          }}
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => {
+                            const input = e.currentTarget.previousElementSibling as HTMLInputElement;
+                            addArrayItem('documentos', input.value);
+                            input.value = '';
+                          }}
+                          className="h-10 px-3"
+                        >
+                          <PlusIcon className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Opções Avançadas */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 pb-2 border-b border-border/50">
+                    <ZapIcon className="w-5 h-5 text-purple-600" />
+                    <h3 className="font-semibold text-lg">Opções Avançadas</h3>
+                  </div>
+                  
+                  <div className="flex items-center justify-between p-4 bg-muted/30 rounded-lg">
+                    <div className="flex items-center space-x-4">
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          id="ativo"
+                          checked={formData.ativo}
+                          onCheckedChange={(checked) => setFormData({ ...formData, ativo: checked })}
+                        />
+                        <Label htmlFor="ativo" className="flex items-center gap-2">
+                          <CheckCircleIcon className="w-4 h-4 text-green-600" />
+                          Serviço Ativo
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          id="digital"
+                          checked={formData.digital}
+                          onCheckedChange={(checked) => setFormData({ ...formData, digital: checked })}
+                        />
+                        <Label htmlFor="digital" className="flex items-center gap-2">
+                          <GlobeIcon className="w-4 h-4 text-blue-600" />
+                          Serviço Digital
+                        </Label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+
+            <div className="flex justify-end space-x-3 pt-4 border-t border-border/50 flex-shrink-0">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsDialogOpen(false)}
+                className="h-10 px-6"
+              >
+                Cancelar
+              </Button>
+              <Button 
+                type="submit"
+                onClick={handleSubmit}
+                className="h-10 px-6 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800"
+              >
+                {editingServico ? 'Actualizar Serviço' : 'Criar Serviço'}
+              </Button>
+            </div>
           </DialogContent>
         </Dialog>
       </div>

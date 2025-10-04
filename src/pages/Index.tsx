@@ -310,14 +310,14 @@ const Index = () => {
         {/* Sectores Estratégicos Section */}
         <Section variant="default" size="lg" className="relative overflow-hidden">
           <SectionContent>
-            <SectionHeader className="text-center space-y-4">
+            <div className="text-center space-y-4 mb-6">
               <div className="flex items-center justify-center gap-3">
                 <div className="relative">
                   <BuildingIcon className="w-10 h-10 text-primary" />
                   <div className="absolute inset-0 w-10 h-10 bg-primary/20 rounded-full animate-pulse" />
                 </div>
                 <h2 className="text-3xl font-bold">
-                  <span className="text-foreground">Setores</span>{' '}
+                  <span className="text-foreground">Sectores</span>{' '}
                   <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                     Estratégicos
                   </span>
@@ -327,7 +327,7 @@ const Index = () => {
                 Explore os sectores estratégicos do município de Chipindo e descubra oportunidades, 
                 programas e informações detalhadas sobre cada área
               </p>
-            </SectionHeader>
+            </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-12">
               {setoresLoading ? (

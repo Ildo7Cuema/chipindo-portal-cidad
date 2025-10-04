@@ -106,25 +106,58 @@ export function useEventRegistrations() {
     setError(null);
 
     try {
-      const { data, error: registerError } = await supabase.rpc('register_for_event', {
-        p_event_id: formData.event_id,
-        p_participant_name: formData.participant_name,
-        p_participant_email: formData.participant_email,
-        p_participant_phone: formData.participant_phone,
-        p_participant_age: formData.participant_age,
-        p_participant_gender: formData.participant_gender,
-        p_participant_address: formData.participant_address,
-        p_participant_occupation: formData.participant_occupation,
-        p_participant_organization: formData.participant_organization,
-        p_special_needs: formData.special_needs,
-        p_dietary_restrictions: formData.dietary_restrictions,
-        p_emergency_contact_name: formData.emergency_contact_name,
-        p_emergency_contact_phone: formData.emergency_contact_phone
-      });
+      // 1. Verificar se o evento existe e tem vagas
+      const { data: event, error: eventError } = await supabase
+        .from('events')
+        .select('max_participants, current_participants')
+        .eq('id', formData.event_id)
+        .single();
 
-      if (registerError) {
-        throw registerError;
+      if (eventError || !event) {
+        throw new Error('Event not found');
       }
+
+      if (event.max_participants > 0 && event.current_participants >= event.max_participants) {
+        throw new Error('Event is full');
+      }
+
+      // 2. Tentar inserir inscrição diretamente (o banco irá verificar duplicatas)
+      const { data: registration, error: insertError } = await supabase
+        .from('event_registrations')
+        .insert([{
+          event_id: formData.event_id,
+          participant_name: formData.participant_name,
+          participant_email: formData.participant_email,
+          participant_phone: formData.participant_phone,
+          participant_age: formData.participant_age,
+          participant_gender: formData.participant_gender,
+          participant_address: formData.participant_address,
+          participant_occupation: formData.participant_occupation,
+          participant_organization: formData.participant_organization,
+          special_needs: formData.special_needs,
+          dietary_restrictions: formData.dietary_restrictions,
+          emergency_contact_name: formData.emergency_contact_name,
+          emergency_contact_phone: formData.emergency_contact_phone
+        }])
+        .select()
+        .single();
+
+      if (insertError) {
+        // Verificar se é erro de duplicata
+        if (insertError.code === '23505' || insertError.message.includes('duplicate')) {
+          throw new Error('Already registered for this event');
+        }
+        throw insertError;
+      }
+
+      // 3. Atualizar contador de participantes
+      await supabase
+        .from('events')
+        .update({ 
+          current_participants: event.current_participants + 1,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', formData.event_id);
 
       toast({
         title: "Inscrição realizada!",
@@ -134,7 +167,7 @@ export function useEventRegistrations() {
       // Atualizar lista de inscrições
       await fetchRegistrations();
 
-      return data;
+      return registration.id;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erro ao realizar inscrição';
       setError(errorMessage);
