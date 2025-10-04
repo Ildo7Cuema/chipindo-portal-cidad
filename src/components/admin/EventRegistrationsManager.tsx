@@ -25,8 +25,7 @@ import {
   Building,
   AlertTriangle,
   CheckCircle2,
-  XCircle2,
-  Clock2,
+  Clock as Clock2,
   FileText,
   Send,
   Bell

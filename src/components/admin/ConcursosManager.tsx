@@ -80,6 +80,8 @@ interface ConcursoItem {
   published: boolean;
   created_at: string;
   updated_at: string;
+  area?: string;
+  categorias_disponiveis?: string;
   // Campos simulados para melhor UX
   category?: string;
   location?: string;
