@@ -74,8 +74,9 @@ export const NewsManager = () => {
   const [editingNews, setEditingNews] = useState<NewsItem | null>(null);
   const [exportLoading, setExportLoading] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string>("");
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [featuredImageIndex, setFeaturedImageIndex] = useState<number>(0);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -87,6 +88,8 @@ export const NewsManager = () => {
     featured: false,
     category: 'desenvolvimento' as CategoryType,
     image_url: "",
+    images: [] as string[],
+    featured_image_index: 0,
   });
 
   const categories = [
@@ -141,28 +144,38 @@ export const NewsManager = () => {
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImageFile(file);
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setImagePreview(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
+    const files = e.target.files;
+    if (files) {
+      const fileArray = Array.from(files);
+      setImageFiles(prev => [...prev, ...fileArray]);
+      
+      fileArray.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          setImagePreviews(prev => [...prev, e.target?.result as string]);
+        };
+        reader.readAsDataURL(file);
+      });
     }
   };
 
-  const removeImage = () => {
-    console.log('Removendo imagem...');
-    setImageFile(null);
-    setImagePreview("");
-    setFormData({ ...formData, image_url: "" });
+  const removeImage = (index: number) => {
+    console.log('Removendo imagem no índice:', index);
+    setImageFiles(prev => prev.filter((_, i) => i !== index));
+    setImagePreviews(prev => prev.filter((_, i) => i !== index));
+    setFormData(prev => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index)
+    }));
+    
+    // Ajustar o índice da imagem destacada se necessário
+    if (featuredImageIndex >= index && featuredImageIndex > 0) {
+      setFeaturedImageIndex(featuredImageIndex - 1);
+      setFormData(prev => ({ ...prev, featured_image_index: featuredImageIndex - 1 }));
+    }
+    
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
-    }
-    // Force re-render by updating editingNews if we're editing
-    if (editingNews) {
-      setEditingNews({ ...editingNews, image_url: "" });
     }
     console.log('Imagem removida com sucesso');
   };
@@ -192,20 +205,28 @@ export const NewsManager = () => {
     setUploading(true);
 
     try {
-      let imageUrl = formData.image_url;
+      let imageUrls: string[] = [...formData.images];
 
-      if (imageFile) {
-        imageUrl = await uploadImage(imageFile);
+      // Upload de novas imagens
+      if (imageFiles.length > 0) {
+        const uploadPromises = imageFiles.map(file => uploadImage(file));
+        const newImageUrls = await Promise.all(uploadPromises);
+        imageUrls = [...imageUrls, ...newImageUrls];
       }
 
       // Obter usuário autenticado
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Usuário não autenticado.');
 
+      // Manter compatibilidade com image_url (primeira imagem ou imagem destacada)
+      const mainImageUrl = imageUrls.length > 0 ? imageUrls[featuredImageIndex] || imageUrls[0] : "";
+
       const newsData = {
         ...formData,
-        image_url: imageUrl,
-        author_id: user.id, // Adicionar author_id para novas notícias
+        image_url: mainImageUrl,
+        images: imageUrls,
+        featured_image_index: featuredImageIndex,
+        author_id: user.id,
       };
 
       if (editingNews) {
@@ -259,14 +280,20 @@ export const NewsManager = () => {
       featured: false,
       category: 'desenvolvimento',
       image_url: "",
+      images: [],
+      featured_image_index: 0,
     });
     setEditingNews(null);
-    setImageFile(null);
-    setImagePreview("");
+    setImageFiles([]);
+    setImagePreviews([]);
+    setFeaturedImageIndex(0);
   };
 
   const handleEdit = (newsItem: NewsItem) => {
     setEditingNews(newsItem);
+    const existingImages = (newsItem as any).images || (newsItem.image_url ? [newsItem.image_url] : []);
+    const featuredIndex = (newsItem as any).featured_image_index || 0;
+    
     setFormData({
       title: newsItem.title,
       content: newsItem.content,
@@ -275,9 +302,12 @@ export const NewsManager = () => {
       featured: newsItem.featured,
       category: (newsItem.category as CategoryType) || 'desenvolvimento',
       image_url: newsItem.image_url || "",
+      images: existingImages,
+      featured_image_index: featuredIndex,
     });
-    setImageFile(null); // Reset imageFile to null when editing
-    setImagePreview(newsItem.image_url || "");
+    setImageFiles([]);
+    setImagePreviews(existingImages);
+    setFeaturedImageIndex(featuredIndex);
     setIsDialogOpen(true);
   };
 
@@ -935,74 +965,105 @@ export const NewsManager = () => {
 
                   <Separator />
                   
-                  {/* Imagem Section */}
+                  {/* Imagens Section */}
                   <div className="space-y-3">
-                    <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-lg bg-amber-100 dark:bg-amber-900/20 flex items-center justify-center">
-                        <ImageIcon className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-lg bg-amber-100 dark:bg-amber-900/20 flex items-center justify-center">
+                          <ImageIcon className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+                        </div>
+                        <h3 className="text-base font-semibold">Imagens da Notícia</h3>
                       </div>
-                      <h3 className="text-base font-semibold">Imagem da Notícia</h3>
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => fileInputRef.current?.click()}
+                        className="h-8"
+                      >
+                        <ImageIcon className="w-3 h-3 mr-2" />
+                        Adicionar Imagens
+                      </Button>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={handleImageChange}
+                        className="hidden"
+                      />
                     </div>
                     
-                    <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4">
-                      {(() => {
-                        const shouldShowImage = imagePreview || (editingNews?.image_url && !imageFile);
-                        console.log('Debug imagem:', {
-                          imagePreview,
-                          editingNewsImageUrl: editingNews?.image_url,
-                          imageFile: !!imageFile,
-                          shouldShowImage
-                        });
-                        return shouldShowImage;
-                      })() ? (
-                        <div className="relative">
-                          <img
-                            src={imagePreview || editingNews?.image_url}
-                            alt="Preview"
-                            className="w-full h-32 object-cover rounded-lg"
-                            onError={(e) => {
-                              console.error('Erro ao carregar imagem:', imagePreview || editingNews?.image_url);
-                              // Remove the image if it fails to load
-                              removeImage();
-                            }}
-                          />
-                          <Button
-                            type="button"
-                            variant="destructive"
-                            size="sm"
-                            className="absolute top-2 right-2 h-7 w-7 p-0"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              console.log('Botão de remover imagem clicado');
-                              removeImage();
-                            }}
+                    {imagePreviews.length > 0 ? (
+                      <div className="grid grid-cols-2 gap-3">
+                        {imagePreviews.map((preview, index) => (
+                          <div 
+                            key={index} 
+                            className={cn(
+                              "relative group border-2 rounded-lg overflow-hidden transition-all",
+                              featuredImageIndex === index 
+                                ? "border-amber-500 ring-2 ring-amber-500/50" 
+                                : "border-muted-foreground/25"
+                            )}
                           >
-                            <X className="w-3 h-3" />
-                          </Button>
-                        </div>
-                      ) : (
-                        <div className="text-center py-4">
-                          <Upload className="w-8 h-8 mx-auto text-muted-foreground mb-3" />
-                          <p className="text-sm text-muted-foreground mb-3">
-                            Selecione uma imagem para ilustrar a notícia
-                          </p>
-                          <Button type="button" variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
-                            <ImageIcon className="w-3 h-3 mr-2" />
-                            Selecionar Imagem
-                          </Button>
-                          <input
-                            ref={fileInputRef}
-                            type="file"
-                            accept="image/*"
-                            onChange={handleImageChange}
-                            className="hidden"
-                          />
-                        </div>
-                      )}
-                    </div>
+                            <img
+                              src={preview}
+                              alt={`Preview ${index + 1}`}
+                              className="w-full h-32 object-cover"
+                            />
+                            
+                            {/* Badge de Destaque */}
+                            {featuredImageIndex === index && (
+                              <div className="absolute top-2 left-2">
+                                <Badge className="bg-amber-500 text-white text-xs">
+                                  <Star className="w-3 h-3 mr-1" />
+                                  Destaque
+                                </Badge>
+                              </div>
+                            )}
+                            
+                            {/* Botões de Ação */}
+                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                              <Button
+                                type="button"
+                                variant="secondary"
+                                size="sm"
+                                className="h-8 text-xs"
+                                onClick={() => {
+                                  setFeaturedImageIndex(index);
+                                  setFormData(prev => ({ ...prev, featured_image_index: index }));
+                                }}
+                              >
+                                <Star className="w-3 h-3 mr-1" />
+                                Destacar
+                              </Button>
+                              <Button
+                                type="button"
+                                variant="destructive"
+                                size="sm"
+                                className="h-8 w-8 p-0"
+                                onClick={() => removeImage(index)}
+                              >
+                                <X className="w-3 h-3" />
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center">
+                        <Upload className="w-12 h-12 mx-auto text-muted-foreground mb-3" />
+                        <p className="text-sm text-muted-foreground mb-2">
+                          Nenhuma imagem selecionada
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          Clique em "Adicionar Imagens" para selecionar várias imagens
+                        </p>
+                      </div>
+                    )}
+                    
                     <p className="text-xs text-muted-foreground">
-                      Imagem opcional que aparecerá junto com a notícia
+                      Selecione várias imagens. A imagem com estrela será destacada como principal.
                     </p>
                   </div>
 

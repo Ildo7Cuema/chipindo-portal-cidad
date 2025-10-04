@@ -24,7 +24,7 @@ interface Direccao {
   created_at: string;
   updated_at: string;
   responsavel?: string;
-  telefone?: string;
+  telefone?: number; // Corrigido: banco retorna number
   email?: string;
   endereco?: string;
   funcionarios?: number;
@@ -133,10 +133,16 @@ export function DepartamentosManager() {
     setLoading(true);
 
     try {
+      // Converter telefone de string para number antes de salvar
+      const dataToSave = {
+        ...formData,
+        telefone: formData.telefone ? parseInt(formData.telefone) : undefined
+      };
+      
       if (editingDirecao) {
         const { error } = await supabase
           .from('departamentos')
-          .update(formData)
+          .update(dataToSave)
           .eq('id', editingDirecao.id);
 
         if (error) throw error;
@@ -144,7 +150,7 @@ export function DepartamentosManager() {
       } else {
         const { error } = await supabase
           .from('departamentos')
-          .insert([formData]);
+          .insert([dataToSave]);
 
         if (error) throw error;
         toast.success('Direcção adicionada com sucesso!');
@@ -171,7 +177,7 @@ export function DepartamentosManager() {
       ordem: direccao.ordem,
       ativo: direccao.ativo,
       responsavel: direccao.responsavel || '',
-      telefone: direccao.telefone || '',
+      telefone: direccao.telefone?.toString() || '',
       email: direccao.email || '',
       endereco: direccao.endereco || '',
       funcionarios: direccao.funcionarios || 0

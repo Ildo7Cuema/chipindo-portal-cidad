@@ -46,6 +46,7 @@ import {
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
 interface NewsItem {
   id: string;
@@ -54,6 +55,8 @@ interface NewsItem {
   content: string;
   created_at: string;
   image_url?: string;
+  images?: string[];
+  featured_image_index?: number;
   featured?: boolean;
   published?: boolean;
   category?: string;
@@ -729,36 +732,52 @@ const AllNews = () => {
               <div className="flex h-full">
                 {/* Coluna da Imagem - Lado Esquerdo */}
                 <div className="w-1/2 relative overflow-hidden bg-gradient-to-br from-blue-50 to-purple-50">
-                  {selectedNews.image_url ? (
+                  {((selectedNews.images && selectedNews.images.length > 0) || selectedNews.image_url) ? (
                     <div className="h-full w-full flex items-center justify-center p-6">
-                      <div className="relative w-full h-full max-w-lg max-h-[80vh] image-container">
-                        <img 
-                          src={selectedNews.image_url} 
-                          alt={selectedNews.title}
-                          className="w-full h-full object-contain rounded-xl shadow-2xl border-4 border-white"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.style.display = 'none';
-                            const parent = target.parentElement;
-                            if (parent) {
-                              const fallback = document.createElement('div');
-                              fallback.className = 'w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl';
-                              fallback.innerHTML = `
-                                <div class="text-center p-8">
-                                  <svg class="w-20 h-20 text-gray-400 mx-auto mb-4" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
-                                  </svg>
-                                  <p class="text-gray-500 font-medium">Imagem não disponível</p>
-                                  <p class="text-xs text-gray-400 mt-2">URL: ${selectedNews.image_url}</p>
+                      <Carousel className="w-full h-full max-w-lg">
+                        <CarouselContent className="h-full">
+                          {/* Exibir múltiplas imagens se disponíveis */}
+                          {selectedNews.images && selectedNews.images.length > 0 ? (
+                            selectedNews.images.map((imageUrl, index) => (
+                              <CarouselItem key={index} className="h-full">
+                                <div className="relative w-full h-full max-h-[80vh] flex items-center justify-center">
+                                  <img 
+                                    src={imageUrl} 
+                                    alt={`${selectedNews.title} - Imagem ${index + 1}`}
+                                    className="w-full h-full object-contain rounded-xl shadow-2xl border-4 border-white"
+                                  />
+                                  <div className="absolute inset-0 rounded-xl bg-gradient-to-t from-black/5 via-transparent to-transparent pointer-events-none" />
+                                  {/* Indicador de imagem destacada */}
+                                  {index === (selectedNews.featured_image_index || 0) && (
+                                    <div className="absolute top-4 right-4 bg-yellow-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg z-10">
+                                      Principal
+                                    </div>
+                                  )}
                                 </div>
-                              `;
-                              parent.appendChild(fallback);
-                            }
-                          }}
-                        />
-                        {/* Overlay sutil para melhor contraste */}
-                        <div className="absolute inset-0 rounded-xl bg-gradient-to-t from-black/5 via-transparent to-transparent pointer-events-none" />
-                      </div>
+                              </CarouselItem>
+                            ))
+                          ) : (
+                            /* Fallback para image_url antiga */
+                            <CarouselItem className="h-full">
+                              <div className="relative w-full h-full max-h-[80vh] flex items-center justify-center">
+                                <img 
+                                  src={selectedNews.image_url} 
+                                  alt={selectedNews.title}
+                                  className="w-full h-full object-contain rounded-xl shadow-2xl border-4 border-white"
+                                />
+                                <div className="absolute inset-0 rounded-xl bg-gradient-to-t from-black/5 via-transparent to-transparent pointer-events-none" />
+                              </div>
+                            </CarouselItem>
+                          )}
+                        </CarouselContent>
+                        {/* Controles do carrossel apenas se houver múltiplas imagens */}
+                        {selectedNews.images && selectedNews.images.length > 1 && (
+                          <>
+                            <CarouselPrevious className="left-2" />
+                            <CarouselNext className="right-2" />
+                          </>
+                        )}
+                      </Carousel>
                     </div>
                   ) : (
                     <div className="h-full w-full flex items-center justify-center p-6">

@@ -14,6 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useNewsLikes } from "@/hooks/useNewsLikes";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { 
   CalendarIcon, 
   ClockIcon, 
@@ -52,6 +53,8 @@ interface NewsItem {
   published: boolean;
   featured: boolean;
   image_url?: string;
+  images?: string[];
+  featured_image_index?: number;
   created_at: string;
   updated_at: string;
   category?: string;
@@ -147,7 +150,7 @@ const Noticias = () => {
       // Buscar notícias reais do banco de dados
       const { data, error } = await supabase
         .from('news')
-        .select('id, title, excerpt, content, author_id, published, featured, image_url, created_at, updated_at')
+        .select('id, title, excerpt, content, author_id, published, featured, image_url, images, featured_image_index, created_at, updated_at')
         .eq('published', true)
         .order('created_at', { ascending: false });
 
@@ -711,24 +714,61 @@ const Noticias = () => {
                     ? "w-full h-64 border-b border-gray-200" 
                     : "w-1/2 border-r border-gray-200"
                 )}>
-                  {selectedNews.image_url ? (
+                  {((selectedNews.images && selectedNews.images.length > 0) || selectedNews.image_url) ? (
                     <div className={cn(
                       "w-full flex items-center justify-center",
                       isMobile ? "h-full p-4" : "h-full p-8"
                     )}>
-                      <div className={cn(
-                        "relative w-full h-full",
-                        isMobile ? "max-w-full" : "max-w-md"
-                      )}>
-                        <img 
-                          src={selectedNews.image_url} 
-                          alt={selectedNews.title}
-                          className="w-full h-full object-contain rounded-2xl shadow-2xl border-4 border-white hover:scale-105 transition-transform duration-300"
-                        />
-                        
-                        {/* Overlay gradiente sutil */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent rounded-2xl pointer-events-none"></div>
-                      </div>
+                      <Carousel className="w-full h-full">
+                        <CarouselContent className="h-full">
+                          {/* Exibir múltiplas imagens se disponíveis */}
+                          {selectedNews.images && selectedNews.images.length > 0 ? (
+                            selectedNews.images.map((imageUrl, index) => (
+                              <CarouselItem key={index} className="h-full">
+                                <div className={cn(
+                                  "relative w-full h-full flex items-center justify-center",
+                                  isMobile ? "max-w-full" : "max-w-md mx-auto"
+                                )}>
+                                  <img 
+                                    src={imageUrl} 
+                                    alt={`${selectedNews.title} - Imagem ${index + 1}`}
+                                    className="w-full h-full object-contain rounded-2xl shadow-2xl border-4 border-white hover:scale-105 transition-transform duration-300"
+                                  />
+                                  <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent rounded-2xl pointer-events-none"></div>
+                                  {/* Indicador de imagem destacada */}
+                                  {index === (selectedNews.featured_image_index || 0) && (
+                                    <div className="absolute top-4 right-4 bg-yellow-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                                      Principal
+                                    </div>
+                                  )}
+                                </div>
+                              </CarouselItem>
+                            ))
+                          ) : (
+                            /* Fallback para image_url antiga */
+                            <CarouselItem className="h-full">
+                              <div className={cn(
+                                "relative w-full h-full flex items-center justify-center",
+                                isMobile ? "max-w-full" : "max-w-md mx-auto"
+                              )}>
+                                <img 
+                                  src={selectedNews.image_url} 
+                                  alt={selectedNews.title}
+                                  className="w-full h-full object-contain rounded-2xl shadow-2xl border-4 border-white hover:scale-105 transition-transform duration-300"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent rounded-2xl pointer-events-none"></div>
+                              </div>
+                            </CarouselItem>
+                          )}
+                        </CarouselContent>
+                        {/* Controles do carrossel apenas se houver múltiplas imagens */}
+                        {selectedNews.images && selectedNews.images.length > 1 && (
+                          <>
+                            <CarouselPrevious className="left-2" />
+                            <CarouselNext className="right-2" />
+                          </>
+                        )}
+                      </Carousel>
                     </div>
                   ) : (
                     <div className={cn(
