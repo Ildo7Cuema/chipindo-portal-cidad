@@ -4,13 +4,23 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Calendar, 
-  Plus, 
-  Edit, 
-  Trash2, 
+import {
+  Calendar,
+  Plus,
+  Edit,
+  Trash2,
   Search
 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useEvents, type Event } from "@/hooks/useEvents";
 import { EventForm } from "./EventForm";
@@ -19,17 +29,23 @@ export const EventsManager = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [eventToDelete, setEventToDelete] = useState<number | null>(null);
   const { toast } = useToast();
 
   const { events, loading, deleteEvent, fetchEvents } = useEvents({
     search: searchTerm
   });
 
-  const handleDelete = async (id: number) => {
-    if (!confirm('Tem certeza que deseja excluir este evento?')) return;
-    
+  const handleDelete = (id: number) => {
+    setEventToDelete(id);
+  };
+
+  const confirmDelete = async () => {
+    if (!eventToDelete) return;
+
     try {
-      await deleteEvent(id);
+      await deleteEvent(eventToDelete);
+      setEventToDelete(null);
     } catch (error) {
       console.error('Erro ao excluir evento:', error);
     }
@@ -107,9 +123,9 @@ export const EventsManager = () => {
                     <h3 className="text-lg font-semibold">{event.title}</h3>
                     <Badge variant="secondary">{event.category}</Badge>
                   </div>
-                  
+
                   <p className="text-muted-foreground mb-3">{event.description}</p>
-                  
+
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                     <div className="flex items-center gap-2">
                       <Calendar className="w-4 h-4" />
@@ -126,7 +142,7 @@ export const EventsManager = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="flex gap-2 ml-4">
                   <Button size="sm" variant="outline" onClick={() => handleEdit(event)}>
                     <Edit className="w-4 h-4" />
@@ -157,6 +173,23 @@ export const EventsManager = () => {
           onSuccess={handleFormSuccess}
         />
       )}
+
+      <AlertDialog open={!!eventToDelete} onOpenChange={(open) => !open && setEventToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Tem certeza que deseja excluir este evento?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação não pode ser desfeita. O evento será permanentemente removido do sistema.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }; 
