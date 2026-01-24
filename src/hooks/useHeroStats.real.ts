@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { usePopulationData } from './usePopulationData';
 
 export interface HeroStats {
   population: number;
@@ -32,6 +33,12 @@ const STATIC_STATS: HeroStats = {
 };
 
 export function useHeroStats() {
+  const {
+    currentPopulation,
+    growthRate: populationGrowthRate,
+    loading: populationLoading
+  } = usePopulationData();
+
   const [stats, setStats] = useState<HeroStats>({
     population: 0,
     populationFormatted: "0",
@@ -48,14 +55,22 @@ export function useHeroStats() {
   });
 
   const fetchStats = async () => {
-    // Simular carregamento
+    // Simular carregamento para outros dados que ainda são estáticos
     setStats(prev => ({ ...prev, loading: true }));
-    
+
     // Simular delay de carregamento
     await new Promise(resolve => setTimeout(resolve, 500));
-    
-    // Usar dados estáticos
-    setStats(STATIC_STATS);
+
+    // Combinar dados dinâmicos de população com dados estáticos de outros setores
+    setStats({
+      ...STATIC_STATS,
+      population: currentPopulation,
+      populationFormatted: currentPopulation ? currentPopulation.toLocaleString('pt-AO') : "...",
+      growthRate: populationGrowthRate,
+      growth_rate: populationGrowthRate,
+      // Manter outros dados estáticos por enquanto
+      loading: populationLoading
+    });
   };
 
   const updatePopulation = async (population: number) => {
@@ -72,8 +87,10 @@ export function useHeroStats() {
   };
 
   useEffect(() => {
-    fetchStats();
-  }, []);
+    if (!populationLoading) {
+      fetchStats();
+    }
+  }, [populationLoading, currentPopulation]);
 
   return {
     ...stats,

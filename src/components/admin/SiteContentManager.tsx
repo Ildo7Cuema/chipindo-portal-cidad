@@ -12,36 +12,36 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { useSiteSettings, SiteSettings } from "@/hooks/useSiteSettings";
-import { 
-  LoaderIcon, 
-  Save, 
-  RotateCcw, 
-  Eye, 
-  EyeOff, 
-  Globe, 
-  Home, 
-  Phone, 
-  Mail, 
-  MapPin, 
-  Clock, 
-  Users, 
-  Building2, 
-  Settings, 
-  Palette, 
-  ImageIcon, 
-  FileText, 
-  Share2, 
-  Facebook, 
-  Instagram, 
-  Twitter, 
-  Youtube, 
-  Linkedin, 
-  ExternalLink, 
-  CheckCircle, 
-  AlertCircle, 
-  Info, 
-  TrendingUp, 
-  BarChart3, 
+import {
+  LoaderIcon,
+  Save,
+  RotateCcw,
+  Eye,
+  EyeOff,
+  Globe,
+  Home,
+  Phone,
+  Mail,
+  MapPin,
+  Clock,
+  Users,
+  Building2,
+  Settings,
+  Palette,
+  ImageIcon,
+  FileText,
+  Share2,
+  Facebook,
+  Instagram,
+  Twitter,
+  Youtube,
+  Linkedin,
+  ExternalLink,
+  CheckCircle,
+  AlertCircle,
+  Info,
+  TrendingUp,
+  BarChart3,
   Calendar,
   Zap,
   Star,
@@ -103,7 +103,7 @@ export const SiteContentManager = () => {
   useEffect(() => {
     // Check if there are unsaved changes
     if (settings) {
-      const hasUnsavedChanges = Object.keys(formData).some(key => 
+      const hasUnsavedChanges = Object.keys(formData).some(key =>
         formData[key as keyof SiteSettings] !== settings[key as keyof SiteSettings]
       );
       setHasChanges(hasUnsavedChanges);
@@ -119,7 +119,7 @@ export const SiteContentManager = () => {
 
   const handleSave = async () => {
     if (!settings) return;
-    
+
     setSaving(true);
     try {
       await updateSettings(formData);
@@ -329,7 +329,7 @@ export const SiteContentManager = () => {
                         className="font-semibold"
                       />
                     </div>
-                    
+
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
                         <Label htmlFor="hero_subtitle" className="flex items-center gap-2">
@@ -346,7 +346,7 @@ export const SiteContentManager = () => {
                         rows={3}
                       />
                     </div>
-                    
+
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
                         <Label htmlFor="hero_location_badge" className="flex items-center gap-2">
@@ -365,198 +365,7 @@ export const SiteContentManager = () => {
                   </CardContent>
                 </Card>
 
-                <Card className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-800/20">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <BarChart3 className="h-5 w-5" />
-                      Estatísticas
-                    </CardTitle>
-                    <CardDescription>
-                      Configure os números e descrições das estatísticas
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid grid-cols-1 gap-4">
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <Label htmlFor="population_count" className="flex items-center gap-2">
-                            <Users className="h-4 w-4" />
-                            População (Número)
-                          </Label>
-                          {getStatusIcon(getFieldStatus('population_count'))}
-                        </div>
-                        <Input
-                          id="population_count"
-                          value={formData.population_count || ''}
-                          onChange={(e) => handleInputChange('population_count', e.target.value)}
-                          placeholder="150.000+"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <Label htmlFor="population_description" className="flex items-center gap-2">
-                            <Info className="h-4 w-4" />
-                            População (Descrição)
-                          </Label>
-                          {getStatusIcon(getFieldStatus('population_description'))}
-                        </div>
-                        <Input
-                          id="population_description"
-                          value={formData.population_description || ''}
-                          onChange={(e) => handleInputChange('population_description', e.target.value)}
-                          placeholder="Cidadãos servidos"
-                        />
-                      </div>
-                    </div>
-                    
-                    <div className="grid grid-cols-1 gap-4">
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <Label htmlFor="departments_count" className="flex items-center gap-2">
-                            <Building2 className="h-4 w-4" />
-                            Direções (Número)
-                          </Label>
-                          {getStatusIcon(getFieldStatus('departments_count'))}
-                        </div>
-                        <Input
-                          id="departments_count"
-                          value={formData.departments_count || ''}
-                          onChange={(e) => handleInputChange('departments_count', e.target.value)}
-                          placeholder="12"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <Label htmlFor="departments_description" className="flex items-center gap-2">
-                            <Info className="h-4 w-4" />
-                            Direções (Descrição)
-                          </Label>
-                          {getStatusIcon(getFieldStatus('departments_description'))}
-                        </div>
-                        <Input
-                          id="departments_description"
-                          value={formData.departments_description || ''}
-                          onChange={(e) => handleInputChange('departments_description', e.target.value)}
-                          placeholder="Áreas de atuação"
-                        />
-                      </div>
-                    </div>
-                    
-                    <div className="grid grid-cols-1 gap-4">
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <Label htmlFor="services_count" className="flex items-center gap-2">
-                            <Zap className="h-4 w-4" />
-                            Serviços (Número)
-                          </Label>
-                          {getStatusIcon(getFieldStatus('services_count'))}
-                        </div>
-                        <Input
-                          id="services_count"
-                          value={formData.services_count || ''}
-                          onChange={(e) => handleInputChange('services_count', e.target.value)}
-                          placeholder="24/7"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <Label htmlFor="services_description" className="flex items-center gap-2">
-                            <Info className="h-4 w-4" />
-                            Serviços (Descrição)
-                          </Label>
-                          {getStatusIcon(getFieldStatus('services_description'))}
-                        </div>
-                        <Input
-                          id="services_description"
-                          value={formData.services_description || ''}
-                          onChange={(e) => handleInputChange('services_description', e.target.value)}
-                          placeholder="Portal sempre ativo"
-                        />
-                      </div>
-                    </div>
-                    
-                    <div className="grid grid-cols-1 gap-4">
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <Label htmlFor="area_total_count" className="flex items-center gap-2">
-                            <MapPin className="h-4 w-4" />
-                            Área Total (Número)
-                          </Label>
-                          {getStatusIcon(getFieldStatus('area_total_count'))}
-                        </div>
-                        <Input
-                          id="area_total_count"
-                          value={formData.area_total_count || ''}
-                          onChange={(e) => handleInputChange('area_total_count', e.target.value)}
-                          placeholder="2.100"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <Label htmlFor="area_total_description" className="flex items-center gap-2">
-                            <Info className="h-4 w-4" />
-                            Área Total (Descrição)
-                          </Label>
-                          {getStatusIcon(getFieldStatus('area_total_description'))}
-                        </div>
-                        <Input
-                          id="area_total_description"
-                          value={formData.area_total_description || ''}
-                          onChange={(e) => handleInputChange('area_total_description', e.target.value)}
-                          placeholder="Quilómetros quadrados"
-                        />
-                      </div>
-                    </div>
-                    
-                    <div className="grid grid-cols-1 gap-4">
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <Label htmlFor="growth_rate" className="flex items-center gap-2">
-                            <TrendingUpIcon className="h-4 w-4" />
-                            Taxa de Crescimento (%)
-                          </Label>
-                          {getStatusIcon(getFieldStatus('growth_rate'))}
-                        </div>
-                        <Input
-                          id="growth_rate"
-                          value={formData.growth_rate || ''}
-                          onChange={(e) => handleInputChange('growth_rate', e.target.value)}
-                          placeholder="5.4"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <Label htmlFor="growth_description" className="flex items-center gap-2">
-                            <Info className="h-4 w-4" />
-                            Descrição da Taxa
-                          </Label>
-                          {getStatusIcon(getFieldStatus('growth_description'))}
-                        </div>
-                        <Input
-                          id="growth_description"
-                          value={formData.growth_description || ''}
-                          onChange={(e) => handleInputChange('growth_description', e.target.value)}
-                          placeholder="Taxa anual"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <Label htmlFor="growth_period" className="flex items-center gap-2">
-                            <Calendar className="h-4 w-4" />
-                            Período de Referência
-                          </Label>
-                          {getStatusIcon(getFieldStatus('growth_period'))}
-                        </div>
-                        <Input
-                          id="growth_period"
-                          value={formData.growth_period || ''}
-                          onChange={(e) => handleInputChange('growth_period', e.target.value)}
-                          placeholder="2024"
-                        />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+
               </div>
             </TabsContent>
 
@@ -588,7 +397,7 @@ export const SiteContentManager = () => {
                         placeholder="Portal de Chipindo"
                       />
                     </div>
-                    
+
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
                         <Label htmlFor="footer_about_subtitle" className="flex items-center gap-2">
@@ -604,7 +413,7 @@ export const SiteContentManager = () => {
                         placeholder="Administração Municipal"
                       />
                     </div>
-                    
+
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
                         <Label htmlFor="footer_about_description" className="flex items-center gap-2">
@@ -621,7 +430,7 @@ export const SiteContentManager = () => {
                         rows={3}
                       />
                     </div>
-                    
+
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
                         <Label htmlFor="copyright_text" className="flex items-center gap-2">
@@ -637,7 +446,7 @@ export const SiteContentManager = () => {
                         placeholder="© 2024 Administração Municipal de Chipindo. Todos os direitos reservados."
                       />
                     </div>
-                    
+
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
                         <Label htmlFor="contact_address" className="flex items-center gap-2">
@@ -654,7 +463,7 @@ export const SiteContentManager = () => {
                         rows={2}
                       />
                     </div>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <div className="flex items-center gap-2">
@@ -671,7 +480,7 @@ export const SiteContentManager = () => {
                           placeholder="+244 XXX XXX XXX"
                         />
                       </div>
-                      
+
                       <div className="space-y-2">
                         <div className="flex items-center gap-2">
                           <Label htmlFor="contact_email" className="flex items-center gap-2">
@@ -718,7 +527,7 @@ export const SiteContentManager = () => {
                         placeholder="Segunda a Sexta: 08:00 - 16:00"
                       />
                     </div>
-                    
+
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
                         <Label htmlFor="opening_hours_saturday" className="flex items-center gap-2">
@@ -734,7 +543,7 @@ export const SiteContentManager = () => {
                         placeholder="Sábado: 08:00 - 12:00"
                       />
                     </div>
-                    
+
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
                         <Label htmlFor="opening_hours_sunday" className="flex items-center gap-2">
@@ -783,7 +592,7 @@ export const SiteContentManager = () => {
                       rows={3}
                     />
                   </div>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
@@ -800,7 +609,7 @@ export const SiteContentManager = () => {
                         placeholder="+244 XXX XXX XXX"
                       />
                     </div>
-                    
+
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
                         <Label htmlFor="contact_email" className="flex items-center gap-2">
@@ -850,7 +659,7 @@ export const SiteContentManager = () => {
                         placeholder="https://facebook.com/chipindo"
                       />
                     </div>
-                    
+
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
                         <Label htmlFor="social_instagram" className="flex items-center gap-2">
@@ -867,7 +676,7 @@ export const SiteContentManager = () => {
                       />
                     </div>
                   </div>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
@@ -884,7 +693,7 @@ export const SiteContentManager = () => {
                         placeholder="https://twitter.com/chipindo"
                       />
                     </div>
-                    
+
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
                         <Label htmlFor="social_youtube" className="flex items-center gap-2">
@@ -923,7 +732,7 @@ export const SiteContentManager = () => {
                 {Object.values(formData).filter(v => v && v.toString().trim() !== '').length} de {Object.keys(formData).length} campos preenchidos
               </span>
             </div>
-            
+
             <div className="flex items-center gap-2">
               <Button
                 variant="outline"
@@ -966,7 +775,7 @@ export const SiteContentManager = () => {
                   Alterações não guardadas
                 </Badge>
               </div>
-              
+
               <div className="flex items-center gap-2">
                 <Button
                   variant="outline"
