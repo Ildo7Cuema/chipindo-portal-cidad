@@ -8,10 +8,10 @@ import { cn } from "@/lib/utils";
 import insigniaAngola from "@/assets/insignia-angola.png";
 import logoRodape from "@/assets/logo_Rodape.png";
 import logoRodapeHuila from "@/assets/logo_Rodape_huila.png";
-import { 
-  MapPinIcon, 
-  PhoneIcon, 
-  MailIcon, 
+import {
+  MapPinIcon,
+  PhoneIcon,
+  MailIcon,
   ClockIcon,
   FacebookIcon,
   InstagramIcon,
@@ -30,9 +30,9 @@ import {
 
 export const Footer = () => {
   const { settings } = useSiteSettings();
-  
+
   const currentYear = new Date().getFullYear();
-  
+
   const quickLinks = [
     { label: "Notícias", href: "/noticias" },
     { label: "Concursos", href: "/concursos" },
@@ -51,37 +51,37 @@ export const Footer = () => {
   ];
 
   const socialLinks = [
-    { 
-      platform: "Facebook", 
-      icon: FacebookIcon, 
-      href: settings?.social_facebook || "#", 
+    {
+      platform: "Facebook",
+      icon: FacebookIcon,
+      href: settings?.social_facebook || "#",
       color: "hover:bg-blue-600 hover:shadow-blue-600/25",
       bgColor: "bg-blue-600/10",
       borderColor: "border-blue-600/20",
       iconColor: "text-blue-400"
     },
-    { 
-      platform: "Instagram", 
-      icon: InstagramIcon, 
-      href: settings?.social_instagram || "#", 
+    {
+      platform: "Instagram",
+      icon: InstagramIcon,
+      href: settings?.social_instagram || "#",
       color: "hover:bg-gradient-to-br hover:from-pink-500 hover:to-purple-600 hover:shadow-pink-600/25",
       bgColor: "bg-gradient-to-br from-pink-600/10 to-purple-600/10",
       borderColor: "border-pink-600/20",
       iconColor: "text-pink-400"
     },
-    { 
-      platform: "Twitter", 
-      icon: TwitterIcon, 
-      href: settings?.social_twitter || "#", 
+    {
+      platform: "Twitter",
+      icon: TwitterIcon,
+      href: settings?.social_twitter || "#",
       color: "hover:bg-sky-500 hover:shadow-sky-500/25",
       bgColor: "bg-sky-600/10",
       borderColor: "border-sky-600/20",
       iconColor: "text-sky-400"
     },
-    { 
-      platform: "YouTube", 
-      icon: YoutubeIcon, 
-      href: settings?.social_youtube || "#", 
+    {
+      platform: "YouTube",
+      icon: YoutubeIcon,
+      href: settings?.social_youtube || "#",
       color: "hover:bg-red-600 hover:shadow-red-600/25",
       bgColor: "bg-red-600/10",
       borderColor: "border-red-600/20",
@@ -97,22 +97,22 @@ export const Footer = () => {
     <footer className="bg-slate-900 text-slate-300 border-t border-slate-800">
       {/* Golden accent line */}
       <div className="h-px bg-gradient-to-r from-transparent via-yellow-500 to-transparent"></div>
-      
+
       <Section variant="default" size="md" className="py-8">
         <SectionContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+
             {/* About Section - Compact */}
             <div className="lg:col-span-2 space-y-4">
-            <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-3">
                 <div className="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-lg flex items-center justify-center p-2 shadow-lg">
-                <img 
-                  src={insigniaAngola} 
-                    alt="Insígnia de Angola" 
-                  className="w-full h-full object-contain"
-                />
-              </div>
-              <div>
+                  <img
+                    src={insigniaAngola}
+                    alt="Insígnia de Angola"
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+                <div>
                   <h3 className="text-lg font-bold text-white">
                     {settings?.footer_about_title || 'Portal de Chipindo'}
                   </h3>
@@ -125,11 +125,11 @@ export const Footer = () => {
                   Oficial
                 </Badge>
               </div>
-              
+
               <p className="text-slate-300 text-sm leading-relaxed">
                 {settings?.footer_about_description || 'Conectando a Administração Municipal aos cidadãos através de informação transparente e serviços digitais de qualidade.'}
               </p>
-              
+
               {/* Social Media - Modern Design */}
               <div className="space-y-3">
                 <h4 className="text-sm font-semibold text-white flex items-center gap-2">
@@ -140,9 +140,9 @@ export const Footer = () => {
                   {socialLinks.map((social) => {
                     const IconComponent = social.icon;
                     return (
-                      <Button 
+                      <Button
                         key={social.platform}
-                        size="sm" 
+                        size="sm"
                         variant="outline"
                         className={cn(
                           "relative w-11 h-11 sm:w-12 sm:h-12 p-0 rounded-xl border-2 transition-all duration-300 ease-out group overflow-hidden",
@@ -156,23 +156,23 @@ export const Footer = () => {
                         )}
                         asChild
                       >
-                        <a 
-                          href={social.href} 
-                          target="_blank" 
+                        <a
+                          href={social.href}
+                          target="_blank"
                           rel="noopener noreferrer"
                           aria-label={`Siga-nos no ${social.platform}`}
                           className="w-full h-full flex items-center justify-center"
                         >
                           {/* Background gradient overlay on hover */}
                           <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                          
+
                           {/* Icon with enhanced styling */}
                           <IconComponent className={cn(
                             "w-4 h-4 sm:w-5 sm:h-5 relative z-10 transition-all duration-300",
                             social.iconColor,
                             "group-hover:text-white group-hover:scale-110"
                           )} />
-                          
+
                           {/* Subtle glow effect */}
                           <div className={cn(
                             "absolute inset-0 rounded-xl opacity-0 group-hover:opacity-20 transition-opacity duration-300",
@@ -186,12 +186,12 @@ export const Footer = () => {
                     );
                   })}
                 </div>
-                
+
                 {/* Social media description */}
                 <p className="text-xs text-slate-400 leading-relaxed">
                   Siga-nos nas redes sociais para ficar atualizado sobre as últimas notícias e serviços municipais.
                 </p>
-                
+
                 {/* Social media stats */}
                 <div className="flex items-center gap-4 text-xs text-slate-500">
                   <div className="flex items-center gap-1">
@@ -212,7 +212,7 @@ export const Footer = () => {
                 <BuildingIcon className="w-4 h-4 text-yellow-500" />
                 Contactos
               </h4>
-              
+
               <div className="space-y-3">
                 <div className="flex items-start gap-3 p-3 rounded-lg bg-slate-800/60 border border-slate-600/50 hover:bg-slate-800/80 transition-colors duration-300">
                   <div className="w-6 h-6 bg-blue-600 rounded-md flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -225,7 +225,7 @@ export const Footer = () => {
                     </p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center gap-3 p-3 rounded-lg bg-slate-800/60 border border-slate-600/50 hover:bg-slate-800/80 transition-colors duration-300">
                   <div className="w-6 h-6 bg-green-600 rounded-md flex items-center justify-center flex-shrink-0">
                     <PhoneIcon className="w-3 h-3 text-white" />
@@ -235,7 +235,7 @@ export const Footer = () => {
                     <p className="text-xs text-slate-300">Linha principal</p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center gap-3 p-3 rounded-lg bg-slate-800/60 border border-slate-600/50 hover:bg-slate-800/80 transition-colors duration-300">
                   <div className="w-6 h-6 bg-orange-600 rounded-md flex items-center justify-center flex-shrink-0">
                     <MailIcon className="w-3 h-3 text-white" />
@@ -256,8 +256,12 @@ export const Footer = () => {
                       <h5 className="text-xs font-medium text-white mb-2">Horário</h5>
                       <div className="space-y-1 text-xs text-slate-300">
                         <div className="flex justify-between">
-                          <span>Seg-Sex:</span>
-                          <span>{settings?.opening_hours_weekdays || '08:00-16:00'}</span>
+                          <span>Seg-Feira:</span>
+                          <span>08:00-16:00</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Sexta-Feira:</span>
+                          <span>08:00-15:00</span>
                         </div>
                         <div className="flex justify-between">
                           <span>Sáb:</span>
@@ -283,11 +287,11 @@ export const Footer = () => {
               <div className="space-y-1">
                 {quickLinks.map((link) => {
                   const IconComponent = link.icon;
-                  
+
                   return (
-                    <a 
+                    <a
                       key={link.label}
-                      href={link.href} 
+                      href={link.href}
                       className={cn(
                         "flex items-center justify-between py-2 px-3 text-sm text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-md transition-colors duration-300 group",
                         link.label === "Área Administrativa" && "bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-500/20 hover:border-yellow-500/30"
@@ -314,23 +318,23 @@ export const Footer = () => {
                 <ShieldCheckIcon className="w-4 h-4 text-yellow-500" />
                 Vínculos Institucionais
               </h4>
-              
+
               <div className="flex items-center justify-center">
                 {/* Logos conectados sem linha divisória */}
                 <div className="flex items-center">
-                  <img 
-                    src={logoRodape} 
-                    alt="Governo de Angola" 
+                  <img
+                    src={logoRodape}
+                    alt="Governo de Angola"
                     className="h-16 w-auto object-contain hover:scale-105 transition-transform duration-300"
                   />
-                  <img 
-                    src={logoRodapeHuila} 
-                    alt="Huíla.gov.ao - Administração Municipal de Chipindo" 
+                  <img
+                    src={logoRodapeHuila}
+                    alt="Huíla.gov.ao - Administração Municipal de Chipindo"
                     className="h-16 w-auto object-contain hover:scale-105 transition-transform duration-300"
                   />
                 </div>
               </div>
-              
+
               <p className="text-xs text-slate-400 max-w-2xl mx-auto">
                 Portal oficial vinculado ao Governo Provincial de Huíla e ao Governo da República de Angola
               </p>
@@ -354,20 +358,20 @@ export const Footer = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-3 text-xs">
                   {legalLinks.map((link) => (
-                    <a 
+                    <a
                       key={link.label}
-                      href={link.href} 
+                      href={link.href}
                       className="text-slate-400 hover:text-slate-200 transition-colors duration-300"
                     >
                       {link.label}
                     </a>
                   ))}
                 </div>
-                
+
                 <Button
                   onClick={scrollToTop}
                   size="sm"
@@ -375,27 +379,27 @@ export const Footer = () => {
                 >
                   <ArrowUpIcon className="w-4 h-4 group-hover:-translate-y-0.5 transition-transform duration-300" />
                 </Button>
+              </div>
             </div>
-          </div>
 
             {/* System Status - Minimal */}
             <div className="mt-4 pt-4 border-t border-slate-800/50">
-                          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
-              <div className="flex items-center gap-4">
-                <span>Portal desenvolvido com tecnologias modernas</span>
-                <div className="hidden sm:flex items-center gap-1">
-                  <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
-                  <span>Online</span>
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
+                <div className="flex items-center gap-4">
+                  <span>Portal desenvolvido com tecnologias modernas</span>
+                  <div className="hidden sm:flex items-center gap-1">
+                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
+                    <span>Online</span>
+                  </div>
                 </div>
-                </div>
-              <div className="flex items-center gap-3">
-                <span>v2.0.1</span>
-                <div className="flex items-center gap-1">
-                  <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-                  <span>99.9% Uptime</span>
+                <div className="flex items-center gap-3">
+                  <span>v2.0.1</span>
+                  <div className="flex items-center gap-1">
+                    <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                    <span>99.9% Uptime</span>
+                  </div>
                 </div>
               </div>
-            </div>
             </div>
           </div>
         </SectionContent>

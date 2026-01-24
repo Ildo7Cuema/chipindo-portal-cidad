@@ -12,10 +12,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
-import { 
-  MapPinIcon, 
-  PhoneIcon, 
-  MailIcon, 
+import {
+  MapPinIcon,
+  PhoneIcon,
+  MailIcon,
   ClockIcon,
   BuildingIcon,
   UserIcon,
@@ -151,29 +151,29 @@ export default function Contactos() {
       // Fetch social media links from site_settings or a dedicated table
       // For now, using mock data as these would be admin-configurable
       const mockSocialMedia: SocialMediaLink[] = [
-        { 
-          name: 'Facebook', 
-          icon: FacebookIcon, 
-          url: settings?.facebook_url || 'https://facebook.com/chipindo.gov', 
+        {
+          name: 'Facebook',
+          icon: FacebookIcon,
+          url: settings?.social_facebook || 'https://facebook.com/chipindo.gov',
           color: 'bg-blue-600',
           active: true
         },
-        { 
-          name: 'Twitter', 
-          icon: TwitterIcon, 
-          url: settings?.twitter_url || 'https://twitter.com/chipindo_gov', 
+        {
+          name: 'Twitter',
+          icon: TwitterIcon,
+          url: settings?.social_twitter || 'https://twitter.com/chipindo_gov',
           color: 'bg-sky-500',
           active: true
         },
-        { 
-          name: 'Instagram', 
-          icon: InstagramIcon, 
-          url: settings?.instagram_url || 'https://instagram.com/chipindo.gov', 
+        {
+          name: 'Instagram',
+          icon: InstagramIcon,
+          url: settings?.social_instagram || 'https://instagram.com/chipindo.gov',
           color: 'bg-pink-500',
           active: true
         }
       ];
-      
+
       setSocialMediaLinks(mockSocialMedia.filter(link => link.active));
     } catch (error) {
       console.error('Error fetching social media links:', error);
@@ -335,7 +335,7 @@ export default function Contactos() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       <main>
         {/* Hero Section */}
         <Section variant="primary" size="lg">
@@ -354,16 +354,16 @@ export default function Contactos() {
                   </p>
                 </div>
               </div>
-              
+
               <p className="text-xl text-primary-foreground/95 max-w-3xl mx-auto leading-relaxed">
-                Estamos aqui para ajudar e esclarecer suas dúvidas. Entre em contacto connosco 
+                Estamos aqui para ajudar e esclarecer suas dúvidas. Entre em contacto connosco
                 através dos nossos canais de atendimento.
               </p>
-              
+
               <div className="flex items-center justify-center gap-4 flex-wrap">
                 <Badge className="bg-white/20 text-white border-white/30 px-4 py-2">
                   <PhoneIcon className="w-4 h-4 mr-2" />
-                  {settings?.opening_hours_weekdays ? 'Seg-Sex: ' + settings.opening_hours_weekdays.split(': ')[1] : 'Atendimento 08:00-16:00'}
+                  Seg-Feira: 08:00-16:00 | Sexta-Feira: 08:00-15:00
                 </Badge>
                 <Badge className="bg-green-500/20 text-green-100 border-green-400/30 px-4 py-2">
                   <MessageSquareIcon className="w-4 h-4 mr-2" />
@@ -468,7 +468,7 @@ export default function Contactos() {
                           <Input
                             id="nome"
                             value={formData.nome}
-                            onChange={(e) => setFormData({...formData, nome: e.target.value})}
+                            onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
                             placeholder="Digite seu nome completo"
                             required
                             disabled={submitting}
@@ -480,7 +480,7 @@ export default function Contactos() {
                             id="email"
                             type="email"
                             value={formData.email}
-                            onChange={(e) => setFormData({...formData, email: e.target.value})}
+                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                             placeholder="seuemail@exemplo.com"
                             required
                             disabled={submitting}
@@ -494,14 +494,14 @@ export default function Contactos() {
                           <Input
                             id="telefone"
                             value={formData.telefone}
-                            onChange={(e) => setFormData({...formData, telefone: e.target.value})}
+                            onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
                             placeholder="+244 900 000 000"
                             disabled={submitting}
                           />
                         </div>
                         <div>
                           <Label htmlFor="categoria">Categoria *</Label>
-                          <Select value={formData.categoria} onValueChange={(value) => setFormData({...formData, categoria: value})}>
+                          <Select value={formData.categoria} onValueChange={(value) => setFormData({ ...formData, categoria: value })}>
                             <SelectTrigger disabled={submitting}>
                               <SelectValue placeholder="Selecione a categoria" />
                             </SelectTrigger>
@@ -528,7 +528,7 @@ export default function Contactos() {
                           <Input
                             id="assunto"
                             value={formData.assunto}
-                            onChange={(e) => setFormData({...formData, assunto: e.target.value})}
+                            onChange={(e) => setFormData({ ...formData, assunto: e.target.value })}
                             placeholder="Assunto da sua mensagem"
                             required
                             disabled={submitting}
@@ -536,7 +536,7 @@ export default function Contactos() {
                         </div>
                         <div>
                           <Label htmlFor="departamento">Departamento (Opcional)</Label>
-                          <Select value={formData.departamento} onValueChange={(value) => setFormData({...formData, departamento: value})}>
+                          <Select value={formData.departamento} onValueChange={(value) => setFormData({ ...formData, departamento: value })}>
                             <SelectTrigger disabled={submitting}>
                               <SelectValue placeholder="Selecione o departamento" />
                             </SelectTrigger>
@@ -560,7 +560,7 @@ export default function Contactos() {
                         <Textarea
                           id="mensagem"
                           value={formData.mensagem}
-                          onChange={(e) => setFormData({...formData, mensagem: e.target.value})}
+                          onChange={(e) => setFormData({ ...formData, mensagem: e.target.value })}
                           placeholder="Digite sua mensagem detalhada aqui. Inclua todas as informações relevantes para que possamos ajudá-lo da melhor forma."
                           rows={6}
                           required
@@ -569,8 +569,8 @@ export default function Contactos() {
                       </div>
 
                       <div className="flex gap-2">
-                        <Button 
-                          type="submit" 
+                        <Button
+                          type="submit"
                           className="flex-1 bg-gradient-to-r from-blue-500 to-green-600 hover:from-blue-600 hover:to-green-700"
                           disabled={submitting}
                         >
@@ -629,7 +629,8 @@ export default function Contactos() {
                       <div>
                         <p className="font-medium">Horário de Funcionamento</p>
                         <div className="text-sm text-muted-foreground space-y-1">
-                          <p>{settings?.opening_hours_weekdays || 'Segunda a Sexta: 08:00 - 16:00'}</p>
+                          <p>Seg-Feira: 08:00 - 16:00</p>
+                          <p>Sexta-Feira: 08:00 - 15:00</p>
                           <p>{settings?.opening_hours_saturday || 'Sábado: 08:00 - 12:00'}</p>
                           <p>{settings?.opening_hours_sunday || 'Domingo: Encerrado'}</p>
                         </div>
@@ -658,9 +659,9 @@ export default function Contactos() {
                       {socialMediaLinks && socialMediaLinks.length > 0 ? socialMediaLinks.map(social => {
                         const IconComponent = social.icon;
                         return (
-                          <Button 
+                          <Button
                             key={social.name}
-                            variant="outline" 
+                            variant="outline"
                             className="w-full justify-start hover:bg-muted/50"
                             onClick={() => window.open(social.url, '_blank')}
                           >
@@ -721,7 +722,7 @@ export default function Contactos() {
             description="Entre em contacto directo com os departamentos municipais"
             centered={true}
           />
-          
+
           <SectionContent>
             {direccoes && direccoes.length > 0 ? (
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -753,7 +754,7 @@ export default function Contactos() {
                             <p className="text-sm text-muted-foreground leading-relaxed">{direccao.descricao}</p>
                           </div>
                         )}
-                        
+
                         {deptContact?.responsavel && (
                           <div className="flex items-center gap-2">
                             <UserIcon className="w-4 h-4 text-muted-foreground" />
@@ -768,7 +769,16 @@ export default function Contactos() {
                           <ClockIcon className="w-4 h-4 text-muted-foreground mt-1" />
                           <div className="text-sm text-muted-foreground">
                             <p className="font-medium">Horário de Atendimento</p>
-                            <p>{deptContact?.horario_especial || settings?.opening_hours_weekdays || 'Segunda a Sexta: 08:00 - 16:00'}</p>
+                            <div className="flex flex-col">
+                              {deptContact?.horario_especial ? (
+                                <p>{deptContact.horario_especial}</p>
+                              ) : (
+                                <>
+                                  <p>Seg-Feira: 08:00 - 16:00</p>
+                                  <p>Sexta-Feira: 08:00 - 15:00</p>
+                                </>
+                              )}
+                            </div>
                           </div>
                         </div>
 
@@ -802,9 +812,9 @@ export default function Contactos() {
                         )}
 
                         <div className="flex gap-2">
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
+                          <Button
+                            variant="outline"
+                            size="sm"
                             className="flex-1 group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
                             onClick={() => {
                               setSelectedDirecao(direccao);
@@ -814,11 +824,11 @@ export default function Contactos() {
                             <MessageSquareIcon className="w-4 h-4 mr-2" />
                             Contactar
                           </Button>
-                          
+
                           {deptContact?.telefone && (
-                            <Button 
-                              variant="outline" 
-                              size="sm" 
+                            <Button
+                              variant="outline"
+                              size="sm"
                               className="px-3 group-hover:bg-green-500 group-hover:text-white transition-colors"
                               onClick={() => window.open(`tel:${deptContact.telefone}`, '_self')}
                               title={`Ligar para ${deptContact.telefone}`}
@@ -826,11 +836,11 @@ export default function Contactos() {
                               <PhoneIcon className="w-4 h-4" />
                             </Button>
                           )}
-                          
+
                           {deptContact?.email && (
-                            <Button 
-                              variant="outline" 
-                              size="sm" 
+                            <Button
+                              variant="outline"
+                              size="sm"
                               className="px-3 group-hover:bg-blue-500 group-hover:text-white transition-colors"
                               onClick={() => window.open(`mailto:${deptContact.email}?subject=Contacto - ${direccao.nome}`, '_self')}
                               title={`Enviar email para ${deptContact.email}`}
@@ -862,7 +872,7 @@ export default function Contactos() {
             description="Veja nossa localização e como chegar até nós através de coordenadas precisas"
             centered={true}
           />
-          
+
           <SectionContent>
             <div className="space-y-6">
               {/* Interactive Map */}
@@ -878,8 +888,8 @@ export default function Contactos() {
               {municipalLocations && municipalLocations.length > 0 && (
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {municipalLocations.map(location => (
-                    <Card 
-                      key={location.id} 
+                    <Card
+                      key={location.id}
                       className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
                     >
                       <CardContent className="p-4">
@@ -896,7 +906,7 @@ export default function Contactos() {
                             </div>
                           </div>
                         </div>
-                        
+
                         <div className="space-y-2 text-xs text-muted-foreground">
                           {location.address && (
                             <p className="line-clamp-2">{location.address}</p>
@@ -946,8 +956,8 @@ export default function Contactos() {
                   </p>
                   <div className="bg-muted/30 rounded-lg p-4 max-w-md mx-auto">
                     <p className="text-sm text-muted-foreground">
-                      <strong>Para Administradores:</strong> Cadastre as localizações na tabela 
-                      <code className="bg-muted px-2 py-1 rounded mx-1">municipality_locations</code> 
+                      <strong>Para Administradores:</strong> Cadastre as localizações na tabela
+                      <code className="bg-muted px-2 py-1 rounded mx-1">municipality_locations</code>
                       com latitude e longitude precisas.
                     </p>
                   </div>
@@ -1017,7 +1027,7 @@ export default function Contactos() {
                 </Button>
               </div>
             </CardHeader>
-            
+
             <CardContent className="space-y-6">
               {/* Direction Info */}
               <div className="bg-muted/30 rounded-lg p-4">
@@ -1047,9 +1057,16 @@ export default function Contactos() {
                   <div>
                     <p className="text-muted-foreground mb-1">Horário:</p>
                     <p className="font-medium">
-                      {getDepartmentContact(selectedDirecao.id)?.horario_especial || 
-                       settings?.opening_hours_weekdays || 
-                       'Segunda a Sexta: 08:00 - 16:00'}
+                      <div className="flex flex-col">
+                        {getDepartmentContact(selectedDirecao.id)?.horario_especial ? (
+                          <p>{getDepartmentContact(selectedDirecao.id)?.horario_especial}</p>
+                        ) : (
+                          <>
+                            <p>Seg-Feira: 08:00 - 16:00</p>
+                            <p>Sexta-Feira: 08:00 - 15:00</p>
+                          </>
+                        )}
+                      </div>
                     </p>
                   </div>
                 </div>
@@ -1058,7 +1075,7 @@ export default function Contactos() {
               {/* Quick Contact Options */}
               <div className="flex gap-3">
                 {getDepartmentContact(selectedDirecao.id)?.telefone && (
-                  <Button 
+                  <Button
                     variant="outline"
                     className="flex-1 bg-green-50 border-green-200 hover:bg-green-100 text-green-700"
                     onClick={() => window.open(`tel:${getDepartmentContact(selectedDirecao.id)?.telefone}`, '_self')}
@@ -1070,13 +1087,13 @@ export default function Contactos() {
                     </span>
                   </Button>
                 )}
-                
+
                 {getDepartmentContact(selectedDirecao.id)?.email && (
-                  <Button 
+                  <Button
                     variant="outline"
                     className="flex-1 bg-blue-50 border-blue-200 hover:bg-blue-100 text-blue-700"
                     onClick={() => window.open(
-                      `mailto:${getDepartmentContact(selectedDirecao.id)?.email}?subject=Contacto - ${selectedDirecao.nome}`, 
+                      `mailto:${getDepartmentContact(selectedDirecao.id)?.email}?subject=Contacto - ${selectedDirecao.nome}`,
                       '_self'
                     )}
                   >
@@ -1092,21 +1109,21 @@ export default function Contactos() {
                   <MessageSquareIcon className="w-5 h-5 text-primary" />
                   Enviar Mensagem via Formulário
                 </h4>
-                
+
                 <form className="space-y-4" onSubmit={(e) => {
                   e.preventDefault();
-                  
+
                   // Set form data for the direction
                   setFormData({
                     ...formData,
                     departamento: selectedDirecao.nome,
                     categoria: 'servicos'
                   });
-                  
+
                   // Close modal and scroll to form
                   setShowContactModal(false);
                   setSelectedDirecao(null);
-                  
+
                   // Scroll to contact form
                   setTimeout(() => {
                     const formElement = document.getElementById('contact-form');
@@ -1121,7 +1138,7 @@ export default function Contactos() {
                       <Input
                         id="quickNome"
                         value={formData.nome}
-                        onChange={(e) => setFormData({...formData, nome: e.target.value})}
+                        onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
                         placeholder="Digite seu nome completo"
                         required
                       />
@@ -1132,7 +1149,7 @@ export default function Contactos() {
                         id="quickEmail"
                         type="email"
                         value={formData.email}
-                        onChange={(e) => setFormData({...formData, email: e.target.value})}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         placeholder="seuemail@exemplo.com"
                         required
                       />
@@ -1144,7 +1161,7 @@ export default function Contactos() {
                     <Input
                       id="quickTelefone"
                       value={formData.telefone}
-                      onChange={(e) => setFormData({...formData, telefone: e.target.value})}
+                      onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
                       placeholder="+244 900 000 000"
                     />
                   </div>
@@ -1154,7 +1171,7 @@ export default function Contactos() {
                     <Input
                       id="quickAssunto"
                       value={formData.assunto}
-                      onChange={(e) => setFormData({...formData, assunto: e.target.value})}
+                      onChange={(e) => setFormData({ ...formData, assunto: e.target.value })}
                       placeholder={`Assunto relacionado a ${selectedDirecao.nome}`}
                       required
                     />
@@ -1165,7 +1182,7 @@ export default function Contactos() {
                     <Textarea
                       id="quickMensagem"
                       value={formData.mensagem}
-                      onChange={(e) => setFormData({...formData, mensagem: e.target.value})}
+                      onChange={(e) => setFormData({ ...formData, mensagem: e.target.value })}
                       placeholder={`Descreva sua questão ou solicitação para ${selectedDirecao.nome}...`}
                       rows={4}
                       required
@@ -1211,7 +1228,7 @@ export default function Contactos() {
           </Card>
         </div>
       )}
-      
+
       <Footer />
     </div>
   );
