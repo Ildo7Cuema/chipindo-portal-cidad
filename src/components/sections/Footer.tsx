@@ -6,8 +6,7 @@ import { Section, SectionContent } from "@/components/ui/section";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { cn } from "@/lib/utils";
 import insigniaAngola from "@/assets/insignia-angola.png";
-import logoRodape from "@/assets/logo_Rodape.png";
-import logoRodapeHuila from "@/assets/logo_Rodape_huila.png";
+import logoGovernoFooter from "@/assets/logo_governo_footer.png";
 import {
   MapPinIcon,
   PhoneIcon,
@@ -292,30 +291,13 @@ export const Footer = () => {
           {/* Official Logos Section */}
           <div className="border-t border-slate-800 mt-8 pt-6">
             <div className="text-center space-y-4">
-              <h4 className="text-sm font-semibold text-white flex items-center justify-center gap-2">
-                <ShieldCheckIcon className="w-4 h-4 text-yellow-500" />
-                Vínculos Institucionais
-              </h4>
-
               <div className="flex items-center justify-center">
-                {/* Logos conectados sem linha divisória */}
-                <div className="flex items-center">
-                  <img
-                    src={logoRodape}
-                    alt="Governo de Angola"
-                    className="h-16 w-auto object-contain hover:scale-105 transition-transform duration-300"
-                  />
-                  <img
-                    src={logoRodapeHuila}
-                    alt="Huíla.gov.ao - Administração Municipal de Chipindo"
-                    className="h-16 w-auto object-contain hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
+                <img
+                  src={logoGovernoFooter}
+                  alt="Governo de Angola e Governo Provincial de Huíla"
+                  className="max-w-[300px] w-full h-auto object-contain hover:scale-105 transition-transform duration-300 drop-shadow-lg"
+                />
               </div>
-
-              <p className="text-xs text-slate-400 max-w-2xl mx-auto">
-                Portal oficial vinculado ao Governo Provincial de Huíla e ao Governo da República de Angola
-              </p>
             </div>
           </div>
 
