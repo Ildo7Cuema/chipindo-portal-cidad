@@ -13,7 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Progress } from "@/components/ui/progress";
-import { 
+import {
   MessageSquareIcon,
   PhoneIcon,
   MailIcon,
@@ -59,18 +59,18 @@ import { Label } from "@/components/ui/label";
 
 const Ouvidoria = () => {
   const { settings } = useSiteSettings();
-  const { 
-    manifestacoes, 
-    stats, 
-    categories, 
-    loading, 
+  const {
+    manifestacoes,
+    stats,
+    categories,
+    loading,
     error,
     fetchManifestacoes,
     submitManifestacao,
     updateManifestacaoStatus,
     rateManifestacao
   } = useOuvidoria();
-  
+
   const [activeTab, setActiveTab] = useState("manifestacoes");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -80,7 +80,7 @@ const Ouvidoria = () => {
   const [selectedManifestacao, setSelectedManifestacao] = useState<OuvidoriaItem | null>(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
-  
+
   // Formulário de nova manifestação
   const [formData, setFormData] = useState<ManifestacaoFormData>({
     nome: "",
@@ -163,14 +163,14 @@ const Ouvidoria = () => {
 
   const handleSubmitManifestacao = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.nome || !formData.email || !formData.categoria || !formData.assunto || !formData.descricao) {
       toast.error('Por favor, preencha todos os campos obrigatórios.');
       return;
     }
 
     const result = await submitManifestacao(formData);
-    
+
     if (result.success) {
       // Limpar formulário
       setFormData({
@@ -181,7 +181,7 @@ const Ouvidoria = () => {
         assunto: "",
         descricao: ""
       });
-      
+
       // Fechar modal se estiver aberto
       setIsFormModalOpen(false);
     }
@@ -197,46 +197,46 @@ const Ouvidoria = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       <main>
         {/* Hero Section */}
-        <Section variant="primary" size="lg">
+        <Section className="relative min-h-[500px] bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 overflow-hidden" size="lg">
+          {/* Background Pattern */}
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-30"></div>
+
           <SectionContent>
-            <div className="text-center space-y-8">
+            <div className="text-center space-y-8 relative z-10">
               <div className="flex items-center justify-center gap-4 mb-8">
-                <div className="w-20 h-20 bg-white/20 rounded-3xl flex items-center justify-center backdrop-blur-xl border border-white/30">
+                <div className="w-20 h-20 bg-white/10 rounded-3xl flex items-center justify-center backdrop-blur-xl border border-white/20 shadow-2xl">
                   <MessageSquareIcon className="w-10 h-10 text-white" />
                 </div>
                 <div className="text-left">
-                  <h1 className="text-5xl md:text-6xl font-bold text-white leading-tight">
+                  <h1 className="text-5xl md:text-6xl font-bold text-white leading-tight drop-shadow-sm">
                     Ouvidoria
-                    <span className="block bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">
+                    <span className="block bg-gradient-to-r from-yellow-200 to-orange-200 bg-clip-text text-transparent">
                       Municipal
                     </span>
                   </h1>
-                  <p className="text-primary-foreground/90 text-xl mt-2">
-                    Administração Municipal de Chipindo
-                  </p>
                 </div>
               </div>
-              
-              <p className="text-xl text-primary-foreground/95 max-w-4xl mx-auto leading-relaxed">
-                Canal direto de comunicação entre cidadãos e a Administração Municipal. 
+
+              <p className="text-xl text-blue-50/90 max-w-4xl mx-auto leading-relaxed font-light">
+                Canal direto de comunicação entre cidadãos e a Administração Municipal.
                 Sua voz é importante para melhorarmos nossos serviços e atendimento.
               </p>
-              
-              <div className="flex items-center justify-center gap-6 flex-wrap">
-                <div className="flex items-center gap-2 px-6 py-3 bg-white/10 rounded-full backdrop-blur-md border border-white/20">
+
+              <div className="flex items-center justify-center gap-6 flex-wrap pt-4">
+                <div className="flex items-center gap-2 px-6 py-3 bg-white/10 rounded-full backdrop-blur-md border border-white/20 hover:bg-white/20 transition-all duration-300">
                   <MessageSquareIcon className="w-5 h-5 text-white" />
                   <span className="text-white font-medium">{stats?.total_manifestacoes || 0} Manifestações</span>
                 </div>
-                <div className="flex items-center gap-2 px-6 py-3 bg-green-500/20 rounded-full backdrop-blur-md border border-green-400/30">
-                  <CheckCircleIcon className="w-5 h-5 text-green-100" />
-                  <span className="text-green-100 font-medium">{stats?.resolvidas || 0} Resolvidas</span>
+                <div className="flex items-center gap-2 px-6 py-3 bg-emerald-500/20 rounded-full backdrop-blur-md border border-emerald-400/30 hover:bg-emerald-500/30 transition-all duration-300">
+                  <CheckCircleIcon className="w-5 h-5 text-emerald-100" />
+                  <span className="text-emerald-100 font-medium">{stats?.resolvidas || 0} Resolvidas</span>
                 </div>
-                <div className="flex items-center gap-2 px-6 py-3 bg-yellow-500/20 rounded-full backdrop-blur-md border border-yellow-400/30">
-                  <ClockIcon className="w-5 h-5 text-yellow-100" />
-                  <span className="text-yellow-100 font-medium">{stats?.tempo_medio_resposta || 0}h Média</span>
+                <div className="flex items-center gap-2 px-6 py-3 bg-amber-500/20 rounded-full backdrop-blur-md border border-amber-400/30 hover:bg-amber-500/30 transition-all duration-300">
+                  <ClockIcon className="w-5 h-5 text-amber-100" />
+                  <span className="text-amber-100 font-medium">{stats?.tempo_medio_resposta || 0}h Média</span>
                 </div>
               </div>
             </div>
@@ -244,60 +244,68 @@ const Ouvidoria = () => {
         </Section>
 
         {/* Estatísticas Rápidas */}
-        <Section variant="secondary" size="lg">
+        <Section variant="muted" size="lg">
           <SectionHeader
             subtitle="Visão Geral"
             title="Estatísticas da Ouvidoria"
             description="Dados actualizados sobre manifestações, tempo de resposta e satisfação dos cidadãos"
             centered={true}
           />
-          
+
           <SectionContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              <Card className="bg-white shadow-lg border-0 hover:shadow-xl transition-shadow">
+              <Card className="bg-white shadow-lg border-0 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-slate-600">Total de Manifestações</p>
                       <p className="text-2xl font-bold text-slate-900">{stats?.total_manifestacoes || 0}</p>
                     </div>
-                    <MessageSquareIcon className="w-8 h-8 text-blue-600" />
+                    <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                      <MessageSquareIcon className="w-6 h-6 text-blue-600" />
+                    </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-white shadow-lg border-0 hover:shadow-xl transition-shadow">
+              <Card className="bg-white shadow-lg border-0 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-slate-600">Pendentes</p>
                       <p className="text-2xl font-bold text-slate-900">{stats?.pendentes || 0}</p>
                     </div>
-                    <AlertCircleIcon className="w-8 h-8 text-yellow-600" />
+                    <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
+                      <AlertCircleIcon className="w-6 h-6 text-amber-600" />
+                    </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-white shadow-lg border-0 hover:shadow-xl transition-shadow">
+              <Card className="bg-white shadow-lg border-0 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-slate-600">Resolvidas</p>
                       <p className="text-2xl font-bold text-slate-900">{stats?.resolvidas || 0}</p>
                     </div>
-                    <CheckCircleIcon className="w-8 h-8 text-green-600" />
+                    <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
+                      <CheckCircleIcon className="w-6 h-6 text-emerald-600" />
+                    </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-white shadow-lg border-0 hover:shadow-xl transition-shadow">
+              <Card className="bg-white shadow-lg border-0 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-slate-600">Satisfação Geral</p>
                       <p className="text-2xl font-bold text-slate-900">{(stats?.satisfacao_geral || 0).toFixed(2)}/5</p>
                     </div>
-                    <StarIcon className="w-8 h-8 text-purple-600" />
+                    <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                      <StarIcon className="w-6 h-6 text-purple-600" />
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -435,15 +443,15 @@ const Ouvidoria = () => {
                                 </div>
                                 <div className="flex items-center gap-2">
                                   <Badge className={getStatusColor(item.status)}>
-                                    {item.status === 'pendente' ? 'Pendente' : 
-                                     item.status === 'em_analise' ? 'Em Análise' : 
-                                     item.status === 'respondido' ? 'Respondido' : 
-                                     item.status === 'resolvido' ? 'Resolvido' : 'Arquivado'}
+                                    {item.status === 'pendente' ? 'Pendente' :
+                                      item.status === 'em_analise' ? 'Em Análise' :
+                                        item.status === 'respondido' ? 'Respondido' :
+                                          item.status === 'resolvido' ? 'Resolvido' : 'Arquivado'}
                                   </Badge>
                                   <Badge className={getPriorityColor(item.prioridade)}>
-                                    {item.prioridade === 'urgente' ? 'Urgente' : 
-                                     item.prioridade === 'alta' ? 'Alta' : 
-                                     item.prioridade === 'media' ? 'Média' : 'Baixa'}
+                                    {item.prioridade === 'urgente' ? 'Urgente' :
+                                      item.prioridade === 'alta' ? 'Alta' :
+                                        item.prioridade === 'media' ? 'Média' : 'Baixa'}
                                   </Badge>
                                   <Badge className={categoryData.bgColor}>
                                     {categoryData.name}
@@ -451,9 +459,9 @@ const Ouvidoria = () => {
                                 </div>
                               </div>
                               <div className="flex items-center gap-2">
-                                <Button 
-                                  variant="outline" 
-                                  size="sm" 
+                                <Button
+                                  variant="outline"
+                                  size="sm"
                                   className="flex items-center gap-2"
                                   onClick={() => handleViewManifestacao(item)}
                                 >
@@ -487,33 +495,33 @@ const Ouvidoria = () => {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <Label htmlFor="nome">Nome Completo *</Label>
-                          <Input 
+                          <Input
                             id="nome"
-                            placeholder="Seu nome completo" 
+                            placeholder="Seu nome completo"
                             value={formData.nome}
                             onChange={(e) => handleFormChange('nome', e.target.value)}
-                            required 
+                            required
                           />
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="email">Email *</Label>
-                          <Input 
+                          <Input
                             id="email"
-                            type="email" 
-                            placeholder="seu.email@exemplo.com" 
+                            type="email"
+                            placeholder="seu.email@exemplo.com"
                             value={formData.email}
                             onChange={(e) => handleFormChange('email', e.target.value)}
-                            required 
+                            required
                           />
                         </div>
                       </div>
-                      
+
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <Label htmlFor="telefone">Telefone</Label>
-                          <Input 
+                          <Input
                             id="telefone"
-                            placeholder="+244 912 345 678" 
+                            placeholder="+244 912 345 678"
                             value={formData.telefone}
                             onChange={(e) => handleFormChange('telefone', e.target.value)}
                           />
@@ -540,30 +548,30 @@ const Ouvidoria = () => {
                           </Select>
                         </div>
                       </div>
-                      
+
                       <div className="space-y-2">
                         <Label htmlFor="assunto">Assunto *</Label>
-                        <Input 
+                        <Input
                           id="assunto"
-                          placeholder="Título da sua manifestação" 
+                          placeholder="Título da sua manifestação"
                           value={formData.assunto}
                           onChange={(e) => handleFormChange('assunto', e.target.value)}
-                          required 
+                          required
                         />
                       </div>
-                      
+
                       <div className="space-y-2">
                         <Label htmlFor="descricao">Descrição *</Label>
-                        <Textarea 
+                        <Textarea
                           id="descricao"
                           placeholder="Descreva detalhadamente sua manifestação..."
                           rows={6}
                           value={formData.descricao}
                           onChange={(e) => handleFormChange('descricao', e.target.value)}
-                          required 
+                          required
                         />
                       </div>
-                      
+
                       <div className="flex items-center justify-end gap-4">
                         <Button type="button" variant="outline" onClick={() => setActiveTab("manifestacoes")}>
                           Cancelar
@@ -633,12 +641,12 @@ const Ouvidoria = () => {
                           <div className="flex items-center gap-2">
                             <div className="flex items-center gap-1">
                               {[1, 2, 3, 4, 5].map((star) => (
-                                <StarIcon 
+                                <StarIcon
                                   key={star}
                                   className={cn(
                                     "w-4 h-4",
                                     star <= (stats?.satisfacao_geral || 0)
-                                      ? "text-yellow-400 fill-current" 
+                                      ? "text-yellow-400 fill-current"
                                       : "text-gray-300"
                                   )}
                                 />
@@ -686,7 +694,7 @@ const Ouvidoria = () => {
               </Button>
             </div>
           </DialogHeader>
-          
+
           <div className="flex-1 overflow-y-auto p-6">
             <div className="space-y-6">
               {/* Informações da Manifestação */}
@@ -713,18 +721,18 @@ const Ouvidoria = () => {
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium text-slate-600">Status:</span>
                     <Badge className={selectedManifestacao ? getStatusColor(selectedManifestacao.status) : ''}>
-                      {selectedManifestacao?.status === 'pendente' ? 'Pendente' : 
-                       selectedManifestacao?.status === 'em_analise' ? 'Em Análise' : 
-                       selectedManifestacao?.status === 'respondido' ? 'Respondido' : 
-                       selectedManifestacao?.status === 'resolvido' ? 'Resolvido' : 'Arquivado'}
+                      {selectedManifestacao?.status === 'pendente' ? 'Pendente' :
+                        selectedManifestacao?.status === 'em_analise' ? 'Em Análise' :
+                          selectedManifestacao?.status === 'respondido' ? 'Respondido' :
+                            selectedManifestacao?.status === 'resolvido' ? 'Resolvido' : 'Arquivado'}
                     </Badge>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium text-slate-600">Prioridade:</span>
                     <Badge className={selectedManifestacao ? getPriorityColor(selectedManifestacao.prioridade) : ''}>
-                      {selectedManifestacao?.prioridade === 'urgente' ? 'Urgente' : 
-                       selectedManifestacao?.prioridade === 'alta' ? 'Alta' : 
-                       selectedManifestacao?.prioridade === 'media' ? 'Média' : 'Baixa'}
+                      {selectedManifestacao?.prioridade === 'urgente' ? 'Urgente' :
+                        selectedManifestacao?.prioridade === 'alta' ? 'Alta' :
+                          selectedManifestacao?.prioridade === 'media' ? 'Média' : 'Baixa'}
                     </Badge>
                   </div>
                 </div>
@@ -780,12 +788,12 @@ const Ouvidoria = () => {
                     <div className="flex items-center gap-2 mb-3">
                       <div className="flex items-center gap-1">
                         {[1, 2, 3, 4, 5].map((star) => (
-                          <StarIcon 
+                          <StarIcon
                             key={star}
                             className={cn(
                               "w-4 h-4",
                               star <= (selectedManifestacao?.avaliacao || 0)
-                                ? "text-yellow-400 fill-current" 
+                                ? "text-yellow-400 fill-current"
                                 : "text-gray-300"
                             )}
                           />

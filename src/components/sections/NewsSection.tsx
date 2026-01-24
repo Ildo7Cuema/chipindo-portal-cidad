@@ -2,12 +2,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Section, SectionHeader, SectionContent } from "@/components/ui/section";
-import { 
-  CalendarIcon, 
-  EyeIcon, 
-  ArrowRightIcon, 
-  ClockIcon, 
-  TrendingUpIcon, 
+import {
+  CalendarIcon,
+  EyeIcon,
+  ArrowRightIcon,
+  ClockIcon,
+  TrendingUpIcon,
   BookOpenIcon,
   StarIcon,
   UsersIcon,
@@ -95,7 +95,7 @@ export const NewsSection = () => {
     const now = new Date();
     const date = new Date(dateString);
     const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-    
+
     if (diffInHours < 1) return 'Há poucos minutos';
     if (diffInHours < 24) return `Há ${diffInHours} horas`;
     const diffInDays = Math.floor(diffInHours / 24);
@@ -147,7 +147,7 @@ export const NewsSection = () => {
               <Card className="group cursor-pointer overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-1 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
                 <div className="relative aspect-video">
                   {featuredNews.image_url ? (
-                    <img 
+                    <img
                       src={featuredNews.image_url}
                       alt={featuredNews.title}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
@@ -157,9 +157,9 @@ export const NewsSection = () => {
                       <BookOpenIcon className="w-16 h-16 text-white/80" />
                     </div>
                   )}
-                  
+
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                  
+
                   <div className="absolute top-4 left-4 flex items-center gap-3">
                     <Badge className={cn("border-0 text-white shadow-lg", getCategoryData(featuredNews.category).color)}>
                       {React.createElement(getCategoryData(featuredNews.category).icon, {
@@ -172,13 +172,13 @@ export const NewsSection = () => {
                       Destaque
                     </Badge>
                   </div>
-                  
+
                   <div className="absolute inset-0 flex flex-col justify-end p-6 text-white">
                     <div className="space-y-4">
                       <h3 className="text-2xl md:text-3xl font-bold leading-tight group-hover:text-yellow-300 transition-colors duration-300 line-clamp-2">
                         {featuredNews.title}
                       </h3>
-                      
+
                       <div className="flex items-center gap-4 text-white/80 text-sm">
                         <div className="flex items-center gap-1">
                           <CalendarIcon className="w-4 h-4" />
@@ -196,14 +196,14 @@ export const NewsSection = () => {
                     </div>
                   </div>
                 </div>
-                
-                <CardContent className="p-6">
-                  <p className="text-muted-foreground mb-4 leading-relaxed line-clamp-2">
+
+                <CardContent className="p-8 relative z-20">
+                  <p className="text-muted-foreground mb-6 leading-relaxed line-clamp-2 text-lg font-light">
                     {featuredNews.excerpt}
                   </p>
-                  <Button 
-                    variant="default" 
-                    className="group/btn bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg"
+                  <Button
+                    variant="default"
+                    className="group/btn bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300"
                     onClick={() => window.location.href = '/noticias'}
                   >
                     Ler artigo completo
@@ -219,10 +219,10 @@ export const NewsSection = () => {
             {regularNews.map((newsItem) => {
               const categoryData = getCategoryData(newsItem.category);
               const IconComponent = categoryData.icon;
-              
+
               return (
-                <Card 
-                  key={newsItem.id} 
+                <Card
+                  key={newsItem.id}
                   className="group cursor-pointer overflow-hidden border-0 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
                   onClick={() => window.location.href = '/noticias'}
                 >
@@ -237,17 +237,17 @@ export const NewsSection = () => {
                         {getTimeAgo(newsItem.created_at)}
                       </span>
                     </div>
-                    
+
                     <CardTitle className="text-lg leading-tight group-hover:text-primary transition-colors duration-300 line-clamp-2">
                       {newsItem.title}
                     </CardTitle>
                   </CardHeader>
-                  
+
                   <CardContent className="pt-0">
                     <p className="text-sm text-muted-foreground mb-4 line-clamp-3 leading-relaxed">
                       {newsItem.excerpt}
                     </p>
-                    
+
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3 text-xs text-muted-foreground">
                         <div className="flex items-center gap-1">
@@ -259,7 +259,7 @@ export const NewsSection = () => {
                           {newsItem.views}
                         </div>
                       </div>
-                      
+
                       <Button variant="ghost" size="sm" className="text-primary hover:bg-primary/10 group/btn">
                         Ler mais
                         <ArrowRightIcon className="w-3 h-3 ml-1 group-hover/btn:translate-x-0.5 transition-transform duration-300" />
@@ -275,8 +275,8 @@ export const NewsSection = () => {
         {/* Call to Action */}
         <div className="text-center mt-12">
           <div className="flex items-center justify-center gap-4 flex-wrap">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="lg"
               className="hover:bg-primary/5 hover:border-primary/40 hover:shadow-lg group bg-white dark:bg-gray-900 shadow-md"
               onClick={() => window.location.href = '/noticias'}
@@ -285,8 +285,8 @@ export const NewsSection = () => {
               Ver todas as notícias
               <ArrowRightIcon className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
             </Button>
-            
-            <Button 
+
+            <Button
               variant="default"
               size="lg"
               className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg group"

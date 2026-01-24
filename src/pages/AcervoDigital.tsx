@@ -13,12 +13,12 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { useAcervoViews } from '@/hooks/useAcervoViews';
-import { 
-  SearchIcon, 
-  FileTextIcon, 
-  ImageIcon, 
-  VideoIcon, 
-  EyeIcon, 
+import {
+  SearchIcon,
+  FileTextIcon,
+  ImageIcon,
+  VideoIcon,
+  EyeIcon,
   DownloadIcon,
   Building2,
   GraduationCapIcon,
@@ -104,7 +104,7 @@ export default function AcervoDigital() {
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(12);
-  
+
   // Estados para carrossel e visualização
   const [carouselItems, setCarouselItems] = useState<AcervoItem[]>([]);
   const [currentCarouselIndex, setCurrentCarouselIndex] = useState(0);
@@ -123,19 +123,19 @@ export default function AcervoDigital() {
   const handleItemView = async (itemId: string) => {
     try {
       await registerView(itemId);
-      
+
       // Actualizar a contagem de visualizações no item
       const updatedViews = await getViewsCount(itemId);
-      setItems(prevItems => 
-        prevItems.map(item => 
-          item.id === itemId 
+      setItems(prevItems =>
+        prevItems.map(item =>
+          item.id === itemId
             ? { ...item, views: updatedViews }
             : item
         )
       );
-      setFilteredItems(prevItems => 
-        prevItems.map(item => 
-          item.id === itemId 
+      setFilteredItems(prevItems =>
+        prevItems.map(item =>
+          item.id === itemId
             ? { ...item, views: updatedViews }
             : item
         )
@@ -214,7 +214,7 @@ export default function AcervoDigital() {
           closeFullscreen();
         }
       }
-      
+
       // Navegação do carrossel com setas
       if (showCarousel && carouselItems.length > 0) {
         if (event.key === 'ArrowLeft') {
@@ -233,12 +233,12 @@ export default function AcervoDigital() {
   const filterAndSortItems = () => {
     const filtered = items.filter(item => {
       const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           (item.description && item.description.toLowerCase().includes(searchTerm.toLowerCase())) ||
-                           (item.category && item.category.toLowerCase().includes(searchTerm.toLowerCase()));
-      
+        (item.description && item.description.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (item.category && item.category.toLowerCase().includes(searchTerm.toLowerCase()));
+
       const matchesDirection = selectedDirection === 'todos' || item.direction === selectedDirection;
       const matchesType = selectedType === 'todos' || item.type === selectedType;
-      
+
       return matchesSearch && matchesDirection && matchesType;
     });
 
@@ -290,7 +290,7 @@ export default function AcervoDigital() {
     const now = new Date();
     const date = new Date(dateString);
     const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-    
+
     if (diffInHours < 1) return 'Há poucos minutos';
     if (diffInHours < 24) return `Há ${diffInHours} horas`;
     const diffInDays = Math.floor(diffInHours / 24);
@@ -320,11 +320,11 @@ export default function AcervoDigital() {
     if (item.type === 'imagem' && item.file_url) {
       return item.file_url;
     }
-    
+
     if (item.thumbnail_url) {
       return item.thumbnail_url;
     }
-    
+
     return null;
   };
 
@@ -387,13 +387,13 @@ export default function AcervoDigital() {
   };
 
   const nextCarouselItem = () => {
-    setCurrentCarouselIndex((prev) => 
+    setCurrentCarouselIndex((prev) =>
       prev === carouselItems.length - 1 ? 0 : prev + 1
     );
   };
 
   const prevCarouselItem = () => {
-    setCurrentCarouselIndex((prev) => 
+    setCurrentCarouselIndex((prev) =>
       prev === 0 ? carouselItems.length - 1 : prev - 1
     );
   };
@@ -410,9 +410,9 @@ export default function AcervoDigital() {
 
   // Função para obter itens de mídia (imagens e vídeos) para o carrossel
   const getMediaItems = () => {
-    return filteredItems.filter(item => 
-      (item.type === 'imagem' || item.type === 'video') && 
-      item.file_url && 
+    return filteredItems.filter(item =>
+      (item.type === 'imagem' || item.type === 'video') &&
+      item.file_url &&
       isValidUrl(item.file_url)
     );
   };
@@ -460,7 +460,7 @@ export default function AcervoDigital() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       <main>
         {/* Hero Section */}
         <Section variant="primary" size="lg">
@@ -479,12 +479,12 @@ export default function AcervoDigital() {
                   </p>
                 </div>
               </div>
-              
+
               <p className="text-xl text-primary-foreground/95 max-w-3xl mx-auto leading-relaxed">
-                Explore nossa coleção digital com documentos oficiais, imagens históricas e vídeos 
+                Explore nossa coleção digital com documentos oficiais, imagens históricas e vídeos
                 institucionais das diferentes direcções municipais.
               </p>
-              
+
               <div className="flex items-center justify-center gap-4 flex-wrap">
                 <Badge className="bg-white/20 text-white border-white/30 px-4 py-2">
                   <ArchiveIcon className="w-4 h-4 mr-2" />
@@ -538,7 +538,7 @@ export default function AcervoDigital() {
                         Filtros
                         {showFilters && <XIcon className="w-4 h-4" />}
                       </Button>
-                      
+
                       <Select value={selectedDirection} onValueChange={setSelectedDirection}>
                         <SelectTrigger className="w-48">
                           <Building2 className="w-4 h-4 mr-2" />
@@ -639,7 +639,7 @@ export default function AcervoDigital() {
                       >
                         <ListIcon className="w-4 h-4" />
                       </Button>
-                      
+
                       {/* Botão do Carrossel */}
                       {getMediaItems().length > 0 && (
                         <Button
@@ -741,7 +741,7 @@ export default function AcervoDigital() {
             description="Documentos, imagens e vídeos organizados por direcções e categorias"
             centered={true}
           />
-          
+
           <SectionContent>
             {filteredItems.length === 0 ? (
               <div className="text-center py-16">
@@ -754,7 +754,7 @@ export default function AcervoDigital() {
                   }
                 </p>
                 {(searchTerm || selectedDirection !== 'todos' || selectedType !== 'todos') && (
-                  <Button 
+                  <Button
                     onClick={() => {
                       setSearchTerm("");
                       setSelectedDirection("todos");
@@ -776,9 +776,9 @@ export default function AcervoDigital() {
                   {paginatedItems.map((item) => {
                     const directionData = getDirectionData(item.direction);
                     const DirIconComponent = directionData.icon;
-                    
+
                     return (
-                      <Card 
+                      <Card
                         key={item.id}
                         className={cn(
                           "group cursor-pointer overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1",
@@ -793,11 +793,11 @@ export default function AcervoDigital() {
                           "relative overflow-hidden",
                           viewMode === 'list' ? "md:w-64 flex-shrink-0" : ""
                         )}>
-                          <div className="aspect-video bg-gradient-to-br from-gray-200 to-gray-300 relative">
+                          <div className="aspect-video bg-gradient-to-br from-gray-100 to-gray-200 relative group-hover:scale-105 transition-transform duration-500">
                             {(() => {
                               // Debug do item para identificar problemas
                               debugFileUrl(item);
-                              
+
                               // Verificar se temos um URL válido
                               if (!item.file_url || !isValidUrl(item.file_url)) {
                                 return (
@@ -814,8 +814,8 @@ export default function AcervoDigital() {
                               if (item.type === 'imagem' && isValidImage(item.file_url)) {
                                 return (
                                   <div className="relative w-full h-full group">
-                                    <img 
-                                      src={item.file_url} 
+                                    <img
+                                      src={item.file_url}
                                       alt={item.title}
                                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                       onError={(e) => {
@@ -876,7 +876,7 @@ export default function AcervoDigital() {
                               if (item.type === 'video' && isValidVideo(item.file_url)) {
                                 return (
                                   <div className="relative w-full h-full group">
-                                    <video 
+                                    <video
                                       src={item.file_url}
                                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                       muted
@@ -944,8 +944,8 @@ export default function AcervoDigital() {
                               // Para documentos ou outros tipos
                               if (item.thumbnail_url && isValidUrl(item.thumbnail_url)) {
                                 return (
-                                  <img 
-                                    src={item.thumbnail_url} 
+                                  <img
+                                    src={item.thumbnail_url}
                                     alt={item.title}
                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                     onError={(e) => {
@@ -979,17 +979,17 @@ export default function AcervoDigital() {
                                 </div>
                               );
                             })()}
-                            
+
                             {/* Overlay sutil com informações essenciais */}
                             <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                            
+
                             {/* Badge de tipo - mais sutil */}
                             <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                               <Badge className={cn("text-xs", getTypeData(item.type).color, "text-white border-0 bg-black/50 backdrop-blur-sm")}>
                                 {getTypeIcon(item.type)}
                               </Badge>
                             </div>
-                            
+
                             {/* Indicador de visualizações - sutil */}
                             {item.views && item.views > 0 && (
                               <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -1001,7 +1001,7 @@ export default function AcervoDigital() {
                             )}
                           </div>
                         </div>
-                        
+
                         <div className="flex-1 p-4">
                           {/* Título - mais proeminente */}
                           <CardTitle className={cn(
@@ -1010,7 +1010,7 @@ export default function AcervoDigital() {
                           )}>
                             {item.title}
                           </CardTitle>
-                          
+
                           {/* Informações essenciais em uma linha */}
                           <div className="flex items-center gap-3 text-xs text-muted-foreground mb-3">
                             <span className="flex items-center gap-1">
@@ -1021,12 +1021,12 @@ export default function AcervoDigital() {
                               <span className="text-primary/70">{item.category}</span>
                             )}
                           </div>
-                          
+
                           {/* Botões de ação - mais compactos */}
                           <div className="flex gap-2">
-                            <Button 
-                              variant="outline" 
-                              size="sm" 
+                            <Button
+                              variant="outline"
+                              size="sm"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setSelectedItem(item);
@@ -1037,8 +1037,8 @@ export default function AcervoDigital() {
                               Ver
                             </Button>
                             {item.file_url && (
-                              <Button 
-                                variant="default" 
+                              <Button
+                                variant="default"
                                 size="sm"
                                 onClick={(e) => {
                                   e.stopPropagation();
@@ -1068,7 +1068,7 @@ export default function AcervoDigital() {
                     >
                       Anterior
                     </Button>
-                    
+
                     {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
                       <Button
                         key={page}
@@ -1080,7 +1080,7 @@ export default function AcervoDigital() {
                         {page}
                       </Button>
                     ))}
-                    
+
                     <Button
                       variant="outline"
                       size="sm"
@@ -1104,14 +1104,14 @@ export default function AcervoDigital() {
             description="Distribuição de documentos, imagens e vídeos pelas direcções municipais"
             centered={true}
           />
-          
+
           <SectionContent>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {directionStats.map(dir => {
                 const IconComponent = dir.icon;
                 return (
                   <Card key={dir.key} className="hover:shadow-lg transition-shadow cursor-pointer"
-                        onClick={() => setSelectedDirection(dir.key)}>
+                    onClick={() => setSelectedDirection(dir.key)}>
                     <CardContent className="p-6 text-center">
                       <div className={cn("w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4", dir.color)}>
                         <IconComponent className="w-6 h-6 text-white" />
@@ -1165,7 +1165,7 @@ export default function AcervoDigital() {
                     </Button>
                   </div>
                 </DialogHeader>
-                
+
                 <div className="space-y-4">
                   {/* Descrição - apenas se existir */}
                   {selectedItem.description && (
@@ -1293,7 +1293,7 @@ export default function AcervoDigital() {
                         )}
                       </div>
                     </div>
-                    
+
                     <div>
                       <h4 className="font-semibold text-foreground mb-2">Metadados</h4>
                       <div className="space-y-1 text-sm">
@@ -1320,7 +1320,7 @@ export default function AcervoDigital() {
           </DialogContent>
         </Dialog>
       </main>
-      
+
       {/* Modal do Carrossel */}
       {showCarousel && carouselItems.length > 0 && (
         <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center">
@@ -1359,7 +1359,7 @@ export default function AcervoDigital() {
               <div className="max-w-4xl max-h-full w-full">
                 {(() => {
                   const currentItem = carouselItems[currentCarouselIndex];
-                  
+
                   if (currentItem.type === 'imagem' && currentItem.file_url) {
                     return (
                       <div className="relative w-full h-full">
@@ -1497,7 +1497,7 @@ export default function AcervoDigital() {
           )}
         </DialogContent>
       </Dialog>
-      
+
       <Footer />
     </div>
   );

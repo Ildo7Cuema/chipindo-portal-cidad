@@ -18,6 +18,10 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				sans: ["Inter", "sans-serif"],
+				heading: ["Outfit", "sans-serif"],
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
@@ -79,10 +83,12 @@ export default {
 				'gradient-card': 'var(--gradient-card)'
 			},
 			boxShadow: {
-				'elegant': 'var(--shadow-elegant)',
-				'glow': 'var(--shadow-glow)',
-				'card': 'var(--shadow-card)',
-				'floating': 'var(--shadow-floating)'
+				'elegant': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+				'glow': '0 0 20px rgba(var(--primary), 0.35)',
+				'card': '0 0 0 1px rgba(0,0,0,0.03), 0 2px 8px rgba(0,0,0,0.04)',
+				'card-hover': '0 0 0 1px rgba(0,0,0,0.03), 0 8px 16px rgba(0,0,0,0.08)',
+				'floating': '0 10px 30px -10px rgba(0,0,0,0.1)',
+				'premium': '0 20px 40px -20px rgba(0,0,0,0.15)',
 			},
 			transitionTimingFunction: {
 				'smooth': 'var(--transition-smooth)',

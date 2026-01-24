@@ -4,11 +4,11 @@ import { Section, SectionHeader, SectionContent } from "@/components/ui/section"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { 
-  ShieldCheckIcon, 
-  LockIcon, 
-  EyeIcon, 
-  UserIcon, 
+import {
+  ShieldCheckIcon,
+  LockIcon,
+  EyeIcon,
+  UserIcon,
   DatabaseIcon,
   AlertTriangleIcon,
   MailIcon,
@@ -88,36 +88,39 @@ const Privacidade = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       <main>
         {/* Hero Section */}
-        <Section variant="primary" size="md">
+        <Section className="relative min-h-[400px] bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 overflow-hidden" size="md">
+          {/* Background Pattern */}
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-30"></div>
+
           <SectionContent>
-            <div className="text-center space-y-6">
-              <div className="flex items-center justify-center gap-3">
-                <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-xl">
+            <div className="text-center space-y-6 relative z-10">
+              <div className="flex items-center justify-center gap-4 mb-4">
+                <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-xl border border-white/20 shadow-2xl">
                   <ShieldCheckIcon className="w-8 h-8 text-white" />
                 </div>
                 <div className="text-left">
-                  <h1 className="text-3xl md:text-4xl font-bold text-white">
+                  <h1 className="text-3xl md:text-4xl font-bold text-white drop-shadow-sm">
                     Política de Privacidade
                   </h1>
-                  <p className="text-primary-foreground/90">
+                  <p className="text-blue-100 font-medium">
                     Portal da Administração Municipal de Chipindo
                   </p>
                 </div>
               </div>
-              
-              <p className="text-lg text-primary-foreground/95 max-w-3xl mx-auto">
+
+              <p className="text-lg text-blue-50/90 max-w-3xl mx-auto leading-relaxed font-light">
                 Seu compromisso com a transparência e proteção dos dados pessoais dos cidadãos é fundamental para nós.
               </p>
-              
-              <div className="flex items-center justify-center gap-4">
-                <Badge className="bg-white/20 text-white border-white/30 px-4 py-2">
+
+              <div className="flex items-center justify-center gap-4 pt-2">
+                <Badge className="bg-white/10 backdrop-blur-md text-white border-white/20 px-4 py-2 hover:bg-white/20 transition-all">
                   <CalendarIcon className="w-4 h-4 mr-2" />
                   Actualizado em {lastUpdated}
                 </Badge>
-                <Badge className="bg-green-500/20 text-green-100 border-green-400/30 px-4 py-2">
+                <Badge className="bg-emerald-500/20 backdrop-blur-md text-emerald-100 border-emerald-400/30 px-4 py-2 hover:bg-emerald-500/30 transition-all">
                   <ShieldCheckIcon className="w-4 h-4 mr-2" />
                   LGPD Compliant
                 </Badge>
@@ -139,12 +142,12 @@ const Privacidade = () => {
                     <h2 className="text-2xl font-bold text-foreground mb-4">Introdução</h2>
                     <div className="prose prose-slate max-w-none text-muted-foreground">
                       <p className="text-base leading-relaxed mb-4">
-                        A Administração Municipal de Chipindo respeita e protege a privacidade de todos os cidadãos que utilizam 
-                        nosso portal. Esta Política de Privacidade explica como coletamos, usamos, protegemos e compartilhamos 
+                        A Administração Municipal de Chipindo respeita e protege a privacidade de todos os cidadãos que utilizam
+                        nosso portal. Esta Política de Privacidade explica como coletamos, usamos, protegemos e compartilhamos
                         informações pessoais quando você interage com nossos serviços digitais.
                       </p>
                       <p className="text-base leading-relaxed">
-                        Ao usar este portal, você concorda com as práticas descritas nesta política. Recomendamos que leia 
+                        Ao usar este portal, você concorda com as práticas descritas nesta política. Recomendamos que leia
                         atentamente todas as seções para entender como seus dados são tratados.
                       </p>
                     </div>
@@ -163,7 +166,7 @@ const Privacidade = () => {
             description="Informações detalhadas sobre coleta, uso e proteção de dados pessoais"
             centered={true}
           />
-          
+
           <SectionContent>
             <div className="grid gap-8">
               {sections.map((section, index) => {
@@ -210,12 +213,12 @@ const Privacidade = () => {
                       <p className="text-muted-foreground">Entre em contacto connosco</p>
                     </div>
                   </div>
-                  
+
                   <p className="text-muted-foreground max-w-2xl mx-auto">
-                    Se você tiver dúvidas sobre esta Política de Privacidade, como exercer seus direitos ou 
+                    Se você tiver dúvidas sobre esta Política de Privacidade, como exercer seus direitos ou
                     relatar preocupações sobre o tratamento de dados pessoais, não hesite em nos contactar.
                   </p>
-                  
+
                   <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                     <Button size="lg" className="bg-orange-600 hover:bg-orange-700 text-white px-8">
                       <MailIcon className="w-5 h-5 mr-2" />
@@ -242,8 +245,8 @@ const Privacidade = () => {
                     Atualizações da Política
                   </h3>
                   <p className="text-sm text-yellow-700 dark:text-yellow-300 leading-relaxed">
-                    Esta Política de Privacidade pode ser atualizada periodicamente para refletir mudanças em nossos 
-                    serviços ou requisitos legais. Recomendamos que verifique esta página regularmente para se manter 
+                    Esta Política de Privacidade pode ser atualizada periodicamente para refletir mudanças em nossos
+                    serviços ou requisitos legais. Recomendamos que verifique esta página regularmente para se manter
                     informado sobre como protegemos suas informações.
                   </p>
                 </div>
@@ -252,7 +255,7 @@ const Privacidade = () => {
           </SectionContent>
         </Section>
       </main>
-      
+
       <Footer />
     </div>
   );

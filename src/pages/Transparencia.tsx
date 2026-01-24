@@ -13,11 +13,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
-import { 
-  FileTextIcon, 
-  DollarSignIcon, 
-  TrendingUpIcon, 
-  UsersIcon, 
+import {
+  FileTextIcon,
+  DollarSignIcon,
+  TrendingUpIcon,
+  UsersIcon,
   CalendarIcon,
   DownloadIcon,
   EyeIcon,
@@ -99,7 +99,7 @@ const Transparencia = () => {
   const loadData = async () => {
     try {
       setLoading(true);
-      
+
       // Carregar documentos publicados
       const { data: docs, error: docsError } = await supabase
         .from('transparency_documents')
@@ -143,7 +143,7 @@ const Transparencia = () => {
   // Filtrar documentos
   const filteredDocuments = documents.filter(doc => {
     const matchesSearch = doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         doc.description?.toLowerCase().includes(searchTerm.toLowerCase());
+      doc.description?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === "all" || doc.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
@@ -241,7 +241,7 @@ const Transparencia = () => {
 
       // Simular download (em produção, seria o arquivo real)
       toast.success(`Download iniciado: ${documentItem.title}`);
-      
+
       // Recarregar dados para actualizar contadores
       loadData();
     } catch (error) {
@@ -332,7 +332,7 @@ const Transparencia = () => {
     <div className="min-h-screen bg-background">
       <style dangerouslySetInnerHTML={{ __html: lineClampStyles }} />
       <Header />
-      
+
       {/* Hero Section */}
       <Section variant="primary" size="lg">
         <SectionContent>
@@ -353,12 +353,12 @@ const Transparencia = () => {
                 </p>
               </div>
             </div>
-            
+
             <p className="text-xl text-primary-foreground/95 max-w-4xl mx-auto leading-relaxed">
-              Acesso público a informações, documentos e dados da Administração Municipal de Chipindo. 
+              Acesso público a informações, documentos e dados da Administração Municipal de Chipindo.
               Promovemos a transparência e o acesso à informação como pilares da boa governação.
             </p>
-            
+
             <div className="flex items-center justify-center gap-6 flex-wrap">
               <div className="flex items-center gap-2 px-6 py-3 bg-white/10 rounded-full backdrop-blur-md border border-white/20">
                 <FileTextIcon className="w-5 h-5 text-white" />
@@ -385,7 +385,7 @@ const Transparencia = () => {
           description="Dados actualizados sobre documentos, orçamento e projectos da Administração Municipal"
           centered={true}
         />
-        
+
         <SectionContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <Card className="bg-white shadow-lg border-0 hover:shadow-xl transition-shadow">
@@ -424,14 +424,16 @@ const Transparencia = () => {
               </CardContent>
             </Card>
 
-            <Card className="bg-white shadow-lg border-0 hover:shadow-xl transition-shadow">
+            <Card className="bg-white shadow-lg border-0 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-slate-600">Cidadãos Beneficiados</p>
                     <p className="text-2xl font-bold text-slate-900">{totalBeneficiaries.toLocaleString()}+</p>
                   </div>
-                  <UsersIcon className="w-8 h-8 text-purple-600" />
+                  <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                    <UsersIcon className="w-6 h-6 text-purple-600" />
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -558,8 +560,8 @@ const Transparencia = () => {
                         {/* Status e Tags */}
                         <div className="flex items-center gap-2 mb-4">
                           <Badge className={getStatusColor(doc.status)}>
-                            {doc.status === 'published' ? 'Publicado' : 
-                             doc.status === 'pending' ? 'Pendente' : 'Arquivado'}
+                            {doc.status === 'published' ? 'Publicado' :
+                              doc.status === 'pending' ? 'Pendente' : 'Arquivado'}
                           </Badge>
                           {doc.tags && doc.tags.slice(0, 2).map((tag, index) => (
                             <Badge key={index} variant="outline" className="text-xs">
@@ -651,8 +653,8 @@ const Transparencia = () => {
                             <div className="text-right">
                               <p className="font-semibold text-slate-900">{budget.percentage}%</p>
                               <Badge className={getBudgetStatusColor(budget.status)}>
-                                {budget.status === 'on_track' ? 'No Prazo' : 
-                                 budget.status === 'over_budget' ? 'Acima' : 'Abaixo'}
+                                {budget.status === 'on_track' ? 'No Prazo' :
+                                  budget.status === 'over_budget' ? 'Acima' : 'Abaixo'}
                               </Badge>
                             </div>
                           </div>
@@ -725,11 +727,11 @@ const Transparencia = () => {
                               <p className="text-slate-600 mb-3">{project.description}</p>
                             </div>
                             <Badge className={getProjectStatusColor(project.status)}>
-                              {project.status === 'active' ? 'Ativo' : 
-                               project.status === 'completed' ? 'Concluído' : 'Planeado'}
+                              {project.status === 'active' ? 'Ativo' :
+                                project.status === 'completed' ? 'Concluído' : 'Planeado'}
                             </Badge>
                           </div>
-                          
+
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
                             <div className="flex items-center gap-2">
                               <DollarSignIcon className="w-4 h-4 text-green-600" />
@@ -905,7 +907,7 @@ const Transparencia = () => {
               </Button>
             </div>
           </DialogHeader>
-          
+
           <ScrollArea className="max-h-[60vh]">
             <div className="space-y-6">
               {/* Informações do Documento */}
@@ -936,8 +938,8 @@ const Transparencia = () => {
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium text-slate-600">Status:</span>
                     <Badge className={selectedDocument ? getStatusColor(selectedDocument.status) : ''}>
-                      {selectedDocument?.status === 'published' ? 'Publicado' : 
-                       selectedDocument?.status === 'pending' ? 'Pendente' : 'Arquivado'}
+                      {selectedDocument?.status === 'published' ? 'Publicado' :
+                        selectedDocument?.status === 'pending' ? 'Pendente' : 'Arquivado'}
                     </Badge>
                   </div>
                 </div>
@@ -963,18 +965,18 @@ const Transparencia = () => {
                 <div className="p-6 bg-white border border-slate-200 rounded-lg">
                   <div className="prose prose-sm max-w-none">
                     <p className="text-slate-700 leading-relaxed">
-                      Este é um documento de transparência da Administração Municipal de Chipindo. 
-                      O conteúdo aqui apresentado demonstra o compromisso da administração com a 
+                      Este é um documento de transparência da Administração Municipal de Chipindo.
+                      O conteúdo aqui apresentado demonstra o compromisso da administração com a
                       transparência e o acesso público à informação.
                     </p>
                     <p className="text-slate-700 leading-relaxed mt-4">
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor 
-                      incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis 
+                      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor
+                      incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
                       nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
                     </p>
                     <p className="text-slate-700 leading-relaxed mt-4">
-                      Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore 
-                      eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt 
+                      Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore
+                      eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt
                       in culpa qui officia deserunt mollit anim id est laborum.
                     </p>
                   </div>

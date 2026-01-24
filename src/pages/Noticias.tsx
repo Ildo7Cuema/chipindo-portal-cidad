@@ -15,11 +15,11 @@ import { toast } from "sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useNewsLikes } from "@/hooks/useNewsLikes";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { 
-  CalendarIcon, 
-  ClockIcon, 
-  UserIcon, 
-  SearchIcon, 
+import {
+  CalendarIcon,
+  ClockIcon,
+  UserIcon,
+  SearchIcon,
   EyeIcon,
   TrendingUpIcon,
   StarIcon,
@@ -64,59 +64,59 @@ interface NewsItem {
 }
 
 const categoryMapping = [
-  { 
-    id: 'desenvolvimento', 
-    name: 'Desenvolvimento', 
-    color: 'bg-blue-500', 
+  {
+    id: 'desenvolvimento',
+    name: 'Desenvolvimento',
+    color: 'bg-blue-500',
     bgColor: 'bg-blue-50 text-blue-700 border-blue-200',
     icon: TrendingUpIcon
   },
-  { 
-    id: 'educacao', 
-    name: 'Educação', 
-    color: 'bg-green-500', 
+  {
+    id: 'educacao',
+    name: 'Educação',
+    color: 'bg-green-500',
     bgColor: 'bg-green-50 text-green-700 border-green-200',
     icon: BookOpenIcon
   },
-  { 
-    id: 'saude', 
-    name: 'Saúde', 
-    color: 'bg-red-500', 
+  {
+    id: 'saude',
+    name: 'Saúde',
+    color: 'bg-red-500',
     bgColor: 'bg-red-50 text-red-700 border-red-200',
     icon: UsersIcon
   },
-  { 
-    id: 'obras', 
-    name: 'Obras Públicas', 
-    color: 'bg-orange-500', 
+  {
+    id: 'obras',
+    name: 'Obras Públicas',
+    color: 'bg-orange-500',
     bgColor: 'bg-orange-50 text-orange-700 border-orange-200',
     icon: Building2Icon
   },
-  { 
-    id: 'turismo', 
-    name: 'Turismo', 
-    color: 'bg-purple-500', 
+  {
+    id: 'turismo',
+    name: 'Turismo',
+    color: 'bg-purple-500',
     bgColor: 'bg-purple-50 text-purple-700 border-purple-200',
     icon: StarIcon
   },
-  { 
-    id: 'agricultura', 
-    name: 'Agricultura', 
-    color: 'bg-emerald-500', 
+  {
+    id: 'agricultura',
+    name: 'Agricultura',
+    color: 'bg-emerald-500',
     bgColor: 'bg-emerald-50 text-emerald-700 border-emerald-200',
     icon: TreeIcon
   },
-  { 
-    id: 'cultura', 
-    name: 'Cultura', 
-    color: 'bg-pink-500', 
+  {
+    id: 'cultura',
+    name: 'Cultura',
+    color: 'bg-pink-500',
     bgColor: 'bg-pink-50 text-pink-700 border-pink-200',
     icon: MessageSquareIcon
   },
-  { 
-    id: 'todos', 
-    name: 'Todas as Categorias', 
-    color: 'bg-slate-500', 
+  {
+    id: 'todos',
+    name: 'Todas as Categorias',
+    color: 'bg-slate-500',
     bgColor: 'bg-slate-50 text-slate-700 border-slate-200',
     icon: NewsIcon
   }
@@ -146,7 +146,7 @@ const Noticias = () => {
   const fetchNews = async () => {
     try {
       setLoading(true);
-      
+
       // Buscar notícias reais do banco de dados
       const { data, error } = await supabase
         .from('news')
@@ -210,9 +210,9 @@ const Noticias = () => {
       );
 
       setNews(newsWithData);
-      
+
       console.log('Notícias carregadas do banco:', newsWithData.length);
-      
+
     } catch (error) {
       console.error('Error fetching news:', error);
       toast.error('Erro ao carregar notícias do banco de dados');
@@ -229,7 +229,7 @@ const Noticias = () => {
   const filterAndSortNews = () => {
     const filtered = news.filter(item => {
       const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           item.excerpt.toLowerCase().includes(searchTerm.toLowerCase());
+        item.excerpt.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = selectedCategory === 'todos' || item.category === selectedCategory;
       return matchesSearch && matchesCategory;
     });
@@ -297,7 +297,7 @@ const Noticias = () => {
   const registerView = async (newsId: string) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      
+
       await supabase
         .from('news_views')
         .insert({
@@ -323,18 +323,18 @@ const Noticias = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
       <Header />
-      
+
       {/* Enhanced Hero Section */}
       <section className="relative min-h-[600px] bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-30"></div>
-        
+
         {/* Floating Elements */}
         <div className="absolute top-20 left-10 w-24 h-24 bg-white/10 rounded-full blur-xl animate-pulse"></div>
         <div className="absolute top-40 right-20 w-32 h-32 bg-blue-400/20 rounded-full blur-2xl animate-pulse delay-1000"></div>
         <div className="absolute bottom-20 left-1/4 w-16 h-16 bg-white/5 rounded-full blur-lg animate-pulse delay-500"></div>
         <div className="absolute top-1/2 right-1/3 w-20 h-20 bg-purple-400/15 rounded-full blur-xl animate-pulse delay-1500"></div>
-        
+
         <div className="relative z-10 container mx-auto px-4 py-20">
           <div className="text-center space-y-8">
             {/* Header with Enhanced Icon */}
@@ -347,7 +347,7 @@ const Noticias = () => {
                   <CheckCircle className="w-5 h-5 text-white" />
                 </div>
               </div>
-              
+
               <div className="space-y-4">
                 <div className="flex items-center justify-center gap-2 mb-3">
                   <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
@@ -365,14 +365,14 @@ const Noticias = () => {
                 </p>
               </div>
             </div>
-            
+
             {/* Enhanced Description */}
-            <div className="max-w-4xl mx-auto space-y-8">
-              <p className="text-xl md:text-2xl text-white/95 leading-relaxed font-light">
-                Fique a par das <span className="font-semibold text-white">últimas notícias</span>, comunicados e desenvolvimentos 
-                do <span className="font-semibold text-white">Município de Chipindo</span> com informações atualizadas e transparentes.
+            <div className="max-w-3xl mx-auto space-y-8 animate-slide-up animation-delay-300">
+              <p className="text-xl md:text-2xl text-blue-50/90 leading-relaxed font-light tracking-wide drop-shadow-sm">
+                Fique a par das <span className="font-medium text-white">últimas notícias</span>, comunicados e desenvolvimentos
+                do <span className="font-medium text-white">Município de Chipindo</span> com informações atualizadas e transparentes.
               </p>
-              
+
               {/* News Stats Preview */}
               <div className="flex flex-wrap justify-center gap-4">
                 <div className="group relative">
@@ -388,7 +388,7 @@ const Noticias = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="group relative">
                   <div className="bg-white/15 backdrop-blur-xl border border-white/20 rounded-2xl px-6 py-4 hover:bg-white/20 transition-all duration-300 hover:scale-105">
                     <div className="flex items-center gap-3">
@@ -402,7 +402,7 @@ const Noticias = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="group relative">
                   <div className="bg-white/15 backdrop-blur-xl border border-white/20 rounded-2xl px-6 py-4 hover:bg-white/20 transition-all duration-300 hover:scale-105">
                     <div className="flex items-center gap-3">
@@ -416,7 +416,7 @@ const Noticias = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="group relative">
                   <div className="bg-white/15 backdrop-blur-xl border border-white/20 rounded-2xl px-6 py-4 hover:bg-white/20 transition-all duration-300 hover:scale-105">
                     <div className="flex items-center gap-3">
@@ -431,7 +431,7 @@ const Noticias = () => {
                   </div>
                 </div>
               </div>
-              
+
               {/* Call to Action */}
               <div className="pt-8">
                 <div className="flex items-center justify-center gap-6 text-white/80 text-sm">
@@ -486,7 +486,7 @@ const Noticias = () => {
                   ))}
                 </SelectContent>
               </Select>
-              
+
               <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
                 <SelectTrigger className="w-full sm:w-40">
                   <SelectValue placeholder="Ordenar" />
@@ -521,9 +521,9 @@ const Noticias = () => {
                   {currentNews.map((item) => {
                     const categoryData = getCategoryData(item.category || 'desenvolvimento');
                     const Icon = categoryData.icon;
-                    
+
                     return (
-                      <Card 
+                      <Card
                         key={item.id}
                         className="group cursor-pointer overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
                         onClick={() => {
@@ -534,8 +534,8 @@ const Noticias = () => {
                         {/* Imagem */}
                         <div className="relative h-48 overflow-hidden">
                           {item.image_url ? (
-                            <img 
-                              src={item.image_url} 
+                            <img
+                              src={item.image_url}
                               alt={item.title}
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                             />
@@ -547,7 +547,7 @@ const Noticias = () => {
                               <Icon className="w-16 h-16 text-white/80" />
                             </div>
                           )}
-                          
+
                           {/* Badge de categoria */}
                           <div className="absolute top-3 left-3">
                             <Badge className={cn(
@@ -559,7 +559,7 @@ const Noticias = () => {
                               {categoryData.name}
                             </Badge>
                           </div>
-                          
+
                           {/* Featured badge */}
                           {item.featured && (
                             <div className="absolute top-3 right-3">
@@ -570,16 +570,16 @@ const Noticias = () => {
                             </div>
                           )}
                         </div>
-                        
+
                         <CardContent className="p-6">
                           <CardTitle className="text-lg font-bold mb-2 line-clamp-2 group-hover:text-primary transition-colors">
                             {item.title}
                           </CardTitle>
-                          
+
                           <p className="text-muted-foreground text-sm mb-4 line-clamp-3">
                             {item.excerpt}
                           </p>
-                          
+
                           {/* Meta informações */}
                           <div className="flex items-center justify-between text-xs text-muted-foreground">
                             <div className="flex items-center gap-4">
@@ -592,7 +592,7 @@ const Noticias = () => {
                                 {item.views || 0}
                               </div>
                             </div>
-                            
+
                             <Button
                               variant="ghost"
                               size="sm"
@@ -633,11 +633,11 @@ const Noticias = () => {
                     >
                       Anterior
                     </Button>
-                    
+
                     {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                       const page = currentPage <= 3 ? i + 1 : currentPage - 2 + i;
                       if (page > totalPages) return null;
-                      
+
                       return (
                         <Button
                           key={page}
@@ -650,7 +650,7 @@ const Noticias = () => {
                         </Button>
                       );
                     })}
-                    
+
                     <Button
                       variant="outline"
                       size="sm"
@@ -671,8 +671,8 @@ const Noticias = () => {
                     </div>
                     <h3 className="text-lg font-semibold text-foreground mb-2">Nenhuma notícia encontrada</h3>
                     <p className="text-muted-foreground">
-                      {searchTerm || selectedCategory !== 'todos' 
-                        ? 'Tente ajustar os filtros de busca' 
+                      {searchTerm || selectedCategory !== 'todos'
+                        ? 'Tente ajustar os filtros de busca'
                         : 'Não há notícias publicadas no momento'
                       }
                     </p>
@@ -690,7 +690,7 @@ const Noticias = () => {
               <DialogTitle className="sr-only">
                 {selectedNews.title}
               </DialogTitle>
-              
+
               {/* Header com botão de fechar */}
               <div className="absolute top-4 right-4 z-30">
                 <Button
@@ -702,7 +702,7 @@ const Noticias = () => {
                   <XIcon className="w-5 h-5" />
                 </Button>
               </div>
-              
+
               <div className={cn(
                 "h-full",
                 isMobile ? "flex flex-col" : "flex"
@@ -710,8 +710,8 @@ const Noticias = () => {
                 {/* Coluna da Imagem - Responsiva */}
                 <div className={cn(
                   "relative bg-gradient-to-br from-blue-50 to-purple-50",
-                  isMobile 
-                    ? "w-full h-64 border-b border-gray-200" 
+                  isMobile
+                    ? "w-full h-64 border-b border-gray-200"
                     : "w-1/2 border-r border-gray-200"
                 )}>
                   {((selectedNews.images && selectedNews.images.length > 0) || selectedNews.image_url) ? (
@@ -729,8 +729,8 @@ const Noticias = () => {
                                   "relative w-full h-full flex items-center justify-center",
                                   isMobile ? "max-w-full" : "max-w-md mx-auto"
                                 )}>
-                                  <img 
-                                    src={imageUrl} 
+                                  <img
+                                    src={imageUrl}
                                     alt={`${selectedNews.title} - Imagem ${index + 1}`}
                                     className="w-full h-full object-contain rounded-2xl shadow-2xl border-4 border-white hover:scale-105 transition-transform duration-300"
                                   />
@@ -751,8 +751,8 @@ const Noticias = () => {
                                 "relative w-full h-full flex items-center justify-center",
                                 isMobile ? "max-w-full" : "max-w-md mx-auto"
                               )}>
-                                <img 
-                                  src={selectedNews.image_url} 
+                                <img
+                                  src={selectedNews.image_url}
                                   alt={selectedNews.title}
                                   className="w-full h-full object-contain rounded-2xl shadow-2xl border-4 border-white hover:scale-105 transition-transform duration-300"
                                 />
@@ -784,7 +784,7 @@ const Noticias = () => {
                       </div>
                     </div>
                   )}
-                  
+
                   {/* Badge de categoria sobre a imagem */}
                   <div className={cn(
                     "absolute z-20",
@@ -795,7 +795,7 @@ const Noticias = () => {
                       {getCategoryData(selectedNews.category || 'desenvolvimento').name}
                     </Badge>
                   </div>
-                  
+
                   {/* Featured badge */}
                   {selectedNews.featured && (
                     <div className={cn(
@@ -809,15 +809,15 @@ const Noticias = () => {
                     </div>
                   )}
                 </div>
-                
+
                 {/* Coluna do Conteúdo - Scrollável */}
                 <div className={cn(
                   "flex flex-col h-full bg-white",
                   isMobile ? "w-full flex-1" : "w-1/2"
                 )}>
                   {/* Área de scroll do conteúdo */}
-                  <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100" style={{ 
-                    maxHeight: isMobile ? 'calc(95vh - 280px)' : 'calc(95vh - 120px)' 
+                  <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100" style={{
+                    maxHeight: isMobile ? 'calc(95vh - 280px)' : 'calc(95vh - 120px)'
                   }}>
                     <div className={cn(
                       "pb-32",
@@ -831,7 +831,7 @@ const Noticias = () => {
                         )}>
                           {selectedNews.title}
                         </h1>
-                        
+
                         {/* Meta informações */}
                         <div className={cn(
                           "flex flex-wrap items-center text-sm text-gray-600 mb-6",
@@ -854,7 +854,7 @@ const Noticias = () => {
                             <span>{selectedNews.likes || 0} curtidas</span>
                           </div>
                         </div>
-                        
+
                         {/* Autor */}
                         {selectedNews.author_name && (
                           <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6 mb-8 border border-blue-100">
@@ -871,7 +871,7 @@ const Noticias = () => {
                           </div>
                         )}
                       </div>
-                      
+
                       {/* Conteúdo da notícia */}
                       <div className="space-y-8">
                         {/* Excerpt */}
@@ -890,7 +890,7 @@ const Noticias = () => {
                             </div>
                           </div>
                         )}
-                        
+
                         {/* Conteúdo principal */}
                         <div className="prose prose-lg max-w-none">
                           <div className="text-gray-800 leading-relaxed text-lg whitespace-pre-wrap space-y-6">
@@ -901,7 +901,7 @@ const Noticias = () => {
                             ))}
                           </div>
                         </div>
-                        
+
                         {/* Informações adicionais */}
                         <div className="bg-gray-50 rounded-2xl p-6 mt-12">
                           <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
@@ -936,7 +936,7 @@ const Noticias = () => {
                       </div>
                     </div>
                   </div>
-                  
+
                   {/* Footer com ações - Fixo na parte inferior */}
                   <div className="bg-gradient-to-r from-blue-50 to-purple-50 border-t border-gray-200 p-6">
                     <div className={cn(
@@ -947,9 +947,9 @@ const Noticias = () => {
                         "flex items-center",
                         isMobile ? "gap-2 w-full justify-center" : "gap-4"
                       )}>
-                        <Button 
-                          variant="outline" 
-                          size="default" 
+                        <Button
+                          variant="outline"
+                          size="default"
                           onClick={() => handleLike(selectedNews.id)}
                           disabled={isLiking}
                           className={cn(
@@ -965,7 +965,7 @@ const Noticias = () => {
                           )} />
                           {newsLikes[selectedNews.id] || 0} curtidas
                         </Button>
-                        
+
                         <Button
                           variant="outline"
                           size="default"
@@ -975,7 +975,7 @@ const Noticias = () => {
                           <ShareIcon className="w-5 h-5 mr-2" />
                           Compartilhar
                         </Button>
-                        
+
                         <Button
                           variant="outline"
                           size="default"
@@ -990,7 +990,7 @@ const Noticias = () => {
                           Copiar
                         </Button>
                       </div>
-                      
+
                       <div className={cn(
                         "flex items-center text-sm text-gray-600",
                         isMobile ? "gap-3 w-full justify-center" : "gap-4"
@@ -1012,7 +1012,7 @@ const Noticias = () => {
           </Dialog>
         )}
       </main>
-      
+
       <Footer />
     </div>
   );

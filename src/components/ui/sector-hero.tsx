@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { 
-  GraduationCapIcon, 
-  HeartIcon, 
-  SproutIcon, 
-  MountainIcon, 
-  BuildingIcon, 
-  PaletteIcon, 
-  ZapIcon, 
+import {
+  GraduationCapIcon,
+  HeartIcon,
+  SproutIcon,
+  MountainIcon,
+  BuildingIcon,
+  PaletteIcon,
+  ZapIcon,
   DropletsIcon,
   ArrowRightIcon,
   TrendingUpIcon,
@@ -31,7 +31,7 @@ interface SectorHeroProps {
     descricao: string;
     missao?: string;
     estatisticas?: Array<{ nome: string; valor: string }>;
-    programas?: Array<{ id: string; nome: string }>;
+    programas?: Array<{ id: string; titulo: string }>;
     oportunidades?: Array<{ id: string; titulo: string }>;
     infraestruturas?: Array<{ id: string; nome: string }>;
   };
@@ -260,7 +260,7 @@ export const SectorHero: React.FC<SectorHeroProps> = ({ setor, className, onExpl
             }}
           />
         ))}
-        
+
         {/* Gradient Overlay */}
         <div className={cn(
           "absolute inset-0 bg-gradient-to-br",
@@ -270,19 +270,19 @@ export const SectorHero: React.FC<SectorHeroProps> = ({ setor, className, onExpl
           <div className="absolute inset-0 bg-black/30"></div>
           {/* Animated Background Elements */}
           <div className="absolute inset-0 opacity-20">
-            <div 
+            <div
               className="absolute top-10 left-10 w-32 h-32 bg-white rounded-full blur-3xl animate-pulse"
               style={{
                 transform: `translate(${(mousePosition.x - 50) * 0.1}px, ${(mousePosition.y - 50) * 0.1}px)`
               }}
             />
-            <div 
+            <div
               className="absolute bottom-10 right-10 w-24 h-24 bg-white rounded-full blur-2xl animate-pulse delay-1000"
               style={{
                 transform: `translate(${(mousePosition.x - 50) * -0.05}px, ${(mousePosition.y - 50) * -0.05}px)`
               }}
             />
-            <div 
+            <div
               className="absolute top-1/2 left-1/4 w-16 h-16 bg-white rounded-full blur-xl animate-pulse delay-500"
               style={{
                 transform: `translate(${(mousePosition.x - 50) * 0.03}px, ${(mousePosition.y - 50) * 0.03}px)`
@@ -296,22 +296,22 @@ export const SectorHero: React.FC<SectorHeroProps> = ({ setor, className, onExpl
       <div className="relative z-10 w-full">
         <div className="container mx-auto px-4 py-12 sm:py-16 lg:py-20">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
-            
+
             {/* Left Column - Enhanced Main Content */}
             <div className={cn("text-white space-y-10", isVisible && "animate-fade-in-up")}>
-                            {/* Premium Location Badges */}
+              {/* Premium Location Badges */}
               <div className="flex flex-wrap items-center gap-3 sm:gap-4 animate-fade-in-up">
-                <Badge 
-                  variant="secondary" 
+                <Badge
+                  variant="secondary"
                   className={cn(
                     `bg-gradient-to-r from-${sectorColors.light}/80 to-${sectorColors.medium}/60 text-${sectorColors.text} border-${sectorColors.border}/50 backdrop-blur-xl px-3 sm:px-4 py-2 shadow-lg hover:shadow-${sectorColors.medium}/25 transition-all duration-300 font-semibold text-xs sm:text-sm`
-                    )}
+                  )}
                 >
                   <MapPinIcon className={cn(`w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 text-${sectorColors.icon}`)} />
                   <span className="whitespace-nowrap">Sector Estratégico</span>
                 </Badge>
-                <Badge 
-                  variant="secondary" 
+                <Badge
+                  variant="secondary"
                   className={cn(
                     `bg-gradient-to-r from-${sectorColors.light}/80 to-${sectorColors.medium}/60 text-${sectorColors.text} border-${sectorColors.border}/50 backdrop-blur-xl px-3 sm:px-4 py-2 shadow-lg hover:shadow-${sectorColors.medium}/25 transition-all duration-300 font-semibold text-xs sm:text-sm`,
                     "animate-pulse"
@@ -340,14 +340,14 @@ export const SectorHero: React.FC<SectorHeroProps> = ({ setor, className, onExpl
                       {setor.nome}
                     </span>
                   </h1>
-                  
+
                   {/* Accent line */}
                   <div className={cn(
                     "absolute -bottom-2 sm:-bottom-4 left-0 w-20 sm:w-32 h-0.5 sm:h-1 bg-gradient-to-r rounded-full shadow-lg animate-pulse",
                     accentClass
                   )} />
                 </div>
-                
+
                 <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white leading-relaxed max-w-2xl font-medium drop-shadow-lg">
                   {setor.descricao}
                 </p>
@@ -373,8 +373,8 @@ export const SectorHero: React.FC<SectorHeroProps> = ({ setor, className, onExpl
 
               {/* Enhanced Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 animate-fade-in-up delay-500">
-                <Button 
-                  size="lg" 
+                <Button
+                  size="lg"
                   className={cn(
                     "bg-white text-gray-900 hover:bg-white/90 font-bold shadow-xl hover:shadow-2xl transition-all duration-300",
                     "group relative overflow-hidden border-2 border-white text-sm sm:text-base"
@@ -390,9 +390,9 @@ export const SectorHero: React.FC<SectorHeroProps> = ({ setor, className, onExpl
                     accentClass
                   )} />
                 </Button>
-                <Button 
-                  size="lg" 
-                  variant="outline" 
+                <Button
+                  size="lg"
+                  variant="outline"
                   className={cn(
                     `border-2 border-${sectorColors.border} text-${sectorColors.text} hover:bg-${sectorColors.light}/50 backdrop-blur-xl shadow-lg hover:shadow-${sectorColors.medium}/25 transition-all duration-300 font-black bg-${sectorColors.light}/80 text-sm sm:text-base`
                   )}
@@ -417,7 +417,7 @@ export const SectorHero: React.FC<SectorHeroProps> = ({ setor, className, onExpl
                   )}>
                     <IconComponent className="w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 text-white group-hover:scale-110 transition-transform duration-500" />
                   </div>
-                  
+
                   {/* Floating Elements with Enhanced Design */}
                   <div className="absolute -top-4 -right-4 sm:-top-6 sm:-right-6 animate-bounce">
                     <Card className={cn(
@@ -433,7 +433,7 @@ export const SectorHero: React.FC<SectorHeroProps> = ({ setor, className, onExpl
                       </div>
                     </Card>
                   </div>
-                  
+
                   <div className="absolute -bottom-4 -left-4 sm:-bottom-6 sm:-left-6 animate-bounce delay-1000">
                     <Card className={cn(
                       `bg-gradient-to-r from-${sectorColors.light}/80 to-${sectorColors.medium}/60 backdrop-blur-xl border-2 border-${sectorColors.border}/50 p-2 sm:p-4 shadow-xl`,
@@ -457,7 +457,7 @@ export const SectorHero: React.FC<SectorHeroProps> = ({ setor, className, onExpl
                       <StarIcon className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                     </div>
                   </div>
-                  
+
                   <div className="absolute bottom-1/2 -left-8 sm:-left-12 animate-pulse delay-500">
                     <div className={cn(
                       `w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-gradient-to-r from-${sectorColors.medium} to-${sectorColors.dark} flex items-center justify-center`
@@ -482,7 +482,7 @@ export const SectorHero: React.FC<SectorHeroProps> = ({ setor, className, onExpl
                     </div>
                   </CardContent>
                 </Card>
-                
+
                 <Card className={cn(
                   `bg-gradient-to-r from-${sectorColors.light}/90 to-${sectorColors.medium}/70 backdrop-blur-xl border-2 border-${sectorColors.border}/60 hover:scale-105 transition-all duration-300`,
                   `shadow-xl hover:shadow-${sectorColors.medium}/25`
@@ -524,23 +524,23 @@ export const SectorHero: React.FC<SectorHeroProps> = ({ setor, className, onExpl
 
       {/* Enhanced Bottom Wave Effect */}
       <div className="absolute bottom-0 left-0 right-0">
-        <svg 
-          viewBox="0 0 1200 120" 
-          preserveAspectRatio="none" 
+        <svg
+          viewBox="0 0 1200 120"
+          preserveAspectRatio="none"
           className="w-full h-12 sm:h-16 lg:h-20 text-white"
         >
-          <path 
-            d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" 
-            opacity=".25" 
+          <path
+            d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z"
+            opacity=".25"
             fill="currentColor"
           />
-          <path 
-            d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" 
-            opacity=".5" 
+          <path
+            d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z"
+            opacity=".5"
             fill="currentColor"
           />
-          <path 
-            d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z" 
+          <path
+            d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z"
             fill="currentColor"
           />
         </svg>

@@ -56,11 +56,11 @@ export const ConcursosSection = () => {
     if (!concurso.deadline) {
       return <Badge className="bg-blue-100 text-blue-800">Disponível</Badge>;
     }
-    
+
     const today = new Date();
     const deadline = new Date(concurso.deadline);
     const daysRemaining = Math.ceil((deadline.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-    
+
     if (daysRemaining < 0) {
       return <Badge variant="secondary">Encerrado</Badge>;
     } else if (daysRemaining <= 7) {
@@ -88,7 +88,7 @@ export const ConcursosSection = () => {
               Concursos Públicos
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Oportunidades de carreira na Administração Municipal de Chipindo. 
+              Oportunidades de carreira na Administração Municipal de Chipindo.
               Inscreva-se online e faça parte da nossa equipa.
             </p>
           </div>
@@ -110,7 +110,7 @@ export const ConcursosSection = () => {
             Concursos Públicos
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Oportunidades de carreira na Administração Municipal de Chipindo. 
+            Oportunidades de carreira na Administração Municipal de Chipindo.
             Inscreva-se online e faça parte da nossa equipa.
           </p>
         </div>
@@ -123,21 +123,21 @@ export const ConcursosSection = () => {
           ) : (
             concursos.map((concurso) => {
               const daysRemaining = getDaysRemaining(concurso.deadline);
-              
+
               return (
                 <Card key={concurso.id} className="overflow-hidden hover:shadow-elegant transition-all duration-300">
-                  <CardHeader>
-                    <div className="flex items-center justify-between mb-2">
+                  <CardHeader className="pb-3 bg-gradient-to-b from-transparent to-muted/20">
+                    <div className="flex items-center justify-between mb-3">
                       {getStatusBadge(concurso)}
-                      <span className="text-sm text-muted-foreground">
+                      <span className="text-xs font-medium text-muted-foreground bg-muted/50 px-2 py-1 rounded-md border border-border/50">
                         {formatDate(concurso.created_at)}
                       </span>
                     </div>
-                    <CardTitle className="text-lg leading-tight">
+                    <CardTitle className="text-xl leading-tight group-hover:text-primary transition-colors duration-300 line-clamp-2 font-bold tracking-tight">
                       {concurso.title}
                     </CardTitle>
                   </CardHeader>
-                  
+
                   <CardContent className="space-y-4">
                     <p className="text-sm text-muted-foreground line-clamp-3">
                       {concurso.description}
@@ -173,9 +173,9 @@ export const ConcursosSection = () => {
                     )}
 
                     <div className="flex gap-2">
-                      <Button 
-                        variant="institutional" 
-                        size="sm" 
+                      <Button
+                        variant="institutional"
+                        size="sm"
                         className="flex-1"
                         onClick={() => setSelectedConcurso(concurso)}
                       >
@@ -183,8 +183,8 @@ export const ConcursosSection = () => {
                         Ver detalhes
                       </Button>
                       {concurso.contact_info && (
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           size="sm"
                           onClick={() => setShowContact(concurso)}
                         >
@@ -205,21 +205,21 @@ export const ConcursosSection = () => {
             Não encontrou o que procura?
           </h3>
           <p className="text-primary-foreground/90 mb-6 max-w-2xl mx-auto">
-            Cadastre-se na nossa base de dados de talentos e seja notificado 
+            Cadastre-se na nossa base de dados de talentos e seja notificado
             sobre novos concursos na sua área de interesse.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
-              variant="secondary" 
+            <Button
+              variant="secondary"
               size="lg"
               className="hover:shadow-glow transition-all duration-300"
               onClick={() => window.location.href = '/register-interest'}
             >
               Cadastrar interesse
             </Button>
-            <Button 
-              variant="outline" 
-              size="lg" 
+            <Button
+              variant="outline"
+              size="lg"
               className="border-primary-foreground text-primary-foreground bg-primary-foreground/5 hover:bg-primary-foreground/15 hover:shadow-elegant transition-all duration-300 font-semibold shadow-sm"
               onClick={() => window.location.href = '/concursos-history'}
             >

@@ -51,6 +51,7 @@ const PaginationLink = ({
       buttonVariants({
         variant: isActive ? "outline" : "ghost",
         size,
+        className: isActive ? "border-primary text-primary font-bold shadow-sm" : "text-muted-foreground",
       }),
       className
     )}

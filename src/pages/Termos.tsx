@@ -4,11 +4,11 @@ import { Section, SectionHeader, SectionContent } from "@/components/ui/section"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { 
-  FileTextIcon, 
-  ScaleIcon, 
-  AlertCircleIcon, 
-  UserCheckIcon, 
+import {
+  FileTextIcon,
+  ScaleIcon,
+  AlertCircleIcon,
+  UserCheckIcon,
   ShieldIcon,
   BanIcon,
   BookOpenIcon,
@@ -92,36 +92,39 @@ const Termos = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       <main>
         {/* Hero Section */}
-        <Section variant="primary" size="md">
+        <Section className="relative min-h-[400px] bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 overflow-hidden" size="md">
+          {/* Background Pattern */}
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-30"></div>
+
           <SectionContent>
-            <div className="text-center space-y-6">
-              <div className="flex items-center justify-center gap-3">
-                <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-xl">
+            <div className="text-center space-y-6 relative z-10">
+              <div className="flex items-center justify-center gap-4 mb-4">
+                <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-xl border border-white/20 shadow-2xl">
                   <ScaleIcon className="w-8 h-8 text-white" />
                 </div>
                 <div className="text-left">
-                  <h1 className="text-3xl md:text-4xl font-bold text-white">
+                  <h1 className="text-3xl md:text-4xl font-bold text-white drop-shadow-sm">
                     Termos de Uso
                   </h1>
-                  <p className="text-primary-foreground/90">
+                  <p className="text-blue-100 font-medium">
                     Portal da Administração Municipal de Chipindo
                   </p>
                 </div>
               </div>
-              
-              <p className="text-lg text-primary-foreground/95 max-w-3xl mx-auto">
+
+              <p className="text-lg text-blue-50/90 max-w-3xl mx-auto leading-relaxed font-light">
                 Estes termos estabelecem as regras e condições para o uso responsável dos serviços digitais municipais.
               </p>
-              
-              <div className="flex items-center justify-center gap-4">
-                <Badge className="bg-white/20 text-white border-white/30 px-4 py-2">
+
+              <div className="flex items-center justify-center gap-4 pt-2">
+                <Badge className="bg-white/10 backdrop-blur-md text-white border-white/20 px-4 py-2 hover:bg-white/20 transition-all">
                   <CalendarIcon className="w-4 h-4 mr-2" />
                   Vigente desde {lastUpdated}
                 </Badge>
-                <Badge className="bg-green-500/20 text-green-100 border-green-400/30 px-4 py-2">
+                <Badge className="bg-emerald-500/20 backdrop-blur-md text-emerald-100 border-emerald-400/30 px-4 py-2 hover:bg-emerald-500/30 transition-all">
                   <ScaleIcon className="w-4 h-4 mr-2" />
                   Legalmente Vinculativo
                 </Badge>
@@ -143,17 +146,17 @@ const Termos = () => {
                     <h2 className="text-2xl font-bold text-foreground mb-4">Acordo Legal</h2>
                     <div className="prose prose-slate max-w-none text-muted-foreground">
                       <p className="text-base leading-relaxed mb-4">
-                        Estes Termos de Uso constituem um acordo legal entre você e a Administração Municipal de Chipindo. 
-                        Eles regem seu acesso e uso do portal municipal, incluindo todos os serviços, funcionalidades e 
+                        Estes Termos de Uso constituem um acordo legal entre você e a Administração Municipal de Chipindo.
+                        Eles regem seu acesso e uso do portal municipal, incluindo todos os serviços, funcionalidades e
                         conteúdos disponibilizados.
                       </p>
                       <p className="text-base leading-relaxed mb-4">
-                        O portal foi desenvolvido para facilitar o acesso dos cidadãos aos serviços públicos e promover 
-                        a transparência administrativa. Seu uso adequado é essencial para manter a qualidade e segurança 
+                        O portal foi desenvolvido para facilitar o acesso dos cidadãos aos serviços públicos e promover
+                        a transparência administrativa. Seu uso adequado é essencial para manter a qualidade e segurança
                         dos serviços oferecidos.
                       </p>
                       <p className="text-base leading-relaxed">
-                        Reservamo-nos o direito de modificar estes termos a qualquer momento, sendo as alterações 
+                        Reservamo-nos o direito de modificar estes termos a qualquer momento, sendo as alterações
                         comunicadas através do próprio portal.
                       </p>
                     </div>
@@ -172,7 +175,7 @@ const Termos = () => {
             description="Regras claras para o uso responsável dos serviços municipais digitais"
             centered={true}
           />
-          
+
           <SectionContent>
             <div className="grid gap-8">
               {sections.map((section, index) => {
@@ -264,12 +267,12 @@ const Termos = () => {
                       <p className="text-muted-foreground">Estamos aqui para esclarecer</p>
                     </div>
                   </div>
-                  
+
                   <p className="text-muted-foreground max-w-2xl mx-auto">
-                    Se você tiver dúvidas sobre estes Termos de Uso ou precisar de esclarecimentos sobre 
+                    Se você tiver dúvidas sobre estes Termos de Uso ou precisar de esclarecimentos sobre
                     seus direitos e responsabilidades, entre em contacto connosco.
                   </p>
-                  
+
                   <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                     <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white px-8">
                       <MailIcon className="w-5 h-5 mr-2" />
@@ -296,7 +299,7 @@ const Termos = () => {
                     Legislação Aplicável
                   </h3>
                   <p className="text-sm text-amber-700 dark:text-amber-300 leading-relaxed">
-                    Estes Termos de Uso são regidos pelas leis da República de Angola. Qualquer disputa será 
+                    Estes Termos de Uso são regidos pelas leis da República de Angola. Qualquer disputa será
                     resolvida pelos tribunais competentes da comarca de Chipindo, Província de Huíla.
                   </p>
                 </div>
@@ -305,7 +308,7 @@ const Termos = () => {
           </SectionContent>
         </Section>
       </main>
-      
+
       <Footer />
     </div>
   );

@@ -51,9 +51,9 @@ const Educacao = () => {
   const scrollToTabs = () => {
     const tabsElement = document.querySelector('[data-tabs-container]');
     if (tabsElement) {
-      tabsElement.scrollIntoView({ 
-        behavior: 'smooth', 
-        block: 'start' 
+      tabsElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
       });
     }
   };
@@ -154,10 +154,10 @@ const Educacao = () => {
       <div className="container mx-auto px-4 pt-6">
         <SetorBreadcrumb setor={setor} />
       </div>
-      
+
       {/* Modern Hero Section */}
-      <SectorHero 
-        setor={setor} 
+      <SectorHero
+        setor={setor}
         onExplorarProgramas={handleExplorarProgramas}
         onVerOportunidades={handleVerOportunidades}
       />
@@ -186,59 +186,62 @@ const Educacao = () => {
             <TabsContent value="programas" className="mt-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {(setor?.programas || []).map((programa, index) => (
-                  <Card key={index} className="hover:shadow-elegant transition-all duration-300">
+                  <Card key={index} className="hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border-0 bg-white dark:bg-gray-800 overflow-hidden group">
+                    <div className="h-1 bg-gradient-to-r from-blue-500 to-indigo-600 w-full" />
                     <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <GraduationCapIcon className="w-5 h-5 text-primary" />
+                      <CardTitle className="flex items-center gap-2 group-hover:text-blue-600 transition-colors">
+                        <div className="p-2 rounded-lg bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
+                          <GraduationCapIcon className="w-5 h-5" />
+                        </div>
                         {programa.titulo}
                       </CardTitle>
-                      <p className="text-muted-foreground">{programa.descricao}</p>
+                      <p className="text-muted-foreground leading-relaxed">{programa.descricao}</p>
                     </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div>
-                        <h4 className="font-semibold mb-2 flex items-center gap-2">
-                          <CheckCircleIcon className="w-4 h-4 text-green-600" />
+                    <CardContent className="space-y-6">
+                      <div className="space-y-3">
+                        <h4 className="font-semibold text-sm uppercase tracking-wider text-gray-500 flex items-center gap-2">
+                          <CheckCircleIcon className="w-4 h-4 text-green-500" />
                           Benefícios
                         </h4>
-                        <ul className="space-y-1">
+                        <ul className="grid gap-2">
                           {(programa.beneficios || []).map((beneficio, idx) => (
-                            <li key={idx} className="text-sm text-muted-foreground flex items-center gap-2">
-                              <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />
+                            <li key={idx} className="text-sm text-gray-600 flex items-start gap-2">
+                              <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-1.5 shrink-0" />
                               {beneficio}
                             </li>
                           ))}
                         </ul>
                       </div>
-                      <div>
-                        <h4 className="font-semibold mb-2 flex items-center gap-2">
-                          <StarIcon className="w-4 h-4 text-blue-600" />
+                      <div className="space-y-3">
+                        <h4 className="font-semibold text-sm uppercase tracking-wider text-gray-500 flex items-center gap-2">
+                          <StarIcon className="w-4 h-4 text-blue-500" />
                           Requisitos
                         </h4>
-                        <ul className="space-y-1">
+                        <ul className="grid gap-2">
                           {(programa.requisitos || []).map((requisito, idx) => (
-                            <li key={idx} className="text-sm text-muted-foreground flex items-center gap-2">
-                              <div className="w-1.5 h-1.5 bg-blue-500 rounded-full" />
+                            <li key={idx} className="text-sm text-gray-600 flex items-start gap-2">
+                              <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-1.5 shrink-0" />
                               {requisito}
                             </li>
                           ))}
                         </ul>
                       </div>
-                      <div className="pt-4 border-t">
-                        <p className="text-sm">
+                      <div className="pt-4 border-t border-gray-100 mt-auto">
+                        <p className="text-sm text-gray-500 mb-4 flex items-center gap-2">
+                          <PhoneIcon className="w-4 h-4" />
                           <strong>Contacto:</strong> {programa.contacto}
                         </p>
+                        <Button
+                          className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg shadow-blue-200"
+                          onClick={() => {
+                            setProgramaSelecionado(programa.titulo);
+                            setOpenInscricaoPrograma(true);
+                          }}
+                        >
+                          Inscrever-se Agora
+                          <ArrowRightIcon className="w-4 h-4 ml-2" />
+                        </Button>
                       </div>
-                      <Button
-                        variant="institutional"
-                        className="w-full"
-                        onClick={() => {
-                          setProgramaSelecionado(programa.titulo);
-                          setOpenInscricaoPrograma(true);
-                        }}
-                      >
-                        Inscrever-se
-                        <ArrowRightIcon className="w-4 h-4 ml-2" />
-                      </Button>
                     </CardContent>
                   </Card>
                 ))}
@@ -356,7 +359,7 @@ const Educacao = () => {
             </div>
           </section>
         )}
-                    {setor?.contactos && setor.contactos.length > 0 && (
+        {setor?.contactos && setor.contactos.length > 0 && (
           <section className="bg-muted/50 rounded-xl p-8">
             <h2 className="text-2xl font-bold text-center mb-8">Informações de Contacto</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

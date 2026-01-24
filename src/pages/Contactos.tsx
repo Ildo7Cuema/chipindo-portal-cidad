@@ -338,38 +338,41 @@ export default function Contactos() {
 
       <main>
         {/* Hero Section */}
-        <Section variant="primary" size="lg">
+        <Section className="relative min-h-[450px] bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 overflow-hidden" size="lg">
+          {/* Background Pattern */}
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-30"></div>
+
           <SectionContent>
-            <div className="text-center space-y-6">
-              <div className="flex items-center justify-center gap-3 mb-6">
-                <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-xl">
-                  <MessageSquareIcon className="w-8 h-8 text-white" />
+            <div className="text-center space-y-8 relative z-10">
+              <div className="flex items-center justify-center gap-4 mb-8">
+                <div className="w-20 h-20 bg-white/10 rounded-3xl flex items-center justify-center backdrop-blur-xl border border-white/20 shadow-2xl">
+                  <PhoneIcon className="w-10 h-10 text-white" />
                 </div>
                 <div className="text-left">
-                  <h1 className="text-4xl md:text-5xl font-bold text-white">
+                  <h1 className="text-5xl md:text-6xl font-bold text-white leading-tight drop-shadow-sm">
                     Contactos
                   </h1>
-                  <p className="text-primary-foreground/90 text-lg">
+                  <p className="text-blue-100 text-xl font-medium">
                     Administração Municipal de Chipindo
                   </p>
                 </div>
               </div>
 
-              <p className="text-xl text-primary-foreground/95 max-w-3xl mx-auto leading-relaxed">
+              <p className="text-xl text-blue-50/90 max-w-3xl mx-auto leading-relaxed font-light">
                 Estamos aqui para ajudar e esclarecer suas dúvidas. Entre em contacto connosco
                 através dos nossos canais de atendimento.
               </p>
 
-              <div className="flex items-center justify-center gap-4 flex-wrap">
-                <Badge className="bg-white/20 text-white border-white/30 px-4 py-2">
-                  <PhoneIcon className="w-4 h-4 mr-2" />
+              <div className="flex items-center justify-center gap-4 flex-wrap pt-4">
+                <Badge className="bg-white/10 backdrop-blur-md text-white border-white/20 px-4 py-2 hover:bg-white/20 transition-all">
+                  <ClockIcon className="w-4 h-4 mr-2" />
                   Seg-Feira: 08:00-16:00 | Sexta-Feira: 08:00-15:00
                 </Badge>
-                <Badge className="bg-green-500/20 text-green-100 border-green-400/30 px-4 py-2">
+                <Badge className="bg-emerald-500/20 backdrop-blur-md text-emerald-100 border-emerald-400/30 px-4 py-2 hover:bg-emerald-500/30 transition-all">
                   <MessageSquareIcon className="w-4 h-4 mr-2" />
                   {totalMessages}+ Mensagens Atendidas
                 </Badge>
-                <Badge className="bg-yellow-500/20 text-yellow-100 border-yellow-400/30 px-4 py-2">
+                <Badge className="bg-amber-500/20 backdrop-blur-md text-amber-100 border-amber-400/30 px-4 py-2 hover:bg-amber-500/30 transition-all">
                   <CheckCircleIcon className="w-4 h-4 mr-2" />
                   Resposta em {responseTime}
                 </Badge>
@@ -382,13 +385,13 @@ export default function Contactos() {
         <Section variant="muted" size="md">
           <SectionContent>
             <div className="grid md:grid-cols-3 gap-6">
-              <Card className="border-0 shadow-xl bg-white/50 dark:bg-gray-900/50 backdrop-blur-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-                <CardContent className="p-6 text-center">
-                  <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <PhoneIcon className="w-6 h-6 text-white" />
+              <Card className="border-0 shadow-xl bg-white/80 dark:bg-gray-900/50 backdrop-blur-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 group">
+                <CardContent className="p-8 text-center">
+                  <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <PhoneIcon className="w-8 h-8 text-blue-600" />
                   </div>
-                  <h3 className="font-semibold text-foreground mb-2">Telefone Geral</h3>
-                  <p className="text-2xl font-bold text-primary mb-2">
+                  <h3 className="font-semibold text-lg text-foreground mb-2">Telefone Geral</h3>
+                  <p className="text-2xl font-bold text-blue-600 mb-2">
                     {settings?.contact_phone || '+244 XXX XXX XXX'}
                   </p>
                   <p className="text-sm text-muted-foreground">
@@ -397,13 +400,13 @@ export default function Contactos() {
                 </CardContent>
               </Card>
 
-              <Card className="border-0 shadow-xl bg-white/50 dark:bg-gray-900/50 backdrop-blur-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-                <CardContent className="p-6 text-center">
-                  <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <MailIcon className="w-6 h-6 text-white" />
+              <Card className="border-0 shadow-xl bg-white/80 dark:bg-gray-900/50 backdrop-blur-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 group">
+                <CardContent className="p-8 text-center">
+                  <div className="w-16 h-16 bg-purple-50 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <MailIcon className="w-8 h-8 text-purple-600" />
                   </div>
-                  <h3 className="font-semibold text-foreground mb-2">Email Oficial</h3>
-                  <p className="text-lg font-bold text-primary mb-2 break-all">
+                  <h3 className="font-semibold text-lg text-foreground mb-2">Email Oficial</h3>
+                  <p className="text-lg font-bold text-purple-600 mb-2 break-all">
                     {settings?.contact_email || 'admin@chipindo.gov.ao'}
                   </p>
                   <p className="text-sm text-muted-foreground">
@@ -412,12 +415,12 @@ export default function Contactos() {
                 </CardContent>
               </Card>
 
-              <Card className="border-0 shadow-xl bg-white/50 dark:bg-gray-900/50 backdrop-blur-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-                <CardContent className="p-6 text-center">
-                  <div className="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <AlertTriangleIcon className="w-6 h-6 text-white" />
+              <Card className="border-0 shadow-xl bg-white/80 dark:bg-gray-900/50 backdrop-blur-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 group">
+                <CardContent className="p-8 text-center">
+                  <div className="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <AlertTriangleIcon className="w-8 h-8 text-red-600" />
                   </div>
-                  <h3 className="font-semibold text-foreground mb-2">Emergências</h3>
+                  <h3 className="font-semibold text-lg text-foreground mb-2">Emergências</h3>
                   <p className="text-2xl font-bold text-red-600 mb-2">
                     {emergencyContacts.length > 0 ? emergencyContacts[0].phone : '199'}
                   </p>

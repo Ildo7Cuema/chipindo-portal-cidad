@@ -14,11 +14,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { 
-  FileTextIcon, 
-  ClockIcon, 
-  MapPinIcon, 
-  PhoneIcon, 
+import {
+  FileTextIcon,
+  ClockIcon,
+  MapPinIcon,
+  PhoneIcon,
   MailIcon,
   UserIcon,
   BuildingIcon,
@@ -191,7 +191,7 @@ export default function Servicos() {
 
       setServicos(servicosData || []);
       setDepartamentos(deptData || []);
-      
+
     } catch (error: any) {
       console.error('Error fetching data:', error);
       setError(error.message || 'Erro ao carregar dados dos serviços');
@@ -208,12 +208,12 @@ export default function Servicos() {
   const filterAndSortServicos = () => {
     const filtered = servicos.filter(servico => {
       const matchesSearch = servico.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           servico.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           servico.direcao.toLowerCase().includes(searchTerm.toLowerCase());
-      
+        servico.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        servico.direcao.toLowerCase().includes(searchTerm.toLowerCase());
+
       const matchesCategory = selectedCategory === 'todos' || servico.categoria === selectedCategory;
       const matchesDirection = selectedDirection === 'todos' || servico.direcao === selectedDirection;
-      
+
       return matchesSearch && matchesCategory && matchesDirection;
     });
 
@@ -238,8 +238,8 @@ export default function Servicos() {
   };
 
   const getDirectionData = (directionName: string) => {
-    return directionIcons[directionName as keyof typeof directionIcons] || 
-           { icon: BuildingIcon, color: 'bg-gray-500' };
+    return directionIcons[directionName as keyof typeof directionIcons] ||
+      { icon: BuildingIcon, color: 'bg-gray-500' };
   };
 
   const getCategoryData = (categoryId: string) => {
@@ -292,7 +292,7 @@ export default function Servicos() {
         title: "Solicitação Enviada!",
         description: "Sua solicitação foi enviada com sucesso. Entraremos em contacto em breve.",
       });
-      
+
       setShowContactForm(false);
       setContactForm({
         nome: "",
@@ -310,8 +310,8 @@ export default function Servicos() {
 
       if (!updateError) {
         // Update local state
-        setServicos(prev => prev.map(s => 
-          s.id === selectedService.id 
+        setServicos(prev => prev.map(s =>
+          s.id === selectedService.id
             ? { ...s, requests: s.requests + 1 }
             : s
         ));
@@ -340,8 +340,8 @@ export default function Servicos() {
 
       if (!error) {
         // Update local state
-        setServicos(prev => prev.map(s => 
-          s.id === serviceId 
+        setServicos(prev => prev.map(s =>
+          s.id === serviceId
             ? { ...s, views: s.views + 1 }
             : s
         ));
@@ -420,18 +420,18 @@ export default function Servicos() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       <main>
         {/* Hero Section */}
         <section className="relative min-h-[500px] bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 overflow-hidden">
           {/* Background Pattern */}
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-30"></div>
-          
+
           {/* Floating Elements */}
           <div className="absolute top-20 left-10 w-20 h-20 bg-white/10 rounded-full blur-xl animate-pulse"></div>
           <div className="absolute top-40 right-20 w-32 h-32 bg-blue-400/20 rounded-full blur-2xl animate-pulse delay-1000"></div>
           <div className="absolute bottom-20 left-1/4 w-16 h-16 bg-white/5 rounded-full blur-lg animate-pulse delay-500"></div>
-          
+
           <div className="relative z-10 container mx-auto px-4 py-16">
             <div className="text-center space-y-8">
               {/* Header with Enhanced Icon */}
@@ -444,7 +444,7 @@ export default function Servicos() {
                     <CheckCircleIcon className="w-4 h-4 text-white" />
                   </div>
                 </div>
-                
+
                 <div className="space-y-3">
                   <div className="flex items-center justify-center gap-2 mb-2">
                     <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
@@ -462,14 +462,14 @@ export default function Servicos() {
                   </p>
                 </div>
               </div>
-              
+
               {/* Enhanced Description */}
               <div className="max-w-4xl mx-auto space-y-6">
                 <p className="text-xl md:text-2xl text-white/95 leading-relaxed font-light">
-                  Acesso <span className="font-semibold text-white">rápido e eficiente</span> aos serviços oferecidos pela nossa administração. 
+                  Acesso <span className="font-semibold text-white">rápido e eficiente</span> aos serviços oferecidos pela nossa administração.
                   Facilitamos a vida dos cidadãos através de processos <span className="font-semibold text-white">transparentes e ágeis</span>.
                 </p>
-                
+
                 {/* Enhanced Stats */}
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-6 flex-wrap">
                   <div className="group relative">
@@ -485,7 +485,7 @@ export default function Servicos() {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="group relative">
                     <div className="bg-green-500/20 backdrop-blur-xl border border-green-400/30 rounded-2xl px-6 py-4 hover:bg-green-500/30 transition-all duration-300 hover:scale-105">
                       <div className="flex items-center gap-3">
@@ -499,7 +499,7 @@ export default function Servicos() {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="group relative">
                     <div className="bg-yellow-500/20 backdrop-blur-xl border border-yellow-400/30 rounded-2xl px-6 py-4 hover:bg-yellow-500/30 transition-all duration-300 hover:scale-105">
                       <div className="flex items-center gap-3">
@@ -515,7 +515,7 @@ export default function Servicos() {
                   </div>
                 </div>
               </div>
-              
+
               {/* Call to Action */}
               <div className="pt-8">
                 <div className="flex items-center justify-center gap-4 text-white/80 text-sm">
@@ -573,7 +573,7 @@ export default function Servicos() {
                         {showFilters ? 'Ocultar' : 'Mostrar'} Filtros
                         {showFilters && <XIcon className="w-4 h-4" />}
                       </Button>
-                      
+
                       <Select value={selectedCategory} onValueChange={setSelectedCategory}>
                         <SelectTrigger className="w-52 bg-white/80 border-blue-200 rounded-xl hover:bg-white transition-all duration-300">
                           <InfoIcon className="w-4 h-4 mr-2 text-blue-600" />
@@ -693,11 +693,10 @@ export default function Servicos() {
                                 variant={isSelected ? "default" : "outline"}
                                 size="sm"
                                 onClick={() => setSelectedCategory(categoria.id)}
-                                className={`flex items-center gap-2 rounded-xl px-4 py-2 transition-all duration-300 hover:scale-105 ${
-                                  isSelected 
-                                    ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg' 
-                                    : 'bg-white/80 border-blue-200 hover:bg-blue-50'
-                                }`}
+                                className={`flex items-center gap-2 rounded-xl px-4 py-2 transition-all duration-300 hover:scale-105 ${isSelected
+                                  ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg'
+                                  : 'bg-white/80 border-blue-200 hover:bg-blue-50'
+                                  }`}
                               >
                                 <IconComponent className="w-4 h-4" />
                                 {categoria.name}
@@ -717,11 +716,10 @@ export default function Servicos() {
                             variant={selectedDirection === 'todos' ? "default" : "outline"}
                             size="sm"
                             onClick={() => setSelectedDirection('todos')}
-                            className={`flex items-center gap-2 rounded-xl px-4 py-2 transition-all duration-300 hover:scale-105 ${
-                              selectedDirection === 'todos'
-                                ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg'
-                                : 'bg-white/80 border-blue-200 hover:bg-blue-50'
-                            }`}
+                            className={`flex items-center gap-2 rounded-xl px-4 py-2 transition-all duration-300 hover:scale-105 ${selectedDirection === 'todos'
+                              ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg'
+                              : 'bg-white/80 border-blue-200 hover:bg-blue-50'
+                              }`}
                           >
                             <BuildingIcon className="w-4 h-4" />
                             Todas as Direcções
@@ -735,11 +733,10 @@ export default function Servicos() {
                                 variant={isSelected ? "default" : "outline"}
                                 size="sm"
                                 onClick={() => setSelectedDirection(dept.nome)}
-                                className={`flex items-center gap-2 rounded-xl px-4 py-2 transition-all duration-300 hover:scale-105 ${
-                                  isSelected 
-                                    ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg' 
-                                    : 'bg-white/80 border-blue-200 hover:bg-blue-50'
-                                }`}
+                                className={`flex items-center gap-2 rounded-xl px-4 py-2 transition-all duration-300 hover:scale-105 ${isSelected
+                                  ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg'
+                                  : 'bg-white/80 border-blue-200 hover:bg-blue-50'
+                                  }`}
                               >
                                 <IconComponent className="w-4 h-4" />
                                 {dept.nome}
@@ -796,7 +793,7 @@ export default function Servicos() {
                 </span>
               </h2>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                Conheça todos os serviços oferecidos pela administração municipal de Chipindo. 
+                Conheça todos os serviços oferecidos pela administração municipal de Chipindo.
                 Processos simplificados para melhor servir os nossos cidadãos.
               </p>
             </div>
@@ -814,7 +811,7 @@ export default function Servicos() {
                     }
                   </p>
                   {(searchTerm || selectedCategory !== 'todos' || selectedDirection !== 'todos') && (
-                    <Button 
+                    <Button
                       onClick={() => {
                         setSearchTerm("");
                         setSelectedCategory("todos");
@@ -839,13 +836,13 @@ export default function Servicos() {
                     const directionData = getDirectionData(servico.direcao);
                     const IconComponent = getIconComponent(servico.icon);
                     const categoryData = getCategoryData(servico.categoria);
-                    
+
                     return (
-                      <Card 
+                      <Card
                         key={servico.id}
                         className={cn(
-                          "group cursor-pointer overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1",
-                          viewMode === 'list' && "md:flex"
+                          "group cursor-pointer overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 bg-white dark:bg-gray-800",
+                          viewMode === 'list' ? "md:flex" : ""
                         )}
                         onClick={() => {
                           setSelectedService(servico);
@@ -853,93 +850,69 @@ export default function Servicos() {
                         }}
                       >
                         <div className={cn(
-                          "relative overflow-hidden",
-                          viewMode === 'list' ? "md:w-64 flex-shrink-0" : ""
+                          "relative p-6 flex flex-col items-center justify-center text-center bg-gradient-to-br from-gray-50 to-gray-100 group-hover:from-blue-50 group-hover:to-blue-100 transition-colors duration-300",
+                          viewMode === 'list' ? "md:w-64 border-r border-gray-100" : "h-48 border-b border-gray-100"
                         )}>
-                          <div className="aspect-video bg-gradient-to-br from-gray-200 to-gray-300 relative">
-                            <div className={cn("w-full h-full flex items-center justify-center", categoryData.color)}>
-                              <IconComponent className="w-12 h-12 text-white/80" />
-                            </div>
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                            <Badge className={cn("absolute top-3 left-3", categoryData.color, "text-white border-0")}>
-                              {servico.categoria}
-                            </Badge>
-                            <div className="absolute top-3 right-3">
-                              {servico.digital ? (
-                                <Badge className="bg-green-500">Digital</Badge>
-                              ) : (
-                                <Badge variant="outline" className="text-white border-white/50">Presencial</Badge>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div className="flex-1 p-6">
-                          <CardTitle className={cn(
-                            "leading-tight group-hover:text-primary transition-colors duration-300 mb-2",
-                            viewMode === 'list' ? "text-lg" : "text-xl"
+                          <div className={cn(
+                            "w-16 h-16 rounded-2xl flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-110 shadow-sm",
+                            getCategoryData(servico.categoria).color.replace('bg-', 'bg-').replace('500', '100')
                           )}>
-                            {servico.title}
-                          </CardTitle>
-                          
-                          <p className="text-sm text-primary font-medium mb-3">{servico.direcao}</p>
-                          
-                          <p className="text-muted-foreground mb-4 line-clamp-2">{servico.description}</p>
-                          
-                          <div className="space-y-2 mb-4">
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <ClockIcon className="w-4 h-4" />
-                              <span className="font-medium">Horário:</span> {servico.horario}
-                            </div>
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <MapPinIcon className="w-4 h-4" />
-                              <span className="font-medium">Local:</span> {servico.localizacao}
-                            </div>
+                            <IconComponent className={cn("w-8 h-8", getCategoryData(servico.categoria).color.replace('bg-', 'text-'))} />
                           </div>
 
-                          <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
-                            <div className="flex items-center gap-4">
-                              <div className="flex items-center gap-1">
-                                <EyeIcon className="w-4 h-4" />
-                                {servico.views}
-                              </div>
-                              <div className="flex items-center gap-1">
-                                <SendIcon className="w-4 h-4" />
-                                {servico.requests} solicitações
+                          <Badge className={cn(
+                            "mb-2",
+                            getCategoryData(servico.categoria).color,
+                            "text-white border-0 shadow-sm"
+                          )}>
+                            {servico.categoria}
+                          </Badge>
+
+                          <div className="absolute top-3 right-3">
+                            {servico.digital ? (
+                              <Badge className="bg-green-500">Digital</Badge>
+                            ) : (
+                              <Badge variant="outline" className="bg-gray-200 text-gray-700">Presencial</Badge>
+                            )}
+                          </div>
+                        </div>
+
+                        <CardContent className={cn("p-6", viewMode === 'list' ? "flex-1" : "")}>
+                          <div className="flex items-start justify-between mb-2">
+                            <div className="flex-1 mr-2">
+                              <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2 mb-2">
+                                {servico.title}
+                              </h3>
+                              <div className="flex items-center gap-2 text-xs text-gray-500 mb-3">
+                                <BuildingIcon className="w-3 h-3" />
+                                {servico.direcao}
                               </div>
                             </div>
                             {getPriorityBadge(servico.prioridade)}
                           </div>
 
-                          <div className="flex gap-2">
-                            <Button 
-                              variant="outline" 
-                              size="sm" 
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSelectedService(servico);
-                                updateServiceViews(servico.id);
-                              }}
-                              className="flex-1"
-                            >
-                              <InfoIcon className="w-4 h-4 mr-2" />
-                              Ver Detalhes
-                            </Button>
-                            <Button 
-                              variant="default" 
-                              size="sm"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSelectedService(servico);
-                                setShowContactForm(true);
-                              }}
-                              className="flex-1 bg-gradient-to-r from-blue-500 to-green-600 hover:from-blue-600 hover:to-green-700"
-                            >
-                              <PhoneIcon className="w-4 h-4 mr-2" />
-                              Solicitar Serviço
-                            </Button>
+                          <p className="text-sm text-gray-600 mb-6 line-clamp-3 leading-relaxed">
+                            {servico.description}
+                          </p>
+
+                          <div className="grid grid-cols-2 gap-4 text-sm text-gray-500 mb-6">
+                            <div className="flex items-center gap-2">
+                              <ClockIcon className="w-4 h-4 text-blue-500" />
+                              <span>{servico.prazo}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <DollarSignIcon className="w-4 h-4 text-green-500" />
+                              <span>{servico.taxa || 'Gratuito'}</span>
+                            </div>
                           </div>
-                        </div>
+
+                          <Button
+                            className="w-full bg-white border-2 border-blue-100 hover:border-blue-500 text-blue-600 hover:bg-blue-50 font-semibold transition-all duration-300 shadow-sm hover:shadow-md group/btn"
+                          >
+                            Ver detalhes
+                            <ArrowRightIcon className="w-4 h-4 ml-2 group-hover/btn:translate-x-1 transition-transform duration-300" />
+                          </Button>
+                        </CardContent>
                       </Card>
                     );
                   })}
@@ -956,7 +929,7 @@ export default function Servicos() {
                     >
                       Anterior
                     </Button>
-                    
+
                     {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
                       <Button
                         key={page}
@@ -968,7 +941,7 @@ export default function Servicos() {
                         {page}
                       </Button>
                     ))}
-                    
+
                     <Button
                       variant="outline"
                       size="sm"
@@ -1002,15 +975,15 @@ export default function Servicos() {
                 Distribuição dos serviços pelas diferentes direcções municipais
               </p>
             </div>
-            
-                        <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {directionStats.filter(dept => dept.serviceCount > 0).map(dept => {
                 const directionData = getDirectionData(dept.nome);
                 const IconComponent = directionData.icon;
-                
+
                 return (
-                  <Card 
-                    key={dept.id} 
+                  <Card
+                    key={dept.id}
                     className="hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer bg-white/80 backdrop-blur-sm border border-white/20"
                     onClick={() => setSelectedDirection(dept.nome)}
                   >
@@ -1069,7 +1042,7 @@ export default function Servicos() {
                     </Button>
                   </div>
                 </DialogHeader>
-                
+
                 <div className="space-y-6">
                   <div>
                     <h3 className="font-semibold text-foreground mb-3">Descrição</h3>
@@ -1188,14 +1161,14 @@ export default function Servicos() {
                   </div>
 
                   <div className="flex gap-2 pt-4 border-t border-border">
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       onClick={() => setSelectedService(null)}
                       className="flex-1"
                     >
                       Fechar
                     </Button>
-                    <Button 
+                    <Button
                       onClick={() => setShowContactForm(true)}
                       className="flex-1 bg-gradient-to-r from-blue-500 to-green-600 hover:from-blue-600 hover:to-green-700"
                     >
@@ -1218,7 +1191,7 @@ export default function Servicos() {
                 {selectedService && `Envie sua solicitação para: ${selectedService.title}`}
               </DialogDescription>
             </DialogHeader>
-            
+
             <div className="space-y-6">
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
@@ -1226,7 +1199,7 @@ export default function Servicos() {
                   <Input
                     id="nome"
                     value={contactForm.nome}
-                    onChange={(e) => setContactForm({...contactForm, nome: e.target.value})}
+                    onChange={(e) => setContactForm({ ...contactForm, nome: e.target.value })}
                     placeholder="Digite seu nome completo"
                     disabled={isSubmitting}
                   />
@@ -1237,7 +1210,7 @@ export default function Servicos() {
                     id="email"
                     type="email"
                     value={contactForm.email}
-                    onChange={(e) => setContactForm({...contactForm, email: e.target.value})}
+                    onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
                     placeholder="seuemail@exemplo.com"
                     disabled={isSubmitting}
                   />
@@ -1250,7 +1223,7 @@ export default function Servicos() {
                   <Input
                     id="telefone"
                     value={contactForm.telefone}
-                    onChange={(e) => setContactForm({...contactForm, telefone: e.target.value})}
+                    onChange={(e) => setContactForm({ ...contactForm, telefone: e.target.value })}
                     placeholder="+244 900 000 000"
                     disabled={isSubmitting}
                   />
@@ -1260,7 +1233,7 @@ export default function Servicos() {
                   <Input
                     id="assunto"
                     value={contactForm.assunto}
-                    onChange={(e) => setContactForm({...contactForm, assunto: e.target.value})}
+                    onChange={(e) => setContactForm({ ...contactForm, assunto: e.target.value })}
                     placeholder="Assunto da solicitação"
                     disabled={isSubmitting}
                   />
@@ -1271,7 +1244,7 @@ export default function Servicos() {
                 <Label>Mensagem *</Label>
                 <Textarea
                   value={contactForm.mensagem}
-                  onChange={(e) => setContactForm({...contactForm, mensagem: e.target.value})}
+                  onChange={(e) => setContactForm({ ...contactForm, mensagem: e.target.value })}
                   placeholder="Descreva sua solicitação ou dúvida em detalhes..."
                   rows={4}
                   disabled={isSubmitting}
@@ -1279,15 +1252,15 @@ export default function Servicos() {
               </div>
 
               <div className="flex gap-2 pt-4 border-t border-border">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   onClick={() => setShowContactForm(false)}
                   disabled={isSubmitting}
                   className="flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Cancelar
                 </Button>
-                <Button 
+                <Button
                   onClick={handleContactSubmit}
                   disabled={isSubmitting}
                   className="flex-1 bg-gradient-to-r from-blue-500 to-green-600 hover:from-blue-600 hover:to-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -1309,7 +1282,7 @@ export default function Servicos() {
           </DialogContent>
         </Dialog>
       </main>
-      
+
       <Footer />
     </div>
   );

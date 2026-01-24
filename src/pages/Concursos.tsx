@@ -11,13 +11,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import { 
-  CalendarIcon, 
-  ClockIcon, 
-  UsersIcon, 
-  FileTextIcon, 
-  MapPinIcon, 
-  GraduationCapIcon, 
+import {
+  CalendarIcon,
+  ClockIcon,
+  UsersIcon,
+  FileTextIcon,
+  MapPinIcon,
+  GraduationCapIcon,
   BriefcaseIcon,
   SearchIcon,
   FilterIcon,
@@ -169,8 +169,8 @@ export default function Concursos() {
   const filterAndSortConcursos = () => {
     const filtered = concursos.filter(item => {
       const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           (item.requirements && item.requirements.toLowerCase().includes(searchTerm.toLowerCase()));
+        item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (item.requirements && item.requirements.toLowerCase().includes(searchTerm.toLowerCase()));
       const matchesCategory = selectedCategory === 'todos' || item.category === selectedCategory;
       return matchesSearch && matchesCategory;
     });
@@ -264,18 +264,18 @@ export default function Concursos() {
         variant: "destructive"
       });
     } else {
-    toast({
-      title: "Sucesso!",
-      description: "Inscrição enviada com sucesso! Receberá confirmação por email.",
-    });
-    setShowInscricaoForm(false);
-    setSelectedConcurso(null);
-    setFormData({
-      nomeCompleto: "",
-      bilheteIdentidade: "",
-      dataNascimento: "",
-      telefone: "",
-      email: "",
+      toast({
+        title: "Sucesso!",
+        description: "Inscrição enviada com sucesso! Receberá confirmação por email.",
+      });
+      setShowInscricaoForm(false);
+      setSelectedConcurso(null);
+      setFormData({
+        nomeCompleto: "",
+        bilheteIdentidade: "",
+        dataNascimento: "",
+        telefone: "",
+        email: "",
         observacoes: "",
         categoria: "",
         arquivos: [],
@@ -299,7 +299,7 @@ export default function Concursos() {
     const now = new Date();
     const date = new Date(dateString);
     const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-    
+
     if (diffInHours < 1) return 'Há poucos minutos';
     if (diffInHours < 24) return `Há ${diffInHours} horas`;
     const diffInDays = Math.floor(diffInHours / 24);
@@ -322,15 +322,15 @@ export default function Concursos() {
   const getStatusBadge = (concurso: Concurso) => {
     const isActiveStatus = isActive(concurso);
     const daysRemaining = getDaysRemaining(concurso.deadline);
-    
+
     if (!isActiveStatus) {
       return <Badge variant="outline" className="text-red-600 border-red-600">Encerrado</Badge>;
     }
-    
+
     if (daysRemaining && daysRemaining <= 7) {
       return <Badge className="bg-orange-500">Encerrando em breve</Badge>;
     }
-    
+
     return <Badge className="bg-green-500">Aberto</Badge>;
   };
 
@@ -361,7 +361,7 @@ export default function Concursos() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       <main>
         {/* Hero Section */}
         <Section variant="primary" size="lg">
@@ -380,22 +380,22 @@ export default function Concursos() {
                   </p>
                 </div>
               </div>
-              
+
               <p className="text-xl text-primary-foreground/95 max-w-3xl mx-auto leading-relaxed">
-                Oportunidades de carreira no serviço público municipal. Junte-se à nossa equipe 
+                Oportunidades de carreira no serviço público municipal. Junte-se à nossa equipe
                 e contribua para o desenvolvimento de Chipindo.
               </p>
-              
-              <div className="flex items-center justify-center gap-4 flex-wrap">
-                <Badge className="bg-white/20 text-white border-white/30 px-4 py-2">
+
+              <div className="flex items-center justify-center gap-4 flex-wrap animate-fade-in-up animation-delay-200">
+                <Badge className="bg-white/10 backdrop-blur-md text-white border-white/20 px-6 py-2.5 text-sm font-medium shadow-lg hover:bg-white/20 transition-all duration-300">
                   <BriefcaseIcon className="w-4 h-4 mr-2" />
                   {concursosAtivos.length} Concursos Abertos
                 </Badge>
-                <Badge className="bg-green-500/20 text-green-100 border-green-400/30 px-4 py-2">
-                  <FlameIcon className="w-4 h-4 mr-2" />
+                <Badge className="bg-emerald-500/20 backdrop-blur-md text-emerald-100 border-emerald-400/30 px-6 py-2.5 text-sm font-medium shadow-lg hover:bg-emerald-500/30 transition-all duration-300">
+                  <CheckCircleIcon className="w-4 h-4 mr-2" />
                   {concursos.length} Total de Vagas
                 </Badge>
-                <Badge className="bg-yellow-500/20 text-yellow-100 border-yellow-400/30 px-4 py-2">
+                <Badge className="bg-amber-500/20 backdrop-blur-md text-amber-100 border-amber-400/30 px-6 py-2.5 text-sm font-medium shadow-lg hover:bg-amber-500/30 transition-all duration-300">
                   <StarIcon className="w-4 h-4 mr-2" />
                   Inscrições Online
                 </Badge>
@@ -435,7 +435,7 @@ export default function Concursos() {
                         Filtros
                         {showFilters && <XIcon className="w-4 h-4" />}
                       </Button>
-                      
+
                       <Select value={selectedCategory} onValueChange={setSelectedCategory}>
                         <SelectTrigger className="w-48">
                           <BriefcaseIcon className="w-4 h-4 mr-2" />
@@ -554,20 +554,20 @@ export default function Concursos() {
             description="Vagas disponíveis para ingressar na Administração Municipal de Chipindo"
             centered={true}
           />
-          
+
           <SectionContent>
             {concursosAtivos.length === 0 ? (
               <div className="text-center py-16">
                 <BriefcaseIcon className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-foreground mb-2">Nenhum concurso aberto</h3>
                 <p className="text-muted-foreground mb-6">
-                  {searchTerm || selectedCategory !== 'todos' 
+                  {searchTerm || selectedCategory !== 'todos'
                     ? "Tente ajustar seus filtros de busca."
                     : "Novos concursos serão publicados em breve. Volte em outro momento."
                   }
                 </p>
                 {(searchTerm || selectedCategory !== 'todos') && (
-                  <Button 
+                  <Button
                     onClick={() => {
                       setSearchTerm("");
                       setSelectedCategory("todos");
@@ -589,9 +589,9 @@ export default function Concursos() {
                     const categoryData = getCategoryData(concurso.category || 'administracao');
                     const IconComponent = categoryData.icon;
                     const daysRemaining = getDaysRemaining(concurso.deadline);
-                    
+
                     return (
-                      <Card 
+                      <Card
                         key={concurso.id}
                         className={cn(
                           "group cursor-pointer overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1",
@@ -617,7 +617,7 @@ export default function Concursos() {
                             </div>
                           </div>
                         </div>
-                        
+
                         <div className="flex-1 p-6">
                           <CardTitle className={cn(
                             "leading-tight group-hover:text-primary transition-colors duration-300 mb-3",
@@ -625,9 +625,9 @@ export default function Concursos() {
                           )}>
                             {concurso.title}
                           </CardTitle>
-                          
+
                           <p className="text-muted-foreground mb-4 line-clamp-2">{concurso.description}</p>
-                          
+
                           <div className="space-y-3 mb-4">
                             {concurso.deadline && (
                               <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -645,7 +645,7 @@ export default function Concursos() {
                               </div>
                             )}
                           </div>
-                          
+
                           <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
                             <div className="flex items-center gap-4">
                               <div className="flex items-center gap-1">
@@ -663,9 +663,9 @@ export default function Concursos() {
                           </div>
 
                           <div className="flex gap-2">
-                            <Button 
-                              variant="outline" 
-                              size="sm" 
+                            <Button
+                              variant="outline"
+                              size="sm"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setSelectedConcurso(concurso);
@@ -675,8 +675,8 @@ export default function Concursos() {
                               <FileTextIcon className="w-4 h-4 mr-2" />
                               Ver Detalhes
                             </Button>
-                            <Button 
-                              variant="default" 
+                            <Button
+                              variant="default"
                               size="sm"
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -704,7 +704,7 @@ export default function Concursos() {
                     >
                       Anterior
                     </Button>
-                    
+
                     {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
                       <Button
                         key={page}
@@ -716,7 +716,7 @@ export default function Concursos() {
                         {page}
                       </Button>
                     ))}
-                    
+
                     <Button
                       variant="outline"
                       size="sm"
@@ -741,13 +741,13 @@ export default function Concursos() {
               description="Consulte os processos seletivos já finalizados"
               centered={true}
             />
-            
+
             <SectionContent>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {concursosEncerrados.slice(0, 6).map(concurso => {
                   const categoryData = getCategoryData(concurso.category || 'administracao');
                   const IconComponent = categoryData.icon;
-                  
+
                   return (
                     <Card key={concurso.id} className="opacity-75 hover:opacity-90 transition-opacity">
                       <CardHeader>
@@ -794,7 +794,7 @@ export default function Concursos() {
                 >
                   <XIcon className="w-5 h-5" />
                 </Button>
-                
+
                 <div className="flex items-center gap-4 mb-4">
                   <Badge className={cn(getCategoryData(selectedConcurso.category || 'administracao').color, "text-white")}>
                     {getCategoryData(selectedConcurso.category || 'administracao').name}
@@ -805,17 +805,17 @@ export default function Concursos() {
                     Publicado em {formatDate(selectedConcurso.created_at)}
                   </div>
                 </div>
-                
+
                 <CardTitle className="text-3xl leading-tight">{selectedConcurso.title}</CardTitle>
               </CardHeader>
-              
+
               <CardContent>
                 <div className="space-y-6">
                   <div>
                     <h3 className="font-semibold text-foreground mb-2">Descrição</h3>
                     <p className="text-muted-foreground leading-relaxed">{selectedConcurso.description}</p>
                   </div>
-                  
+
                   {selectedConcurso.requirements && (
                     <div>
                       <h3 className="font-semibold text-foreground mb-2">Requisitos</h3>
@@ -858,14 +858,14 @@ export default function Concursos() {
 
                   {isActive(selectedConcurso) && (
                     <div className="flex gap-2 pt-6 border-t border-border">
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         onClick={() => setSelectedConcurso(null)}
                         className="flex-1"
                       >
                         Fechar
                       </Button>
-                      <Button 
+                      <Button
                         onClick={() => handleInscricao(selectedConcurso)}
                         className="flex-1 bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700"
                       >
@@ -906,7 +906,7 @@ export default function Concursos() {
                 {selectedConcurso.requirements && (
                   <div className="p-4 rounded-lg bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800 flex items-start gap-3">
                     <CheckCircleIcon className="w-6 h-6 text-blue-600 mt-1" />
-                  <div>
+                    <div>
                       <div className="font-semibold text-blue-900 dark:text-blue-200 mb-1">Requisitos do Concurso</div>
                       <div className="text-sm text-blue-800 dark:text-blue-300 whitespace-pre-line">{selectedConcurso.requirements}</div>
                     </div>
@@ -983,7 +983,7 @@ export default function Concursos() {
                     <Input
                       id="nomeCompleto"
                       value={formData.nomeCompleto}
-                      onChange={(e) => setFormData({...formData, nomeCompleto: e.target.value})}
+                      onChange={(e) => setFormData({ ...formData, nomeCompleto: e.target.value })}
                       placeholder="Nome Completo *"
                       className="pl-10"
                     />
@@ -993,7 +993,7 @@ export default function Concursos() {
                     <Input
                       id="bilheteIdentidade"
                       value={formData.bilheteIdentidade}
-                      onChange={(e) => setFormData({...formData, bilheteIdentidade: e.target.value})}
+                      onChange={(e) => setFormData({ ...formData, bilheteIdentidade: e.target.value })}
                       placeholder="Nº Bilhete de Identidade *"
                       className="pl-10"
                     />
@@ -1006,7 +1006,7 @@ export default function Concursos() {
                       id="dataNascimento"
                       type="date"
                       value={formData.dataNascimento}
-                      onChange={(e) => setFormData({...formData, dataNascimento: e.target.value})}
+                      onChange={(e) => setFormData({ ...formData, dataNascimento: e.target.value })}
                       className="pl-10"
                     />
                   </div>
@@ -1015,7 +1015,7 @@ export default function Concursos() {
                     <Input
                       id="telefone"
                       value={formData.telefone}
-                      onChange={(e) => setFormData({...formData, telefone: e.target.value})}
+                      onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
                       placeholder="Contacto Telefônico *"
                       className="pl-10"
                     />
@@ -1027,7 +1027,7 @@ export default function Concursos() {
                     id="email"
                     type="email"
                     value={formData.email}
-                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     placeholder="Email *"
                     className="pl-10"
                   />
@@ -1060,21 +1060,21 @@ export default function Concursos() {
                   <FileTextIcon className="absolute left-3 top-3 text-muted-foreground w-4 h-4" />
                   <Textarea
                     value={formData.observacoes}
-                    onChange={(e) => setFormData({...formData, observacoes: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, observacoes: e.target.value })}
                     placeholder="Informações adicionais relevantes para o concurso..."
                     rows={4}
                     className="pl-10"
                   />
                 </div>
                 <div className="flex gap-2 pt-4 border-t border-border">
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     onClick={() => setShowInscricaoForm(false)}
                     className="flex-1"
                   >
                     Cancelar
                   </Button>
-                  <Button 
+                  <Button
                     onClick={submitInscricao}
                     className="flex-1 bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700"
                   >
@@ -1086,7 +1086,7 @@ export default function Concursos() {
           </div>
         )}
       </main>
-      
+
       <Footer />
     </div>
   );

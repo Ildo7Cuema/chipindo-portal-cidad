@@ -55,37 +55,25 @@ export const Footer = () => {
       platform: "Facebook",
       icon: FacebookIcon,
       href: settings?.social_facebook || "#",
-      color: "hover:bg-blue-600 hover:shadow-blue-600/25",
-      bgColor: "bg-blue-600/10",
-      borderColor: "border-blue-600/20",
-      iconColor: "text-blue-400"
+      color: "hover:bg-blue-600 hover:shadow-blue-500/30",
     },
     {
       platform: "Instagram",
       icon: InstagramIcon,
       href: settings?.social_instagram || "#",
-      color: "hover:bg-gradient-to-br hover:from-pink-500 hover:to-purple-600 hover:shadow-pink-600/25",
-      bgColor: "bg-gradient-to-br from-pink-600/10 to-purple-600/10",
-      borderColor: "border-pink-600/20",
-      iconColor: "text-pink-400"
+      color: "hover:bg-gradient-to-br hover:from-pink-600 hover:to-purple-600 hover:shadow-pink-500/30",
     },
     {
       platform: "Twitter",
       icon: TwitterIcon,
       href: settings?.social_twitter || "#",
-      color: "hover:bg-sky-500 hover:shadow-sky-500/25",
-      bgColor: "bg-sky-600/10",
-      borderColor: "border-sky-600/20",
-      iconColor: "text-sky-400"
+      color: "hover:bg-sky-500 hover:shadow-sky-500/30",
     },
     {
       platform: "YouTube",
       icon: YoutubeIcon,
       href: settings?.social_youtube || "#",
-      color: "hover:bg-red-600 hover:shadow-red-600/25",
-      bgColor: "bg-red-600/10",
-      borderColor: "border-red-600/20",
-      iconColor: "text-red-400"
+      color: "hover:bg-red-600 hover:shadow-red-500/30",
     }
   ];
 
@@ -142,17 +130,14 @@ export const Footer = () => {
                     return (
                       <Button
                         key={social.platform}
-                        size="sm"
-                        variant="outline"
+                        size="icon"
+                        variant="ghost"
                         className={cn(
-                          "relative w-11 h-11 sm:w-12 sm:h-12 p-0 rounded-xl border-2 transition-all duration-300 ease-out group overflow-hidden",
-                          "bg-slate-800/60 backdrop-blur-sm",
-                          social.bgColor,
-                          social.borderColor,
-                          "hover:scale-110 hover:shadow-lg hover:shadow-slate-900/50",
-                          "focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:ring-offset-2 focus:ring-offset-slate-900",
-                          "active:scale-95",
-                          social.color
+                          "relative w-12 h-12 rounded-xl transition-all duration-500 ease-out group overflow-hidden",
+                          "bg-white/5 border border-white/10 backdrop-blur-md",
+                          "hover:scale-110 hover:-translate-y-1 hover:shadow-lg",
+                          social.color, // Apply brand hover color/shadow
+                          "hover:border-white/20"
                         )}
                         asChild
                       >
@@ -161,25 +146,18 @@ export const Footer = () => {
                           target="_blank"
                           rel="noopener noreferrer"
                           aria-label={`Siga-nos no ${social.platform}`}
-                          className="w-full h-full flex items-center justify-center"
+                          className="flex items-center justify-center p-0"
                         >
-                          {/* Background gradient overlay on hover */}
-                          <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-                          {/* Icon with enhanced styling */}
-                          <IconComponent className={cn(
-                            "w-4 h-4 sm:w-5 sm:h-5 relative z-10 transition-all duration-300",
-                            social.iconColor,
-                            "group-hover:text-white group-hover:scale-110"
+                          {/* Inner soft glow */}
+                          <div className={cn(
+                            "absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500",
+                            "bg-gradient-to-br from-white/10 to-transparent"
                           )} />
 
-                          {/* Subtle glow effect */}
-                          <div className={cn(
-                            "absolute inset-0 rounded-xl opacity-0 group-hover:opacity-20 transition-opacity duration-300",
-                            social.platform === "Facebook" && "bg-blue-600",
-                            social.platform === "Instagram" && "bg-gradient-to-br from-pink-500 to-purple-600",
-                            social.platform === "Twitter" && "bg-sky-500",
-                            social.platform === "YouTube" && "bg-red-600"
+                          {/* Icon */}
+                          <IconComponent className={cn(
+                            "w-5 h-5 relative z-10 transition-all duration-300",
+                            "text-slate-400 group-hover:text-white group-hover:scale-110"
                           )} />
                         </a>
                       </Button>

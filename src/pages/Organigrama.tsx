@@ -12,12 +12,12 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
-import { 
-  UsersIcon, 
-  SearchIcon, 
-  MailIcon, 
-  PhoneIcon, 
-  ChevronDownIcon, 
+import {
+  UsersIcon,
+  SearchIcon,
+  MailIcon,
+  PhoneIcon,
+  ChevronDownIcon,
   ChevronUpIcon,
   FilterIcon,
   GridIcon,
@@ -130,7 +130,7 @@ export default function Organigrama() {
 
       if (error) throw error;
       setMembers(data || []);
-      
+
       // Expand first direction by default
       if (data && data.length > 0) {
         setExpandedDirections(new Set([data[0].departamento]));
@@ -145,11 +145,11 @@ export default function Organigrama() {
   const filterAndSortMembers = () => {
     const filtered = members.filter(member => {
       const matchesSearch = member.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           member.cargo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           (member.descricao && member.descricao.toLowerCase().includes(searchTerm.toLowerCase()));
-      
+        member.cargo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (member.descricao && member.descricao.toLowerCase().includes(searchTerm.toLowerCase()));
+
       const matchesDirection = selectedDirection === 'todos' || member.departamento === selectedDirection;
-      
+
       return matchesSearch && matchesDirection;
     });
 
@@ -194,8 +194,8 @@ export default function Organigrama() {
   };
 
   const getDirectionData = (directionName: string) => {
-    return directionIcons[directionName as keyof typeof directionIcons] || 
-           { icon: BuildingIcon, color: 'bg-gray-500' };
+    return directionIcons[directionName as keyof typeof directionIcons] ||
+      { icon: BuildingIcon, color: 'bg-gray-500' };
   };
 
   const getHierarchyLevel = (member: OrganigramaMember): number => {
@@ -209,7 +209,7 @@ export default function Organigrama() {
     return directions.map(direction => ({
       ...direction,
       memberCount: members.filter(member => member.departamento === direction.nome).length,
-      directorCount: members.filter(member => 
+      directorCount: members.filter(member =>
         member.departamento === direction.nome && !member.superior_id
       ).length
     }));
@@ -239,7 +239,7 @@ export default function Organigrama() {
     }
 
     return (
-      <div 
+      <div
         className="group relative cursor-pointer flex flex-col items-center"
         onClick={() => setSelectedMember(member)}
       >
@@ -253,7 +253,7 @@ export default function Organigrama() {
                 {formatInitials(member.nome)}
               </AvatarFallback>
             </Avatar>
-            
+
             {/* Overlay com informações implícitas */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3">
               <h4 className="text-white font-semibold text-sm leading-tight line-clamp-2 mb-1">
@@ -281,12 +281,12 @@ export default function Organigrama() {
           <h4 className="font-semibold text-sm text-foreground leading-tight line-clamp-2 max-w-32">
             {member.nome}
           </h4>
-          
+
           {/* Cargo */}
           <p className="text-xs text-muted-foreground line-clamp-1 max-w-32">
             {member.cargo}
           </p>
-          
+
           {/* Badge do departamento */}
           <Badge className={cn("text-xs px-2 py-1 rounded-full shadow-sm mt-1", directionData.color, "text-white border-0")}>
             <IconComponent className="w-3 h-3 mr-1" />
@@ -402,41 +402,44 @@ export default function Organigrama() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       <main>
         {/* Hero Section */}
-        <Section variant="primary" size="lg">
+        <Section className="relative min-h-[450px] bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 overflow-hidden" size="lg">
+          {/* Background Pattern */}
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-30"></div>
+
           <SectionContent>
-            <div className="text-center space-y-6">
-              <div className="flex items-center justify-center gap-3 mb-6">
-                <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-xl">
-                  <UsersIcon className="w-8 h-8 text-white" />
+            <div className="text-center space-y-8 relative z-10">
+              <div className="flex items-center justify-center gap-4 mb-8">
+                <div className="w-20 h-20 bg-white/10 rounded-3xl flex items-center justify-center backdrop-blur-xl border border-white/20 shadow-2xl">
+                  <UsersIcon className="w-10 h-10 text-white" />
                 </div>
                 <div className="text-left">
-                  <h1 className="text-4xl md:text-5xl font-bold text-white">
-                    Organigrama Municipal
+                  <h1 className="text-5xl md:text-6xl font-bold text-white leading-tight drop-shadow-sm">
+                    Organigrama
+                    <span className="block bg-gradient-to-r from-yellow-200 to-orange-200 bg-clip-text text-transparent">
+                      Municipal
+                    </span>
                   </h1>
-                  <p className="text-primary-foreground/90 text-lg">
-                    Administração Municipal de Chipindo
-                  </p>
                 </div>
               </div>
-              
-              <p className="text-xl text-primary-foreground/95 max-w-3xl mx-auto leading-relaxed">
-                Conheça a estrutura organizacional da nossa administração municipal 
+
+              <p className="text-xl text-blue-50/90 max-w-3xl mx-auto leading-relaxed font-light">
+                Conheça a estrutura organizacional da nossa administração municipal
                 e os responsáveis por cada área de actuação.
               </p>
-              
-              <div className="flex items-center justify-center gap-4 flex-wrap">
-                <Badge className="bg-white/20 text-white border-white/30 px-4 py-2">
+
+              <div className="flex items-center justify-center gap-6 flex-wrap pt-4">
+                <Badge className="bg-white/10 backdrop-blur-md text-white border-white/20 px-6 py-2.5 text-sm font-medium hover:bg-white/20 transition-all">
                   <UsersIcon className="w-4 h-4 mr-2" />
                   {totalMembers} Membros da Equipe
                 </Badge>
-                <Badge className="bg-green-500/20 text-green-100 border-green-400/30 px-4 py-2">
+                <Badge className="bg-emerald-500/20 backdrop-blur-md text-emerald-100 border-emerald-400/30 px-6 py-2.5 text-sm font-medium hover:bg-emerald-500/30 transition-all">
                   <BuildingIcon className="w-4 h-4 mr-2" />
                   {totalDirections} Direcções
                 </Badge>
-                <Badge className="bg-yellow-500/20 text-yellow-100 border-yellow-400/30 px-4 py-2">
+                <Badge className="bg-amber-500/20 backdrop-blur-md text-amber-100 border-amber-400/30 px-6 py-2.5 text-sm font-medium hover:bg-amber-500/30 transition-all">
                   <CrownIcon className="w-4 h-4 mr-2" />
                   {totalLeaders} Dirigentes
                 </Badge>
@@ -476,7 +479,7 @@ export default function Organigrama() {
                         Filtros
                         {showFilters && <XIcon className="w-4 h-4" />}
                       </Button>
-                      
+
                       <Select value={selectedDirection} onValueChange={setSelectedDirection}>
                         <SelectTrigger className="w-48">
                           <BuildingIcon className="w-4 h-4 mr-2" />
@@ -601,7 +604,7 @@ export default function Organigrama() {
             description="Conheça os responsáveis pelas diferentes áreas da administração municipal"
             centered={true}
           />
-          
+
           <SectionContent>
             {filteredMembers.length === 0 ? (
               <div className="text-center py-16">
@@ -614,7 +617,7 @@ export default function Organigrama() {
                   }
                 </p>
                 {(searchTerm || selectedDirection !== 'todos') && (
-                  <Button 
+                  <Button
                     onClick={() => {
                       setSearchTerm("");
                       setSelectedDirection("todos");
@@ -631,7 +634,7 @@ export default function Organigrama() {
               <div className="p-4 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 rounded-2xl shadow-inner overflow-x-auto min-h-[600px] flex items-center justify-center">
                 {rootMember && treeChildrenData.length > 0 ? (
                   <div className="w-full h-full flex items-center justify-center">
-                    <Tree 
+                    <Tree
                       lineWidth={'3px'}
                       lineColor={'#8b5cf6'}
                       lineBorderRadius={'15px'}
@@ -679,16 +682,16 @@ export default function Organigrama() {
             description="Visão geral da estrutura organizacional e distribuição de membros"
             centered={true}
           />
-          
+
           <SectionContent>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {directionStats.map(direction => {
                 const directionData = getDirectionData(direction.nome);
                 const IconComponent = directionData.icon;
-                
+
                 return (
-                  <Card 
-                    key={direction.id} 
+                  <Card
+                    key={direction.id}
                     className="hover:shadow-lg transition-shadow cursor-pointer"
                     onClick={() => setSelectedDirection(direction.nome)}
                   >
@@ -751,7 +754,7 @@ export default function Organigrama() {
                     </Button>
                   </div>
                 </DialogHeader>
-                
+
                 <div className="space-y-6">
                   <div>
                     <h4 className="font-semibold text-foreground mb-2">Cargo</h4>
@@ -772,7 +775,7 @@ export default function Organigrama() {
                         {selectedMember.email && (
                           <div className="flex items-center gap-2">
                             <MailIcon className="w-4 h-4 text-muted-foreground" />
-                            <a 
+                            <a
                               href={`mailto:${selectedMember.email}`}
                               className="text-primary hover:underline"
                             >
@@ -783,7 +786,7 @@ export default function Organigrama() {
                         {selectedMember.telefone && (
                           <div className="flex items-center gap-2">
                             <PhoneIcon className="w-4 h-4 text-muted-foreground" />
-                            <a 
+                            <a
                               href={`tel:${selectedMember.telefone}`}
                               className="text-primary hover:underline"
                             >
@@ -822,7 +825,7 @@ export default function Organigrama() {
           </DialogContent>
         </Dialog>
       </main>
-      
+
       <Footer />
     </div>
   );

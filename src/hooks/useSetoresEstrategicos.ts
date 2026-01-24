@@ -55,16 +55,19 @@ export interface OportunidadeSetor {
   ordem: number;
   created_at: string;
   updated_at: string;
+  contacto?: string;
 }
 
 export interface InfraestruturaSetor {
   id: string;
   setor_id: string;
   nome: string;
+  descricao: string;
   localizacao: string;
   capacidade: string;
   estado: string;
   equipamentos: string[];
+  observacoes?: string;
   ativo: boolean;
   ordem: number;
   created_at: string;
@@ -104,7 +107,7 @@ export const useSetoresEstrategicos = () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const { data, error } = await supabase
         .from('setores_estrategicos')
         .select('*')
@@ -114,7 +117,7 @@ export const useSetoresEstrategicos = () => {
         console.error('Erro ao buscar setores:', error);
         throw error;
       }
-      
+
       setSetores(data || []);
     } catch (err) {
       console.error('Erro ao carregar setores:', err);
@@ -199,9 +202,9 @@ export const useSetoresEstrategicos = () => {
       return {
         ...setor,
         estatisticas: estatisticas || [],
-        programas: programas || [],
-        oportunidades: oportunidades || [],
-        infraestruturas: infraestruturas || [],
+        programas: (programas as unknown as ProgramaSetor[]) || [],
+        oportunidades: (oportunidades as unknown as OportunidadeSetor[]) || [],
+        infraestruturas: (infraestruturas as unknown as InfraestruturaSetor[]) || [],
         contactos: contactos || []
       };
     } catch (err) {
@@ -222,7 +225,7 @@ export const useSetoresEstrategicos = () => {
         console.error('Erro ao criar setor:', error);
         throw error;
       }
-      
+
       await fetchSetores();
       return data;
     } catch (err) {
@@ -244,7 +247,7 @@ export const useSetoresEstrategicos = () => {
         console.error('Erro ao actualizar setor:', error);
         throw error;
       }
-      
+
       await fetchSetores();
       return data;
     } catch (err) {
@@ -264,7 +267,7 @@ export const useSetoresEstrategicos = () => {
         console.error('Erro ao excluir setor:', error);
         throw error;
       }
-      
+
       await fetchSetores();
     } catch (err) {
       console.error('Erro ao excluir setor:', err);
