@@ -12,7 +12,7 @@ import {
   AlertCircle,
   Info
 } from "lucide-react";
-import { useSystemSettings } from "@/hooks/useSystemSettings";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 interface GuidelinesModalProps {
   trigger?: React.ReactNode;
@@ -21,8 +21,12 @@ interface GuidelinesModalProps {
 export const GuidelinesModal = ({ trigger }: GuidelinesModalProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const { systemConfig } = useSystemSettings();
-  const { eventsContactEmail, eventsContactPhone } = systemConfig;
+  const { settings } = useSiteSettings();
+  
+  // Use site settings for contact information (real data from database)
+  const contactEmail = settings?.contact_email || 'eventos@chipindo.gov.ao';
+  const contactPhone = settings?.contact_phone || '+244 XXX XXX XXX';
+  const openingHours = settings?.opening_hours_weekdays || 'Segunda a Sexta, 8h-17h';
 
   const handleDownload = () => {
     const guidelines = `# Diretrizes para Promoção de Eventos em Chipindo
@@ -51,9 +55,9 @@ export const GuidelinesModal = ({ trigger }: GuidelinesModalProps) => {
 - Cumprimento de normas de segurança obrigatório
 
 ## 5. Contactos
-- Email: ${eventsContactEmail}
-- Telefone: ${eventsContactPhone}
-- Horário: Segunda a Sexta, 8h-17h`;
+- Email: ${contactEmail}
+- Telefone: ${contactPhone}
+- Horário: ${openingHours}`;
 
     const blob = new Blob([guidelines], { type: 'text/markdown' });
     const url = URL.createObjectURL(blob);
@@ -65,11 +69,10 @@ export const GuidelinesModal = ({ trigger }: GuidelinesModalProps) => {
   };
 
   const handleContact = () => {
-    const email = eventsContactEmail;
     const subject = 'Informações sobre Promoção de Eventos';
     const body = `Olá,\n\nGostaria de obter informações sobre como promover um evento na plataforma do município de Chipindo.\n\nAguardo o vosso contacto.\n\nObrigado.`;
 
-    window.open(`mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank');
+    window.open(`mailto:${contactEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank');
   };
 
   return (
@@ -200,15 +203,15 @@ export const GuidelinesModal = ({ trigger }: GuidelinesModalProps) => {
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <Mail className="w-4 h-4 text-gray-600" />
-                <span className="text-sm">{eventsContactEmail}</span>
+                <span className="text-sm">{contactEmail}</span>
               </div>
               <div className="flex items-center gap-3">
                 <Phone className="w-4 h-4 text-gray-600" />
-                <span className="text-sm">{eventsContactPhone}</span>
+                <span className="text-sm">{contactPhone}</span>
               </div>
               <div className="flex items-center gap-3">
                 <Clock className="w-4 h-4 text-gray-600" />
-                <span className="text-sm">Segunda a Sexta, 8h-17h</span>
+                <span className="text-sm">{openingHours}</span>
               </div>
             </div>
           </div>
