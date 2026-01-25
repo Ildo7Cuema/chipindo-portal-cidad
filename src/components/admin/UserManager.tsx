@@ -6,16 +6,26 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { 
-  Users, 
-  UserPlus, 
-  UserCheck, 
-  UserX, 
-  Edit, 
-  Trash2, 
-  Search, 
-  Shield, 
-  Crown, 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  Users,
+  UserPlus,
+  UserCheck,
+  UserX,
+  Edit,
+  Trash2,
+  Search,
+  Shield,
+  Crown,
   Lock,
   Mail,
   Building2,
@@ -155,7 +165,7 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      
+
       const { data: profiles, error } = await supabase
         .from('profiles')
         .select('*')
@@ -167,7 +177,7 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
         return;
       }
 
-      const validUsers = profiles?.filter(user => 
+      const validUsers = profiles?.filter(user =>
         user.email && user.full_name
       ) || [];
 
@@ -190,25 +200,25 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
     const total = users.length;
     const active = users.filter(user => user.role !== null).length;
     const inactive = total - active;
-    
+
     const byRole = users.reduce((acc, user) => {
       const role = user.role || 'user';
       acc[role] = (acc[role] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
-    
+
     setStats({ total, active, inactive, byRole });
   }, [users]);
 
   const filteredUsers = users
     .filter(user => {
       const matchesSearch = user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          user.email.toLowerCase().includes(searchTerm.toLowerCase());
+        user.email.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesRole = filterRole === 'all' || user.role === filterRole;
-      const matchesStatus = filterStatus === 'all' || 
-                          (filterStatus === 'active' && user.role !== null) ||
-                          (filterStatus === 'inactive' && user.role === null);
-      
+      const matchesStatus = filterStatus === 'all' ||
+        (filterStatus === 'active' && user.role !== null) ||
+        (filterStatus === 'inactive' && user.role === null);
+
       return matchesSearch && matchesRole && matchesStatus;
     });
 
@@ -262,7 +272,7 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
       }
 
       // Gerar uma senha temporária
-                  const tempPassword = formData.customPassword || Math.random().toString(36).slice(-8) + '!1A';
+      const tempPassword = formData.customPassword || Math.random().toString(36).slice(-8) + '!1A';
 
       // 1. Criar utilizador no Supabase Auth
       const { data: authData, error: authError } = await supabase.auth.signUp({
@@ -290,12 +300,13 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
       // 2. Criar perfil na tabela profiles
       const { error: profileError } = await supabase
         .from('profiles')
-        .insert({
+        .upsert({
           user_id: authData.user.id,
           email: formData.email,
           full_name: formData.full_name,
           role: formData.role,
-          setor_id: setorId
+          setor_id: setorId,
+          updated_at: new Date().toISOString()
         });
 
       if (profileError) {
@@ -304,28 +315,28 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
         return;
       }
 
-                  toast.success('Utilizador criado com sucesso!');
-            
-            if (formData.customPassword) {
-              toast.info(`Senha personalizada definida: ${tempPassword}`, {
-                duration: 10000,
-                description: 'O utilizador deve alterar esta senha no primeiro login'
-              });
-            } else {
-              toast.info(`Senha temporária gerada: ${tempPassword}`, {
-                duration: 10000,
-                description: 'O utilizador deve alterar esta senha no primeiro login'
-              });
-            }
-      
+      toast.success('Utilizador criado com sucesso!');
+
+      if (formData.customPassword) {
+        toast.info(`Senha personalizada definida: ${tempPassword}`, {
+          duration: 10000,
+          description: 'O utilizador deve alterar esta senha no primeiro login'
+        });
+      } else {
+        toast.info(`Senha temporária gerada: ${tempPassword}`, {
+          duration: 10000,
+          description: 'O utilizador deve alterar esta senha no primeiro login'
+        });
+      }
+
       setShowAddDialog(false);
-                  setFormData({
-              email: '',
-              full_name: '',
-              role: 'user',
-              customPassword: ''
-            });
-      
+      setFormData({
+        email: '',
+        full_name: '',
+        role: 'user',
+        customPassword: ''
+      });
+
       // Recarregar a lista de utilizadores
       fetchUsers();
     } catch (error) {
@@ -339,11 +350,11 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
   const handleToggleStatus = async (userId: string, currentStatus: boolean) => {
     try {
       setActionLoading(`toggle-${userId}`);
-      
+
       // Se está ativo (role !== null), desativar (role = null)
       // Se está inativo (role === null), ativar (role = 'user')
       const newRole = currentStatus ? null : 'user';
-      
+
       const { error } = await supabase
         .from('profiles')
         .update({ role: newRole })
@@ -368,7 +379,7 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
   const handleChangeRole = async (userId: string, newRole: UserRole) => {
     try {
       setActionLoading(`role-${userId}`);
-      
+
       // Validação básica
       if (!newRole) {
         toast.error('Role é obrigatório');
@@ -380,7 +391,7 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
       if (isSectorRole(newRole)) {
         const setor = setores.find(s => s.slug === newRole);
         setorId = setor?.id || null;
-        
+
         if (!setorId) {
           toast.error(`Setor não encontrado para o role ${newRole}`);
           return;
@@ -389,7 +400,7 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
 
       const { error } = await supabase
         .from('profiles')
-        .update({ 
+        .update({
           role: newRole,
           setor_id: setorId
         })
@@ -415,7 +426,7 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
   const handleEditUser = async (userId: string, updatedData: { full_name: string; email: string }) => {
     try {
       setActionLoading(`edit-${userId}`);
-      
+
       // Validações básicas
       if (!updatedData.email || !updatedData.full_name) {
         toast.error('Email e nome são obrigatórios');
@@ -442,7 +453,7 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
 
       const { error } = await supabase
         .from('profiles')
-        .update({ 
+        .update({
           full_name: updatedData.full_name.trim(),
           email: updatedData.email.trim().toLowerCase()
         })
@@ -464,29 +475,37 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
     }
   };
 
-    const handleDeleteUser = async (userId: string) => {
-    if (!confirm('Tem certeza que deseja excluir este utilizador? Esta ação não pode ser desfeita.')) {
-      return;
-    }
+  const [userToDelete, setUserToDelete] = useState<string | null>(null);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
+  const handleDeleteClick = (userId: string) => {
+    setUserToDelete(userId);
+    setShowDeleteDialog(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!userToDelete) return;
+
+    const userId = userToDelete;
 
     try {
       setActionLoading(`delete-${userId}`);
-      
+
       console.log('Iniciando exclusão do utilizador:', userId);
-      
+
       // Usar a função SQL completa para exclusão
       const { data: result, error } = await supabase.rpc('delete_user_complete', {
         user_profile_id: userId
       });
-      
+
       if (error) {
         console.error('Erro na exclusão:', error);
         toast.error(`Erro ao excluir utilizador: ${error.message}. Execute o script de correção RLS.`);
         return;
       }
-      
+
       console.log('Resultado da exclusão:', result);
-      
+
       if (result && result.success) {
         // Mostrar mensagem baseada no resultado
         if (result.auth_deleted) {
@@ -494,7 +513,7 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
         } else {
           toast.warning(`Utilizador ${result.user_email} excluído do sistema, mas pode permanecer no sistema de autenticação`);
         }
-        
+
         // Log do resultado completo
         console.log('Resultado completo da exclusão:', result);
       } else {
@@ -508,7 +527,14 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
       toast.error('Erro ao excluir utilizador');
     } finally {
       setActionLoading(null);
+      setShowDeleteDialog(false);
+      setUserToDelete(null);
     }
+  };
+
+  const handleDeleteUser = async (userId: string) => {
+    // This is kept for reference but the UI now uses handleDeleteClick
+    handleDeleteClick(userId);
   };
 
   if (currentUserRole !== 'admin') {
@@ -619,7 +645,7 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
                       Adicionar Novo Utilizador
                     </DialogTitle>
                   </DialogHeader>
-                  
+
                   <div className="space-y-6">
                     {/* Basic Information */}
                     <div className="space-y-4">
@@ -627,7 +653,7 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
                         <Mail className="h-4 w-4" />
                         Informações Básicas
                       </h3>
-                      
+
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <Label htmlFor="email">Email *</Label>
@@ -640,7 +666,7 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
                             required
                           />
                         </div>
-                        
+
                         <div className="space-y-2">
                           <Label htmlFor="full_name">Nome Completo *</Label>
                           <Input
@@ -711,7 +737,7 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
                             </span>
                           </div>
                           <p className="text-sm text-blue-700 dark:text-blue-300">
-                            Este utilizador terá acesso exclusivo às informações e funcionalidades da {getSectorName(formData.role)}. 
+                            Este utilizador terá acesso exclusivo às informações e funcionalidades da {getSectorName(formData.role)}.
                             Poderá visualizar inscrições, candidaturas e receber notificações relacionadas com esta área.
                           </p>
                         </div>
@@ -812,7 +838,7 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
             {filteredUsers.map((user) => {
               const roleBadgeVariant = getRoleBadgeVariant(user.role);
               const isSectorUser = isSectorRole(user.role as UserRole);
-              
+
               return (
                 <Card key={user.id} className={cn(
                   "group hover:shadow-lg transition-all duration-200 hover:-translate-y-1",
@@ -835,8 +861,8 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
                         )}
                       </div>
                       <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Button 
-                          size="sm" 
+                        <Button
+                          size="sm"
                           variant="outline"
                           onClick={() => handleToggleStatus(user.id, user.role !== null)}
                           title={user.role !== null ? "Bloquear utilizador" : "Desbloquear utilizador"}
@@ -848,9 +874,9 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
                             user.role !== null ? <UserX className="h-3 w-3" /> : <UserCheck className="h-3 w-3" />
                           )}
                         </Button>
-                        
-                        <Button 
-                          size="sm" 
+
+                        <Button
+                          size="sm"
                           variant="outline"
                           onClick={() => {
                             setSelectedUser(user);
@@ -869,9 +895,9 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
                             <Edit className="h-3 w-3" />
                           )}
                         </Button>
-                        
-                        <Button 
-                          size="sm" 
+
+                        <Button
+                          size="sm"
                           variant="outline"
                           onClick={() => {
                             setSelectedUser(user);
@@ -887,12 +913,12 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
                             <Shield className="h-3 w-3" />
                           )}
                         </Button>
-                        
-                        <Button 
-                          size="sm" 
-                          variant="outline" 
+
+                        <Button
+                          size="sm"
+                          variant="outline"
                           className="text-destructive hover:text-destructive"
-                          onClick={() => handleDeleteUser(user.id)}
+                          onClick={() => handleDeleteClick(user.id)}
                           title="Excluir utilizador"
                           disabled={actionLoading === `delete-${user.id}`}
                         >
@@ -944,7 +970,7 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
           <DialogHeader>
             <DialogTitle>Editar Utilizador</DialogTitle>
           </DialogHeader>
-          
+
           <div className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="edit-email">Email</Label>
@@ -954,7 +980,7 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
                 onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="edit-full_name">Nome Completo</Label>
               <Input
@@ -964,12 +990,12 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
               />
             </div>
           </div>
-          
+
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setShowEditDialog(false)}>
               Cancelar
             </Button>
-            <Button 
+            <Button
               onClick={() => {
                 if (selectedUser) {
                   handleEditUser(selectedUser.id, editFormData);
@@ -990,7 +1016,7 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
           <DialogHeader>
             <DialogTitle>Alterar Role do Utilizador</DialogTitle>
           </DialogHeader>
-          
+
           <div className="space-y-4">
             <div className="space-y-2">
               <Label>Novo Role</Label>
@@ -1013,7 +1039,7 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
                 </SelectContent>
               </Select>
             </div>
-            
+
             {isSectorRole(newRole) && (
               <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                 <p className="text-sm text-blue-700 dark:text-blue-300">
@@ -1022,12 +1048,12 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
               </div>
             )}
           </div>
-          
+
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setShowRoleDialog(false)}>
               Cancelar
             </Button>
-            <Button 
+            <Button
               onClick={() => {
                 if (selectedUser) {
                   handleChangeRole(selectedUser.id, newRole);
@@ -1040,6 +1066,28 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
           </div>
         </DialogContent>
       </Dialog>
+
+
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Tem certeza absoluta?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação não pode ser desfeita. Isso excluirá permanentemente o utilizador
+              e removerá seus dados de nossos servidores.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Excluir Utilizador
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

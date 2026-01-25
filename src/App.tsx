@@ -38,6 +38,7 @@ import TurismoMeioAmbiente from "./pages/TurismoMeioAmbiente";
 import TestPage from "./pages/TestPage";
 import EducacaoSimple from "./pages/EducacaoSimple";
 import Events from "./pages/Events";
+import { usePageTracking } from "./hooks/usePageTracking";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -53,6 +54,11 @@ const queryClient = new QueryClient({
   },
 });
 
+const PageTracker = () => {
+  usePageTracking();
+  return null;
+};
+
 const App = () => (
   <ErrorBoundary>
     <DOMErrorBoundary>
@@ -61,6 +67,7 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
+            <PageTracker />
             <MaintenanceMode>
               <Routes>
                 <Route path="/" element={<Index />} />

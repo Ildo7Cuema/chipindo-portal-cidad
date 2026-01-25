@@ -6,16 +6,26 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { 
-  Users, 
-  UserPlus, 
-  UserCheck, 
-  UserX, 
-  Edit, 
-  Trash2, 
-  Search, 
-  Shield, 
-  Crown, 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  Users,
+  UserPlus,
+  UserCheck,
+  UserX,
+  Edit,
+  Trash2,
+  Search,
+  Shield,
+  Crown,
   Lock,
   Mail,
   Building2,
@@ -127,7 +137,7 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      
+
       const { data: profiles, error } = await supabase
         .from('profiles')
         .select('*')
@@ -139,7 +149,7 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
         return;
       }
 
-      const validUsers = profiles?.filter(user => 
+      const validUsers = profiles?.filter(user =>
         user.email && user.full_name
       ) || [];
 
@@ -161,25 +171,25 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
     const total = users.length;
     const active = users.filter(user => user.role !== null).length;
     const inactive = total - active;
-    
+
     const byRole = users.reduce((acc, user) => {
       const role = user.role || 'user';
       acc[role] = (acc[role] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
-    
+
     setStats({ total, active, inactive, byRole });
   }, [users]);
 
   const filteredUsers = users
     .filter(user => {
       const matchesSearch = user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          user.email.toLowerCase().includes(searchTerm.toLowerCase());
+        user.email.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesRole = filterRole === 'all' || user.role === filterRole;
-      const matchesStatus = filterStatus === 'all' || 
-                          (filterStatus === 'active' && user.role !== null) ||
-                          (filterStatus === 'inactive' && user.role === null);
-      
+      const matchesStatus = filterStatus === 'all' ||
+        (filterStatus === 'active' && user.role !== null) ||
+        (filterStatus === 'inactive' && user.role === null);
+
       return matchesSearch && matchesRole && matchesStatus;
     });
 
@@ -280,14 +290,14 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
         duration: 10000,
         description: 'O utilizador deve alterar esta senha no primeiro login'
       });
-      
+
       setShowAddDialog(false);
       setFormData({
         email: '',
         full_name: '',
         role: 'user'
       });
-      
+
       fetchUsers();
     } catch (error) {
       console.error('Error adding user:', error);
@@ -300,7 +310,7 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
   const handleToggleStatus = async (userId: string, currentStatus: boolean) => {
     try {
       const newRole = currentStatus ? null : 'user';
-      
+
       const { error } = await supabase
         .from('profiles')
         .update({ role: newRole })
@@ -320,10 +330,21 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
     }
   };
 
-  const handleDeleteUser = async (userId: string) => {
-    if (!confirm('Tem certeza que deseja excluir este utilizador?')) {
-      return;
-    }
+  const [userToDelete, setUserToDelete] = useState<string | null>(null);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
+  const handleDeleteClick = (userId: string) => {
+    setUserToDelete(userId);
+    setShowDeleteDialog(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!userToDelete) return;
+
+    const userId = userToDelete;
+    // Reset state immediately or wait until after? 
+    // Usually better to wait or keep dialog open with loading state if needed.
+    // For now we'll match existing behavior but use the separate execution function.
 
     try {
       const { data: profile } = await supabase
@@ -353,7 +374,16 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
     } catch (error) {
       console.error('Error deleting user:', error);
       toast.error('Erro ao excluir utilizador');
+    } finally {
+      setShowDeleteDialog(false);
+      setUserToDelete(null);
     }
+  };
+
+  // Deprecated direct delete handler
+  const handleDeleteUser = async (userId: string) => {
+    // This is kept for reference but the UI now uses handleDeleteClick
+    handleDeleteClick(userId);
   };
 
   if (currentUserRole !== 'admin') {
@@ -464,14 +494,14 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
                       Adicionar Novo Utilizador
                     </DialogTitle>
                   </DialogHeader>
-                  
+
                   <div className="space-y-6">
                     <div className="space-y-4">
                       <h3 className="text-lg font-semibold flex items-center gap-2">
                         <Mail className="h-4 w-4" />
                         Informações Básicas
                       </h3>
-                      
+
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <Label htmlFor="email">Email *</Label>
@@ -484,7 +514,7 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
                             required
                           />
                         </div>
-                        
+
                         <div className="space-y-2">
                           <Label htmlFor="full_name">Nome Completo *</Label>
                           <Input
@@ -528,7 +558,7 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
                             </span>
                           </div>
                           <p className="text-sm text-blue-700 dark:text-blue-300">
-                            Este utilizador terá acesso exclusivo às informações e funcionalidades da {getSectorName(formData.role)}. 
+                            Este utilizador terá acesso exclusivo às informações e funcionalidades da {getSectorName(formData.role)}.
                             Poderá visualizar inscrições, candidaturas e receber notificações relacionadas com esta área.
                           </p>
                         </div>
@@ -542,7 +572,7 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
                           </span>
                         </div>
                         <p className="text-sm text-yellow-700 dark:text-yellow-300">
-                          Uma senha temporária será gerada automaticamente e exibida após a criação do utilizador. 
+                          Uma senha temporária será gerada automaticamente e exibida após a criação do utilizador.
                           O utilizador deve alterar esta senha no primeiro login.
                         </p>
                       </div>
@@ -642,7 +672,7 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
             {filteredUsers.map((user) => {
               const roleBadgeVariant = getRoleBadgeVariant(user.role);
               const isSectorUser = isSectorRole(user.role as UserRole);
-              
+
               return (
                 <Card key={user.id} className={cn(
                   "group hover:shadow-lg transition-all duration-200 hover:-translate-y-1",
@@ -665,18 +695,18 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
                         )}
                       </div>
                       <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Button 
-                          size="sm" 
+                        <Button
+                          size="sm"
                           variant="outline"
                           onClick={() => handleToggleStatus(user.id, user.role !== null)}
                         >
                           {user.role !== null ? <UserX className="h-3 w-3" /> : <UserCheck className="h-3 w-3" />}
                         </Button>
-                        <Button 
-                          size="sm" 
-                          variant="outline" 
+                        <Button
+                          size="sm"
+                          variant="outline"
                           className="text-destructive hover:text-destructive"
-                          onClick={() => handleDeleteUser(user.id)}
+                          onClick={() => handleDeleteClick(user.id)}
                         >
                           <Trash2 className="h-3 w-3" />
                         </Button>
@@ -715,6 +745,26 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
           </div>
         )}
       </div>
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Tem certeza absoluta?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação não pode ser desfeita. Isso excluirá permanentemente o utilizador
+              e removerá seus dados de nossos servidores.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Excluir Utilizador
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 } 

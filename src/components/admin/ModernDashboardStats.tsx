@@ -7,14 +7,14 @@ import { StatCard } from "@/components/ui/stat-card";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { 
-  FileText, 
-  Users, 
-  Trophy, 
-  Eye, 
-  TrendingUp, 
-  Calendar, 
-  Building2, 
+import {
+  FileText,
+  Users,
+  Trophy,
+  Eye,
+  TrendingUp,
+  Calendar,
+  Building2,
   FolderOpen,
   Activity,
   BarChart3,
@@ -105,15 +105,15 @@ import { cn } from "@/lib/utils";
 // Componente para gráfico de barras simples
 const SimpleBarChart = ({ data, height = 200 }: { data: { label: string; value: number; color: string }[]; height?: number }) => {
   const maxValue = Math.max(...data.map(d => d.value));
-  
+
   return (
     <div className="flex items-end justify-between h-[200px] gap-2 p-4">
       {data.map((item, index) => (
         <div key={index} className="flex flex-col items-center flex-1">
           <div className="text-xs text-muted-foreground mb-2">{item.value}</div>
-          <div 
+          <div
             className="w-full rounded-t-sm transition-all duration-300 hover:opacity-80"
-            style={{ 
+            style={{
               height: `${(item.value / maxValue) * 150}px`,
               backgroundColor: item.color,
               minHeight: '4px'
@@ -127,10 +127,10 @@ const SimpleBarChart = ({ data, height = 200 }: { data: { label: string; value: 
 };
 
 // Componente para gráfico de progresso circular
-const CircularProgress = ({ value, size = 80, strokeWidth = 8, color = "#3b82f6" }: { 
-  value: number; 
-  size?: number; 
-  strokeWidth?: number; 
+const CircularProgress = ({ value, size = 80, strokeWidth = 8, color = "#3b82f6" }: {
+  value: number;
+  size?: number;
+  strokeWidth?: number;
   color?: string;
 }) => {
   const radius = (size - strokeWidth) / 2;
@@ -170,25 +170,25 @@ const CircularProgress = ({ value, size = 80, strokeWidth = 8, color = "#3b82f6"
 };
 
 // Componente para métricas de performance
-const PerformanceMetric = ({ 
-  title, 
-  value, 
-  target, 
-  unit = "%", 
+const PerformanceMetric = ({
+  title,
+  value,
+  target,
+  unit = "%",
   color = "blue",
-  icon: Icon 
-}: { 
-  title: string; 
-  value: number; 
-  target: number; 
-  unit?: string; 
+  icon: Icon
+}: {
+  title: string;
+  value: number;
+  target: number;
+  unit?: string;
   color?: string;
   icon: React.ComponentType<{ className?: string }>;
 }) => {
   const percentage = Math.min((value / target) * 100, 100);
   const isOnTarget = percentage >= 100;
   const isClose = percentage >= 80;
-  
+
   const colorClasses = {
     blue: "text-blue-600 bg-blue-50 dark:bg-blue-950/20",
     green: "text-green-600 bg-green-50 dark:bg-green-950/20",
@@ -208,7 +208,7 @@ const PerformanceMetric = ({
             {isOnTarget ? "Meta Atingida" : isClose ? "Próximo" : "Atenção"}
           </Badge>
         </div>
-        
+
         <div className="space-y-2">
           <h3 className="font-semibold text-sm text-muted-foreground">{title}</h3>
           <div className="flex items-baseline gap-2">
@@ -292,11 +292,11 @@ export const ModernDashboardStats = () => {
     setExportLoading('csv');
     try {
       const exportData = ExportUtils.exportDashboardStats(stats);
-      ExportUtils.exportToCSV(exportData, { 
+      ExportUtils.exportToCSV(exportData, {
         filename: 'dashboard-chipindo',
-        includeTimestamp: true 
+        includeTimestamp: true
       });
-      
+
       toast({
         title: "Relatório CSV exportado",
         description: "O relatório foi baixado com sucesso em formato CSV.",
@@ -316,12 +316,12 @@ export const ModernDashboardStats = () => {
     setExportLoading('pdf');
     try {
       const exportData = ExportUtils.exportDashboardStats(stats);
-      ExportUtils.exportToPDF(exportData, { 
+      ExportUtils.exportToPDF(exportData, {
         filename: 'dashboard-chipindo',
         author: 'Administração Municipal',
         company: 'Município de Chipindo - Província da Huíla'
       });
-      
+
       toast({
         title: "Relatório PDF gerado",
         description: "O relatório foi gerado e baixado com sucesso em formato PDF.",
@@ -341,13 +341,13 @@ export const ModernDashboardStats = () => {
     setExportLoading('excel');
     try {
       const exportData = ExportUtils.exportDashboardStats(stats);
-      ExportUtils.exportToExcel(exportData, { 
+      ExportUtils.exportToExcel(exportData, {
         filename: 'dashboard-chipindo',
         sheetName: 'Dashboard Executivo',
         author: 'Administração Municipal',
         company: 'Município de Chipindo'
       });
-      
+
       toast({
         title: "Relatório Excel gerado",
         description: "O relatório foi gerado e baixado com sucesso em formato Excel.",
@@ -436,7 +436,7 @@ export const ModernDashboardStats = () => {
       <div className="relative overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-blue-950/20 dark:to-indigo-950/20 rounded-2xl border border-border/50 shadow-lg">
         {/* Background Pattern */}
         <div className="absolute inset-0 bg-grid-slate-100 dark:bg-grid-slate-800 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] dark:[mask-image:linear-gradient(0deg,rgba(255,255,255,0.1),rgba(255,255,255,0.05))]" />
-        
+
         <div className="relative p-4 sm:p-6 lg:p-8">
           {/* Mobile Layout */}
           <div className="block lg:hidden space-y-3">
@@ -461,7 +461,7 @@ export const ModernDashboardStats = () => {
                   </div>
                 </div>
               </div>
-              
+
               {/* Mobile Status */}
               <div className="flex items-center gap-2">
                 <div className="flex items-center gap-1">
@@ -474,18 +474,18 @@ export const ModernDashboardStats = () => {
                 </div>
               </div>
             </div>
-            
+
             {/* Mobile Description */}
             <p className="text-muted-foreground text-sm font-medium leading-normal">
               Painel de controle executivo com métricas em tempo real
             </p>
-            
+
             {/* Mobile Export Buttons */}
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-1.5">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={exportToCSV}
                   disabled={exportLoading === 'csv'}
                   className="h-8 px-2.5 text-xs font-medium"
@@ -497,9 +497,9 @@ export const ModernDashboardStats = () => {
                   )}
                   CSV
                 </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={exportToExcel}
                   disabled={exportLoading === 'excel'}
                   className="h-8 px-2.5 text-xs font-medium"
@@ -512,9 +512,9 @@ export const ModernDashboardStats = () => {
                   Excel
                 </Button>
               </div>
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={exportToPDF}
                 disabled={exportLoading === 'pdf'}
                 className="h-8 px-2.5 text-xs font-medium"
@@ -555,7 +555,7 @@ export const ModernDashboardStats = () => {
                 </p>
               </div>
             </div>
-            
+
             <div className="flex flex-col items-end gap-4 flex-shrink-0">
               {/* Desktop System Status */}
               <div className="flex items-center gap-4">
@@ -568,12 +568,12 @@ export const ModernDashboardStats = () => {
                   <span className="text-sm text-muted-foreground">{responseTime}s</span>
                 </div>
               </div>
-              
+
               {/* Desktop Export Buttons */}
               <div className="flex items-center gap-3">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={exportToCSV}
                   disabled={exportLoading === 'csv'}
                   className="h-10 px-4 hover:bg-muted/60 text-sm font-medium"
@@ -585,9 +585,9 @@ export const ModernDashboardStats = () => {
                   )}
                   Exportar CSV
                 </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={exportToExcel}
                   disabled={exportLoading === 'excel'}
                   className="h-10 px-4 hover:bg-muted/60 text-sm font-medium"
@@ -599,9 +599,9 @@ export const ModernDashboardStats = () => {
                   )}
                   Exportar Excel
                 </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={exportToPDF}
                   disabled={exportLoading === 'pdf'}
                   className="h-10 px-4 hover:bg-muted/60 text-sm font-medium"
@@ -630,7 +630,7 @@ export const ModernDashboardStats = () => {
           trend={{ value: 12, isPositive: true }}
           className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 border-green-200 dark:border-green-800 shadow-lg hover:shadow-xl transition-all duration-300"
         />
-        
+
         <StatCard
           icon={Users}
           label="Usuários Ativos"
@@ -639,7 +639,7 @@ export const ModernDashboardStats = () => {
           variant="glass"
           className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/20 dark:to-cyan-950/20 border-blue-200 dark:border-blue-800 shadow-lg hover:shadow-xl transition-all duration-300"
         />
-        
+
         <StatCard
           icon={Globe}
           label="Taxa de Transparência"
@@ -649,14 +649,14 @@ export const ModernDashboardStats = () => {
           trend={{ value: transparencyRate >= 80 ? 5 : -2, isPositive: transparencyRate >= 80 }}
           className="bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-950/20 dark:to-violet-950/20 border-purple-200 dark:border-purple-800 shadow-lg hover:shadow-xl transition-all duration-300"
         />
-        
+
         <StatCard
-          icon={Zap}
-          label="Eficiência"
-          value={`${publicationRate}%`}
-          description="Taxa de publicação"
+          icon={Eye}
+          label="Total de Acessos"
+          value={stats.totalVisits}
+          description="Visualizações de página"
           variant="glass"
-          trend={{ value: publicationRate >= 70 ? 8 : -3, isPositive: publicationRate >= 70 }}
+          trend={{ value: 10, isPositive: true }}
           className="bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-orange-950/20 dark:to-yellow-950/20 border-orange-200 dark:border-orange-800 shadow-lg hover:shadow-xl transition-all duration-300"
         />
       </div>
@@ -689,13 +689,13 @@ export const ModernDashboardStats = () => {
               <span className="xs:hidden">Eng.</span>
             </TabsTrigger>
           </TabsList>
-          
+
           {/* Mobile Time Range Selector */}
           <div className="flex items-center">
             <div className="flex items-center gap-2">
               <span className="text-xs text-muted-foreground font-medium">Período:</span>
-              <select 
-                value={timeRange} 
+              <select
+                value={timeRange}
                 onChange={(e) => setTimeRange(e.target.value)}
                 className="text-xs border border-border rounded-md px-2 py-1.5 bg-background font-medium"
               >
@@ -724,12 +724,12 @@ export const ModernDashboardStats = () => {
               Engajamento
             </TabsTrigger>
           </TabsList>
-          
+
           {/* Desktop Time Range Selector */}
           <div className="flex items-center gap-3">
             <span className="text-sm text-muted-foreground font-medium">Período de Análise:</span>
-            <select 
-              value={timeRange} 
+            <select
+              value={timeRange}
               onChange={(e) => setTimeRange(e.target.value)}
               className="text-sm border border-border rounded-lg px-4 py-2 bg-background font-medium hover:border-primary/50 transition-colors"
             >
@@ -856,7 +856,7 @@ export const ModernDashboardStats = () => {
                 <div className="flex items-center justify-center">
                   <CircularProgress value={systemHealth} size={120} color="#10b981" />
                 </div>
-                
+
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center p-3 bg-white dark:bg-slate-800 rounded-lg">
                     <div className="text-lg font-bold text-green-600">{responseTime}s</div>
@@ -923,32 +923,32 @@ export const ModernDashboardStats = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button 
-                  className="w-full justify-start" 
+                <Button
+                  className="w-full justify-start"
                   variant="outline"
                   onClick={navigateToNews}
                 >
                   <FileText className="w-4 h-4 mr-2" />
                   Nova Notícia
                 </Button>
-                <Button 
-                  className="w-full justify-start" 
+                <Button
+                  className="w-full justify-start"
                   variant="outline"
                   onClick={navigateToConcursos}
                 >
                   <Trophy className="w-4 h-4 mr-2" />
                   Novo Concurso
                 </Button>
-                <Button 
-                  className="w-full justify-start" 
+                <Button
+                  className="w-full justify-start"
                   variant="outline"
                   onClick={navigateToAcervo}
                 >
                   <FolderOpen className="w-4 h-4 mr-2" />
                   Upload Documento
                 </Button>
-                <Button 
-                  className="w-full justify-start" 
+                <Button
+                  className="w-full justify-start"
                   variant="outline"
                   onClick={navigateToUsers}
                 >
@@ -971,7 +971,7 @@ export const ModernDashboardStats = () => {
               size="lg"
               className="md:col-span-1 shadow-lg hover:shadow-xl transition-all duration-300"
             />
-            
+
             <StatCard
               icon={Star}
               label="Qualidade"
@@ -981,7 +981,7 @@ export const ModernDashboardStats = () => {
               size="lg"
               className="md:col-span-1 shadow-lg hover:shadow-xl transition-all duration-300"
             />
-            
+
             <StatCard
               icon={CheckCircle}
               label="Conformidade"
@@ -1012,13 +1012,13 @@ export const ModernDashboardStats = () => {
                     <span className="text-sm font-bold">{stats.totalUsers}</span>
                   </div>
                   <Progress value={75} className="h-2" />
-                  
+
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">Taxa de Retenção</span>
                     <span className="text-sm font-bold">85%</span>
                   </div>
                   <Progress value={85} className="h-2" />
-                  
+
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">Tempo Médio de Sessão</span>
                     <span className="text-sm font-bold">12 min</span>
@@ -1042,7 +1042,7 @@ export const ModernDashboardStats = () => {
                 <div className="flex items-center justify-center">
                   <CircularProgress value={userSatisfaction * 20} size={100} color="#f59e0b" />
                 </div>
-                
+
                 <div className="grid grid-cols-2 gap-4 text-center">
                   <div>
                     <div className="text-lg font-bold text-green-600">92%</div>
@@ -1058,7 +1058,7 @@ export const ModernDashboardStats = () => {
           </div>
         </TabsContent>
       </Tabs>
-      
+
       {/* Enhanced Recent Activity - Responsive */}
       <div className="space-y-3">
         {/* Mobile Activity Header */}
@@ -1086,7 +1086,7 @@ export const ModernDashboardStats = () => {
             Actualizar Dados
           </Button>
         </div>
-        
+
         <RecentActivity />
       </div>
     </div>

@@ -11,6 +11,7 @@ interface RealTimeStats {
   totalAcervoItems: number;
   publicAcervoItems: number;
   totalUsers: number;
+  totalVisits: number;
   loading: boolean;
 }
 
@@ -25,6 +26,7 @@ export function useRealTimeStats() {
     totalAcervoItems: 0,
     publicAcervoItems: 0,
     totalUsers: 0,
+    totalVisits: 0,
     loading: true,
   });
 
@@ -60,12 +62,17 @@ export function useRealTimeStats() {
         .from('profiles')
         .select('id');
 
+      // Fetch site visits
+      const { count: visitsCount } = await supabase
+        .from('site_visits')
+        .select('*', { count: 'exact', head: true });
+
       // Calculate statistics
       const totalNews = newsData?.length || 0;
       const publishedNews = newsData?.filter(n => n.published).length || 0;
-      
+
       const totalConcursos = concursosData?.length || 0;
-      const activeConcursos = concursosData?.filter(c => 
+      const activeConcursos = concursosData?.filter(c =>
         c.published && (!c.deadline || new Date(c.deadline) > new Date())
       ).length || 0;
 
@@ -74,6 +81,7 @@ export function useRealTimeStats() {
       const totalAcervoItems = acervoData?.length || 0;
       const publicAcervoItems = acervoData?.filter(a => a.is_public).length || 0;
       const totalUsers = usersData?.length || 0;
+      const totalVisits = visitsCount || 0;
 
       setStats({
         totalNews,
@@ -85,6 +93,7 @@ export function useRealTimeStats() {
         totalAcervoItems,
         publicAcervoItems,
         totalUsers,
+        totalVisits,
         loading: false,
       });
     } catch (error) {
