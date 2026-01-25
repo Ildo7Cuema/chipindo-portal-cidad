@@ -157,13 +157,47 @@ export function useEvents(filters?: EventFilters) {
 
   const deleteEvent = async (id: number) => {
     try {
-      const { error } = await supabase
+      console.log('Deleting event with id:', id);
+      
+      // First verify the event exists
+      const { data: existingEvent, error: checkError } = await supabase
+        .from('events')
+        .select('id')
+        .eq('id', id)
+        .single();
+      
+      if (checkError) {
+        console.error('Event not found or check error:', checkError);
+        throw new Error(`Evento não encontrado (ID: ${id})`);
+      }
+      
+      console.log('Event found, proceeding with delete:', existingEvent);
+      
+      const { error, count } = await supabase
         .from('events')
         .delete()
-        .eq('id', id);
+        .eq('id', id)
+        .select();
 
-      if (error) throw error;
-
+      if (error) {
+        console.error('Delete error:', error);
+        throw error;
+      }
+      
+      // Verify deletion was successful by checking if event still exists
+      const { data: verifyEvent } = await supabase
+        .from('events')
+        .select('id')
+        .eq('id', id)
+        .single();
+      
+      if (verifyEvent) {
+        console.error('Event still exists after delete:', verifyEvent);
+        throw new Error('Falha ao excluir evento. O evento ainda existe no banco de dados. Verifique as permissões de RLS.');
+      }
+      
+      console.log('Event successfully deleted from database');
+      
       setEvents(prev => prev.filter(event => event.id !== id));
       toast({
         title: "Sucesso",
@@ -171,8 +205,9 @@ export function useEvents(filters?: EventFilters) {
       });
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erro ao excluir evento';
+      console.error('Delete event error:', err);
       toast({
-        title: "Erro",
+        title: "Erro ao excluir evento",
         description: errorMessage,
         variant: "destructive"
       });
