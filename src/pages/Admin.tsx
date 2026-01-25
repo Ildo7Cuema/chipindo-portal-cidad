@@ -46,6 +46,7 @@ import { InterestRegistrationsManager } from "@/components/admin/InterestRegistr
 import { SectorAccessManager } from "@/components/admin/SectorAccessManager";
 import { AuditLogsManager } from "@/components/admin/AuditLogsManager";
 import { AccessDenied } from "@/components/ui/access-denied";
+import { SiteVisitsReport } from "@/components/admin/SiteVisitsReport";
 interface NavigationItem {
   id: string;
   label: string;
@@ -254,7 +255,7 @@ const Admin = () => {
     description: "Configurações do sistema",
     category: "Sistema"
   }];
-  
+
   // Filtrar itens baseado nas permissões do utilizador
   const allItems = [...navigationItems, ...adminOnlyItems];
   const filteredItems = getFilteredMenuItems(allItems);
@@ -356,21 +357,21 @@ const Admin = () => {
   }
   if (!user || !profile) {
     return <ResponsiveContainer>
-        <ResponsiveSection spacing="lg" className="min-h-screen flex items-center justify-center">
-          <ResponsiveCard className="max-w-md w-full text-center">
-            <ResponsiveText variant="h3" className="mb-4">
-              Acesso Negado
-            </ResponsiveText>
-            <ResponsiveText variant="body" className="text-muted-foreground mb-6">
-              Você não tem permissão para acessar esta área.
-            </ResponsiveText>
-            <Button onClick={() => navigate("/")} variant="outline">
-              <ChevronLeft className="w-4 h-4 mr-2" />
-              Voltar ao Portal
-            </Button>
-          </ResponsiveCard>
-        </ResponsiveSection>
-      </ResponsiveContainer>;
+      <ResponsiveSection spacing="lg" className="min-h-screen flex items-center justify-center">
+        <ResponsiveCard className="max-w-md w-full text-center">
+          <ResponsiveText variant="h3" className="mb-4">
+            Acesso Negado
+          </ResponsiveText>
+          <ResponsiveText variant="body" className="text-muted-foreground mb-6">
+            Você não tem permissão para acessar esta área.
+          </ResponsiveText>
+          <Button onClick={() => navigate("/")} variant="outline">
+            <ChevronLeft className="w-4 h-4 mr-2" />
+            Voltar ao Portal
+          </Button>
+        </ResponsiveCard>
+      </ResponsiveSection>
+    </ResponsiveContainer>;
   }
   const getRoleLabel = (userRole: string) => {
     switch (userRole) {
@@ -394,203 +395,208 @@ const Admin = () => {
   };
   const activeItem = allItems.find(item => item.id === activeTab);
   return <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
-      {/* Mobile Header */}
-      <div className={cn("sticky top-0 z-50 w-full border-b bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg transition-all duration-300 lg:hidden", headerCollapsed ? "h-12" : "h-16")}>
-        <div className="flex h-full items-center px-4">
-          {/* Menu Button */}
-          <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="sm" className="mr-3 h-10 w-10 p-0">
-                <MenuIcon className="w-5 h-5" />
-              </Button>
-            </SheetTrigger>
-          </Sheet>
-          
-          {/* Mobile Sidebar Component */}
-          <MobileSidebar open={sidebarOpen} onOpenChange={setSidebarOpen} navigationItems={filteredItems} activeTab={activeTab} onTabChange={setActiveTab} profile={profile} role={role} onSignOut={handleSignOut} getRoleLabel={getRoleLabel} getRoleBadgeVariant={getRoleBadgeVariant} />
-
-          {/* Current Section */}
-          <div className="flex-1 min-w-0">
-            <ResponsiveText variant="h5" className="truncate">
-              {activeItem?.label}
-            </ResponsiveText>
-            {!headerCollapsed && <ResponsiveText variant="small" className="text-muted-foreground truncate">
-                {activeItem?.description}
-              </ResponsiveText>}
-          </div>
-
-          {/* User Avatar */}
-          <Avatar className="w-8 h-8 ml-3">
-            <AvatarImage src="/placeholder-avatar.jpg" alt="Avatar" />
-            <AvatarFallback>
-              {profile?.full_name ? profile.full_name.charAt(0).toUpperCase() : 'U'}
-            </AvatarFallback>
-          </Avatar>
-        </div>
-      </div>
-
-      {/* Desktop Header */}
-      <div className="hidden lg:block sticky top-0 z-50 w-full border-b bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg">
-        <div className="flex h-16 items-center px-6">
-          {/* Portal Title */}
-          <div className="flex items-center gap-3 mr-6">
-            <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-              <Settings className="w-5 h-5 text-primary" />
-            </div>
-            <div>
-              <ResponsiveText variant="h5" className="font-bold">Portal Administrativo</ResponsiveText>
-              <ResponsiveText variant="small" className="text-muted-foreground">Município de Chipindo</ResponsiveText>
-            </div>
-          </div>
-
-          {/* Current Section */}
-          <div className="flex items-center gap-2 mr-auto">
-            <ChevronRight className="w-4 h-4 text-muted-foreground" />
-            <ResponsiveText variant="body" className="font-medium">{activeItem?.label}</ResponsiveText>
-          </div>
-
-          {/* User Profile */}
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-3">
-              <div className="text-right">
-                <ResponsiveText variant="body" className="font-medium">{profile?.full_name || profile?.email}</ResponsiveText>
-                <Badge variant={getRoleBadgeVariant(role) as any} className="text-xs">
-                  {getRoleLabel(role)}
-                </Badge>
-              </div>
-              <Avatar className="w-8 h-8">
-                <AvatarImage src="/placeholder-avatar.jpg" alt="Avatar" />
-                <AvatarFallback>
-                  {profile?.full_name ? profile.full_name.charAt(0).toUpperCase() : 'U'}
-                </AvatarFallback>
-              </Avatar>
-            </div>
-
-            <Separator orientation="vertical" className="h-6" />
-
-            <Button variant="ghost" size="sm" onClick={handleSignOut}>
-              <LogOut className="w-4 h-4" />
+    {/* Mobile Header */}
+    <div className={cn("sticky top-0 z-50 w-full border-b bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg transition-all duration-300 lg:hidden", headerCollapsed ? "h-12" : "h-16")}>
+      <div className="flex h-full items-center px-4">
+        {/* Menu Button */}
+        <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="sm" className="mr-3 h-10 w-10 p-0">
+              <MenuIcon className="w-5 h-5" />
             </Button>
+          </SheetTrigger>
+        </Sheet>
+
+        {/* Mobile Sidebar Component */}
+        <MobileSidebar open={sidebarOpen} onOpenChange={setSidebarOpen} navigationItems={filteredItems} activeTab={activeTab} onTabChange={setActiveTab} profile={profile} role={role} onSignOut={handleSignOut} getRoleLabel={getRoleLabel} getRoleBadgeVariant={getRoleBadgeVariant} />
+
+        {/* Current Section */}
+        <div className="flex-1 min-w-0">
+          <ResponsiveText variant="h5" className="truncate">
+            {activeItem?.label}
+          </ResponsiveText>
+          {!headerCollapsed && <ResponsiveText variant="small" className="text-muted-foreground truncate">
+            {activeItem?.description}
+          </ResponsiveText>}
+        </div>
+
+        {/* User Avatar */}
+        <Avatar className="w-8 h-8 ml-3">
+          <AvatarImage src="/placeholder-avatar.jpg" alt="Avatar" />
+          <AvatarFallback>
+            {profile?.full_name ? profile.full_name.charAt(0).toUpperCase() : 'U'}
+          </AvatarFallback>
+        </Avatar>
+      </div>
+    </div>
+
+    {/* Desktop Header */}
+    <div className="hidden lg:block sticky top-0 z-50 w-full border-b bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg">
+      <div className="flex h-16 items-center px-6">
+        {/* Portal Title */}
+        <div className="flex items-center gap-3 mr-6">
+          <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+            <Settings className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <ResponsiveText variant="h5" className="font-bold">Portal Administrativo</ResponsiveText>
+            <ResponsiveText variant="small" className="text-muted-foreground">Município de Chipindo</ResponsiveText>
           </div>
         </div>
-      </div>
 
-      <div className="flex">
-        {/* Desktop Sidebar */}
-        <aside className="hidden lg:block sticky top-16 h-[calc(100vh-4rem)] bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg border-r overflow-y-auto">
-          <div className="p-4 space-y-2">
-            {Object.entries(groupedItems).map(([category, items]) => <div key={category}>
-                <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-3">
-                  {category}
-                </div>
-                <div className="space-y-1">
-                  {items.map(item => {
+        {/* Current Section */}
+        <div className="flex items-center gap-2 mr-auto">
+          <ChevronRight className="w-4 h-4 text-muted-foreground" />
+          <ResponsiveText variant="body" className="font-medium">{activeItem?.label}</ResponsiveText>
+        </div>
+
+        {/* User Profile */}
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            <div className="text-right">
+              <ResponsiveText variant="body" className="font-medium">{profile?.full_name || profile?.email}</ResponsiveText>
+              <Badge variant={getRoleBadgeVariant(role) as any} className="text-xs">
+                {getRoleLabel(role)}
+              </Badge>
+            </div>
+            <Avatar className="w-8 h-8">
+              <AvatarImage src="/placeholder-avatar.jpg" alt="Avatar" />
+              <AvatarFallback>
+                {profile?.full_name ? profile.full_name.charAt(0).toUpperCase() : 'U'}
+              </AvatarFallback>
+            </Avatar>
+          </div>
+
+          <Separator orientation="vertical" className="h-6" />
+
+          <Button variant="ghost" size="sm" onClick={handleSignOut}>
+            <LogOut className="w-4 h-4" />
+          </Button>
+        </div>
+      </div>
+    </div>
+
+    <div className="flex">
+      {/* Desktop Sidebar */}
+      <aside className="hidden lg:block sticky top-16 h-[calc(100vh-4rem)] bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg border-r overflow-y-auto">
+        <div className="p-4 space-y-2">
+          {Object.entries(groupedItems).map(([category, items]) => <div key={category}>
+            <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-3">
+              {category}
+            </div>
+            <div className="space-y-1">
+              {items.map(item => {
                 const isActive = activeTab === item.id;
                 const Icon = item.icon;
                 return <button key={item.id} onClick={() => setActiveTab(item.id)} className={cn("w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all duration-200 group", isActive ? "bg-primary text-primary-foreground shadow-md" : "hover:bg-muted/60 hover:-translate-y-0.5 hover:shadow-sm")}>
-                        <Icon className={cn("w-5 h-5 flex-shrink-0", isActive ? "text-primary-foreground" : "text-muted-foreground group-hover:text-foreground")} />
-                        <div className="flex-1 min-w-0">
-                          <ResponsiveText variant="body" className={cn("font-medium truncate", isActive ? "text-primary-foreground" : "text-foreground")}>
-                            {item.label}
-                          </ResponsiveText>
-                          <ResponsiveText variant="small" className={cn("truncate", isActive ? "text-primary-foreground/80" : "text-muted-foreground")}>
-                            {item.description}
-                          </ResponsiveText>
-                        </div>
-                        {item.badge && <Badge variant={isActive ? "secondary" : "default"} className="text-xs">{item.badge}</Badge>}
-                      </button>;
+                  <Icon className={cn("w-5 h-5 flex-shrink-0", isActive ? "text-primary-foreground" : "text-muted-foreground group-hover:text-foreground")} />
+                  <div className="flex-1 min-w-0">
+                    <ResponsiveText variant="body" className={cn("font-medium truncate", isActive ? "text-primary-foreground" : "text-foreground")}>
+                      {item.label}
+                    </ResponsiveText>
+                    <ResponsiveText variant="small" className={cn("truncate", isActive ? "text-primary-foreground/80" : "text-muted-foreground")}>
+                      {item.description}
+                    </ResponsiveText>
+                  </div>
+                  {item.badge && <Badge variant={isActive ? "secondary" : "default"} className="text-xs">{item.badge}</Badge>}
+                </button>;
               })}
+            </div>
+          </div>)}
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <main className="flex-1 overflow-hidden">
+        <ResponsiveContainer>
+          {/* Content Header - Remove spacing for content management tabs */}
+          {activeTab !== "dashboard" && activeTab !== "notifications" && activeTab !== "news" && activeTab !== "concursos" && activeTab !== "acervo" && activeTab !== "organigrama" && activeTab !== "departamentos" && activeTab !== "setores" && activeTab !== "content" && activeTab !== "carousel" && activeTab !== "events" && <ResponsiveSection spacing="sm">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+
+            </div>
+          </ResponsiveSection>}
+
+          {/* Tab Content - Remove spacing for content management tabs */}
+          <ResponsiveSection spacing={activeTab === "dashboard" || activeTab === "notifications" || activeTab === "news" || activeTab === "concursos" || activeTab === "acervo" || activeTab === "organigrama" || activeTab === "departamentos" || activeTab === "setores" || activeTab === "content" || activeTab === "carousel" || activeTab === "events" ? "none" : "lg"}>
+            <div className="min-h-[calc(100vh-12rem)]">
+              {activeTab === "dashboard" && (
+                <div className="space-y-6">
+                  <ModernDashboardStats />
+                  <SiteVisitsReport />
                 </div>
-              </div>)}
-          </div>
-        </aside>
-
-        {/* Main Content */}
-        <main className="flex-1 overflow-hidden">
-          <ResponsiveContainer>
-            {/* Content Header - Remove spacing for content management tabs */}
-            {activeTab !== "dashboard" && activeTab !== "notifications" && activeTab !== "news" && activeTab !== "concursos" && activeTab !== "acervo" && activeTab !== "organigrama" && activeTab !== "departamentos" && activeTab !== "setores" && activeTab !== "content" && activeTab !== "carousel" && activeTab !== "events" && <ResponsiveSection spacing="sm">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-                  
+              )}
+              {activeTab === "notifications" && <NotificationsManager />}
+              {activeTab === "news" && <NewsManager />}
+              {activeTab === "concursos" && <ConcursosManager />}
+              {activeTab === "acervo" && <AcervoDigitalManager />}
+              {activeTab === "organigrama" && <OrganigramaManager />}
+              {activeTab === "departamentos" && <DepartamentosManager />}
+              {activeTab === "setores" && <SetoresEstrategicosManager />}
+              {activeTab === "content" && <SiteContentManager />}
+              {activeTab === "carousel" && <HeroCarouselManager />}
+              {activeTab === "locations" && <LocationsManager />}
+              {activeTab === "emergency-contacts" && <EmergencyContactsManager />}
+              {activeTab === "transparency" && <TransparencyManager />}
+              {activeTab === "ouvidoria" && <OuvidoriaManager />}
+              {activeTab === "service-requests" && <ServiceRequestsManager />}
+              {activeTab === "interest-registrations" && <InterestRegistrationsManager />}
+              {activeTab === "population" && <PopulationHistoryManager />}
+              {activeTab === "characterization" && <MunicipalityCharacterizationManager />}
+              {activeTab === "events" && <EventsManager />}
+              {activeTab === "event-registrations" && <EventRegistrationsManager />}
+              {activeTab === "turismo-carousel" && <TurismoAmbienteCarouselManager />}
+              {activeTab === "users" && (canManageUsers ? <UserManager currentUserRole={role} /> : <AccessDenied title="Gestão de Utilizadores" message="Apenas administradores podem gerir utilizadores do sistema." />)}
+              {activeTab === "sector-access" && (canManageUsers ? <SectorAccessManager currentUserRole={role} currentUserSetorId={profile?.setor_id} /> : <AccessDenied title="Acesso por Setor" message="Apenas administradores podem configurar acesso por setor." />)}
+              {activeTab === "audit-logs" && (canViewAuditLogs ? <AuditLogsManager currentUserRole={role} /> : <AccessDenied title="Logs de Auditoria" message="Apenas administradores podem visualizar logs de auditoria." />)}
+              {activeTab === "settings" && (canAccessSystemSettings ? <SystemSettings /> : <AccessDenied title="Configurações do Sistema" message="Apenas administradores podem aceder às configurações do sistema." />)}
+              {/* Other tabs would be added here */}
+              {activeTab !== "dashboard" && activeTab !== "notifications" && activeTab !== "news" && activeTab !== "concursos" && activeTab !== "acervo" && activeTab !== "organigrama" && activeTab !== "departamentos" && activeTab !== "content" && activeTab !== "carousel" && activeTab !== "locations" && activeTab !== "emergency-contacts" && activeTab !== "transparency" && activeTab !== "ouvidoria" && activeTab !== "users" && activeTab !== "settings" && <ResponsiveCard className="text-center py-12">
+                <div className="w-16 h-16 bg-muted/20 rounded-xl flex items-center justify-center mx-auto mb-4">
+                  <Settings className="w-8 h-8 text-muted-foreground" />
                 </div>
-              </ResponsiveSection>}
+                <ResponsiveText variant="body" className="text-muted-foreground font-medium">
+                  Secção em desenvolvimento
+                </ResponsiveText>
+                <ResponsiveText variant="small" className="text-muted-foreground/70 mt-1">
+                  Esta funcionalidade será implementada em breve
+                </ResponsiveText>
+              </ResponsiveCard>}
+            </div>
+          </ResponsiveSection>
+        </ResponsiveContainer>
+      </main>
 
-            {/* Tab Content - Remove spacing for content management tabs */}
-            <ResponsiveSection spacing={activeTab === "dashboard" || activeTab === "notifications" || activeTab === "news" || activeTab === "concursos" || activeTab === "acervo" || activeTab === "organigrama" || activeTab === "departamentos" || activeTab === "setores" || activeTab === "content" || activeTab === "carousel" || activeTab === "events" ? "none" : "lg"}>
-              <div className="min-h-[calc(100vh-12rem)]">
-                {activeTab === "dashboard" && <ModernDashboardStats />}
-                {activeTab === "notifications" && <NotificationsManager />}
-                {activeTab === "news" && <NewsManager />}
-                {activeTab === "concursos" && <ConcursosManager />}
-                {activeTab === "acervo" && <AcervoDigitalManager />}
-                {activeTab === "organigrama" && <OrganigramaManager />}
-                {activeTab === "departamentos" && <DepartamentosManager />}
-                {activeTab === "setores" && <SetoresEstrategicosManager />}
-                {activeTab === "content" && <SiteContentManager />}
-                {activeTab === "carousel" && <HeroCarouselManager />}
-                {activeTab === "locations" && <LocationsManager />}
-                {activeTab === "emergency-contacts" && <EmergencyContactsManager />}
-                {activeTab === "transparency" && <TransparencyManager />}
-                        {activeTab === "ouvidoria" && <OuvidoriaManager />}
-        {activeTab === "service-requests" && <ServiceRequestsManager />}
-        {activeTab === "interest-registrations" && <InterestRegistrationsManager />}
-        {activeTab === "population" && <PopulationHistoryManager />}
-                {activeTab === "characterization" && <MunicipalityCharacterizationManager />}
-                {activeTab === "events" && <EventsManager />}
-                {activeTab === "event-registrations" && <EventRegistrationsManager />}
-                {activeTab === "turismo-carousel" && <TurismoAmbienteCarouselManager />}
-                {activeTab === "users" && (canManageUsers ? <UserManager currentUserRole={role} /> : <AccessDenied title="Gestão de Utilizadores" message="Apenas administradores podem gerir utilizadores do sistema." />)}
-                {activeTab === "sector-access" && (canManageUsers ? <SectorAccessManager currentUserRole={role} currentUserSetorId={profile?.setor_id} /> : <AccessDenied title="Acesso por Setor" message="Apenas administradores podem configurar acesso por setor." />)}
-                {activeTab === "audit-logs" && (canViewAuditLogs ? <AuditLogsManager currentUserRole={role} /> : <AccessDenied title="Logs de Auditoria" message="Apenas administradores podem visualizar logs de auditoria." />)}
-                {activeTab === "settings" && (canAccessSystemSettings ? <SystemSettings /> : <AccessDenied title="Configurações do Sistema" message="Apenas administradores podem aceder às configurações do sistema." />)}
-                {/* Other tabs would be added here */}
-                {activeTab !== "dashboard" && activeTab !== "notifications" && activeTab !== "news" && activeTab !== "concursos" && activeTab !== "acervo" && activeTab !== "organigrama" && activeTab !== "departamentos" && activeTab !== "content" && activeTab !== "carousel" && activeTab !== "locations" && activeTab !== "emergency-contacts" && activeTab !== "transparency" && activeTab !== "ouvidoria" && activeTab !== "users" && activeTab !== "settings" && <ResponsiveCard className="text-center py-12">
-                    <div className="w-16 h-16 bg-muted/20 rounded-xl flex items-center justify-center mx-auto mb-4">
-                      <Settings className="w-8 h-8 text-muted-foreground" />
-                    </div>
-                    <ResponsiveText variant="body" className="text-muted-foreground font-medium">
-                      Secção em desenvolvimento
-                    </ResponsiveText>
-                    <ResponsiveText variant="small" className="text-muted-foreground/70 mt-1">
-                      Esta funcionalidade será implementada em breve
-                    </ResponsiveText>
-                  </ResponsiveCard>}
-              </div>
-            </ResponsiveSection>
-          </ResponsiveContainer>
-        </main>
+      {/* Help Page Modal */}
+      <HelpPage open={showHelp} onOpenChange={setShowHelp} />
+    </div>
 
-        {/* Help Page Modal */}
-        <HelpPage open={showHelp} onOpenChange={setShowHelp} />
-      </div>
+    {/* Mobile Bottom Navigation */}
+    <div className={cn("fixed bottom-0 left-0 right-0 z-50 lg:hidden transition-transform duration-300", showBottomNav ? "translate-y-0" : "translate-y-full")}>
+      <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg border-t border-border/50 shadow-lg">
+        <div className="flex items-center justify-around p-2">
+          {/* Quick Actions */}
+          <button className="flex flex-col items-center gap-1 p-2 rounded-lg transition-all duration-200 min-w-0 flex-1 text-muted-foreground hover:text-foreground hover:bg-muted/50" onClick={handleRefreshData}>
+            <RefreshCw className="w-5 h-5" />
+            <span className="text-xs font-medium">Actualizar</span>
+          </button>
 
-      {/* Mobile Bottom Navigation */}
-      <div className={cn("fixed bottom-0 left-0 right-0 z-50 lg:hidden transition-transform duration-300", showBottomNav ? "translate-y-0" : "translate-y-full")}>
-        <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg border-t border-border/50 shadow-lg">
-          <div className="flex items-center justify-around p-2">
-            {/* Quick Actions */}
-            <button className="flex flex-col items-center gap-1 p-2 rounded-lg transition-all duration-200 min-w-0 flex-1 text-muted-foreground hover:text-foreground hover:bg-muted/50" onClick={handleRefreshData}>
-              <RefreshCw className="w-5 h-5" />
-              <span className="text-xs font-medium">Actualizar</span>
-            </button>
-            
-            <button className="flex flex-col items-center gap-1 p-2 rounded-lg transition-all duration-200 min-w-0 flex-1 text-muted-foreground hover:text-foreground hover:bg-muted/50" onClick={handleExportData}>
-              <Download className="w-5 h-5" />
-              <span className="text-xs font-medium">Exportar</span>
-            </button>
-            
-            <button className="flex flex-col items-center gap-1 p-2 rounded-lg transition-all duration-200 min-w-0 flex-1 text-muted-foreground hover:text-foreground hover:bg-muted/50" onClick={handleOpenHelp}>
-              <HelpCircle className="w-5 h-5" />
-              <span className="text-xs font-medium">Ajuda</span>
-            </button>
-            
-            <button className="flex flex-col items-center gap-1 p-2 rounded-lg transition-all duration-200 min-w-0 flex-1 text-muted-foreground hover:text-foreground hover:bg-muted/50" onClick={() => setSidebarOpen(true)}>
-              <MenuIcon className="w-5 h-5" />
-              <span className="text-xs font-medium">Menu</span>
-            </button>
-          </div>
+          <button className="flex flex-col items-center gap-1 p-2 rounded-lg transition-all duration-200 min-w-0 flex-1 text-muted-foreground hover:text-foreground hover:bg-muted/50" onClick={handleExportData}>
+            <Download className="w-5 h-5" />
+            <span className="text-xs font-medium">Exportar</span>
+          </button>
+
+          <button className="flex flex-col items-center gap-1 p-2 rounded-lg transition-all duration-200 min-w-0 flex-1 text-muted-foreground hover:text-foreground hover:bg-muted/50" onClick={handleOpenHelp}>
+            <HelpCircle className="w-5 h-5" />
+            <span className="text-xs font-medium">Ajuda</span>
+          </button>
+
+          <button className="flex flex-col items-center gap-1 p-2 rounded-lg transition-all duration-200 min-w-0 flex-1 text-muted-foreground hover:text-foreground hover:bg-muted/50" onClick={() => setSidebarOpen(true)}>
+            <MenuIcon className="w-5 h-5" />
+            <span className="text-xs font-medium">Menu</span>
+          </button>
         </div>
       </div>
-    </div>;
+    </div>
+  </div>;
 };
 export default Admin;

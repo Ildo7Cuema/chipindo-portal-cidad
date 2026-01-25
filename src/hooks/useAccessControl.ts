@@ -60,7 +60,7 @@ export const defaultAccessConfig: AccessControlConfig = {
       'ouvidoria',          // Ouvidoria
       'interest-registrations' // Gestão de Informações/Estatísticas
     ],
-    'sector-mineiro': [
+    'setor-mineiro': [
       'concursos',           // Gestão de Concursos
       'service-requests',    // Gestão de Solicitações
       'ouvidoria',          // Ouvidoria
@@ -103,29 +103,29 @@ export function useAccessControl(config: AccessControlConfig = defaultAccessConf
   // Função para verificar se o utilizador pode aceder a um item específico
   const canAccessItem = (itemId: string): boolean => {
     if (isAdmin) return true; // Admin tem acesso total
-    
+
     const userRole = profile?.role as UserRole;
-    
+
     // Verificar se é item apenas para admin
     if (config.adminOnly.includes(itemId)) {
       return isAdmin;
     }
-    
+
     // Verificar se é item público
     if (config.publicItems.includes(itemId)) {
       return true;
     }
-    
+
     // Verificar se é item para editor
     if (config.editorItems.includes(itemId)) {
       return isAdmin || isEditor;
     }
-    
+
     // Verificar se é item específico do setor
     if (isSectorUser && config.sectorItems[userRole]) {
       return config.sectorItems[userRole].includes(itemId);
     }
-    
+
     return false;
   };
 
@@ -176,7 +176,7 @@ export function useAccessControl(config: AccessControlConfig = defaultAccessConf
     isSectorUser,
     role,
     profile,
-    
+
     // Funções de verificação
     canAccessItem,
     canManageUsers,
@@ -184,14 +184,14 @@ export function useAccessControl(config: AccessControlConfig = defaultAccessConf
     canAccessSystemSettings,
     canManageContent,
     canAccessSector,
-    
+
     // Funções de filtro
     getFilteredMenuItems,
-    
+
     // Funções de setor
     getCurrentSector,
     getCurrentSectorName,
-    
+
     // Configuração
     accessConfig: config
   };

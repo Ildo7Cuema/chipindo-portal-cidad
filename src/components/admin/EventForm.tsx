@@ -14,9 +14,10 @@ interface EventFormProps {
   event?: Event | null;
   onClose: () => void;
   onSuccess: () => void;
+  setorId?: string | null;
 }
 
-export const EventForm = ({ event, onClose, onSuccess }: EventFormProps) => {
+export const EventForm = ({ event, onClose, onSuccess, setorId }: EventFormProps) => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -75,13 +76,16 @@ export const EventForm = ({ event, onClose, onSuccess }: EventFormProps) => {
           description: "O evento foi atualizado com sucesso"
         });
       } else {
-        await createEvent(formData);
+        await createEvent({
+          ...formData,
+          setor_id: setorId
+        });
         toast({
           title: "Evento criado",
           description: "O evento foi criado com sucesso"
         });
       }
-      
+
       onSuccess();
       onClose();
     } catch (error) {
@@ -129,7 +133,7 @@ export const EventForm = ({ event, onClose, onSuccess }: EventFormProps) => {
             <X className="w-4 h-4" />
           </Button>
         </CardHeader>
-        
+
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Informações Básicas */}
@@ -144,7 +148,7 @@ export const EventForm = ({ event, onClose, onSuccess }: EventFormProps) => {
                   placeholder="Título do evento"
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="category">Categoria *</Label>
                 <Select value={formData.category} onValueChange={(value) => handleInputChange('category', value)}>
@@ -186,7 +190,7 @@ export const EventForm = ({ event, onClose, onSuccess }: EventFormProps) => {
                   required
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="event_time">Hora</Label>
                 <Input
@@ -196,7 +200,7 @@ export const EventForm = ({ event, onClose, onSuccess }: EventFormProps) => {
                   onChange={(e) => handleInputChange('event_time', e.target.value)}
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="status">Estado</Label>
                 <Select value={formData.status} onValueChange={(value) => handleInputChange('status', value)}>
@@ -226,7 +230,7 @@ export const EventForm = ({ event, onClose, onSuccess }: EventFormProps) => {
                   placeholder="Local do evento"
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="organizer">Organizador *</Label>
                 <Input
@@ -251,7 +255,7 @@ export const EventForm = ({ event, onClose, onSuccess }: EventFormProps) => {
                   placeholder="+244 123 456 789"
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="email">Email *</Label>
                 <Input
@@ -287,7 +291,7 @@ export const EventForm = ({ event, onClose, onSuccess }: EventFormProps) => {
                   placeholder="Gratuito"
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="max_participants">Máximo de Participantes</Label>
                 <Input
@@ -298,7 +302,7 @@ export const EventForm = ({ event, onClose, onSuccess }: EventFormProps) => {
                   min="0"
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="current_participants">Participantes Atuais</Label>
                 <Input

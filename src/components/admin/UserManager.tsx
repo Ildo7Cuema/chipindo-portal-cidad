@@ -83,7 +83,7 @@ const userRoles = [
   { value: 'educacao', label: 'Direção de Educação', icon: GraduationCap, color: 'blue', description: 'Acesso à área de Educação' },
   { value: 'saude', label: 'Direção de Saúde', icon: Heart, color: 'red', description: 'Acesso à área de Saúde' },
   { value: 'agricultura', label: 'Direção de Agricultura', icon: Sprout, color: 'green', description: 'Acesso à área de Agricultura' },
-  { value: 'sector-mineiro', label: 'Direção do Setor Mineiro', icon: Pickaxe, color: 'yellow', description: 'Acesso ao Setor Mineiro' },
+  { value: 'setor-mineiro', label: 'Direção do Setor Mineiro', icon: Pickaxe, color: 'yellow', description: 'Acesso ao Setor Mineiro' },
   { value: 'desenvolvimento-economico', label: 'Direção de Desenvolvimento Económico', icon: TrendingUp, color: 'emerald', description: 'Acesso ao Desenvolvimento Económico' },
   { value: 'cultura', label: 'Direção de Cultura', icon: Palette, color: 'purple', description: 'Acesso à área de Cultura' },
   { value: 'tecnologia', label: 'Direção de Tecnologia', icon: Cpu, color: 'indigo', description: 'Acesso à área de Tecnologia' },
@@ -95,7 +95,7 @@ const mockSetores: SetorEstrategico[] = [
   { id: '1', nome: 'Educação', slug: 'educacao' },
   { id: '2', nome: 'Saúde', slug: 'saude' },
   { id: '3', nome: 'Agricultura', slug: 'agricultura' },
-  { id: '4', nome: 'Setor Mineiro', slug: 'sector-mineiro' },
+  { id: '4', nome: 'Setor Mineiro', slug: 'setor-mineiro' },
   { id: '5', nome: 'Desenvolvimento Económico', slug: 'desenvolvimento-economico' },
   { id: '6', nome: 'Cultura', slug: 'cultura' },
   { id: '7', nome: 'Tecnologia', slug: 'tecnologia' },
@@ -494,9 +494,16 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
       console.log('Iniciando exclusão do utilizador:', userId);
 
       // Usar a função SQL completa para exclusão
-      const { data: result, error } = await supabase.rpc('delete_user_complete', {
+      const { data: rpcData, error } = await supabase.rpc('delete_user_complete', {
         user_profile_id: userId
       });
+
+      const result = rpcData as {
+        success: boolean;
+        auth_deleted: boolean;
+        user_email: string;
+        message?: string;
+      } | null;
 
       if (error) {
         console.error('Erro na exclusão:', error);

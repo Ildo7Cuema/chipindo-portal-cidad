@@ -1,13 +1,13 @@
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { 
-  MenuIcon, 
-  XIcon, 
-  UserIcon, 
-  FileTextIcon, 
-  ImageIcon, 
-  CalendarIcon, 
+import {
+  MenuIcon,
+  XIcon,
+  UserIcon,
+  FileTextIcon,
+  ImageIcon,
+  CalendarIcon,
   BuildingIcon,
   HomeIcon,
   PhoneIcon,
@@ -51,7 +51,7 @@ export const Navigation = ({ className }: NavigationProps) => {
     { label: "Educação", href: "/educacao", icon: GraduationCapIcon },
     { label: "Saúde", href: "/saude", icon: HeartIcon },
     { label: "Agricultura", href: "/agricultura", icon: SproutIcon },
-    { label: "Sector Mineiro", href: "/sector-mineiro", icon: PickaxeIcon },
+    { label: "Sector Mineiro", href: "/setor-mineiro", icon: PickaxeIcon },
     { label: "Desenvolvimento Económico", href: "/desenvolvimento-economico", icon: TrendingUpIcon },
     { label: "Cultura", href: "/cultura", icon: PaletteIcon },
     { label: "Tecnologia", href: "/tecnologia", icon: CpuIcon },
@@ -73,7 +73,7 @@ export const Navigation = ({ className }: NavigationProps) => {
         {navItems.map((item) => {
           const IconComponent = item.icon;
           const active = isActive(item.href);
-          
+
           return (
             <Button
               key={item.label}
@@ -81,8 +81,8 @@ export const Navigation = ({ className }: NavigationProps) => {
               size="sm"
               className={cn(
                 "h-8 px-2 text-xs font-medium transition-colors duration-200",
-                active 
-                  ? "bg-primary/10 text-primary" 
+                active
+                  ? "bg-primary/10 text-primary"
                   : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
               )}
               onClick={() => handleNavClick(item.href)}
@@ -98,10 +98,10 @@ export const Navigation = ({ className }: NavigationProps) => {
           <Button
             variant="ghost"
             size="sm"
-              className={cn(
-                "h-8 px-2 text-xs font-medium transition-colors duration-200",
+            className={cn(
+              "h-8 px-2 text-xs font-medium transition-colors duration-200",
               isSetoresOpen || setoresItems.some(item => isActive(item.href))
-                ? "bg-primary/10 text-primary" 
+                ? "bg-primary/10 text-primary"
                 : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
             )}
             onClick={() => setIsSetoresOpen(!isSetoresOpen)}
@@ -118,7 +118,7 @@ export const Navigation = ({ className }: NavigationProps) => {
 
           {/* Dropdown Menu */}
           {isSetoresOpen && (
-            <div 
+            <div
               className="absolute top-full left-0 mt-1 w-64 bg-card border border-border rounded-lg shadow-floating z-50"
               onMouseEnter={() => setIsSetoresOpen(true)}
               onMouseLeave={() => setIsSetoresOpen(false)}
@@ -130,14 +130,14 @@ export const Navigation = ({ className }: NavigationProps) => {
                 {setoresItems.map((item) => {
                   const IconComponent = item.icon;
                   const active = isActive(item.href);
-                  
+
                   return (
                     <button
                       key={item.label}
                       className={cn(
                         "w-full flex items-center gap-3 text-left p-2.5 rounded-md transition-colors duration-200",
-                        active 
-                          ? "bg-primary/10 text-primary" 
+                        active
+                          ? "bg-primary/10 text-primary"
                           : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                       )}
                       onClick={() => {
@@ -171,28 +171,28 @@ export const Navigation = ({ className }: NavigationProps) => {
       {/* Mobile Navigation */}
       {isMenuOpen && (
         <>
-          <div 
+          <div
             className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden"
             onClick={() => setIsMenuOpen(false)}
           />
-          
+
           <div className="absolute top-full right-0 w-64 bg-card border border-border rounded-lg shadow-floating mt-2 lg:hidden z-50 overflow-hidden">
             <div className="p-3 border-b border-border bg-muted/50">
               <h3 className="font-medium text-sm text-foreground">Menu</h3>
             </div>
-            
+
             <div className="p-2">
               {navItems.map((item) => {
                 const IconComponent = item.icon;
                 const active = isActive(item.href);
-                
+
                 return (
                   <button
                     key={item.label}
                     className={cn(
                       "w-full flex items-center gap-3 text-left p-2.5 rounded-md transition-colors duration-200",
-                      active 
-                        ? "bg-primary/10 text-primary" 
+                      active
+                        ? "bg-primary/10 text-primary"
                         : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                     )}
                     onClick={() => handleNavClick(item.href)}
@@ -211,14 +211,14 @@ export const Navigation = ({ className }: NavigationProps) => {
                 {setoresItems.map((item) => {
                   const IconComponent = item.icon;
                   const active = isActive(item.href);
-                  
+
                   return (
                     <button
                       key={item.label}
                       className={cn(
                         "w-full flex items-center gap-3 text-left p-2.5 rounded-md transition-colors duration-200",
-                        active 
-                          ? "bg-primary/10 text-primary" 
+                        active
+                          ? "bg-primary/10 text-primary"
                           : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                       )}
                       onClick={() => handleNavClick(item.href)}
@@ -229,11 +229,11 @@ export const Navigation = ({ className }: NavigationProps) => {
                   );
                 })}
               </div>
-              
+
               <div className="border-t border-border mt-2 pt-2">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  variant="outline"
+                  size="sm"
                   className="w-full h-8 text-sm"
                   onClick={() => {
                     setIsMenuOpen(false);

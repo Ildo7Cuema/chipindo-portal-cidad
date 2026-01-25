@@ -29,7 +29,7 @@ import Ouvidoria from "./pages/Ouvidoria";
 import Educacao from "./pages/Educacao";
 import Saude from "./pages/Saude";
 import Agricultura from "./pages/Agricultura";
-import SectorMineiro from "./pages/SectorMineiro";
+import SetorMineiro from "./pages/SetorMineiro";
 import DesenvolvimentoEconomico from "./pages/DesenvolvimentoEconomico";
 import Cultura from "./pages/Cultura";
 import Tecnologia from "./pages/Tecnologia";
@@ -92,7 +92,7 @@ const App = () => (
                 <Route path="/educacao" element={<Educacao />} />
                 <Route path="/saude" element={<Saude />} />
                 <Route path="/agricultura" element={<Agricultura />} />
-                <Route path="/sector-mineiro" element={<SectorMineiro />} />
+                <Route path="/setor-mineiro" element={<SetorMineiro />} />
                 <Route path="/desenvolvimento-economico" element={<DesenvolvimentoEconomico />} />
                 <Route path="/cultura" element={<Cultura />} />
                 <Route path="/tecnologia" element={<Tecnologia />} />

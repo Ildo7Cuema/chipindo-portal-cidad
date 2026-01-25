@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { 
+import {
   Breadcrumb,
   BreadcrumbList,
   BreadcrumbItem,
@@ -21,7 +21,7 @@ const setorIcons: { [key: string]: React.ComponentType<any> } = {
   educacao: BuildingIcon,
   saude: BuildingIcon,
   agricultura: BuildingIcon,
-  'sector-mineiro': BuildingIcon,
+  'setor-mineiro': BuildingIcon,
   'desenvolvimento-economico': BuildingIcon,
   cultura: BuildingIcon,
   tecnologia: BuildingIcon,
@@ -36,8 +36,8 @@ export const SetorBreadcrumb = ({ setor, className }: SetorBreadcrumbProps) => {
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <Link 
-                to="/" 
+              <Link
+                to="/"
                 className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
               >
                 <HomeIcon className="w-4 h-4" />
@@ -45,13 +45,13 @@ export const SetorBreadcrumb = ({ setor, className }: SetorBreadcrumbProps) => {
               </Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
-          
+
           <BreadcrumbSeparator />
-          
+
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <Link 
-                to="/servicos" 
+              <Link
+                to="/servicos"
                 className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
               >
                 <BuildingIcon className="w-4 h-4" />
@@ -59,9 +59,9 @@ export const SetorBreadcrumb = ({ setor, className }: SetorBreadcrumbProps) => {
               </Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
-          
+
           <BreadcrumbSeparator />
-          
+
           <BreadcrumbItem>
             <BreadcrumbPage className="flex items-center gap-2">
               <BuildingIcon className="w-4 h-4" />
@@ -80,8 +80,8 @@ export const SetorBreadcrumb = ({ setor, className }: SetorBreadcrumbProps) => {
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink asChild>
-            <Link 
-              to="/" 
+            <Link
+              to="/"
               className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
             >
               <HomeIcon className="w-4 h-4" />
@@ -89,13 +89,13 @@ export const SetorBreadcrumb = ({ setor, className }: SetorBreadcrumbProps) => {
             </Link>
           </BreadcrumbLink>
         </BreadcrumbItem>
-        
+
         <BreadcrumbSeparator />
-        
+
         <BreadcrumbItem>
           <BreadcrumbLink asChild>
-            <Link 
-              to="/servicos" 
+            <Link
+              to="/servicos"
               className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
             >
               <BuildingIcon className="w-4 h-4" />
@@ -103,9 +103,9 @@ export const SetorBreadcrumb = ({ setor, className }: SetorBreadcrumbProps) => {
             </Link>
           </BreadcrumbLink>
         </BreadcrumbItem>
-        
+
         <BreadcrumbSeparator />
-        
+
         <BreadcrumbItem>
           <BreadcrumbPage className="flex items-center gap-2">
             <SetorIcon className="w-4 h-4" />

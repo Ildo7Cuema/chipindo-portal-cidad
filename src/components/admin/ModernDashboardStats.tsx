@@ -99,6 +99,7 @@ import {
 } from "lucide-react";
 import { RecentActivity } from "./RecentActivity";
 import { useRealTimeStats } from "@/hooks/useRealTimeStats";
+import { useUserRole } from "@/hooks/useUserRole";
 import ExportUtils from "@/lib/export-utils";
 import { cn } from "@/lib/utils";
 
@@ -227,7 +228,8 @@ const PerformanceMetric = ({
 };
 
 export const ModernDashboardStats = () => {
-  const { stats } = useRealTimeStats();
+  const { role, setorId, isSectorUser, isAdmin } = useUserRole();
+  const { stats } = useRealTimeStats(role, setorId);
   const [activeView, setActiveView] = useState("overview");
   const [exportLoading, setExportLoading] = useState<string | null>(null);
   const [timeRange, setTimeRange] = useState("7d");

@@ -3,6 +3,7 @@ import { Hero } from "@/components/sections/Hero";
 import { NewsSection } from "@/components/sections/NewsSection";
 import { ConcursosSection } from "@/components/sections/ConcursosSection";
 import { Footer } from "@/components/sections/Footer";
+import { MunicipalityCharacterization } from "@/components/sections/MunicipalityCharacterization";
 import { Section, SectionHeader, SectionContent } from "@/components/ui/section";
 import { StatCard } from "@/components/ui/stat-card";
 import { Card, CardContent } from "@/components/ui/card";
@@ -170,6 +171,9 @@ const Index = () => {
           </SectionContent>
         </Section>
 
+        {/* Municipality Characterization Section */}
+        <MunicipalityCharacterization />
+
 
 
         {/* Services Section - Only show if we have directions */}
@@ -266,94 +270,94 @@ const Index = () => {
         <NewsSection />
         <ConcursosSection />
 
-        {/* Emergency Contact Section - Organized */ }
-  {
-    !emergencyLoading && emergencyContacts.length > 0 && (
-      <Section variant="primary" size="md" className="relative overflow-hidden">
-        {/* Animated background pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `radial-gradient(circle at 20% 50%, currentColor 2px, transparent 2px),
+        {/* Emergency Contact Section - Organized */}
+        {
+          !emergencyLoading && emergencyContacts.length > 0 && (
+            <Section variant="primary" size="md" className="relative overflow-hidden">
+              {/* Animated background pattern */}
+              <div className="absolute inset-0 opacity-10">
+                <div className="absolute inset-0" style={{
+                  backgroundImage: `radial-gradient(circle at 20% 50%, currentColor 2px, transparent 2px),
                                  radial-gradient(circle at 80% 50%, currentColor 3px, transparent 3px)`,
-            backgroundSize: '100px 100px, 120px 120px',
-            backgroundPosition: '0 0, 50px 50px'
-          }} />
-        </div>
-
-        <SectionContent className="relative z-10">
-          <div className="text-center space-y-8">
-            <div className="space-y-4">
-              <div className="flex items-center justify-center gap-3">
-                <div className="relative">
-                  <ShieldCheckIcon className="w-10 h-10 text-primary-foreground" />
-                  <div className="absolute inset-0 w-10 h-10 bg-white/20 rounded-full animate-ping" />
-                </div>
-                <h3 className="text-3xl font-bold">
-                  <span className="text-primary-foreground">Contactos de</span>{' '}
-                  <span className="bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">
-                    Emergência
-                  </span>
-                </h3>
+                  backgroundSize: '100px 100px, 120px 120px',
+                  backgroundPosition: '0 0, 50px 50px'
+                }} />
               </div>
-              <p className="text-primary-foreground/95 max-w-3xl mx-auto text-lg">
-                Em caso de emergência, contacte imediatamente os serviços de emergência oficiais do município
-              </p>
-            </div>
 
-            <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-              {emergencyContacts
-                .sort((a, b) => a.priority - b.priority)
-                .slice(0, 3)
-                .map((contact) => (
-                  <Card key={contact.id} className="bg-primary-foreground/20 backdrop-blur-xl border-primary-foreground/30 hover:bg-primary-foreground/30 transition-all duration-300 group">
-                    <CardContent className="flex items-center gap-4 p-6">
+              <SectionContent className="relative z-10">
+                <div className="text-center space-y-8">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-center gap-3">
                       <div className="relative">
-                        <PhoneIcon className="w-8 h-8 text-primary-foreground group-hover:scale-110 transition-transform duration-300" />
-                        <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse" />
+                        <ShieldCheckIcon className="w-10 h-10 text-primary-foreground" />
+                        <div className="absolute inset-0 w-10 h-10 bg-white/20 rounded-full animate-ping" />
                       </div>
-                      <div className="text-left">
-                        <p className="text-primary-foreground font-bold text-lg">{contact.name}</p>
-                        <p className="text-primary-foreground/90 text-sm">{contact.phone}</p>
-                        {contact.description && (
-                          <p className="text-primary-foreground/70 text-xs">{contact.description}</p>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-            </div>
-
-            {/* General emergency info */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-              <Card className="bg-primary-foreground/20 backdrop-blur-xl border-primary-foreground/30 hover:bg-primary-foreground/30 transition-all duration-300 group">
-                <CardContent className="flex items-center gap-4 p-6">
-                  <ClockIcon className="w-8 h-8 text-primary-foreground group-hover:scale-110 transition-transform duration-300" />
-                  <div className="text-left">
-                    <p className="text-primary-foreground font-bold text-lg">Disponível 24h</p>
-                    <p className="text-primary-foreground/90 text-sm">Atendimento permanente</p>
+                      <h3 className="text-3xl font-bold">
+                        <span className="text-primary-foreground">Contactos de</span>{' '}
+                        <span className="bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">
+                          Emergência
+                        </span>
+                      </h3>
+                    </div>
+                    <p className="text-primary-foreground/95 max-w-3xl mx-auto text-lg">
+                      Em caso de emergência, contacte imediatamente os serviços de emergência oficiais do município
+                    </p>
                   </div>
-                </CardContent>
-              </Card>
 
-              <Card className="bg-primary-foreground/20 backdrop-blur-xl border-primary-foreground/30 hover:bg-primary-foreground/30 transition-all duration-300 group">
-                <CardContent className="flex items-center gap-4 p-6">
-                  <GlobeIcon className="w-8 h-8 text-primary-foreground group-hover:scale-110 transition-transform duration-300" />
-                  <div className="text-left">
-                    <p className="text-primary-foreground font-bold text-lg">Cobertura Total</p>
-                    <p className="text-primary-foreground/90 text-sm">Todo o município</p>
+                  <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                    {emergencyContacts
+                      .sort((a, b) => a.priority - b.priority)
+                      .slice(0, 3)
+                      .map((contact) => (
+                        <Card key={contact.id} className="bg-primary-foreground/20 backdrop-blur-xl border-primary-foreground/30 hover:bg-primary-foreground/30 transition-all duration-300 group">
+                          <CardContent className="flex items-center gap-4 p-6">
+                            <div className="relative">
+                              <PhoneIcon className="w-8 h-8 text-primary-foreground group-hover:scale-110 transition-transform duration-300" />
+                              <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse" />
+                            </div>
+                            <div className="text-left">
+                              <p className="text-primary-foreground font-bold text-lg">{contact.name}</p>
+                              <p className="text-primary-foreground/90 text-sm">{contact.phone}</p>
+                              {contact.description && (
+                                <p className="text-primary-foreground/70 text-xs">{contact.description}</p>
+                              )}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
                   </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </SectionContent>
-      </Section>
-    )
-  }
+
+                  {/* General emergency info */}
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+                    <Card className="bg-primary-foreground/20 backdrop-blur-xl border-primary-foreground/30 hover:bg-primary-foreground/30 transition-all duration-300 group">
+                      <CardContent className="flex items-center gap-4 p-6">
+                        <ClockIcon className="w-8 h-8 text-primary-foreground group-hover:scale-110 transition-transform duration-300" />
+                        <div className="text-left">
+                          <p className="text-primary-foreground font-bold text-lg">Disponível 24h</p>
+                          <p className="text-primary-foreground/90 text-sm">Atendimento permanente</p>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="bg-primary-foreground/20 backdrop-blur-xl border-primary-foreground/30 hover:bg-primary-foreground/30 transition-all duration-300 group">
+                      <CardContent className="flex items-center gap-4 p-6">
+                        <GlobeIcon className="w-8 h-8 text-primary-foreground group-hover:scale-110 transition-transform duration-300" />
+                        <div className="text-left">
+                          <p className="text-primary-foreground font-bold text-lg">Cobertura Total</p>
+                          <p className="text-primary-foreground/90 text-sm">Todo o município</p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+              </SectionContent>
+            </Section>
+          )
+        }
 
       </main >
 
-  <Footer />
+      <Footer />
     </div >
   );
 };

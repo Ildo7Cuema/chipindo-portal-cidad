@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  ZapIcon,
+  PickaxeIcon,
   UsersIcon,
   BuildingIcon,
   HeartHandshakeIcon,
@@ -33,7 +33,7 @@ import { useSetoresEstrategicos } from "@/hooks/useSetoresEstrategicos";
 import { SetorCompleto } from "@/hooks/useSetoresEstrategicos";
 import { cn } from "@/lib/utils";
 
-const EnergiaAgua = () => {
+const SectorMineiro = () => {
   const { getSetorBySlug } = useSetoresEstrategicos();
   const [setor, setSetor] = useState<SetorCompleto | null>(null);
   const [loading, setLoading] = useState(true);
@@ -75,7 +75,8 @@ const EnergiaAgua = () => {
       try {
         setLoading(true);
         setError(null);
-        const data = await getSetorBySlug('energia-agua');
+        // Corrigido para corresponder ao slug no banco de dados
+        const data = await getSetorBySlug('setor-mineiro');
         if (!isMounted) return;
         // Garantir que arrays são arrays (parse se vierem como string)
         if (data) {
@@ -119,7 +120,7 @@ const EnergiaAgua = () => {
               {error || 'Sector não encontrado'}
             </h1>
             <p className="text-muted-foreground">
-              O sector de EnergiaAgua não está disponível no momento.
+              O sector de SectorMineiro não está disponível no momento.
             </p>
           </div>
         </div>
@@ -130,7 +131,7 @@ const EnergiaAgua = () => {
 
   const getIconComponent = (iconName: string) => {
     const iconMap: { [key: string]: any } = {
-      'Zap': ZapIcon,
+      'Pickaxe': PickaxeIcon,
       'Users': UsersIcon,
       'Building': BuildingIcon,
       'HeartHandshake': HeartHandshakeIcon,
@@ -145,7 +146,7 @@ const EnergiaAgua = () => {
       'Star': StarIcon,
       'TrendingUp': TrendingUpIcon
     };
-    return iconMap[iconName] || ZapIcon;
+    return iconMap[iconName] || PickaxeIcon;
   };
 
   return (
@@ -193,10 +194,10 @@ const EnergiaAgua = () => {
                   <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
                     <CardHeader className="pb-4">
                       <div className="flex items-center gap-3 mb-3">
-                        <div className="p-2 bg-cyan-100 rounded-lg">
-                          <HeartHandshakeIcon className="w-5 h-5 text-cyan-600" />
+                        <div className="p-2 bg-yellow-100 rounded-lg">
+                          <HeartHandshakeIcon className="w-5 h-5 text-yellow-600" />
                         </div>
-                        <Badge className="bg-cyan-100 text-cyan-800">
+                        <Badge className="bg-yellow-100 text-yellow-800">
                           Programa
                         </Badge>
                       </div>
@@ -225,7 +226,7 @@ const EnergiaAgua = () => {
                           <ul className="space-y-1">
                             {programa.requisitos?.map((requisito: string, idx: number) => (
                               <li key={idx} className="text-sm text-muted-foreground flex items-center gap-2">
-                                <div className="w-1.5 h-1.5 bg-cyan-500 rounded-full" />
+                                <div className="w-1.5 h-1.5 bg-yellow-500 rounded-full" />
                                 {requisito}
                               </li>
                             ))}
@@ -505,4 +506,4 @@ const EnergiaAgua = () => {
   );
 };
 
-export default EnergiaAgua;
+export default SectorMineiro;

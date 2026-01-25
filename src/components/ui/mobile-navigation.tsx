@@ -2,15 +2,15 @@ import * as React from 'react';
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { 
-  MenuIcon, 
+import {
+  MenuIcon,
   HomeIcon,
-  FileTextIcon, 
-  CalendarIcon, 
-  ImageIcon, 
-  UserIcon, 
-  PhoneIcon, 
-  WrenchIcon, 
+  FileTextIcon,
+  CalendarIcon,
+  ImageIcon,
+  UserIcon,
+  PhoneIcon,
+  WrenchIcon,
   ChevronDownIcon,
   GraduationCapIcon,
   HeartIcon,
@@ -67,7 +67,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({ className })
     { label: "Educação", href: "/educacao", icon: GraduationCapIcon },
     { label: "Saúde", href: "/saude", icon: HeartIcon },
     { label: "Agricultura", href: "/agricultura", icon: SproutIcon },
-    { label: "Sector Mineiro", href: "/sector-mineiro", icon: PickaxeIcon },
+    { label: "Sector Mineiro", href: "/setor-mineiro", icon: PickaxeIcon },
     { label: "Desenvolvimento Económico", href: "/desenvolvimento-economico", icon: TrendingUpIcon },
     { label: "Cultura", href: "/cultura", icon: PaletteIcon },
     { label: "Tecnologia", href: "/tecnologia", icon: CpuIcon },
@@ -95,9 +95,9 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({ className })
             <MenuIcon className="w-5 h-5" />
           </Button>
         </SheetTrigger>
-        
-        <SheetContent 
-          side="left" 
+
+        <SheetContent
+          side="left"
           className="w-[85vw] max-w-sm p-0 bg-background/95 backdrop-blur-xl border-r border-border/50 flex flex-col h-full"
           style={{ height: '100vh' }}
         >
@@ -112,25 +112,25 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({ className })
               </div>
             </SheetTitle>
           </SheetHeader>
-          
+
           <div className="flex-1 overflow-y-auto min-h-0" style={{ height: 'calc(100vh - 80px)' }}>
             <div className="py-2">
               <div className="p-4 space-y-2">
                 <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 sticky top-0 bg-background/95 backdrop-blur-sm py-2 z-10">
                   Navegação Principal
                 </div>
-                
+
                 {mainNavItems.map((item) => {
                   const IconComponent = item.icon;
                   const active = isActive(item.href);
-                  
+
                   return (
                     <button
                       key={item.label}
                       className={cn(
                         "w-full flex items-center gap-3 text-left p-3 rounded-xl transition-all duration-200",
-                        active 
-                          ? "bg-primary/10 text-primary border border-primary/20" 
+                        active
+                          ? "bg-primary/10 text-primary border border-primary/20"
                           : "text-foreground hover:bg-muted/50 hover:text-primary"
                       )}
                       onClick={() => handleNavClick(item.href)}
@@ -147,7 +147,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({ className })
                 <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 sticky top-0 bg-background/95 backdrop-blur-sm py-2 z-10">
                   Sectores Estratégicos
                 </div>
-                
+
                 <button
                   className="w-full flex items-center justify-between p-3 rounded-xl transition-all duration-200 hover:bg-muted/50"
                   onClick={() => setIsSetoresOpen(!isSetoresOpen)}
@@ -161,20 +161,20 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({ className })
                     isSetoresOpen && "rotate-180"
                   )} />
                 </button>
-                
+
                 {isSetoresOpen && (
                   <div className="ml-4 space-y-1 animate-in slide-in-from-top-2 duration-200">
                     {setoresItems.map((item) => {
                       const IconComponent = item.icon;
                       const active = isActive(item.href);
-                      
+
                       return (
                         <button
                           key={item.label}
                           className={cn(
                             "w-full flex items-center gap-3 text-left p-2.5 rounded-lg transition-all duration-200 text-sm",
-                            active 
-                              ? "bg-primary/10 text-primary" 
+                            active
+                              ? "bg-primary/10 text-primary"
                               : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
                           )}
                           onClick={() => handleNavClick(item.href)}
@@ -192,18 +192,18 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({ className })
                 <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 sticky top-0 bg-background/95 backdrop-blur-sm py-2 z-10">
                   Outros Serviços
                 </div>
-                
+
                 {secondaryNavItems.map((item) => {
                   const IconComponent = item.icon;
                   const active = isActive(item.href);
-                  
+
                   return (
                     <button
                       key={item.label}
                       className={cn(
                         "w-full flex items-center gap-3 text-left p-3 rounded-xl transition-all duration-200",
-                        active 
-                          ? "bg-primary/10 text-primary border border-primary/20" 
+                        active
+                          ? "bg-primary/10 text-primary border border-primary/20"
                           : "text-foreground hover:bg-muted/50 hover:text-primary"
                       )}
                       onClick={() => handleNavClick(item.href)}
@@ -219,7 +219,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({ className })
                 <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 sticky top-0 bg-background/95 backdrop-blur-sm py-2 z-10">
                   Administração
                 </div>
-                
+
                 <button
                   className="w-full flex items-center gap-3 text-left p-3 rounded-xl transition-all duration-200 text-foreground hover:bg-muted/50 hover:text-primary"
                   onClick={() => {
@@ -246,14 +246,14 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({ className })
             {mainNavItems.map((item) => {
               const IconComponent = item.icon;
               const active = isActive(item.href);
-              
+
               return (
                 <button
                   key={item.label}
                   className={cn(
                     "flex flex-col items-center gap-1 p-2 rounded-lg transition-all duration-200 min-w-0 flex-1",
-                    active 
-                      ? "text-primary bg-primary/10" 
+                    active
+                      ? "text-primary bg-primary/10"
                       : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                   )}
                   onClick={() => handleNavClick(item.href)}
@@ -263,7 +263,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({ className })
                 </button>
               );
             })}
-            
+
             <button
               className="flex flex-col items-center gap-1 p-2 rounded-lg transition-all duration-200 min-w-0 flex-1 text-muted-foreground hover:text-foreground hover:bg-muted/50"
               onClick={() => setIsDrawerOpen(true)}

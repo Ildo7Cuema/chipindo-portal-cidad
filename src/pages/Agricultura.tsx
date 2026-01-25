@@ -3,7 +3,7 @@ import { Footer } from "@/components/sections/Footer";
 import { SetorBreadcrumb } from "@/components/ui/setor-breadcrumb";
 import { SetorNavigation } from "@/components/ui/setor-navigation";
 import { SetorStats } from "@/components/ui/setor-stats";
-import { SectorHero } from "@/components/ui/sector-hero";
+import { SectorHero } from "@/components/ui/setor-hero";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

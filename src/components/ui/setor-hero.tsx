@@ -45,7 +45,7 @@ const getSectorIcon = (slug: string) => {
     'educacao': GraduationCapIcon,
     'saude': HeartIcon,
     'agricultura': SproutIcon,
-    'sector-mineiro': MountainIcon,
+    'setor-mineiro': MountainIcon,
     'desenvolvimento-economico': BuildingIcon,
     'cultura': PaletteIcon,
     'tecnologia': ZapIcon,
@@ -59,7 +59,7 @@ const getSectorGradient = (slug: string) => {
     'educacao': 'from-blue-700 via-blue-800 to-indigo-900',
     'saude': 'from-red-700 via-red-800 to-pink-900',
     'agricultura': 'from-green-700 via-emerald-800 to-teal-900',
-    'sector-mineiro': 'from-slate-700 via-gray-800 to-zinc-900',
+    'setor-mineiro': 'from-slate-700 via-gray-800 to-zinc-900',
     'desenvolvimento-economico': 'from-purple-700 via-violet-800 to-indigo-900',
     'cultura': 'from-pink-700 via-rose-800 to-red-900',
     'tecnologia': 'from-indigo-700 via-blue-800 to-cyan-900',
@@ -74,7 +74,7 @@ const getSectorAccent = (slug: string) => {
     'educacao': 'from-blue-400 to-indigo-500',
     'saude': 'from-red-400 to-pink-500',
     'agricultura': 'from-green-400 to-emerald-500',
-    'sector-mineiro': 'from-slate-400 to-gray-500',
+    'setor-mineiro': 'from-slate-400 to-gray-500',
     'desenvolvimento-economico': 'from-purple-400 to-violet-500',
     'cultura': 'from-pink-400 to-rose-500',
     'tecnologia': 'from-indigo-400 to-blue-500',
@@ -110,7 +110,7 @@ const getSectorColors = (slug: string) => {
       text: 'green-800',
       icon: 'green-700'
     },
-    'sector-mineiro': {
+    'setor-mineiro': {
       light: 'slate-100',
       medium: 'slate-300',
       dark: 'slate-800',
@@ -176,7 +176,7 @@ const getSectorImages = (slug: string) => {
       'https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=85',
       'https://images.unsplash.com/photo-1523741543316-beb7fc7023d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=85'
     ],
-    'sector-mineiro': [
+    'setor-mineiro': [
       'https://images.unsplash.com/photo-1518709268805-4e9042af2176?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=85',
       'https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=85'
     ],

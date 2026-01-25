@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { User } from '@supabase/supabase-js';
 
-export type UserRole = 'admin' | 'editor' | 'user' | 'educacao' | 'saude' | 'agricultura' | 'sector-mineiro' | 'desenvolvimento-economico' | 'cultura' | 'tecnologia' | 'energia-agua';
+export type UserRole = 'admin' | 'editor' | 'user' | 'educacao' | 'saude' | 'agricultura' | 'setor-mineiro' | 'desenvolvimento-economico' | 'cultura' | 'tecnologia' | 'energia-agua';
 
 interface UserProfile {
   id: string;
@@ -17,7 +17,7 @@ interface UserProfile {
 
 // Função para verificar se um role é de setor específico
 export const isSectorRole = (role: UserRole): boolean => {
-  return ['educacao', 'saude', 'agricultura', 'sector-mineiro', 'desenvolvimento-economico', 'cultura', 'tecnologia', 'energia-agua'].includes(role);
+  return ['educacao', 'saude', 'agricultura', 'setor-mineiro', 'desenvolvimento-economico', 'cultura', 'tecnologia', 'energia-agua'].includes(role);
 };
 
 // Função para obter o nome do setor a partir do role
@@ -26,13 +26,13 @@ export const getSectorName = (role: UserRole): string => {
     'educacao': 'Educação',
     'saude': 'Saúde',
     'agricultura': 'Agricultura',
-    'sector-mineiro': 'Setor Mineiro',
+    'setor-mineiro': 'Sector Mineiro',
     'desenvolvimento-economico': 'Desenvolvimento Económico',
     'cultura': 'Cultura',
     'tecnologia': 'Tecnologia',
     'energia-agua': 'Energia e Água'
   };
-  
+
   return sectorNames[role] || role;
 };
 
@@ -42,13 +42,13 @@ export const getSectorSlug = (role: UserRole): string => {
     'educacao': 'educacao',
     'saude': 'saude',
     'agricultura': 'agricultura',
-    'sector-mineiro': 'sector-mineiro',
+    'setor-mineiro': 'setor-mineiro',
     'desenvolvimento-economico': 'desenvolvimento-economico',
     'cultura': 'cultura',
     'tecnologia': 'tecnologia',
     'energia-agua': 'energia-agua'
   };
-  
+
   return sectorSlugs[role] || '';
 };
 
@@ -131,21 +131,21 @@ export function useUserRole(user: User | null = null) {
   // Função para verificar se o utilizador pode aceder a um item específico
   const canAccessItem = (itemId: string): boolean => {
     if (isAdmin) return true; // Admin tem acesso total
-    
+
     const userRole = profile?.role as UserRole;
-    
+
     // Mapeamento de itens por setor
     const sectorItems: Record<string, string[]> = {
       'educacao': ['educacao', 'gestao-educacao', 'estatisticas-educacao'],
       'saude': ['saude', 'gestao-saude', 'estatisticas-saude'],
       'agricultura': ['agricultura', 'gestao-agricultura', 'estatisticas-agricultura'],
-      'sector-mineiro': ['sector-mineiro', 'gestao-mineiro', 'estatisticas-mineiro'],
+      'setor-mineiro': ['setor-mineiro', 'gestao-mineiro', 'estatisticas-mineiro'],
       'desenvolvimento-economico': ['desenvolvimento-economico', 'gestao-economico', 'estatisticas-economico'],
       'cultura': ['cultura', 'gestao-cultura', 'estatisticas-cultura'],
       'tecnologia': ['tecnologia', 'gestao-tecnologia', 'estatisticas-tecnologia'],
       'energia-agua': ['energia-agua', 'gestao-energia', 'estatisticas-energia']
     };
-    
+
     // Itens que apenas admin pode aceder
     const adminOnlyItems = [
       'gestao-utilizadores',
@@ -155,7 +155,7 @@ export function useUserRole(user: User | null = null) {
       'acesso-setor',
       'audit-logs'
     ];
-    
+
     // Itens que editor pode aceder
     const editorItems = [
       'gestao-conteudo',
@@ -171,22 +171,22 @@ export function useUserRole(user: User | null = null) {
       'gestao-inscricoes',
       'gestao-atividades'
     ];
-    
+
     // Verificar se é item apenas para admin
     if (adminOnlyItems.includes(itemId)) {
       return isAdmin;
     }
-    
+
     // Verificar se é item para editor
     if (editorItems.includes(itemId)) {
       return isAdmin || isEditor;
     }
-    
+
     // Verificar se é item específico do setor
     if (isSectorUser && sectorItems[userRole]) {
       return sectorItems[userRole].includes(itemId);
     }
-    
+
     return false;
   };
 

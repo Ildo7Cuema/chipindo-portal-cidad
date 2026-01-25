@@ -21,6 +21,7 @@ export interface Event {
   featured: boolean;
   created_at: string;
   updated_at: string;
+  setor_id?: string | null;
 }
 
 export interface EventFilters {
@@ -28,6 +29,7 @@ export interface EventFilters {
   status?: string;
   featured?: boolean;
   search?: string;
+  setorId?: string | null;
 }
 
 export function useEvents(filters?: EventFilters) {
@@ -59,6 +61,10 @@ export function useEvents(filters?: EventFilters) {
         query = query.eq('featured', filters.featured);
       }
 
+      if (filters?.setorId) {
+        query = query.eq('setor_id', filters.setorId);
+      }
+
       const { data, error: fetchError } = await query;
 
       if (fetchError) {
@@ -78,7 +84,7 @@ export function useEvents(filters?: EventFilters) {
         );
       }
 
-      setEvents(filteredData);
+      setEvents(filteredData as unknown as Event[]);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar eventos';
       setError(errorMessage);
@@ -102,7 +108,7 @@ export function useEvents(filters?: EventFilters) {
 
       if (error) throw error;
 
-      setEvents(prev => [...prev, data]);
+      setEvents(prev => [...prev, data as unknown as Event]);
       toast({
         title: "Sucesso",
         description: "Evento criado com sucesso"
@@ -131,7 +137,7 @@ export function useEvents(filters?: EventFilters) {
 
       if (error) throw error;
 
-      setEvents(prev => prev.map(event => event.id === id ? data : event));
+      setEvents(prev => prev.map(event => event.id === id ? (data as unknown as Event) : event));
       toast({
         title: "Sucesso",
         description: "Evento atualizado com sucesso"
@@ -176,7 +182,7 @@ export function useEvents(filters?: EventFilters) {
 
   useEffect(() => {
     fetchEvents();
-  }, [filters?.category, filters?.status, filters?.featured, filters?.search]);
+  }, [filters?.category, filters?.status, filters?.featured, filters?.search, filters?.setorId]);
 
   return {
     events,

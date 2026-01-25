@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { 
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -12,15 +12,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { 
+import {
   Textarea
 } from "@/components/ui/textarea";
-import { 
-  Building2, 
-  Users, 
-  FileText, 
-  Download, 
-  Bell, 
+import {
+  Building2,
+  Users,
+  FileText,
+  Download,
+  Bell,
   Lock,
   GraduationCap,
   Heart,
@@ -120,7 +120,7 @@ const sectorIcons = {
   'educacao': GraduationCap,
   'saude': Heart,
   'agricultura': Sprout,
-  'sector-mineiro': Pickaxe,
+  'setor-mineiro': Pickaxe,
   'desenvolvimento-economico': TrendingUp,
   'cultura': Palette,
   'tecnologia': Cpu,
@@ -149,7 +149,7 @@ export function SectorAccessManager({ currentUserRole, currentUserSetorId }: Sec
   const [notificationModalOpen, setNotificationModalOpen] = useState(false);
   const [quickActionsModalOpen, setQuickActionsModalOpen] = useState(false);
   const [selectedSectorForAction, setSelectedSectorForAction] = useState<SectorData | null>(null);
-  
+
   // Estados para formulários
   const [exportData, setExportData] = useState<ExportData>({
     sectorId: '',
@@ -157,7 +157,7 @@ export function SectorAccessManager({ currentUserRole, currentUserSetorId }: Sec
     format: 'csv',
     dateRange: 'all'
   });
-  
+
   const [notificationData, setNotificationData] = useState<NotificationData>({
     sectorId: '',
     title: '',
@@ -211,7 +211,7 @@ export function SectorAccessManager({ currentUserRole, currentUserSetorId }: Sec
           };
         })
       );
-      const filteredSetores = userSectorSlug 
+      const filteredSetores = userSectorSlug
         ? enrichedData.filter((s: SectorData) => s.slug === userSectorSlug)
         : enrichedData;
       setSectorData(filteredSetores);
@@ -371,7 +371,7 @@ export function SectorAccessManager({ currentUserRole, currentUserSetorId }: Sec
   const handleSendNotification = async () => {
     try {
       setNotificationLoading(true);
-      
+
       const sector = selectedSectorForAction;
       if (!sector) return;
 
@@ -537,7 +537,7 @@ export function SectorAccessManager({ currentUserRole, currentUserSetorId }: Sec
             <div>
               <CardTitle className="flex items-center gap-2">
                 <Building2 className="h-6 w-6 text-primary" />
-                {isSectorRole(currentUserRole) 
+                {isSectorRole(currentUserRole)
                   ? `Gestão da ${getSectorName(currentUserRole)}`
                   : 'Gestão de Acesso por Setor'
                 }
@@ -618,10 +618,10 @@ export function SectorAccessManager({ currentUserRole, currentUserSetorId }: Sec
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {filteredSectorData.map((sector) => {
             const SectorIcon = sectorIcons[sector.slug as keyof typeof sectorIcons] || Building2;
-            
+
             return (
-              <Card key={sector.id} className="group hover:shadow-lg transition-all duration-200 border-l-4" 
-                    style={{ borderLeftColor: sector.cor_primaria }}>
+              <Card key={sector.id} className="group hover:shadow-lg transition-all duration-200 border-l-4"
+                style={{ borderLeftColor: sector.cor_primaria }}>
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -689,7 +689,7 @@ export function SectorAccessManager({ currentUserRole, currentUserSetorId }: Sec
                           <Bell className="h-3 w-3" />
                         </Button>
                       </div>
-                      
+
                       <div className="flex gap-2">
                         <Button
                           size="sm"
@@ -827,27 +827,27 @@ export function SectorAccessManager({ currentUserRole, currentUserSetorId }: Sec
                 <div className="p-4 border rounded-lg">
                   <h4 className="font-semibold mb-2">Ações Rápidas</h4>
                   <div className="space-y-2">
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
+                    <Button
+                      size="sm"
+                      variant="outline"
                       className="w-full"
                       onClick={() => handleOpenExportModal(selectedSectorForDetail)}
                     >
                       <Download className="h-3 w-3 mr-1" />
                       Exportar Dados
                     </Button>
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
+                    <Button
+                      size="sm"
+                      variant="outline"
                       className="w-full"
                       onClick={() => handleOpenNotificationModal(selectedSectorForDetail)}
                     >
                       <Bell className="h-3 w-3 mr-1" />
                       Enviar Notificação
                     </Button>
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
+                    <Button
+                      size="sm"
+                      variant="outline"
                       className="w-full"
                       onClick={() => handleOpenQuickActionsModal(selectedSectorForDetail)}
                     >
@@ -880,14 +880,14 @@ export function SectorAccessManager({ currentUserRole, currentUserSetorId }: Sec
               Configure as opções de exportação para o setor {selectedSectorForAction?.nome}
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-sm font-medium">Tipo de Dados</label>
-                <Select 
-                  value={exportData.dataType} 
-                  onValueChange={(value: 'inscricoes' | 'candidaturas' | 'programas' | 'oportunidades' | 'utilizadores' | 'completo') => setExportData({...exportData, dataType: value})}
+                <Select
+                  value={exportData.dataType}
+                  onValueChange={(value: 'inscricoes' | 'candidaturas' | 'programas' | 'oportunidades' | 'utilizadores' | 'completo') => setExportData({ ...exportData, dataType: value })}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -902,12 +902,12 @@ export function SectorAccessManager({ currentUserRole, currentUserSetorId }: Sec
                   </SelectContent>
                 </Select>
               </div>
-              
+
               <div>
                 <label className="text-sm font-medium">Formato</label>
-                <Select 
-                  value={exportData.format} 
-                  onValueChange={(value: 'csv' | 'excel' | 'pdf') => setExportData({...exportData, format: value})}
+                <Select
+                  value={exportData.format}
+                  onValueChange={(value: 'csv' | 'excel' | 'pdf') => setExportData({ ...exportData, format: value })}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -920,12 +920,12 @@ export function SectorAccessManager({ currentUserRole, currentUserSetorId }: Sec
                 </Select>
               </div>
             </div>
-            
+
             <div>
               <label className="text-sm font-medium">Período</label>
-              <Select 
-                value={exportData.dateRange} 
-                onValueChange={(value: 'today' | 'week' | 'month' | 'all') => setExportData({...exportData, dateRange: value})}
+              <Select
+                value={exportData.dateRange}
+                onValueChange={(value: 'today' | 'week' | 'month' | 'all') => setExportData({ ...exportData, dateRange: value })}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -973,33 +973,33 @@ export function SectorAccessManager({ currentUserRole, currentUserSetorId }: Sec
               Envie uma notificação para o setor {selectedSectorForAction?.nome}
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="space-y-4">
             <div>
               <label className="text-sm font-medium">Título</label>
               <Input
                 value={notificationData.title}
-                onChange={(e) => setNotificationData({...notificationData, title: e.target.value})}
+                onChange={(e) => setNotificationData({ ...notificationData, title: e.target.value })}
                 placeholder="Título da notificação"
               />
             </div>
-            
+
             <div>
               <label className="text-sm font-medium">Mensagem</label>
               <Textarea
                 value={notificationData.message}
-                onChange={(e) => setNotificationData({...notificationData, message: e.target.value})}
+                onChange={(e) => setNotificationData({ ...notificationData, message: e.target.value })}
                 placeholder="Digite a mensagem da notificação..."
                 rows={4}
               />
             </div>
-            
+
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-sm font-medium">Tipo</label>
-                <Select 
-                  value={notificationData.type} 
-                  onValueChange={(value: 'info' | 'warning' | 'success' | 'urgent') => setNotificationData({...notificationData, type: value})}
+                <Select
+                  value={notificationData.type}
+                  onValueChange={(value: 'info' | 'warning' | 'success' | 'urgent') => setNotificationData({ ...notificationData, type: value })}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -1012,12 +1012,12 @@ export function SectorAccessManager({ currentUserRole, currentUserSetorId }: Sec
                   </SelectContent>
                 </Select>
               </div>
-              
+
               <div>
                 <label className="text-sm font-medium">Destinatários</label>
-                <Select 
-                  value={notificationData.recipients} 
-                  onValueChange={(value: 'all' | 'active' | 'specific') => setNotificationData({...notificationData, recipients: value})}
+                <Select
+                  value={notificationData.recipients}
+                  onValueChange={(value: 'all' | 'active' | 'specific') => setNotificationData({ ...notificationData, recipients: value })}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -1065,7 +1065,7 @@ export function SectorAccessManager({ currentUserRole, currentUserSetorId }: Sec
               Execute ações rápidas no setor selecionado
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="grid grid-cols-2 gap-3">
             <Button
               variant="outline"
@@ -1076,7 +1076,7 @@ export function SectorAccessManager({ currentUserRole, currentUserSetorId }: Sec
               <CheckCircle className="h-5 w-5 mb-1" />
               <span className="text-xs">Ativar Setor</span>
             </Button>
-            
+
             <Button
               variant="outline"
               onClick={() => handleQuickAction('deactivate')}
@@ -1086,7 +1086,7 @@ export function SectorAccessManager({ currentUserRole, currentUserSetorId }: Sec
               <AlertCircle className="h-5 w-5 mb-1" />
               <span className="text-xs">Desativar Setor</span>
             </Button>
-            
+
             <Button
               variant="outline"
               onClick={() => handleQuickAction('refresh')}
@@ -1096,7 +1096,7 @@ export function SectorAccessManager({ currentUserRole, currentUserSetorId }: Sec
               <Activity className="h-5 w-5 mb-1" />
               <span className="text-xs">Atualizar Dados</span>
             </Button>
-            
+
             <Button
               variant="outline"
               onClick={() => handleQuickAction('backup')}
@@ -1106,7 +1106,7 @@ export function SectorAccessManager({ currentUserRole, currentUserSetorId }: Sec
               <FileDown className="h-5 w-5 mb-1" />
               <span className="text-xs">Criar Backup</span>
             </Button>
-            
+
             <Button
               variant="outline"
               onClick={() => handleQuickAction('report')}
@@ -1116,7 +1116,7 @@ export function SectorAccessManager({ currentUserRole, currentUserSetorId }: Sec
               <FileText className="h-5 w-5 mb-1" />
               <span className="text-xs">Gerar Relatório</span>
             </Button>
-            
+
             <Button
               variant="outline"
               onClick={() => handleOpenExportModal(selectedSectorForAction!)}

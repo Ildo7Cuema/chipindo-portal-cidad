@@ -15,7 +15,7 @@ interface RealTimeStats {
   loading: boolean;
 }
 
-export function useRealTimeStats() {
+export function useRealTimeStats(role?: string, setorId?: string | null) {
   const [stats, setStats] = useState<RealTimeStats>({
     totalNews: 0,
     publishedNews: 0,
@@ -32,40 +32,39 @@ export function useRealTimeStats() {
 
   const fetchStats = async () => {
     try {
-      // Fetch news statistics
-      const { data: newsData } = await supabase
-        .from('news')
-        .select('id, published');
+      // Base queries
+      let newsQuery = supabase.from('news').select('id, published', { count: 'exact' });
+      let concursosQuery = supabase.from('concursos').select('id, published, deadline', { count: 'exact' });
+      let acervoQuery = supabase.from('acervo_digital').select('id, is_public', { count: 'exact' });
+      let eventsQuery = supabase.from('events').select('id, status', { count: 'exact' });
 
-      // Fetch concursos statistics  
-      const { data: concursosData } = await supabase
-        .from('concursos')
-        .select('id, published, deadline');
+      // Apply sector filter if not admin and has sectorId
+      if (role !== 'admin' && setorId) {
+        newsQuery = newsQuery.eq('setor_id', setorId);
+        concursosQuery = concursosQuery.eq('setor_id', setorId);
+        acervoQuery = acervoQuery.eq('setor_id', setorId);
+        eventsQuery = eventsQuery.eq('setor_id', setorId);
+      }
 
-      // Fetch departamentos statistics
-      const { data: direcoesData } = await supabase
-        .from('departamentos')
-        .select('id, ativo');
-
-      // Fetch organigrama statistics
-      const { data: organigramaData } = await supabase
-        .from('organigrama')
-        .select('id, ativo');
-
-      // Fetch acervo statistics
-      const { data: acervoData } = await supabase
-        .from('acervo_digital')
-        .select('id, is_public');
-
-      // Fetch users statistics (only if admin)
-      const { data: usersData } = await supabase
-        .from('profiles')
-        .select('id');
-
-      // Fetch site visits
-      const { count: visitsCount } = await supabase
-        .from('site_visits')
-        .select('*', { count: 'exact', head: true });
+      const [
+        { data: newsData },
+        { data: concursosData },
+        { data: acervoData },
+        { data: eventsData },
+        { data: direcoesData },
+        { data: organigramaData },
+        { data: usersData },
+        { count: visitsCount }
+      ] = await Promise.all([
+        newsQuery,
+        concursosQuery,
+        acervoQuery,
+        eventsQuery,
+        supabase.from('departamentos').select('id, ativo'),
+        supabase.from('organigrama').select('id, ativo'),
+        role === 'admin' ? supabase.from('profiles').select('id') : Promise.resolve({ data: [] }),
+        supabase.from('site_visits').select('*', { count: 'exact', head: true })
+      ]);
 
       // Calculate statistics
       const totalNews = newsData?.length || 0;
@@ -75,6 +74,8 @@ export function useRealTimeStats() {
       const activeConcursos = concursosData?.filter(c =>
         c.published && (!c.deadline || new Date(c.deadline) > new Date())
       ).length || 0;
+
+      const totalEvents = eventsData?.length || 0;
 
       const totalDirecoes = direcoesData?.filter(d => d.ativo).length || 0;
       const totalOrganigramaMembers = organigramaData?.filter(m => m.ativo).length || 0;
@@ -104,7 +105,7 @@ export function useRealTimeStats() {
 
   useEffect(() => {
     fetchStats();
-  }, []);
+  }, [role, setorId]);
 
   return { stats, refetch: fetchStats };
 }

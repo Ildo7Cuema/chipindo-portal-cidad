@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useEvents, type Event } from "@/hooks/useEvents";
+import { useUserRole } from "@/hooks/useUserRole";
 import { EventForm } from "./EventForm";
 
 export const EventsManager = () => {
@@ -31,9 +32,11 @@ export const EventsManager = () => {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [eventToDelete, setEventToDelete] = useState<number | null>(null);
   const { toast } = useToast();
+  const { role, setorId, isAdmin } = useUserRole();
 
   const { events, loading, deleteEvent, fetchEvents } = useEvents({
-    search: searchTerm
+    search: searchTerm,
+    setorId: !isAdmin ? setorId : undefined
   });
 
   const handleDelete = (id: number) => {
@@ -171,6 +174,7 @@ export const EventsManager = () => {
           event={selectedEvent}
           onClose={handleFormClose}
           onSuccess={handleFormSuccess}
+          setorId={!isAdmin ? setorId : undefined}
         />
       )}
 

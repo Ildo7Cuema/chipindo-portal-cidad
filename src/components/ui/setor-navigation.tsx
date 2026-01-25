@@ -3,14 +3,14 @@ import { Link, useLocation } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { 
-  GraduationCapIcon, 
-  HeartIcon, 
-  SproutIcon, 
-  PickaxeIcon, 
-  TrendingUpIcon, 
-  PaletteIcon, 
-  CpuIcon, 
+import {
+  GraduationCapIcon,
+  HeartIcon,
+  SproutIcon,
+  PickaxeIcon,
+  TrendingUpIcon,
+  PaletteIcon,
+  CpuIcon,
   ZapIcon,
   ChevronLeftIcon,
   ChevronRightIcon
@@ -23,61 +23,61 @@ interface SetorNavigationProps {
 }
 
 const setores = [
-  { 
-    name: "Educação", 
-    slug: "educacao", 
-    icon: GraduationCapIcon, 
+  {
+    name: "Educação",
+    slug: "educacao",
+    icon: GraduationCapIcon,
     color: "bg-blue-100 text-blue-800 border-blue-200",
-    path: "/educacao" 
+    path: "/educacao"
   },
-  { 
-    name: "Saúde", 
-    slug: "saude", 
-    icon: HeartIcon, 
+  {
+    name: "Saúde",
+    slug: "saude",
+    icon: HeartIcon,
     color: "bg-red-100 text-red-800 border-red-200",
-    path: "/saude" 
+    path: "/saude"
   },
-  { 
-    name: "Agricultura", 
-    slug: "agricultura", 
-    icon: SproutIcon, 
+  {
+    name: "Agricultura",
+    slug: "agricultura",
+    icon: SproutIcon,
     color: "bg-green-100 text-green-800 border-green-200",
-    path: "/agricultura" 
+    path: "/agricultura"
   },
-  { 
-    name: "Sector Mineiro", 
-    slug: "sector-mineiro", 
-    icon: PickaxeIcon, 
+  {
+    name: "Sector Mineiro",
+    slug: "setor-mineiro",
+    icon: PickaxeIcon,
     color: "bg-yellow-100 text-yellow-800 border-yellow-200",
-    path: "/sector-mineiro" 
+    path: "/setor-mineiro"
   },
-  { 
-    name: "Desenvolvimento Económico", 
-    slug: "desenvolvimento-economico", 
-    icon: TrendingUpIcon, 
+  {
+    name: "Desenvolvimento Económico",
+    slug: "desenvolvimento-economico",
+    icon: TrendingUpIcon,
     color: "bg-emerald-100 text-emerald-800 border-emerald-200",
-    path: "/desenvolvimento-economico" 
+    path: "/desenvolvimento-economico"
   },
-  { 
-    name: "Cultura", 
-    slug: "cultura", 
-    icon: PaletteIcon, 
+  {
+    name: "Cultura",
+    slug: "cultura",
+    icon: PaletteIcon,
     color: "bg-purple-100 text-purple-800 border-purple-200",
-    path: "/cultura" 
+    path: "/cultura"
   },
-  { 
-    name: "Tecnologia", 
-    slug: "tecnologia", 
-    icon: CpuIcon, 
+  {
+    name: "Tecnologia",
+    slug: "tecnologia",
+    icon: CpuIcon,
     color: "bg-indigo-100 text-indigo-800 border-indigo-200",
-    path: "/tecnologia" 
+    path: "/tecnologia"
   },
-  { 
-    name: "Energia e Água", 
-    slug: "energia-agua", 
-    icon: ZapIcon, 
+  {
+    name: "Energia e Água",
+    slug: "energia-agua",
+    icon: ZapIcon,
     color: "bg-cyan-100 text-cyan-800 border-cyan-200",
-    path: "/energia-agua" 
+    path: "/energia-agua"
   }
 ];
 
@@ -85,7 +85,7 @@ export const SetorNavigation = ({ className, showTitle = true }: SetorNavigation
   const location = useLocation();
   const currentSetor = setores.find(setor => setor.path === location.pathname);
   const currentIndex = setores.findIndex(setor => setor.path === location.pathname);
-  
+
   const prevSetor = currentIndex > 0 ? setores[currentIndex - 1] : null;
   const nextSetor = currentIndex < setores.length - 1 ? setores[currentIndex + 1] : null;
 
@@ -103,13 +103,13 @@ export const SetorNavigation = ({ className, showTitle = true }: SetorNavigation
           </p>
         </div>
       )}
-      
+
       {/* Navegação Anterior/Próximo */}
       <div className="flex items-center justify-between gap-2 sm:gap-4">
         {prevSetor ? (
           <Link to={prevSetor.path}>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="sm"
               className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3 py-2 h-auto min-w-0 hover:bg-muted/80 hover:shadow-sm transition-all duration-200 group"
             >
@@ -121,16 +121,16 @@ export const SetorNavigation = ({ className, showTitle = true }: SetorNavigation
         ) : (
           <div className="w-20 sm:w-32" />
         )}
-        
+
         <Badge variant="outline" className="px-2 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm bg-background border-border shadow-sm">
           <span className="hidden sm:inline font-medium">{currentIndex + 1} de {setores.length}</span>
           <span className="sm:hidden font-medium">{currentIndex + 1}/{setores.length}</span>
         </Badge>
-        
+
         {nextSetor ? (
           <Link to={nextSetor.path}>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="sm"
               className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3 py-2 h-auto min-w-0 hover:bg-muted/80 hover:shadow-sm transition-all duration-200 group"
             >
@@ -143,7 +143,7 @@ export const SetorNavigation = ({ className, showTitle = true }: SetorNavigation
           <div className="w-20 sm:w-32" />
         )}
       </div>
-      
+
       {/* Grid de Todos os Setores */}
       <Card>
         <CardContent className="p-2 sm:p-4">
@@ -151,7 +151,7 @@ export const SetorNavigation = ({ className, showTitle = true }: SetorNavigation
             {setores.map((setor) => {
               const IconComponent = setor.icon;
               const isActive = setor.path === location.pathname;
-              
+
               return (
                 <Link key={setor.slug} to={setor.path}>
                   <Button
@@ -159,21 +159,21 @@ export const SetorNavigation = ({ className, showTitle = true }: SetorNavigation
                     size="sm"
                     className={cn(
                       "w-full h-auto p-2 sm:p-3 flex flex-col items-center gap-1 sm:gap-2 transition-all duration-200 group",
-                      isActive 
-                        ? "bg-primary text-primary-foreground shadow-md" 
+                      isActive
+                        ? "bg-primary text-primary-foreground shadow-md"
                         : "hover:bg-muted/80 hover:shadow-sm"
                     )}
                   >
                     <IconComponent className={cn(
                       "w-4 h-4 sm:w-5 sm:h-5 transition-colors duration-200",
-                      isActive 
-                        ? "text-primary-foreground" 
+                      isActive
+                        ? "text-primary-foreground"
                         : "text-muted-foreground group-hover:text-foreground"
                     )} />
                     <span className={cn(
                       "text-xs font-medium text-center leading-tight truncate w-full transition-colors duration-200",
-                      isActive 
-                        ? "text-primary-foreground" 
+                      isActive
+                        ? "text-primary-foreground"
                         : "text-muted-foreground group-hover:text-foreground group-hover:font-semibold"
                     )}>
                       {setor.name}

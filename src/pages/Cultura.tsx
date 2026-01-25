@@ -3,7 +3,7 @@ import { Footer } from "@/components/sections/Footer";
 import { SetorBreadcrumb } from "@/components/ui/setor-breadcrumb";
 import { SetorNavigation } from "@/components/ui/setor-navigation";
 import { SetorStats } from "@/components/ui/setor-stats";
-import { SectorHero } from "@/components/ui/sector-hero";
+import { SectorHero } from "@/components/ui/setor-hero";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -50,9 +50,9 @@ const Cultura = () => {
   const scrollToTabs = () => {
     const tabsElement = document.querySelector('[data-tabs-container]');
     if (tabsElement) {
-      tabsElement.scrollIntoView({ 
-        behavior: 'smooth', 
-        block: 'start' 
+      tabsElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
       });
     }
   };
@@ -151,9 +151,9 @@ const Cultura = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
-      <SectorHero 
-        setor={setor} 
+
+      <SectorHero
+        setor={setor}
         onExplorarProgramas={handleExplorarProgramas}
         onVerOportunidades={handleVerOportunidades}
       />
@@ -171,285 +171,285 @@ const Cultura = () => {
         {/* Content Tabs */}
         <div data-tabs-container>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-12">
-          <TabsList className="flex flex-wrap w-full gap-2 p-2 bg-muted/50">
-            <TabsTrigger value="programas" className="flex-1 min-w-0 text-xs sm:text-sm px-2 sm:px-3 py-2 sm:py-1.5">
-              <span className="truncate">Programas</span>
-            </TabsTrigger>
-            <TabsTrigger value="oportunidades" className="flex-1 min-w-0 text-xs sm:text-sm px-2 sm:px-3 py-2 sm:py-1.5">
-              <span className="truncate">Oportunidades</span>
-            </TabsTrigger>
-            <TabsTrigger value="infraestruturas" className="flex-1 min-w-0 text-xs sm:text-sm px-2 sm:px-3 py-2 sm:py-1.5">
-              <span className="truncate">Infraestruturas</span>
-            </TabsTrigger>
-            <TabsTrigger value="contactos" className="flex-1 min-w-0 text-xs sm:text-sm px-2 sm:px-3 py-2 sm:py-1.5">
-              <span className="truncate">Contactos</span>
-            </TabsTrigger>
-          </TabsList>
+            <TabsList className="flex flex-wrap w-full gap-2 p-2 bg-muted/50">
+              <TabsTrigger value="programas" className="flex-1 min-w-0 text-xs sm:text-sm px-2 sm:px-3 py-2 sm:py-1.5">
+                <span className="truncate">Programas</span>
+              </TabsTrigger>
+              <TabsTrigger value="oportunidades" className="flex-1 min-w-0 text-xs sm:text-sm px-2 sm:px-3 py-2 sm:py-1.5">
+                <span className="truncate">Oportunidades</span>
+              </TabsTrigger>
+              <TabsTrigger value="infraestruturas" className="flex-1 min-w-0 text-xs sm:text-sm px-2 sm:px-3 py-2 sm:py-1.5">
+                <span className="truncate">Infraestruturas</span>
+              </TabsTrigger>
+              <TabsTrigger value="contactos" className="flex-1 min-w-0 text-xs sm:text-sm px-2 sm:px-3 py-2 sm:py-1.5">
+                <span className="truncate">Contactos</span>
+              </TabsTrigger>
+            </TabsList>
 
-          {/* Programas */}
-          <TabsContent value="programas" className="mt-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {setor.programas.map((programa, index) => (
-                <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
-                  <CardHeader className="pb-4">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="p-2 bg-purple-100 rounded-lg">
-                        <HeartHandshakeIcon className="w-5 h-5 text-purple-600" />
-                      </div>
-                      <Badge className="bg-purple-100 text-purple-800">
-                        Programa
-                      </Badge>
-                    </div>
-                    <CardTitle className="text-lg">{programa.titulo}</CardTitle>
-                    <p className="text-sm text-muted-foreground">
-                      {programa.descricao}
-                    </p>
-                  </CardHeader>
-                  
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div>
-                        <h4 className="font-medium text-sm mb-2">Benefícios:</h4>
-                        <ul className="space-y-1">
-                          {programa.beneficios?.map((beneficio: string, idx: number) => (
-                            <li key={idx} className="text-sm text-muted-foreground flex items-center gap-2">
-                              <CheckCircleIcon className="w-3 h-3 text-green-500" />
-                              {beneficio}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      
-                      <div>
-                        <h4 className="font-medium text-sm mb-2">Requisitos:</h4>
-                        <ul className="space-y-1">
-                          {programa.requisitos?.map((requisito: string, idx: number) => (
-                            <li key={idx} className="text-sm text-muted-foreground flex items-center gap-2">
-                              <div className="w-1.5 h-1.5 bg-purple-500 rounded-full" />
-                              {requisito}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      
-                      {programa.contacto && (
-                        <div className="pt-2 border-t">
-                          <p className="text-sm text-muted-foreground">
-                            <strong>Contacto:</strong> {programa.contacto}
-                          </p>
+            {/* Programas */}
+            <TabsContent value="programas" className="mt-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {setor.programas.map((programa, index) => (
+                  <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
+                    <CardHeader className="pb-4">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="p-2 bg-purple-100 rounded-lg">
+                          <HeartHandshakeIcon className="w-5 h-5 text-purple-600" />
                         </div>
-                      )}
-                      
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="w-full"
-                        onClick={() => {
-                          setProgramaSelecionado(programa.titulo);
-                          setOpenInscricaoPrograma(true);
-                        }}
-                      >
-                        Inscrever-se
-                        <ArrowRightIcon className="w-4 h-4 ml-2" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
+                        <Badge className="bg-purple-100 text-purple-800">
+                          Programa
+                        </Badge>
+                      </div>
+                      <CardTitle className="text-lg">{programa.titulo}</CardTitle>
+                      <p className="text-sm text-muted-foreground">
+                        {programa.descricao}
+                      </p>
+                    </CardHeader>
 
-          {/* Oportunidades */}
-          <TabsContent value="oportunidades" className="mt-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {setor.oportunidades.map((oportunidade, index) => (
-                <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
-                  <CardHeader className="pb-4">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="p-2 bg-blue-100 rounded-lg">
-                        <LightbulbIcon className="w-5 h-5 text-blue-600" />
-                      </div>
-                      <Badge className="bg-blue-100 text-blue-800">
-                        Oportunidade
-                      </Badge>
-                    </div>
-                    <CardTitle className="text-lg">{oportunidade.titulo}</CardTitle>
-                    <p className="text-sm text-muted-foreground">
-                      {oportunidade.descricao}
-                    </p>
-                  </CardHeader>
-                  
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div>
-                        <h4 className="font-medium text-sm mb-2">Requisitos:</h4>
-                        <ul className="space-y-1">
-                          {oportunidade.requisitos?.map((requisito: string, idx: number) => (
-                            <li key={idx} className="text-sm text-muted-foreground flex items-center gap-2">
-                              <div className="w-1.5 h-1.5 bg-blue-500 rounded-full" />
-                              {requisito}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      
-                      {oportunidade.contacto && (
-                        <div className="pt-2 border-t">
-                          <p className="text-sm text-muted-foreground">
-                            <strong>Contacto:</strong> {oportunidade.contacto}
-                          </p>
+                    <CardContent>
+                      <div className="space-y-4">
+                        <div>
+                          <h4 className="font-medium text-sm mb-2">Benefícios:</h4>
+                          <ul className="space-y-1">
+                            {programa.beneficios?.map((beneficio: string, idx: number) => (
+                              <li key={idx} className="text-sm text-muted-foreground flex items-center gap-2">
+                                <CheckCircleIcon className="w-3 h-3 text-green-500" />
+                                {beneficio}
+                              </li>
+                            ))}
+                          </ul>
                         </div>
-                      )}
-                      
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="w-full"
-                        onClick={() => {
-                          setOportunidadeSelecionada(oportunidade.titulo);
-                          setOpenCandidatura(true);
-                        }}
-                      >
-                        Candidatar-se
-                        <ArrowRightIcon className="w-4 h-4 ml-2" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
 
-          {/* Infraestruturas */}
-          <TabsContent value="infraestruturas" className="mt-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {setor.infraestruturas.map((infraestrutura, index) => (
-                <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
-                  <CardHeader className="pb-4">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="p-2 bg-orange-100 rounded-lg">
-                        <BuildingIcon className="w-5 h-5 text-orange-600" />
-                      </div>
-                      <Badge className="bg-orange-100 text-orange-800">
-                        Infraestrutura
-                      </Badge>
-                    </div>
-                    <CardTitle className="text-lg">{infraestrutura.nome}</CardTitle>
-                    <p className="text-sm text-muted-foreground">
-                      {infraestrutura.descricao}
-                    </p>
-                  </CardHeader>
-                  
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div>
-                        <h4 className="font-medium text-sm mb-2">Características:</h4>
-                        <ul className="space-y-1">
-                          {infraestrutura.caracteristicas?.map((caracteristica: string, idx: number) => (
-                            <li key={idx} className="text-sm text-muted-foreground flex items-center gap-2">
-                              <CheckCircleIcon className="w-3 h-3 text-orange-500" />
-                              {caracteristica}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      
-                      {infraestrutura.localizacao && (
-                        <div className="pt-2 border-t">
-                          <p className="text-sm text-muted-foreground">
-                            <strong>Localização:</strong> {infraestrutura.localizacao}
-                          </p>
+                        <div>
+                          <h4 className="font-medium text-sm mb-2">Requisitos:</h4>
+                          <ul className="space-y-1">
+                            {programa.requisitos?.map((requisito: string, idx: number) => (
+                              <li key={idx} className="text-sm text-muted-foreground flex items-center gap-2">
+                                <div className="w-1.5 h-1.5 bg-purple-500 rounded-full" />
+                                {requisito}
+                              </li>
+                            ))}
+                          </ul>
                         </div>
-                      )}
-                      
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="w-full"
-                        onClick={() => {
-                          setDetalheInfra(infraestrutura);
-                          setOpenDetalhes(true);
-                        }}
-                      >
-                        Ver Detalhes
-                        <ArrowRightIcon className="w-4 h-4 ml-2" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
 
-          {/* Contactos */}
-          <TabsContent value="contactos" className="mt-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {setor.contactos.map((contacto, index) => (
-                <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
-                  <CardHeader className="pb-4">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="p-2 bg-purple-100 rounded-lg">
-                        <PhoneIcon className="w-5 h-5 text-purple-600" />
+                        {programa.contacto && (
+                          <div className="pt-2 border-t">
+                            <p className="text-sm text-muted-foreground">
+                              <strong>Contacto:</strong> {programa.contacto}
+                            </p>
+                          </div>
+                        )}
+
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full"
+                          onClick={() => {
+                            setProgramaSelecionado(programa.titulo);
+                            setOpenInscricaoPrograma(true);
+                          }}
+                        >
+                          Inscrever-se
+                          <ArrowRightIcon className="w-4 h-4 ml-2" />
+                        </Button>
                       </div>
-                      <Badge className="bg-purple-100 text-purple-800">
-                        Contacto
-                      </Badge>
-                    </div>
-                    <CardTitle className="text-lg">{contacto.nome}</CardTitle>
-                    <p className="text-sm text-muted-foreground">
-                      {contacto.cargo}
-                    </p>
-                  </CardHeader>
-                  
-                  <CardContent>
-                    <div className="space-y-3">
-                      {contacto.telefone && (
-                        <div className="flex items-center gap-2">
-                          <PhoneIcon className="w-4 h-4 text-muted-foreground" />
-                          <span className="text-sm">{contacto.telefone}</span>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </TabsContent>
+
+            {/* Oportunidades */}
+            <TabsContent value="oportunidades" className="mt-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {setor.oportunidades.map((oportunidade, index) => (
+                  <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
+                    <CardHeader className="pb-4">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="p-2 bg-blue-100 rounded-lg">
+                          <LightbulbIcon className="w-5 h-5 text-blue-600" />
                         </div>
-                      )}
-                      
-                      {contacto.email && (
-                        <div className="flex items-center gap-2">
-                          <MailIcon className="w-4 h-4 text-muted-foreground" />
-                          <span className="text-sm">{contacto.email}</span>
+                        <Badge className="bg-blue-100 text-blue-800">
+                          Oportunidade
+                        </Badge>
+                      </div>
+                      <CardTitle className="text-lg">{oportunidade.titulo}</CardTitle>
+                      <p className="text-sm text-muted-foreground">
+                        {oportunidade.descricao}
+                      </p>
+                    </CardHeader>
+
+                    <CardContent>
+                      <div className="space-y-4">
+                        <div>
+                          <h4 className="font-medium text-sm mb-2">Requisitos:</h4>
+                          <ul className="space-y-1">
+                            {oportunidade.requisitos?.map((requisito: string, idx: number) => (
+                              <li key={idx} className="text-sm text-muted-foreground flex items-center gap-2">
+                                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full" />
+                                {requisito}
+                              </li>
+                            ))}
+                          </ul>
                         </div>
-                      )}
-                      
-                      {contacto.endereco && (
-                        <div className="flex items-center gap-2">
-                          <MapPinIcon className="w-4 h-4 text-muted-foreground" />
-                          <span className="text-sm">{contacto.endereco}</span>
+
+                        {oportunidade.contacto && (
+                          <div className="pt-2 border-t">
+                            <p className="text-sm text-muted-foreground">
+                              <strong>Contacto:</strong> {oportunidade.contacto}
+                            </p>
+                          </div>
+                        )}
+
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full"
+                          onClick={() => {
+                            setOportunidadeSelecionada(oportunidade.titulo);
+                            setOpenCandidatura(true);
+                          }}
+                        >
+                          Candidatar-se
+                          <ArrowRightIcon className="w-4 h-4 ml-2" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </TabsContent>
+
+            {/* Infraestruturas */}
+            <TabsContent value="infraestruturas" className="mt-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {setor.infraestruturas.map((infraestrutura, index) => (
+                  <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
+                    <CardHeader className="pb-4">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="p-2 bg-orange-100 rounded-lg">
+                          <BuildingIcon className="w-5 h-5 text-orange-600" />
                         </div>
-                      )}
-                      
-                      {contacto.horario && (
-                        <div className="flex items-center gap-2">
-                          <CalendarIcon className="w-4 h-4 text-muted-foreground" />
-                          <span className="text-sm">{contacto.horario}</span>
+                        <Badge className="bg-orange-100 text-orange-800">
+                          Infraestrutura
+                        </Badge>
+                      </div>
+                      <CardTitle className="text-lg">{infraestrutura.nome}</CardTitle>
+                      <p className="text-sm text-muted-foreground">
+                        {infraestrutura.descricao}
+                      </p>
+                    </CardHeader>
+
+                    <CardContent>
+                      <div className="space-y-4">
+                        <div>
+                          <h4 className="font-medium text-sm mb-2">Características:</h4>
+                          <ul className="space-y-1">
+                            {infraestrutura.caracteristicas?.map((caracteristica: string, idx: number) => (
+                              <li key={idx} className="text-sm text-muted-foreground flex items-center gap-2">
+                                <CheckCircleIcon className="w-3 h-3 text-orange-500" />
+                                {caracteristica}
+                              </li>
+                            ))}
+                          </ul>
                         </div>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-        </Tabs>
+
+                        {infraestrutura.localizacao && (
+                          <div className="pt-2 border-t">
+                            <p className="text-sm text-muted-foreground">
+                              <strong>Localização:</strong> {infraestrutura.localizacao}
+                            </p>
+                          </div>
+                        )}
+
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full"
+                          onClick={() => {
+                            setDetalheInfra(infraestrutura);
+                            setOpenDetalhes(true);
+                          }}
+                        >
+                          Ver Detalhes
+                          <ArrowRightIcon className="w-4 h-4 ml-2" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </TabsContent>
+
+            {/* Contactos */}
+            <TabsContent value="contactos" className="mt-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {setor.contactos.map((contacto, index) => (
+                  <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
+                    <CardHeader className="pb-4">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="p-2 bg-purple-100 rounded-lg">
+                          <PhoneIcon className="w-5 h-5 text-purple-600" />
+                        </div>
+                        <Badge className="bg-purple-100 text-purple-800">
+                          Contacto
+                        </Badge>
+                      </div>
+                      <CardTitle className="text-lg">{contacto.nome}</CardTitle>
+                      <p className="text-sm text-muted-foreground">
+                        {contacto.cargo}
+                      </p>
+                    </CardHeader>
+
+                    <CardContent>
+                      <div className="space-y-3">
+                        {contacto.telefone && (
+                          <div className="flex items-center gap-2">
+                            <PhoneIcon className="w-4 h-4 text-muted-foreground" />
+                            <span className="text-sm">{contacto.telefone}</span>
+                          </div>
+                        )}
+
+                        {contacto.email && (
+                          <div className="flex items-center gap-2">
+                            <MailIcon className="w-4 h-4 text-muted-foreground" />
+                            <span className="text-sm">{contacto.email}</span>
+                          </div>
+                        )}
+
+                        {contacto.endereco && (
+                          <div className="flex items-center gap-2">
+                            <MapPinIcon className="w-4 h-4 text-muted-foreground" />
+                            <span className="text-sm">{contacto.endereco}</span>
+                          </div>
+                        )}
+
+                        {contacto.horario && (
+                          <div className="flex items-center gap-2">
+                            <CalendarIcon className="w-4 h-4 text-muted-foreground" />
+                            <span className="text-sm">{contacto.horario}</span>
+                          </div>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </TabsContent>
+          </Tabs>
         </div>
       </main>
 
       {/* Modals */}
-      <CandidaturaForm 
-        open={openCandidatura} 
+      <CandidaturaForm
+        open={openCandidatura}
         onOpenChange={setOpenCandidatura}
         oportunidade={oportunidadeSelecionada}
         setor={setor.nome}
       />
 
-      <InscricaoProgramaForm 
-        open={openInscricaoPrograma} 
+      <InscricaoProgramaForm
+        open={openInscricaoPrograma}
         onOpenChange={setOpenInscricaoPrograma}
         programa={programaSelecionado}
         setor={setor.nome}
@@ -461,7 +461,7 @@ const Cultura = () => {
             <DialogTitle>{detalheInfra?.nome}</DialogTitle>
             <DialogDescription>{detalheInfra?.descricao}</DialogDescription>
           </DialogHeader>
-          
+
           {detalheInfra && (
             <div className="space-y-4">
               <div>
@@ -475,14 +475,14 @@ const Cultura = () => {
                   ))}
                 </ul>
               </div>
-              
+
               {detalheInfra.localizacao && (
                 <div>
                   <h4 className="font-medium mb-2">Localização:</h4>
                   <p className="text-sm text-muted-foreground">{detalheInfra.localizacao}</p>
                 </div>
               )}
-              
+
               {detalheInfra.observacoes && (
                 <div>
                   <h4 className="font-medium mb-2">Observações:</h4>
@@ -491,7 +491,7 @@ const Cultura = () => {
               )}
             </div>
           )}
-          
+
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpenDetalhes(false)}>
               Fechar
@@ -499,7 +499,7 @@ const Cultura = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      
+
       <Footer />
     </div>
   );

@@ -18,23 +18,23 @@ import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import ExportUtils from "@/lib/export-utils";
 import { seedSampleConcursos } from "@/lib/seed-concursos";
-import { 
-  Trophy, 
-  Plus, 
-  Search, 
-  MoreVertical, 
-  Edit, 
-  Trash2, 
-  Eye, 
-  EyeOff, 
-  Clock, 
-  CheckCircle, 
-  AlertTriangle, 
-  Info, 
-  Calendar, 
-  MapPin, 
-  Users, 
-  FileText, 
+import {
+  Trophy,
+  Plus,
+  Search,
+  MoreVertical,
+  Edit,
+  Trash2,
+  Eye,
+  EyeOff,
+  Clock,
+  CheckCircle,
+  AlertTriangle,
+  Info,
+  Calendar,
+  MapPin,
+  Users,
+  FileText,
   BriefcaseIcon as Briefcase,
   GraduationCap,
   Heart,
@@ -125,9 +125,9 @@ export const ConcursosManager = () => {
   const [inscricoesLoading, setInscricoesLoading] = useState(false);
   const [inscricoes, setInscricoes] = useState<Inscricao[]>([]);
   const [inscricoesConcurso, setInscricoesConcurso] = useState<ConcursoItem | null>(null);
-  const [inscricoesSort, setInscricoesSort] = useState<'nome'|'idade'|'categoria'>('nome');
-  const [inscricoesSortDir, setInscricoesSortDir] = useState<'asc'|'desc'>('asc');
-  
+  const [inscricoesSort, setInscricoesSort] = useState<'nome' | 'idade' | 'categoria'>('nome');
+  const [inscricoesSortDir, setInscricoesSortDir] = useState<'asc' | 'desc'>('asc');
+
   // Estados para responsividade
   const [showFilters, setShowFilters] = useState(false);
   const [showBulkActions, setShowBulkActions] = useState(false);
@@ -140,7 +140,7 @@ export const ConcursosManager = () => {
   const getSectorPlaceholders = () => {
     const currentSector = getCurrentSector();
     const currentSectorName = getCurrentSectorName();
-    
+
     const placeholders = {
       title: "Ex: Concurso Público para Professor de Educação Primária",
       area: "Ex: Direcção de Educação, Direcção de Saúde, etc.",
@@ -165,7 +165,7 @@ export const ConcursosManager = () => {
           salary_range: "Ex: 200.000 - 300.000 Kz",
           nova_categoria: "Ex: Professor de Matemática, Professor de Português, Director de Escola"
         };
-      
+
       case 'saude':
         return {
           title: "Ex: Concurso Público para Enfermeiro",
@@ -177,7 +177,7 @@ export const ConcursosManager = () => {
           salary_range: "Ex: 250.000 - 350.000 Kz",
           nova_categoria: "Ex: Enfermeiro, Médico, Técnico de Laboratório, Farmacêutico"
         };
-      
+
       case 'agricultura':
         return {
           title: "Ex: Concurso Público para Técnico Agrícola",
@@ -189,8 +189,8 @@ export const ConcursosManager = () => {
           salary_range: "Ex: 180.000 - 250.000 Kz",
           nova_categoria: "Ex: Técnico Agrícola, Engenheiro Agrónomo, Extensionista Rural"
         };
-      
-      case 'sector-mineiro':
+
+      case 'setor-mineiro':
         return {
           title: "Ex: Concurso Público para Técnico de Minas",
           area: "Ex: Direcção de Recursos Minerais",
@@ -201,7 +201,7 @@ export const ConcursosManager = () => {
           salary_range: "Ex: 300.000 - 400.000 Kz",
           nova_categoria: "Ex: Técnico de Minas, Engenheiro de Minas, Geólogo"
         };
-      
+
       case 'desenvolvimento-economico':
         return {
           title: "Ex: Concurso Público para Economista",
@@ -213,7 +213,7 @@ export const ConcursosManager = () => {
           salary_range: "Ex: 250.000 - 350.000 Kz",
           nova_categoria: "Ex: Economista, Analista Económico, Técnico de Planeamento"
         };
-      
+
       case 'cultura':
         return {
           title: "Ex: Concurso Público para Animador Cultural",
@@ -225,7 +225,7 @@ export const ConcursosManager = () => {
           salary_range: "Ex: 150.000 - 220.000 Kz",
           nova_categoria: "Ex: Animador Cultural, Técnico de Museu, Gestor Cultural"
         };
-      
+
       case 'tecnologia':
         return {
           title: "Ex: Concurso Público para Técnico de Informática",
@@ -237,7 +237,7 @@ export const ConcursosManager = () => {
           salary_range: "Ex: 200.000 - 300.000 Kz",
           nova_categoria: "Ex: Técnico de Informática, Desenvolvedor, Analista de Sistemas"
         };
-      
+
       case 'energia-agua':
         return {
           title: "Ex: Concurso Público para Técnico de Energia",
@@ -249,7 +249,7 @@ export const ConcursosManager = () => {
           salary_range: "Ex: 220.000 - 320.000 Kz",
           nova_categoria: "Ex: Técnico de Energia, Técnico de Águas, Engenheiro Electrotécnico"
         };
-      
+
       default:
         return placeholders;
     }
@@ -318,10 +318,10 @@ export const ConcursosManager = () => {
       if (!isAdmin) {
         const currentSector = getCurrentSector();
         const currentSectorName = getCurrentSectorName();
-        
+
         if (currentSector && currentSectorName) {
           // Filtrar no frontend por título ou descrição
-          filteredData = filteredData.filter(concurso => 
+          filteredData = filteredData.filter(concurso =>
             (concurso.title && concurso.title.toLowerCase().includes(currentSectorName.toLowerCase())) ||
             (concurso.description && concurso.description.toLowerCase().includes(currentSectorName.toLowerCase()))
           );
@@ -341,7 +341,7 @@ export const ConcursosManager = () => {
         applications_count: Math.floor(Math.random() * 200) + 10,
         categorias_disponiveis: parseCategoriasDisponiveis(item.categorias_disponiveis)
       }));
-      
+
       setConcursos(enrichedData);
     } catch (error) {
       console.error('Erro inesperado ao carregar concursos:', error);
@@ -464,24 +464,24 @@ export const ConcursosManager = () => {
       resetForm();
       fetchConcursos();
     } catch (error: unknown) {
-        toast({
+      toast({
         title: "Erro ao actualizar",
-          description: error instanceof Error ? error.message : "Erro desconhecido",
-          variant: "destructive",
-        });
+        description: error instanceof Error ? error.message : "Erro desconhecido",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
   };
 
   const resetForm = () => {
-        setFormData({
-          title: "",
-          description: "",
-          requirements: "",
-          deadline: "",
-          contact_info: "",
-          published: false,
+    setFormData({
+      title: "",
+      description: "",
+      requirements: "",
+      deadline: "",
+      contact_info: "",
+      published: false,
       category: 'outros',
       location: "",
       salary_range: "",
@@ -583,9 +583,9 @@ export const ConcursosManager = () => {
           .from('concursos')
           .delete()
           .in('id', selectedIds);
-        
+
         if (error) throw error;
-        
+
         toast({
           title: "Concursos excluídos",
           description: `${selectedIds.length} concursos foram excluídos.`,
@@ -595,9 +595,9 @@ export const ConcursosManager = () => {
           .from('concursos')
           .update({ published: action === 'publish' })
           .in('id', selectedIds);
-        
+
         if (error) throw error;
-        
+
         toast({
           title: `Concursos ${action === 'publish' ? 'publicados' : 'despublicados'}`,
           description: `${selectedIds.length} concursos foram ${action === 'publish' ? 'publicados' : 'despublicados'}.`,
@@ -668,11 +668,11 @@ export const ConcursosManager = () => {
         }
       };
 
-      ExportUtils.exportToCSV(exportData, { 
+      ExportUtils.exportToCSV(exportData, {
         filename: 'concursos-publicos-chipindo',
-        includeTimestamp: true 
+        includeTimestamp: true
       });
-      
+
       toast({
         title: "Concursos exportados",
         description: "O relatório foi baixado em formato CSV.",
@@ -728,7 +728,7 @@ export const ConcursosManager = () => {
     const date = new Date(dateString);
     const now = new Date();
     const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-    
+
     if (diffInHours < 1) {
       const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
       return `${diffInMinutes}m`;
@@ -750,19 +750,19 @@ export const ConcursosManager = () => {
   };
 
   const filteredConcursos = concursos.filter(concurso => {
-    const matchesSearch = searchQuery === '' || 
+    const matchesSearch = searchQuery === '' ||
       concurso.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       concurso.description.toLowerCase().includes(searchQuery.toLowerCase());
-    
+
     const matchesCategory = categoryFilter === 'all' || concurso.category === categoryFilter;
     const matchesStatus = statusFilter === 'all' || concurso.status === statusFilter;
-    
-    const matchesTab = activeTab === 'all' || 
+
+    const matchesTab = activeTab === 'all' ||
       (activeTab === 'published' && concurso.published) ||
       (activeTab === 'draft' && !concurso.published) ||
       (activeTab === 'active' && concurso.status === 'active') ||
       (activeTab === 'closed' && concurso.status === 'closed');
-    
+
     return matchesSearch && matchesCategory && matchesStatus && matchesTab;
   });
 
@@ -780,9 +780,9 @@ export const ConcursosManager = () => {
         .select('*')
         .eq('concurso_id', concurso.id)
         .order('created_at', { ascending: false });
-      
+
       if (error) throw error;
-      
+
       setInscricoes(data || []);
     } catch (error) {
       console.error('Erro ao carregar inscrições:', error);
@@ -824,7 +824,7 @@ export const ConcursosManager = () => {
     return idade;
   };
 
-  const exportInscricoes = async (format: 'excel'|'pdf') => {
+  const exportInscricoes = async (format: 'excel' | 'pdf') => {
     if (!inscricoesConcurso) return;
     const sorted = sortInscricoes(inscricoes);
     const exportData = {
@@ -871,8 +871,8 @@ export const ConcursosManager = () => {
   const categoriaInputRef = useRef<HTMLInputElement>(null);
 
   if (loading) {
-  return (
-    <div className="space-y-6">
+    return (
+      <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div className="space-y-2">
             <div className="h-8 w-64 bg-muted animate-pulse rounded" />
@@ -905,7 +905,7 @@ export const ConcursosManager = () => {
     <div className="space-y-6">
       {/* Sector Filter */}
       <SectorFilter />
-      
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex-1 min-w-0">
@@ -914,7 +914,7 @@ export const ConcursosManager = () => {
             Gerencie concursos públicos e processos de recrutamento municipal
           </p>
         </div>
-        
+
         <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
           {/* Mobile Menu for Actions */}
           <div className="sm:hidden">
@@ -932,8 +932,8 @@ export const ConcursosManager = () => {
                   <span>Ações Rápidas</span>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem 
-                  onClick={exportConcursosToCSV} 
+                <DropdownMenuItem
+                  onClick={exportConcursosToCSV}
                   disabled={exportLoading === 'csv'}
                   className="py-3"
                 >
@@ -948,7 +948,7 @@ export const ConcursosManager = () => {
                   </div>
                 </DropdownMenuItem>
                 {concursos.length === 0 && (
-                  <DropdownMenuItem 
+                  <DropdownMenuItem
                     onClick={handleSeedSampleConcursos}
                     disabled={loading}
                     className="py-3"
@@ -973,9 +973,9 @@ export const ConcursosManager = () => {
             {/* Export Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  variant="outline"
+                  size="sm"
                   disabled={exportLoading !== null}
                   className="shadow-sm hover:shadow-md transition-all duration-200"
                 >
@@ -996,8 +996,8 @@ export const ConcursosManager = () => {
                   <span>Exportar Concursos</span>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem 
-                  onClick={exportConcursosToCSV} 
+                <DropdownMenuItem
+                  onClick={exportConcursosToCSV}
                   disabled={exportLoading === 'csv'}
                   className="py-3"
                 >
@@ -1018,8 +1018,8 @@ export const ConcursosManager = () => {
             {selectedIds.length > 0 && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     size="sm"
                     className="shadow-sm hover:shadow-md transition-all duration-200 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/10 dark:to-orange-900/10 border-amber-200 dark:border-amber-800 hover:from-amber-100 hover:to-orange-100 dark:hover:from-amber-900/20 dark:hover:to-orange-900/20"
                   >
@@ -1041,7 +1041,7 @@ export const ConcursosManager = () => {
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem 
+                  <DropdownMenuItem
                     onClick={() => handleBulkAction('publish')}
                     className="py-4 cursor-pointer hover:bg-green-50 dark:hover:bg-green-900/10"
                   >
@@ -1055,7 +1055,7 @@ export const ConcursosManager = () => {
                       </div>
                     </div>
                   </DropdownMenuItem>
-                  <DropdownMenuItem 
+                  <DropdownMenuItem
                     onClick={() => handleBulkAction('unpublish')}
                     className="py-4 cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/10"
                   >
@@ -1070,7 +1070,7 @@ export const ConcursosManager = () => {
                     </div>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem 
+                  <DropdownMenuItem
                     className="text-destructive focus:text-destructive py-4 cursor-pointer hover:bg-red-50 dark:hover:bg-red-900/10"
                     onClick={() => handleBulkAction('delete')}
                   >
@@ -1090,9 +1090,9 @@ export const ConcursosManager = () => {
 
             {/* Sample Concursos Button */}
             {concursos.length === 0 && (
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={handleSeedSampleConcursos}
                 disabled={loading}
                 className="shadow-sm hover:shadow-md transition-all duration-200 bg-purple-50 dark:bg-purple-900/10 border-purple-200 dark:border-purple-800 hover:bg-purple-100 dark:hover:bg-purple-900/20"
@@ -1112,7 +1112,7 @@ export const ConcursosManager = () => {
                 <span className="sm:hidden">Novo</span>
               </Button>
             </DialogTrigger>
-          
+
             <DialogContent className="max-w-3xl max-h-[95vh] overflow-hidden flex flex-col">
               <DialogHeader className="pb-4 border-b border-border/50 flex-shrink-0">
                 <div className="flex items-center gap-3">
@@ -1122,17 +1122,17 @@ export const ConcursosManager = () => {
                   <div>
                     <DialogTitle className="text-lg font-semibold">
                       {editingConcurso ? "Editar Concurso" : "Novo Concurso Público"}
-              </DialogTitle>
+                    </DialogTitle>
                     <DialogDescription className="text-sm text-muted-foreground">
-                      {editingConcurso 
-                        ? "Edite os detalhes do concurso público" 
+                      {editingConcurso
+                        ? "Edite os detalhes do concurso público"
                         : "Crie um novo concurso público para o município"
                       }
-              </DialogDescription>
+                    </DialogDescription>
                   </div>
                 </div>
-            </DialogHeader>
-            
+              </DialogHeader>
+
               <ScrollArea className="flex-1 overflow-y-auto">
                 <form onSubmit={handleSubmit} className="space-y-6 p-6">
                   {/* Informações Básicas Section */}
@@ -1143,24 +1143,24 @@ export const ConcursosManager = () => {
                       </div>
                       <h3 className="text-base font-semibold">Informações Básicas</h3>
                     </div>
-                    
+
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <div className="space-y-2">
+                      <div className="space-y-2">
                         <Label htmlFor="title" className="text-sm font-medium flex items-center gap-2">
                           <Building className="w-3 h-3" />
                           Título do Concurso
                         </Label>
-                <Input
-                  id="title"
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                        <Input
+                          id="title"
+                          value={formData.title}
+                          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                           placeholder={sectorPlaceholders.title}
                           className="h-10"
-                  required
-                />
-              </div>
-              
-              <div className="space-y-2">
+                          required
+                        />
+                      </div>
+
+                      <div className="space-y-2">
                         <Label htmlFor="area" className="text-sm font-medium flex items-center gap-2">
                           <Building2 className="w-3 h-3" />
                           Direcção/Área Responsável
@@ -1175,26 +1175,26 @@ export const ConcursosManager = () => {
                         />
                       </div>
                     </div>
-                    
+
                     <div className="space-y-2">
                       <Label htmlFor="description" className="text-sm font-medium flex items-center gap-2">
                         <MessageSquare className="w-3 h-3" />
                         Descrição
                       </Label>
-                <Textarea
-                  id="description"
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                      <Textarea
+                        id="description"
+                        value={formData.description}
+                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                         placeholder={sectorPlaceholders.description}
-                  rows={4}
+                        rows={4}
                         className="resize-none"
-                  required
-                />
+                        required
+                      />
                     </div>
-              </div>
-              
+                  </div>
+
                   <Separator />
-                  
+
                   {/* Detalhes do Concurso Section */}
                   <div className="space-y-3">
                     <div className="flex items-center gap-2">
@@ -1203,9 +1203,9 @@ export const ConcursosManager = () => {
                       </div>
                       <h3 className="text-base font-semibold">Detalhes do Concurso</h3>
                     </div>
-                    
+
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-              <div className="space-y-2">
+                      <div className="space-y-2">
                         <Label htmlFor="positions_available" className="text-sm font-medium flex items-center gap-2">
                           <Users className="w-3 h-3" />
                           Vagas Disponíveis
@@ -1217,10 +1217,10 @@ export const ConcursosManager = () => {
                           value={formData.positions_available}
                           onChange={(e) => setFormData({ ...formData, positions_available: parseInt(e.target.value) || 1 })}
                           className="h-10"
-                />
-              </div>
-              
-              <div className="space-y-2">
+                        />
+                      </div>
+
+                      <div className="space-y-2">
                         <Label htmlFor="location" className="text-sm font-medium flex items-center gap-2">
                           <MapPin className="w-3 h-3" />
                           Localização
@@ -1233,7 +1233,7 @@ export const ConcursosManager = () => {
                           className="h-10"
                         />
                       </div>
-                      
+
                       <div className="space-y-2">
                         <Label htmlFor="salary_range" className="text-sm font-medium flex items-center gap-2">
                           <DollarSign className="w-3 h-3" />
@@ -1248,24 +1248,24 @@ export const ConcursosManager = () => {
                         />
                       </div>
                     </div>
-                    
+
                     <div className="space-y-2">
                       <Label htmlFor="deadline" className="text-sm font-medium flex items-center gap-2">
                         <Calendar className="w-3 h-3" />
                         Data Limite
                       </Label>
-                <Input
-                  id="deadline"
-                  type="date"
-                  value={formData.deadline}
-                  onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
+                      <Input
+                        id="deadline"
+                        type="date"
+                        value={formData.deadline}
+                        onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
                         className="h-10"
-                />
+                      />
                     </div>
-              </div>
-              
+                  </div>
+
                   <Separator />
-                  
+
                   {/* Requisitos e Contacto Section */}
                   <div className="space-y-3">
                     <div className="flex items-center gap-2">
@@ -1274,9 +1274,9 @@ export const ConcursosManager = () => {
                       </div>
                       <h3 className="text-base font-semibold">Requisitos e Contacto</h3>
                     </div>
-                    
+
                     <div className="space-y-4">
-              <div className="space-y-2">
+                      <div className="space-y-2">
                         <Label htmlFor="requirements" className="text-sm font-medium flex items-center gap-2">
                           <CheckCircle className="w-3 h-3" />
                           Requisitos
@@ -1290,24 +1290,24 @@ export const ConcursosManager = () => {
                           className="resize-none"
                         />
                       </div>
-                      
+
                       <div className="space-y-2">
                         <Label htmlFor="contact_info" className="text-sm font-medium flex items-center gap-2">
                           <Globe className="w-3 h-3" />
                           Informações de Contacto
                         </Label>
-                <Textarea
-                  id="contact_info"
-                  value={formData.contact_info}
-                  onChange={(e) => setFormData({ ...formData, contact_info: e.target.value })}
+                        <Textarea
+                          id="contact_info"
+                          value={formData.contact_info}
+                          onChange={(e) => setFormData({ ...formData, contact_info: e.target.value })}
                           placeholder={sectorPlaceholders.contact_info}
                           rows={3}
                           className="resize-none"
-                />
+                        />
                       </div>
                     </div>
-              </div>
-              
+                  </div>
+
                   <Separator />
 
                   {/* Categorias Disponíveis Section */}
@@ -1318,7 +1318,7 @@ export const ConcursosManager = () => {
                       </div>
                       <h3 className="text-base font-semibold">Categorias Disponíveis</h3>
                     </div>
-                    
+
                     <div className="space-y-4">
                       <div className="space-y-2">
                         <Label htmlFor="categorias_disponiveis" className="text-sm font-medium flex items-center gap-2">
@@ -1350,7 +1350,7 @@ export const ConcursosManager = () => {
                               <Plus className="w-3 h-3" />
                             </Button>
                           </div>
-                          
+
                           {formData.categorias_disponiveis.length > 0 && (
                             <div className="space-y-2">
                               <Label className="text-xs font-medium text-muted-foreground">
@@ -1377,7 +1377,7 @@ export const ConcursosManager = () => {
                               </div>
                             </div>
                           )}
-                          
+
                           {formData.categorias_disponiveis.length === 0 && (
                             <p className="text-xs text-muted-foreground">
                               Adicione categorias para que os candidatos possam escolher ao se inscrever.
@@ -1387,7 +1387,7 @@ export const ConcursosManager = () => {
                       </div>
                     </div>
                   </div>
-                  
+
                   <Separator />
 
                   {/* Status Section */}
@@ -1398,46 +1398,46 @@ export const ConcursosManager = () => {
                       </div>
                       <h3 className="text-base font-semibold">Status de Publicação</h3>
                     </div>
-                    
+
                     <div className="flex items-center space-x-3">
-                <Switch
-                  id="published"
-                  checked={formData.published}
-                  onCheckedChange={(checked) => setFormData({ ...formData, published: checked })}
-                />
+                      <Switch
+                        id="published"
+                        checked={formData.published}
+                        onCheckedChange={(checked) => setFormData({ ...formData, published: checked })}
+                      />
                       <div>
                         <Label htmlFor="published" className="text-sm font-medium">
                           {formData.published ? "Publicado" : "Rascunho"}
                         </Label>
                         <p className="text-xs text-muted-foreground">
-                          {formData.published 
-                            ? "O concurso será visível publicamente" 
+                          {formData.published
+                            ? "O concurso será visível publicamente"
                             : "O concurso ficará como rascunho"
                           }
                         </p>
-              </div>
+                      </div>
                     </div>
                   </div>
                 </form>
               </ScrollArea>
-              
+
               <div className="pt-4 border-t border-border/50 flex-shrink-0">
                 <div className="flex justify-between items-center">
                   <div className="text-xs text-muted-foreground">
                     {editingConcurso ? "Modificando concurso existente" : "Criando novo concurso"}
                   </div>
                   <div className="flex items-center gap-2">
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  onClick={() => setIsDialogOpen(false)}
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setIsDialogOpen(false)}
                       className="min-w-[80px] h-9"
                       size="sm"
-                >
-                  Cancelar
-                </Button>
-                    <Button 
-                      type="submit" 
+                    >
+                      Cancelar
+                    </Button>
+                    <Button
+                      type="submit"
                       disabled={loading || !formData.title || !formData.description}
                       className="min-w-[100px] h-9 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg"
                       onClick={handleSubmit}
@@ -1454,12 +1454,12 @@ export const ConcursosManager = () => {
                           {editingConcurso ? "Actualizar" : "Criar"}
                         </div>
                       )}
-                </Button>
-              </div>
+                    </Button>
+                  </div>
                 </div>
               </div>
-          </DialogContent>
-        </Dialog>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
@@ -1541,7 +1541,7 @@ export const ConcursosManager = () => {
                 Filtros
                 <ChevronDown className={cn("w-4 h-4 transition-transform", showFilters && "rotate-180")} />
               </Button>
-              
+
               {selectedIds.length > 0 && (
                 <Button
                   variant="outline"
@@ -1647,7 +1647,7 @@ export const ConcursosManager = () => {
                     <XIcon className="w-4 h-4" />
                   </Button>
                 </div>
-                
+
                 <div className="grid grid-cols-1 gap-2">
                   <Button
                     variant="default"
@@ -1677,7 +1677,7 @@ export const ConcursosManager = () => {
                     Excluir Selecionados
                   </Button>
                 </div>
-                
+
                 <div className="text-xs text-amber-700 dark:text-amber-300 text-center">
                   Clique em "X" para cancelar a seleção
                 </div>
@@ -1830,12 +1830,12 @@ export const ConcursosManager = () => {
                               </Badge>
                             </div>
                           </div>
-                          
+
                           <div className="flex items-center gap-2 flex-shrink-0">
                             <span className="text-xs text-muted-foreground hidden sm:block">
                               {formatDate(concurso.created_at)}
                             </span>
-                            
+
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
@@ -1854,7 +1854,7 @@ export const ConcursosManager = () => {
                                 <DropdownMenuSeparator />
                                 <AlertDialog>
                                   <AlertDialogTrigger asChild>
-                                    <DropdownMenuItem 
+                                    <DropdownMenuItem
                                       onSelect={(e) => e.preventDefault()}
                                       className="text-destructive focus:text-destructive"
                                     >
@@ -1867,21 +1867,21 @@ export const ConcursosManager = () => {
                                       <div className="flex items-center gap-3">
                                         <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-100 to-red-200 dark:from-red-900/20 dark:to-red-800/20 flex items-center justify-center">
                                           <AlertTriangle className="w-6 h-6 text-red-600 dark:text-red-400" />
-                      </div>
+                                        </div>
                                         <div>
                                           <AlertDialogTitle className="text-lg font-semibold">Confirmar Exclusão</AlertDialogTitle>
                                           <AlertDialogDescription className="text-muted-foreground mt-1">
                                             Esta ação não pode ser desfeita
                                           </AlertDialogDescription>
-                    </div>
+                                        </div>
                                       </div>
                                     </AlertDialogHeader>
-                                    
+
                                     <div className="py-4 space-y-3">
                                       <p className="text-sm text-muted-foreground">
                                         Tem certeza que deseja excluir este concurso?
                                       </p>
-                                      
+
                                       <div className="p-3 rounded-lg bg-muted/50 border border-dashed">
                                         <div className="flex items-center gap-2 mb-1">
                                           <div className={cn("w-6 h-6 rounded-lg flex items-center justify-center", getCategoryColor(concurso.category))}>
@@ -1890,26 +1890,26 @@ export const ConcursosManager = () => {
                                           <span className="font-medium text-sm">{concurso.title}</span>
                                         </div>
                                         <p className="text-xs text-muted-foreground">
-                                          {concurso.description.length > 60 
-                                            ? concurso.description.substring(0, 60) + '...' 
+                                          {concurso.description.length > 60
+                                            ? concurso.description.substring(0, 60) + '...'
                                             : concurso.description
                                           }
                                         </p>
                                       </div>
                                     </div>
-                                    
+
                                     <AlertDialogFooter className="pt-4 border-t border-border/50">
                                       <AlertDialogCancel className="min-w-[100px]">
                                         Cancelar
                                       </AlertDialogCancel>
-                                      <AlertDialogAction 
+                                      <AlertDialogAction
                                         onClick={() => handleDelete(concurso.id)}
                                         className="min-w-[100px] bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white shadow-lg"
                                       >
                                         <div className="flex items-center gap-2">
-                        <Trash2 className="w-4 h-4" />
+                                          <Trash2 className="w-4 h-4" />
                                           Excluir
-                    </div>
+                                        </div>
                                       </AlertDialogAction>
                                     </AlertDialogFooter>
                                   </AlertDialogContent>
@@ -1920,9 +1920,9 @@ export const ConcursosManager = () => {
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
-                  </div>
+                          </div>
                         </div>
-                        
+
                         <p className={cn(
                           "text-sm text-muted-foreground leading-relaxed mb-3 line-clamp-2",
                           concurso.published && "text-foreground/80"
@@ -2011,8 +2011,8 @@ export const ConcursosManager = () => {
                           <div className="mt-3 p-2 sm:p-3 bg-muted/50 rounded-lg">
                             <p className="text-xs font-medium text-muted-foreground mb-1 sm:mb-2">Requisitos:</p>
                             <p className="text-xs text-muted-foreground line-clamp-2">
-                              {concurso.requirements.length > 80 
-                                ? concurso.requirements.substring(0, 80) + '...' 
+                              {concurso.requirements.length > 80
+                                ? concurso.requirements.substring(0, 80) + '...'
                                 : concurso.requirements
                               }
                             </p>
@@ -2021,7 +2021,7 @@ export const ConcursosManager = () => {
                       </div>
                     </div>
                   </CardContent>
-              </Card>
+                </Card>
               ))}
             </div>
           )}
@@ -2050,7 +2050,7 @@ export const ConcursosManager = () => {
                 <div className="sm:hidden space-y-2">
                   <div className="flex items-center gap-2">
                     <span className="text-xs text-muted-foreground">Ordenar:</span>
-                    <Select value={inscricoesSort} onValueChange={(value: 'nome'|'idade'|'categoria') => setInscricoesSort(value)}>
+                    <Select value={inscricoesSort} onValueChange={(value: 'nome' | 'idade' | 'categoria') => setInscricoesSort(value)}>
                       <SelectTrigger className="w-32">
                         <SelectValue />
                       </SelectTrigger>
@@ -2060,22 +2060,22 @@ export const ConcursosManager = () => {
                         <SelectItem value="categoria">Categoria</SelectItem>
                       </SelectContent>
                     </Select>
-                    <Button variant="ghost" size="icon" onClick={()=>setInscricoesSortDir(inscricoesSortDir==='asc'?'desc':'asc')} className="h-8 w-8">
-                      <SortAsc className={inscricoesSortDir==='asc'?'':'hidden'} />
-                      <SortDesc className={inscricoesSortDir==='desc'?'':'hidden'} />
+                    <Button variant="ghost" size="icon" onClick={() => setInscricoesSortDir(inscricoesSortDir === 'asc' ? 'desc' : 'asc')} className="h-8 w-8">
+                      <SortAsc className={inscricoesSortDir === 'asc' ? '' : 'hidden'} />
+                      <SortDesc className={inscricoesSortDir === 'desc' ? '' : 'hidden'} />
                     </Button>
                   </div>
                   <div className="flex gap-2">
-                    <Button variant="outline" size="sm" onClick={()=>exportInscricoes('excel')} className="flex-1 text-xs">
-                      <FileSpreadsheet className="w-3 h-3 mr-1"/>
+                    <Button variant="outline" size="sm" onClick={() => exportInscricoes('excel')} className="flex-1 text-xs">
+                      <FileSpreadsheet className="w-3 h-3 mr-1" />
                       Excel
                     </Button>
-                    <Button variant="outline" size="sm" onClick={()=>exportInscricoes('pdf')} className="flex-1 text-xs">
-                      <FileDown className="w-3 h-3 mr-1"/>
+                    <Button variant="outline" size="sm" onClick={() => exportInscricoes('pdf')} className="flex-1 text-xs">
+                      <FileDown className="w-3 h-3 mr-1" />
                       PDF
                     </Button>
                     <Button variant="outline" size="sm" onClick={printInscricoes} className="flex-1 text-xs">
-                      <Printer className="w-3 h-3 mr-1"/>
+                      <Printer className="w-3 h-3 mr-1" />
                       Imprimir
                     </Button>
                   </div>
@@ -2085,34 +2085,34 @@ export const ConcursosManager = () => {
                 <div className="hidden sm:flex sm:items-center sm:justify-between">
                   <div className="flex gap-2 items-center">
                     <span className="text-sm text-muted-foreground">Ordenar por:</span>
-                    <Button variant={inscricoesSort==='nome' ? 'default' : 'outline'} size="sm" onClick={()=>setInscricoesSort('nome')}>
-                      <UserIcon className="w-4 h-4 mr-1"/>
+                    <Button variant={inscricoesSort === 'nome' ? 'default' : 'outline'} size="sm" onClick={() => setInscricoesSort('nome')}>
+                      <UserIcon className="w-4 h-4 mr-1" />
                       Nome
                     </Button>
-                    <Button variant={inscricoesSort==='idade' ? 'default' : 'outline'} size="sm" onClick={()=>setInscricoesSort('idade')}>
-                      <Calendar className="w-4 h-4 mr-1"/>
+                    <Button variant={inscricoesSort === 'idade' ? 'default' : 'outline'} size="sm" onClick={() => setInscricoesSort('idade')}>
+                      <Calendar className="w-4 h-4 mr-1" />
                       Idade
                     </Button>
-                    <Button variant={inscricoesSort==='categoria' ? 'default' : 'outline'} size="sm" onClick={()=>setInscricoesSort('categoria')}>
-                      <Tag className="w-4 h-4 mr-1"/>
+                    <Button variant={inscricoesSort === 'categoria' ? 'default' : 'outline'} size="sm" onClick={() => setInscricoesSort('categoria')}>
+                      <Tag className="w-4 h-4 mr-1" />
                       Categoria
                     </Button>
-                    <Button variant="ghost" size="icon" onClick={()=>setInscricoesSortDir(inscricoesSortDir==='asc'?'desc':'asc')}>
-                      <SortAsc className={inscricoesSortDir==='asc'?'':'hidden'} />
-                      <SortDesc className={inscricoesSortDir==='desc'?'':'hidden'} />
+                    <Button variant="ghost" size="icon" onClick={() => setInscricoesSortDir(inscricoesSortDir === 'asc' ? 'desc' : 'asc')}>
+                      <SortAsc className={inscricoesSortDir === 'asc' ? '' : 'hidden'} />
+                      <SortDesc className={inscricoesSortDir === 'desc' ? '' : 'hidden'} />
                     </Button>
                   </div>
                   <div className="flex gap-2">
-                    <Button variant="outline" size="sm" onClick={()=>exportInscricoes('excel')}>
-                      <FileSpreadsheet className="w-4 h-4 mr-1"/>
+                    <Button variant="outline" size="sm" onClick={() => exportInscricoes('excel')}>
+                      <FileSpreadsheet className="w-4 h-4 mr-1" />
                       Excel
                     </Button>
-                    <Button variant="outline" size="sm" onClick={()=>exportInscricoes('pdf')}>
-                      <FileDown className="w-4 h-4 mr-1"/>
+                    <Button variant="outline" size="sm" onClick={() => exportInscricoes('pdf')}>
+                      <FileDown className="w-4 h-4 mr-1" />
                       PDF
                     </Button>
                     <Button variant="outline" size="sm" onClick={printInscricoes}>
-                      <Printer className="w-4 h-4 mr-1"/>
+                      <Printer className="w-4 h-4 mr-1" />
                       Imprimir
                     </Button>
                   </div>
@@ -2139,7 +2139,7 @@ export const ConcursosManager = () => {
                     <tbody>
                       {sortInscricoes(inscricoes).map((i, idx) => (
                         <tr key={i.id} className="border-b hover:bg-muted/30">
-                          <td className="p-2">{idx+1}</td>
+                          <td className="p-2">{idx + 1}</td>
                           <td className="p-2 font-medium">
                             <div>
                               <div className="font-medium">{i.nome_completo}</div>
