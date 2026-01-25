@@ -100,9 +100,9 @@ const mapFromDb = (data: any): SystemConfig => ({
   timezone: data.timezone || DEFAULT_CONFIG.timezone,
   dateFormat: data.date_format || DEFAULT_CONFIG.dateFormat,
 
-  // Event Settings (stored in JSON value)
-  eventsContactEmail: data.value?.events?.contactEmail || DEFAULT_CONFIG.eventsContactEmail,
-  eventsContactPhone: data.value?.events?.contactPhone || DEFAULT_CONFIG.eventsContactPhone,
+  // Event Settings (check flat columns first, then JSON value field, then defaults)
+  eventsContactEmail: data.events_contact_email || data.value?.events?.contactEmail || DEFAULT_CONFIG.eventsContactEmail,
+  eventsContactPhone: data.events_contact_phone || data.value?.events?.contactPhone || DEFAULT_CONFIG.eventsContactPhone,
 });
 
 // Helper to map frontend camelCase to DB snake_case
@@ -135,6 +135,10 @@ const mapToDb = (config: Partial<SystemConfig>) => {
   if (config.language !== undefined) mapped.language = config.language;
   if (config.timezone !== undefined) mapped.timezone = config.timezone;
   if (config.dateFormat !== undefined) mapped.date_format = config.dateFormat;
+
+  // Events Settings - map to both flat columns and JSON value field
+  if (config.eventsContactEmail !== undefined) mapped.events_contact_email = config.eventsContactEmail;
+  if (config.eventsContactPhone !== undefined) mapped.events_contact_phone = config.eventsContactPhone;
 
   return mapped;
 };
