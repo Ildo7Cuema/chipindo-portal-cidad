@@ -46,7 +46,8 @@ import {
   CheckCircleIcon,
   InfoIcon,
   SendIcon,
-  AlertTriangleIcon
+  AlertTriangleIcon,
+  ArrowRightIcon
 } from "lucide-react";
 
 interface Servico {
@@ -189,7 +190,24 @@ export default function Servicos() {
 
       if (deptError) throw deptError;
 
-      setServicos(servicosData || []);
+      // Define a type guard for priority
+      const getPriority = (p: string | null): 'alta' | 'media' | 'baixa' => {
+        if (p === 'alta' || p === 'media' || p === 'baixa') return p;
+        return 'baixa'; // Default fallback
+      };
+
+      const mappedServicos: Servico[] = (servicosData || []).map((s) => ({
+        ...s,
+        prioridade: getPriority(s.prioridade),
+        // Ensure other required fields are handled if they come as null from DB but are required in Interface
+        // Based on the error, prioridade was the main issue. 
+        // We cast to proper types where necessary or rely on ...s if types match closely enough apart from prioridade.
+        views: s.views || 0,
+        requests: s.requests || 0,
+        ativo: s.ativo || false,
+      } as Servico));
+
+      setServicos(mappedServicos);
       setDepartamentos(deptData || []);
 
     } catch (error: any) {
