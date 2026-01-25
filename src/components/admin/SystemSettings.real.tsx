@@ -8,14 +8,14 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { 
-  Settings, 
-  Save, 
-  RefreshCw, 
-  Database, 
-  Shield, 
-  Mail, 
-  Globe, 
+import {
+  Settings,
+  Save,
+  RefreshCw,
+  Database,
+  Shield,
+  Mail,
+  Globe,
   Bell,
   Activity,
   Palette,
@@ -23,7 +23,9 @@ import {
   Users,
   HardDrive,
   Zap,
-  AlertCircle
+  Phone,
+  AlertCircle,
+  Calendar
 } from "lucide-react";
 import { toast } from "sonner";
 import { useSystemSettings } from "@/hooks/useSystemSettings";
@@ -164,10 +166,11 @@ export const SystemSettings = () => {
         </CardHeader>
         <CardContent>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="general">Geral</TabsTrigger>
               <TabsTrigger value="security">Segurança</TabsTrigger>
               <TabsTrigger value="notifications">Notificações</TabsTrigger>
+              <TabsTrigger value="events">Eventos</TabsTrigger>
               <TabsTrigger value="performance">Performance</TabsTrigger>
             </TabsList>
 
@@ -176,7 +179,7 @@ export const SystemSettings = () => {
               <div className="grid gap-6 md:grid-cols-2">
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold">Configurações Gerais</h3>
-                  
+
                   <div className="space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="siteName">Nome do Site</Label>
@@ -187,7 +190,7 @@ export const SystemSettings = () => {
                         placeholder="Nome do portal"
                       />
                     </div>
-                    
+
                     <div className="space-y-2">
                       <Label htmlFor="siteDescription">Descrição do Site</Label>
                       <Textarea
@@ -198,7 +201,7 @@ export const SystemSettings = () => {
                         rows={3}
                       />
                     </div>
-                    
+
                     <div className="space-y-2">
                       <Label htmlFor="contactEmail">Email de Contacto</Label>
                       <Input
@@ -209,7 +212,7 @@ export const SystemSettings = () => {
                         placeholder="admin@chipindo.gov.ao"
                       />
                     </div>
-                    
+
                     <div className="space-y-2">
                       <Label htmlFor="contactPhone">Telefone de Contacto</Label>
                       <Input
@@ -219,7 +222,7 @@ export const SystemSettings = () => {
                         placeholder="+244 XXX XXX XXX"
                       />
                     </div>
-                    
+
                     <div className="space-y-2">
                       <Label htmlFor="contactAddress">Endereço</Label>
                       <Textarea
@@ -235,7 +238,7 @@ export const SystemSettings = () => {
 
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold">Configurações de Aparência</h3>
-                  
+
                   <div className="space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="theme">Tema</Label>
@@ -253,7 +256,7 @@ export const SystemSettings = () => {
                         </SelectContent>
                       </Select>
                     </div>
-                    
+
                     <div className="space-y-2">
                       <Label htmlFor="language">Idioma</Label>
                       <Select
@@ -269,7 +272,7 @@ export const SystemSettings = () => {
                         </SelectContent>
                       </Select>
                     </div>
-                    
+
                     <div className="space-y-2">
                       <Label htmlFor="timezone">Fuso Horário</Label>
                       <Select
@@ -285,7 +288,7 @@ export const SystemSettings = () => {
                         </SelectContent>
                       </Select>
                     </div>
-                    
+
                     <div className="space-y-2">
                       <Label htmlFor="dateFormat">Formato de Data</Label>
                       <Select
@@ -307,12 +310,66 @@ export const SystemSettings = () => {
               </div>
             </TabsContent>
 
+            {/* Events Settings */}
+            <TabsContent value="events" className="space-y-6">
+              <div className="grid gap-6 md:grid-cols-2">
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold">Configurações de Eventos</h3>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="eventsContactEmail">Email para Eventos</Label>
+                      <div className="flex">
+                        <Mail className="w-4 h-4 mr-2 mt-3 text-muted-foreground" />
+                        <Input
+                          id="eventsContactEmail"
+                          type="email"
+                          value={localConfig.eventsContactEmail}
+                          onChange={(e) => setLocalConfig({ ...localConfig, eventsContactEmail: e.target.value })}
+                          placeholder="eventos@chipindo.gov.ao"
+                        />
+                      </div>
+                      <p className="text-xs text-muted-foreground">Exibido no modal de diretrizes de eventos.</p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="eventsContactPhone">Telefone para Eventos</Label>
+                      <div className="flex">
+                        <Phone className="w-4 h-4 mr-2 mt-3 text-muted-foreground" />
+                        <Input
+                          id="eventsContactPhone"
+                          value={localConfig.eventsContactPhone}
+                          onChange={(e) => setLocalConfig({ ...localConfig, eventsContactPhone: e.target.value })}
+                          placeholder="+244 9XX XXX XXX"
+                        />
+                      </div>
+                      <p className="text-xs text-muted-foreground">Exibido no modal de diretrizes de eventos.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold">Informações</h3>
+                  <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                    <div className="flex items-start gap-3">
+                      <Calendar className="w-5 h-5 text-blue-600 mt-0.5" />
+                      <div>
+                        <h4 className="font-medium text-blue-900 dark:text-blue-100">Gestão de Eventos</h4>
+                        <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
+                          As informações de contacto configuradas aqui aparecerão automaticamente nas áreas públicas onde os cidadãos buscam informações sobre como promover ou participar de eventos.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+
             {/* Security Settings */}
             <TabsContent value="security" className="space-y-6">
               <div className="grid gap-6 md:grid-cols-2">
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold">Configurações de Segurança</h3>
-                  
+
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
@@ -326,7 +383,7 @@ export const SystemSettings = () => {
                         onCheckedChange={(checked) => setLocalConfig({ ...localConfig, maintenanceMode: checked })}
                       />
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
                         <Label>Permitir Registro</Label>
@@ -339,7 +396,7 @@ export const SystemSettings = () => {
                         onCheckedChange={(checked) => setLocalConfig({ ...localConfig, allowRegistration: checked })}
                       />
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
                         <Label>Verificação de Email</Label>
@@ -357,7 +414,7 @@ export const SystemSettings = () => {
 
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold">Configurações de Sessão</h3>
-                  
+
                   <div className="space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="sessionTimeout">Timeout de Sessão (minutos)</Label>
@@ -370,7 +427,7 @@ export const SystemSettings = () => {
                         max="1440"
                       />
                     </div>
-                    
+
                     <div className="space-y-2">
                       <Label htmlFor="maxLoginAttempts">Tentativas de Login Máximas</Label>
                       <Input
@@ -392,7 +449,7 @@ export const SystemSettings = () => {
               <div className="grid gap-6 md:grid-cols-2">
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold">Tipos de Notificação</h3>
-                  
+
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
@@ -406,7 +463,7 @@ export const SystemSettings = () => {
                         onCheckedChange={(checked) => setLocalConfig({ ...localConfig, emailNotifications: checked })}
                       />
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
                         <Label>Notificações SMS</Label>
@@ -419,7 +476,7 @@ export const SystemSettings = () => {
                         onCheckedChange={(checked) => setLocalConfig({ ...localConfig, smsNotifications: checked })}
                       />
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
                         <Label>Notificações Push</Label>
@@ -437,7 +494,7 @@ export const SystemSettings = () => {
 
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold">Configurações de Frequência</h3>
-                  
+
                   <div className="space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="notificationFrequency">Frequência de Notificações</Label>
@@ -466,7 +523,7 @@ export const SystemSettings = () => {
               <div className="grid gap-6 md:grid-cols-2">
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold">Configurações de Performance</h3>
-                  
+
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
@@ -480,7 +537,7 @@ export const SystemSettings = () => {
                         onCheckedChange={(checked) => setLocalConfig({ ...localConfig, cacheEnabled: checked })}
                       />
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
                         <Label>Compressão Habilitada</Label>
@@ -493,7 +550,7 @@ export const SystemSettings = () => {
                         onCheckedChange={(checked) => setLocalConfig({ ...localConfig, compressionEnabled: checked })}
                       />
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
                         <Label>CDN Habilitado</Label>
@@ -506,7 +563,7 @@ export const SystemSettings = () => {
                         onCheckedChange={(checked) => setLocalConfig({ ...localConfig, cdnEnabled: checked })}
                       />
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
                         <Label>Backup Automático</Label>
@@ -524,7 +581,7 @@ export const SystemSettings = () => {
 
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold">Manutenção da Base de Dados</h3>
-                  
+
                   <div className="space-y-4">
                     <Button
                       variant="outline"
@@ -534,7 +591,7 @@ export const SystemSettings = () => {
                       <Database className="h-4 w-4 mr-2" />
                       Otimizar Base de Dados
                     </Button>
-                    
+
                     <Button
                       variant="outline"
                       onClick={vacuumDatabase}
@@ -543,7 +600,7 @@ export const SystemSettings = () => {
                       <RefreshCw className="h-4 w-4 mr-2" />
                       Vacuum da Base de Dados
                     </Button>
-                    
+
                     <Button
                       variant="outline"
                       onClick={reindexDatabase}
@@ -552,7 +609,7 @@ export const SystemSettings = () => {
                       <Database className="h-4 w-4 mr-2" />
                       Reindexar Base de Dados
                     </Button>
-                    
+
                     <Button
                       variant="outline"
                       onClick={checkDatabaseIntegrity}
@@ -577,7 +634,7 @@ export const SystemSettings = () => {
                 <Globe className="h-4 w-4 mr-2" />
                 Exportar
               </Button>
-              
+
               <Button
                 variant="outline"
                 onClick={handleReset}
@@ -587,7 +644,7 @@ export const SystemSettings = () => {
                 Redefinir
               </Button>
             </div>
-            
+
             <div className="flex items-center gap-2">
               <Button
                 variant="outline"
@@ -596,7 +653,7 @@ export const SystemSettings = () => {
                 <HardDrive className="h-4 w-4 mr-2" />
                 Criar Backup
               </Button>
-              
+
               <Button
                 onClick={handleSave}
                 disabled={saving}

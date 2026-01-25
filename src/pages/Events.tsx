@@ -7,12 +7,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { 
-  Calendar, 
-  MapPin, 
-  Clock, 
-  Users, 
-  Search, 
+import {
+  Calendar,
+  MapPin,
+  Clock,
+  Users,
+  Search,
   ArrowLeft,
   ExternalLink,
   Heart,
@@ -23,7 +23,8 @@ import {
   CheckCircle,
   AlertCircle,
   X,
-  FileText
+  FileText,
+  MessageCircle
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -31,14 +32,17 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import EventRegistrationModal from "@/components/ui/event-registration-modal";
 import { useEvents, type Event } from "@/hooks/useEvents";
 
+import { GuidelinesModal } from "@/components/ui/guidelines-modal";
+import { useSystemSettings } from "@/hooks/useSystemSettings";
+
 const Events = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [favoriteEvents, setFavoriteEvents] = useState<number[]>([]);
   const [participatingEvents, setParticipatingEvents] = useState<number[]>([]);
-  const [loadingStates, setLoadingStates] = useState<{[key: string]: boolean}>({});
-  const [showGuidelines, setShowGuidelines] = useState(false);
+  const [loadingStates, setLoadingStates] = useState<{ [key: string]: boolean }>({});
+  // const [showGuidelines, setShowGuidelines] = useState(false); // Removed state
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [showRegistrationModal, setShowRegistrationModal] = useState(false);
   const { toast } = useToast();
@@ -104,17 +108,17 @@ const Events = () => {
   };
 
   const handleFavorite = (event: Event) => {
-    setFavoriteEvents(prev => 
-      prev.includes(event.id) 
+    setFavoriteEvents(prev =>
+      prev.includes(event.id)
         ? prev.filter(id => id !== event.id)
         : [...prev, event.id]
     );
-    
+
     const isFavorited = favoriteEvents.includes(event.id);
-    
+
     toast({
       title: isFavorited ? "Removido dos favoritos" : "Adicionado aos favoritos!",
-      description: isFavorited 
+      description: isFavorited
         ? `"${event.title}" removido dos favoritos`
         : `"${event.title}" adicionado aos favoritos`
     });
@@ -127,7 +131,7 @@ const Events = () => {
         text: event.description,
         url: `${window.location.origin}/eventos?event=${event.id}`
       };
-      
+
       if (navigator.share) {
         await navigator.share(shareData);
       } else {
@@ -161,23 +165,30 @@ const Events = () => {
         }
         break;
     }
-    
+
     toast({
       title: "Contacto aberto",
       description: `Abrindo ${type === 'phone' ? 'telefone' : type === 'email' ? 'email' : 'website'} para "${event.organizer}"`
     });
   };
 
+  const { systemConfig } = useSystemSettings();
+
   const handleContactAdministration = () => {
-    const email = 'eventos@chipindo.gov.ao';
-    const subject = 'Informações sobre Promoção de Eventos';
-    const body = `Olá,\n\nGostaria de obter informações sobre como promover um evento na plataforma do município de Chipindo.\n\nAguardo o vosso contacto.\n\nObrigado.`;
-    
-    window.open(`mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank');
-    
+    // Get phone from event settings or fallback to site settings or default
+    const phone = systemConfig.eventsContactPhone || '+244926123459';
+    // Clean phone number for WhatsApp URL (remove spaces, parentheses, etc)
+    const cleanPhone = phone.replace(/[^\d+]/g, '');
+
+    // Construct WhatsApp message
+    const message = encodeURIComponent("Olá, gostaria de obter informações sobre como promover um evento na plataforma do município de Chipindo.");
+
+    // Open WhatsApp
+    window.open(`https://wa.me/${cleanPhone}?text=${message}`, '_blank');
+
     toast({
-      title: "Email aberto",
-      description: "Abrindo email para a administração municipal"
+      title: "WhatsApp aberto",
+      description: "A iniciar conversa com a administração municipal..."
     });
   };
 
@@ -189,9 +200,9 @@ const Events = () => {
     });
   };
 
-  const handleViewGuidelines = () => {
+  /* const handleViewGuidelines = () => {
     setShowGuidelines(true);
-  };
+  }; */
 
   // Calcular estatísticas dos eventos
   const totalEvents = events.length;
@@ -201,14 +212,14 @@ const Events = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       {/* Hero Section */}
-      <EventsHero 
+      <EventsHero
         totalEvents={totalEvents}
         featuredEvents={featuredEvents}
         upcomingEvents={upcomingEvents}
       />
-      
+
       <main className="pt-20">
 
         {/* Filters Section */}
@@ -226,7 +237,7 @@ const Events = () => {
                   />
                 </div>
               </div>
-              
+
               <Select value={selectedCategory} onValueChange={setSelectedCategory}>
                 <SelectTrigger className="w-full md:w-48">
                   <SelectValue />
@@ -239,7 +250,7 @@ const Events = () => {
                   ))}
                 </SelectContent>
               </Select>
-              
+
               <Select value={selectedStatus} onValueChange={setSelectedStatus}>
                 <SelectTrigger className="w-full md:w-48">
                   <SelectValue />
@@ -274,8 +285,8 @@ const Events = () => {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredEvents.map((event) => (
-                  <Card 
-                    key={event.id} 
+                  <Card
+                    key={event.id}
                     className={cn(
                       "overflow-hidden hover:shadow-lg transition-all duration-300",
                       event.featured && "ring-2 ring-yellow-400"
@@ -286,7 +297,7 @@ const Events = () => {
                         ⭐ Evento Destacado
                       </div>
                     )}
-                    
+
                     <CardHeader className="pb-4">
                       <div className="flex items-start justify-between">
                         <CardTitle className="text-lg leading-tight">{event.title}</CardTitle>
@@ -298,28 +309,28 @@ const Events = () => {
                         {event.category}
                       </Badge>
                     </CardHeader>
-                    
+
                     <CardContent className="space-y-4">
                       <p className="text-sm text-muted-foreground line-clamp-3">
                         {event.description}
                       </p>
-                      
+
                       <div className="space-y-2 text-sm">
                         <div className="flex items-center gap-2">
                           <Calendar className="w-4 h-4 text-blue-600" />
                           <span className="font-medium">{formatDate(event.date)}</span>
                         </div>
-                        
+
                         <div className="flex items-center gap-2">
                           <Clock className="w-4 h-4 text-green-600" />
                           <span>{event.event_time}</span>
                         </div>
-                        
+
                         <div className="flex items-center gap-2">
                           <MapPin className="w-4 h-4 text-red-600" />
                           <span>{event.location}</span>
                         </div>
-                        
+
                         <div className="flex items-center gap-2">
                           <Users className="w-4 h-4 text-purple-600" />
                           <span>
@@ -327,40 +338,40 @@ const Events = () => {
                             {event.max_participants > 0 && ` / ${event.max_participants} vagas`}
                           </span>
                         </div>
-                        
+
                         <div className="flex items-center gap-2">
                           <span className="font-semibold text-lg">{event.price}</span>
                         </div>
                       </div>
-                      
+
                       <div className="border-t pt-4">
                         <p className="text-sm font-medium mb-2">Organizador: {event.organizer}</p>
-                        
+
                         <div className="flex flex-wrap gap-2">
-                          <Button 
-                            size="sm" 
-                            variant="outline" 
+                          <Button
+                            size="sm"
+                            variant="outline"
                             className="text-xs border-gray-300 text-gray-700 hover:bg-gray-50 font-medium"
                             onClick={() => handleContact(event, 'phone')}
                           >
                             <Phone className="w-3 h-3 mr-1" />
                             Contactar
                           </Button>
-                          
-                          <Button 
-                            size="sm" 
-                            variant="outline" 
+
+                          <Button
+                            size="sm"
+                            variant="outline"
                             className="text-xs border-gray-300 text-gray-700 hover:bg-gray-50 font-medium"
                             onClick={() => handleContact(event, 'email')}
                           >
                             <Mail className="w-3 h-3 mr-1" />
                             Email
                           </Button>
-                          
+
                           {event.website && (
-                            <Button 
-                              size="sm" 
-                              variant="outline" 
+                            <Button
+                              size="sm"
+                              variant="outline"
                               className="text-xs border-gray-300 text-gray-700 hover:bg-gray-50 font-medium"
                               onClick={() => handleContact(event, 'website')}
                             >
@@ -370,20 +381,20 @@ const Events = () => {
                           )}
                         </div>
                       </div>
-                      
+
                       <div className="flex gap-2">
-                        <Button 
+                        <Button
                           className="flex-1"
                           onClick={() => handleParticipate(event)}
                           disabled={event.max_participants > 0 && event.current_participants >= event.max_participants}
                         >
-                          {event.max_participants > 0 && event.current_participants >= event.max_participants 
-                            ? 'Evento Lotado' 
+                          {event.max_participants > 0 && event.current_participants >= event.max_participants
+                            ? 'Evento Lotado'
                             : 'Participar'
                           }
                         </Button>
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           size="sm"
                           onClick={() => handleFavorite(event)}
                           className={cn(
@@ -393,8 +404,8 @@ const Events = () => {
                         >
                           <Heart className={cn("w-4 h-4", favoriteEvents.includes(event.id) && "fill-current")} />
                         </Button>
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           size="sm"
                           onClick={() => handleShare(event)}
                           className="border-gray-300 text-gray-700 hover:bg-gray-50"
@@ -418,123 +429,30 @@ const Events = () => {
               Quer promover o seu evento em Chipindo? Entre em contacto connosco para divulgar o seu evento na nossa plataforma.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 variant="secondary"
                 onClick={handleContactAdministration}
               >
-                <Mail className="w-5 h-5 mr-2" />
-                Contactar Administração
+                <MessageCircle className="w-5 h-5 mr-2" />
+                Contactar (WhatsApp)
               </Button>
-              <Button 
-                size="lg" 
-                variant="outline" 
-                className="text-white border-white/80 bg-white/10 hover:bg-white hover:text-blue-600 font-semibold shadow-lg transition-all duration-300"
-                onClick={handleViewGuidelines}
-              >
-                <ExternalLink className="w-5 h-5 mr-2" />
-                Ver Diretrizes
-              </Button>
+              <GuidelinesModal trigger={
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="text-white border-white/80 bg-white/10 hover:bg-white hover:text-blue-600 font-semibold shadow-lg transition-all duration-300"
+                >
+                  <ExternalLink className="w-5 h-5 mr-2" />
+                  Ver Diretrizes
+                </Button>
+              } />
             </div>
           </div>
         </section>
 
         {/* Modal de Diretrizes */}
-        <Dialog open={showGuidelines} onOpenChange={setShowGuidelines}>
-          <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <FileText className="w-6 h-6 text-blue-600" />
-                Diretrizes para Promoção de Eventos
-              </DialogTitle>
-            </DialogHeader>
-            
-            <div className="space-y-6">
-              {/* Critérios de Elegibilidade */}
-              <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-                <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-3">
-                  1. Critérios de Elegibilidade
-                </h3>
-                <ul className="space-y-2 text-sm">
-                  <li>• Eventos devem ser de interesse público</li>
-                  <li>• Organizadores devem ter sede ou representação no município</li>
-                  <li>• Eventos devem respeitar a legislação local</li>
-                </ul>
-              </div>
-
-              {/* Informações Obrigatórias */}
-              <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
-                <h3 className="text-lg font-semibold text-green-900 dark:text-green-100 mb-3">
-                  2. Informações Obrigatórias
-                </h3>
-                <ul className="space-y-2 text-sm">
-                  <li>• Título e descrição do evento</li>
-                  <li>• Data, hora e local</li>
-                  <li>• Organizador e contactos</li>
-                  <li>• Número esperado de participantes</li>
-                  <li>• Medidas de segurança</li>
-                </ul>
-              </div>
-
-              {/* Processo de Submissão */}
-              <div className="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-4">
-                <h3 className="text-lg font-semibold text-orange-900 dark:text-orange-100 mb-3">
-                  3. Processo de Submissão
-                </h3>
-                <ol className="space-y-2 text-sm">
-                  <li>1. Contactar a administração municipal</li>
-                  <li>2. Preencher formulário de solicitação</li>
-                  <li>3. Aguardar aprovação (até 5 dias úteis)</li>
-                  <li>4. Fornecer materiais promocionais</li>
-                </ol>
-              </div>
-
-              {/* Responsabilidades */}
-              <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4">
-                <h3 className="text-lg font-semibold text-purple-900 dark:text-purple-100 mb-3">
-                  4. Responsabilidades
-                </h3>
-                <ul className="space-y-2 text-sm">
-                  <li>• Organizador é responsável pela execução do evento</li>
-                  <li>• Município fornece suporte promocional</li>
-                  <li>• Cumprimento de normas de segurança obrigatório</li>
-                </ul>
-              </div>
-
-              {/* Contactos */}
-              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
-                  5. Contactos
-                </h3>
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3">
-                    <Mail className="w-4 h-4 text-gray-600" />
-                    <span className="text-sm">eventos@chipindo.gov.ao</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Phone className="w-4 h-4 text-gray-600" />
-                    <span className="text-sm">+244 123 456 789</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Clock className="w-4 h-4 text-gray-600" />
-                    <span className="text-sm">Segunda a Sexta, 8h-17h</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Ações */}
-            <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t">
-              <Button 
-                onClick={handleContactAdministration}
-                className="flex-1"
-              >
-                <Mail className="w-4 h-4 mr-2" />
-                Contactar Administração
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+        {/* Modal de Diretrizes removed - using component now */}
 
         {/* Event Registration Modal */}
         <EventRegistrationModal
@@ -547,7 +465,7 @@ const Events = () => {
           onRegistrationSuccess={handleRegistrationSuccess}
         />
       </main>
-      
+
       <Footer />
     </div>
   );

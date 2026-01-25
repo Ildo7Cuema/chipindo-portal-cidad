@@ -2993,6 +2993,14 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
+      check_database_integrity: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          issues: number
+          status: string
+          warnings: number
+        }
+      }
       check_missing_indexes: {
         Args: Record<PropertyKey, never>
         Returns: {

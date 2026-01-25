@@ -9,31 +9,34 @@ interface SystemConfig {
   contactEmail: string;
   contactPhone: string;
   contactAddress: string;
-  
+
   // Security Settings
   maintenanceMode: boolean;
   allowRegistration: boolean;
   requireEmailVerification: boolean;
   sessionTimeout: number;
   maxLoginAttempts: number;
-  
+
   // Notification Settings
   emailNotifications: boolean;
   smsNotifications: boolean;
   pushNotifications: boolean;
   notificationFrequency: string;
-  
+
   // Performance Settings
   cacheEnabled: boolean;
   compressionEnabled: boolean;
   cdnEnabled: boolean;
   autoBackup: boolean;
-  
+
   // Appearance Settings
   theme: string;
   language: string;
   timezone: string;
   dateFormat: string;
+  // Events Settings
+  eventsContactEmail: string;
+  eventsContactPhone: string;
 }
 
 const DEFAULT_CONFIG: SystemConfig = {
@@ -59,6 +62,95 @@ const DEFAULT_CONFIG: SystemConfig = {
   language: 'pt',
   timezone: 'Africa/Luanda',
   dateFormat: 'dd/MM/yyyy',
+  eventsContactEmail: 'eventos@chipindo.gov.ao',
+  eventsContactPhone: '+244 123 456 789',
+};
+
+// Helper to map DB snake_case to frontend camelCase
+const mapFromDb = (data: any): SystemConfig => ({
+  // Site Settings
+  siteName: data.site_name || DEFAULT_CONFIG.siteName,
+  siteDescription: data.site_description || DEFAULT_CONFIG.siteDescription,
+  contactEmail: data.contact_email || DEFAULT_CONFIG.contactEmail,
+  contactPhone: data.contact_phone || DEFAULT_CONFIG.contactPhone,
+  contactAddress: data.contact_address || DEFAULT_CONFIG.contactAddress,
+
+  // Security Settings
+  maintenanceMode: data.maintenance_mode ?? DEFAULT_CONFIG.maintenanceMode,
+  allowRegistration: data.allow_registration ?? DEFAULT_CONFIG.allowRegistration,
+  requireEmailVerification: data.require_email_verification ?? DEFAULT_CONFIG.requireEmailVerification,
+  sessionTimeout: data.session_timeout || DEFAULT_CONFIG.sessionTimeout,
+  maxLoginAttempts: data.max_login_attempts || DEFAULT_CONFIG.maxLoginAttempts,
+
+  // Notification Settings
+  emailNotifications: data.email_notifications ?? DEFAULT_CONFIG.emailNotifications,
+  smsNotifications: data.sms_notifications ?? DEFAULT_CONFIG.smsNotifications,
+  pushNotifications: data.push_notifications ?? DEFAULT_CONFIG.pushNotifications,
+  notificationFrequency: data.notification_frequency || DEFAULT_CONFIG.notificationFrequency,
+
+  // Performance Settings
+  cacheEnabled: data.cache_enabled ?? DEFAULT_CONFIG.cacheEnabled,
+  compressionEnabled: data.compression_enabled ?? DEFAULT_CONFIG.compressionEnabled,
+  cdnEnabled: data.cdn_enabled ?? DEFAULT_CONFIG.cdnEnabled,
+  autoBackup: data.auto_backup ?? DEFAULT_CONFIG.autoBackup,
+
+  // Appearance Settings
+  theme: data.theme || DEFAULT_CONFIG.theme,
+  language: data.language || DEFAULT_CONFIG.language,
+  timezone: data.timezone || DEFAULT_CONFIG.timezone,
+  dateFormat: data.date_format || DEFAULT_CONFIG.dateFormat,
+
+  // Event Settings (stored in JSON value)
+  eventsContactEmail: data.value?.events?.contactEmail || DEFAULT_CONFIG.eventsContactEmail,
+  eventsContactPhone: data.value?.events?.contactPhone || DEFAULT_CONFIG.eventsContactPhone,
+});
+
+// Helper to map frontend camelCase to DB snake_case
+const mapToDb = (config: Partial<SystemConfig>) => {
+  const mapped: any = {};
+
+  if (config.siteName !== undefined) mapped.site_name = config.siteName;
+  if (config.siteDescription !== undefined) mapped.site_description = config.siteDescription;
+  if (config.contactEmail !== undefined) mapped.contact_email = config.contactEmail;
+  if (config.contactPhone !== undefined) mapped.contact_phone = config.contactPhone;
+  if (config.contactAddress !== undefined) mapped.contact_address = config.contactAddress;
+
+  if (config.maintenanceMode !== undefined) mapped.maintenance_mode = config.maintenanceMode;
+  if (config.allowRegistration !== undefined) mapped.allow_registration = config.allowRegistration;
+  if (config.requireEmailVerification !== undefined) mapped.require_email_verification = config.requireEmailVerification;
+  if (config.sessionTimeout !== undefined) mapped.session_timeout = config.sessionTimeout;
+  if (config.maxLoginAttempts !== undefined) mapped.max_login_attempts = config.maxLoginAttempts;
+
+  if (config.emailNotifications !== undefined) mapped.email_notifications = config.emailNotifications;
+  if (config.smsNotifications !== undefined) mapped.sms_notifications = config.smsNotifications;
+  if (config.pushNotifications !== undefined) mapped.push_notifications = config.pushNotifications;
+  if (config.notificationFrequency !== undefined) mapped.notification_frequency = config.notificationFrequency;
+
+  if (config.cacheEnabled !== undefined) mapped.cache_enabled = config.cacheEnabled;
+  if (config.compressionEnabled !== undefined) mapped.compression_enabled = config.compressionEnabled;
+  if (config.cdnEnabled !== undefined) mapped.cdn_enabled = config.cdnEnabled;
+  if (config.autoBackup !== undefined) mapped.auto_backup = config.autoBackup;
+
+  if (config.theme !== undefined) mapped.theme = config.theme;
+  if (config.language !== undefined) mapped.language = config.language;
+  if (config.timezone !== undefined) mapped.timezone = config.timezone;
+  if (config.dateFormat !== undefined) mapped.date_format = config.dateFormat;
+
+  return mapped;
+};
+
+// Add key helper
+const addKey = (data: any, config: Partial<SystemConfig>) => {
+  const value: any = {};
+
+  if (config.eventsContactEmail !== undefined || config.eventsContactPhone !== undefined) {
+    value.events = {
+      contactEmail: config.eventsContactEmail,
+      contactPhone: config.eventsContactPhone
+    };
+  }
+
+  return { ...data, key: 'system_config', value };
 };
 
 export const useSystemSettings = () => {
@@ -70,23 +162,22 @@ export const useSystemSettings = () => {
   const loadSystemSettings = async () => {
     try {
       setLoading(true);
-      
+
       // Get system settings from database
       const { data, error } = await supabase
         .from('system_settings')
         .select('*')
-        .limit(1)
-        .single();
+        .eq('key', 'system_config') // Filter by our fixed key
+        .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') {
+      if (error) {
         console.error('Error loading system settings:', error);
         toast.error('Erro ao carregar configurações do sistema');
       }
 
       if (data) {
-        // Merge with defaults for any missing fields
-        const mergedConfig = { ...DEFAULT_CONFIG, ...data };
-        setSystemConfig(mergedConfig);
+        // Map from DB format to local format
+        setSystemConfig(mapFromDb(data));
       } else {
         // If no settings exist, create default settings
         await createDefaultSettings();
@@ -102,13 +193,19 @@ export const useSystemSettings = () => {
   // Create default settings in database
   const createDefaultSettings = async () => {
     try {
+      const dbConfig = addKey(mapToDb(DEFAULT_CONFIG), DEFAULT_CONFIG);
       const { error } = await supabase
         .from('system_settings')
-        .insert([DEFAULT_CONFIG]);
+        .insert([dbConfig])
+        .select();
 
       if (error) {
+        if (error.code === '42501') {
+          console.warn('Cannot create default settings (RLS restricted). Using defaults.');
+          setSystemConfig(DEFAULT_CONFIG);
+          return;
+        }
         console.error('Error creating default settings:', error);
-        toast.error('Erro ao criar configurações padrão');
       } else {
         setSystemConfig(DEFAULT_CONFIG);
       }
@@ -121,11 +218,38 @@ export const useSystemSettings = () => {
   const saveSystemSettings = async (config: Partial<SystemConfig>) => {
     try {
       setSaving(true);
-      
-      // Update system settings in database
-      const { error } = await supabase
+
+      const dbConfig = mapToDb(config);
+
+      // Check if we need to insert or update
+      // First get existing ID if any
+      const { data: existingData } = await supabase
         .from('system_settings')
-        .upsert([config], { onConflict: 'id' });
+        .select('id')
+        .eq('key', 'system_config')
+        .limit(1)
+        .maybeSingle();
+
+      let error;
+
+      if (existingData?.id) {
+        // Update existing
+        // We need to merge with existing value if possible, but for now we reconstruct
+        const finalConfig = addKey(dbConfig, { ...systemConfig, ...config });
+
+        const { error: updateError } = await supabase
+          .from('system_settings')
+          .update(finalConfig)
+          .eq('id', existingData.id)
+          .eq('key', 'system_config');
+        error = updateError;
+      } else {
+        // Insert new
+        const { error: insertError } = await supabase
+          .from('system_settings')
+          .insert([addKey(dbConfig, config)]);
+        error = insertError;
+      }
 
       if (error) {
         console.error('Error saving system settings:', error);
@@ -166,15 +290,15 @@ export const useSystemSettings = () => {
   const exportSettings = async () => {
     try {
       const dataStr = JSON.stringify(systemConfig, null, 2);
-      const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-      
-      const exportFileDefaultName = `system-settings-${new Date().toISOString().slice(0,10)}.json`;
-      
+      const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+
+      const exportFileDefaultName = `system-settings-${new Date().toISOString().slice(0, 10)}.json`;
+
       const linkElement = document.createElement('a');
       linkElement.setAttribute('href', dataUri);
       linkElement.setAttribute('download', exportFileDefaultName);
       linkElement.click();
-      
+
       toast.success('Configurações exportadas com sucesso');
     } catch (error) {
       console.error('Error in exportSettings:', error);

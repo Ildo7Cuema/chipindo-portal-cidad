@@ -2,16 +2,17 @@ import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { 
-  FileText, 
-  Download, 
-  Mail, 
-  Phone, 
-  Clock, 
+import {
+  FileText,
+  Download,
+  Mail,
+  Phone,
+  Clock,
   CheckCircle,
   AlertCircle,
   Info
 } from "lucide-react";
+import { useSystemSettings } from "@/hooks/useSystemSettings";
 
 interface GuidelinesModalProps {
   trigger?: React.ReactNode;
@@ -19,6 +20,9 @@ interface GuidelinesModalProps {
 
 export const GuidelinesModal = ({ trigger }: GuidelinesModalProps) => {
   const [isOpen, setIsOpen] = useState(false);
+
+  const { systemConfig } = useSystemSettings();
+  const { eventsContactEmail, eventsContactPhone } = systemConfig;
 
   const handleDownload = () => {
     const guidelines = `# Diretrizes para Promoção de Eventos em Chipindo
@@ -47,8 +51,8 @@ export const GuidelinesModal = ({ trigger }: GuidelinesModalProps) => {
 - Cumprimento de normas de segurança obrigatório
 
 ## 5. Contactos
-- Email: eventos@chipindo.gov.ao
-- Telefone: +244 123 456 789
+- Email: ${eventsContactEmail}
+- Telefone: ${eventsContactPhone}
 - Horário: Segunda a Sexta, 8h-17h`;
 
     const blob = new Blob([guidelines], { type: 'text/markdown' });
@@ -61,10 +65,10 @@ export const GuidelinesModal = ({ trigger }: GuidelinesModalProps) => {
   };
 
   const handleContact = () => {
-    const email = 'eventos@chipindo.gov.ao';
+    const email = eventsContactEmail;
     const subject = 'Informações sobre Promoção de Eventos';
     const body = `Olá,\n\nGostaria de obter informações sobre como promover um evento na plataforma do município de Chipindo.\n\nAguardo o vosso contacto.\n\nObrigado.`;
-    
+
     window.open(`mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank');
   };
 
@@ -85,7 +89,7 @@ export const GuidelinesModal = ({ trigger }: GuidelinesModalProps) => {
             Diretrizes para Promoção de Eventos
           </DialogTitle>
         </DialogHeader>
-        
+
         <div className="space-y-6">
           {/* Critérios de Elegibilidade */}
           <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
@@ -196,11 +200,11 @@ export const GuidelinesModal = ({ trigger }: GuidelinesModalProps) => {
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <Mail className="w-4 h-4 text-gray-600" />
-                <span className="text-sm">eventos@chipindo.gov.ao</span>
+                <span className="text-sm">{eventsContactEmail}</span>
               </div>
               <div className="flex items-center gap-3">
                 <Phone className="w-4 h-4 text-gray-600" />
-                <span className="text-sm">+244 123 456 789</span>
+                <span className="text-sm">{eventsContactPhone}</span>
               </div>
               <div className="flex items-center gap-3">
                 <Clock className="w-4 h-4 text-gray-600" />
