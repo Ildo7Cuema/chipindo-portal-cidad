@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   FileText,
   Download,
@@ -10,7 +11,8 @@ import {
   Clock,
   CheckCircle,
   AlertCircle,
-  Info
+  Info,
+  Loader2
 } from "lucide-react";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 
@@ -21,12 +23,12 @@ interface GuidelinesModalProps {
 export const GuidelinesModal = ({ trigger }: GuidelinesModalProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const { settings } = useSiteSettings();
+  const { settings, loading } = useSiteSettings();
   
   // Use site settings for contact information (real data from database)
-  const contactEmail = settings?.contact_email || 'eventos@chipindo.gov.ao';
-  const contactPhone = settings?.contact_phone || '+244 XXX XXX XXX';
-  const openingHours = settings?.opening_hours_weekdays || 'Segunda a Sexta, 8h-17h';
+  const contactEmail = settings?.contact_email || 'A carregar...';
+  const contactPhone = settings?.contact_phone || 'A carregar...';
+  const openingHours = settings?.opening_hours_weekdays || 'A carregar...';
 
   const handleDownload = () => {
     const guidelines = `# Diretrizes para Promoção de Eventos em Chipindo
@@ -199,19 +201,32 @@ export const GuidelinesModal = ({ trigger }: GuidelinesModalProps) => {
             <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
               <Phone className="w-5 h-5" />
               5. Contactos
+              {loading && <Loader2 className="w-4 h-4 animate-spin text-gray-400" />}
             </h3>
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <Mail className="w-4 h-4 text-gray-600" />
-                <span className="text-sm">{contactEmail}</span>
+                {loading ? (
+                  <Skeleton className="h-4 w-48" />
+                ) : (
+                  <span className="text-sm">{contactEmail}</span>
+                )}
               </div>
               <div className="flex items-center gap-3">
                 <Phone className="w-4 h-4 text-gray-600" />
-                <span className="text-sm">{contactPhone}</span>
+                {loading ? (
+                  <Skeleton className="h-4 w-36" />
+                ) : (
+                  <span className="text-sm">{contactPhone}</span>
+                )}
               </div>
               <div className="flex items-center gap-3">
                 <Clock className="w-4 h-4 text-gray-600" />
-                <span className="text-sm">{openingHours}</span>
+                {loading ? (
+                  <Skeleton className="h-4 w-44" />
+                ) : (
+                  <span className="text-sm">{openingHours}</span>
+                )}
               </div>
             </div>
           </div>
