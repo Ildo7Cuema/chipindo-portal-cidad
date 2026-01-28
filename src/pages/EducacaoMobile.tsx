@@ -438,7 +438,7 @@ const EducacaoMobile = () => {
       </Dialog>
 
       <Dialog open={openDetalhes} onOpenChange={setOpenDetalhes}>
-        <DialogContent className="max-w-md mx-auto">
+        <DialogContent className="w-[calc(100%-2rem)] max-w-md mx-auto rounded-2xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{detalheInfra?.nome}</DialogTitle>
             <DialogDescription>

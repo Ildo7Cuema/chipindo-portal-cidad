@@ -376,7 +376,7 @@ const Educacao = () => {
                     <div className="pt-2">
                       <Button
                         variant="outline"
-                        className="w-full h-12 rounded-xl transition-all duration-200 active:scale-[0.98] touch-manipulation text-sm sm:text-base font-medium border-2 hover:bg-primary/5"
+                        className="w-full h-12 rounded-xl transition-all duration-200 active:scale-[0.98] touch-manipulation text-sm sm:text-base font-medium border-2 hover:bg-primary hover:text-primary-foreground hover:border-primary"
                         onClick={() => { setDetalheInfra(infra); setOpenDetalhes(true); }}
                       >
                         Ver Detalhes
@@ -469,7 +469,7 @@ const Educacao = () => {
         }}
       />
       <Dialog open={openDetalhes} onOpenChange={setOpenDetalhes}>
-        <DialogContent className="w-full h-full sm:h-auto sm:w-[95vw] max-w-none sm:max-w-lg md:max-w-xl rounded-none sm:rounded-2xl max-h-full sm:max-h-[90vh] overflow-y-auto overscroll-contain scroll-smooth fixed inset-0 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 p-5 sm:p-6 md:p-8">
+        <DialogContent className="w-[calc(100%-2rem)] sm:w-[95vw] max-w-lg md:max-w-xl mx-auto rounded-2xl max-h-[90vh] sm:max-h-[90vh] overflow-y-auto overscroll-contain scroll-smooth p-5 sm:p-6 md:p-8">
           <DialogHeader className="pb-4 sm:pb-5">
             <DialogTitle className="text-lg sm:text-xl md:text-2xl font-bold">Detalhes da Infraestrutura</DialogTitle>
             <DialogDescription asChild>
