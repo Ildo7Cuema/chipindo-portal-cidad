@@ -711,143 +711,150 @@ const AllNews = () => {
         {/* News Modal */}
         {selectedNews && (
           <Dialog open={!!selectedNews} onOpenChange={() => setSelectedNews(null)}>
-            <DialogContent className="max-w-7xl h-[95vh] overflow-hidden p-0 bg-white">
+            <DialogContent className="max-w-7xl w-[95vw] max-h-[95vh] p-0 bg-white overflow-hidden flex flex-col">
               {/* DialogTitle para acessibilidade - oculto visualmente */}
               <DialogTitle className="sr-only">
                 {selectedNews.title}
               </DialogTitle>
               
               {/* Header com botão de fechar */}
-              <div className="absolute top-4 right-4 z-20">
+              <div className="absolute top-2 right-2 md:top-4 md:right-4 z-50">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setSelectedNews(null)}
-                  className="bg-white/95 backdrop-blur-sm hover:bg-white shadow-lg border border-gray-200"
+                  className="bg-white/95 backdrop-blur-sm hover:bg-white shadow-lg border border-gray-200 h-8 w-8 md:h-10 md:w-10 p-0"
                 >
-                  <XIcon className="w-5 h-5" />
+                  <XIcon className="w-4 h-4 md:w-5 md:h-5" />
                 </Button>
               </div>
               
-              <div className="flex h-full">
-                {/* Coluna da Imagem - Lado Esquerdo */}
-                <div className="w-1/2 relative overflow-hidden bg-gradient-to-br from-blue-50 to-purple-50">
-                  {((selectedNews.images && selectedNews.images.length > 0) || selectedNews.image_url) ? (
-                    <div className="h-full w-full flex items-center justify-center p-6">
-                      <Carousel className="w-full h-full max-w-lg">
-                        <CarouselContent className="h-full">
-                          {/* Exibir múltiplas imagens se disponíveis */}
-                          {selectedNews.images && selectedNews.images.length > 0 ? (
-                            selectedNews.images.map((imageUrl, index) => (
-                              <CarouselItem key={index} className="h-full">
-                                <div className="relative w-full h-full max-h-[80vh] flex items-center justify-center">
-                                  <img 
-                                    src={imageUrl} 
-                                    alt={`${selectedNews.title} - Imagem ${index + 1}`}
-                                    className="w-full h-full object-contain rounded-xl shadow-2xl border-4 border-white"
-                                  />
-                                  <div className="absolute inset-0 rounded-xl bg-gradient-to-t from-black/5 via-transparent to-transparent pointer-events-none" />
-                                  {/* Indicador de imagem destacada */}
-                                  {index === (selectedNews.featured_image_index || 0) && (
-                                    <div className="absolute top-4 right-4 bg-yellow-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg z-10">
-                                      Principal
+              {/* Container principal com scroll */}
+              <div className="flex-1 overflow-y-auto overflow-x-hidden">
+                <div className="flex flex-col md:flex-row min-h-full">
+                  {/* Coluna da Imagem - Lado Esquerdo */}
+                  <div className="w-full md:w-1/2 relative bg-gradient-to-br from-blue-50 to-purple-50 flex-shrink-0">
+                    {((selectedNews.images && selectedNews.images.length > 0) || selectedNews.image_url) ? (
+                      <div className="w-full flex items-center justify-center p-4 md:p-6 min-h-[200px] md:min-h-[400px]">
+                        <div className="relative w-full max-w-md mx-auto">
+                          <Carousel className="w-full">
+                            <CarouselContent>
+                              {/* Exibir múltiplas imagens se disponíveis */}
+                              {selectedNews.images && selectedNews.images.length > 0 ? (
+                                selectedNews.images.map((imageUrl, index) => (
+                                  <CarouselItem key={index}>
+                                    <div className="relative w-full aspect-[4/3] flex items-center justify-center">
+                                      <img 
+                                        src={imageUrl} 
+                                        alt={`${selectedNews.title} - Imagem ${index + 1}`}
+                                        className="w-full h-full object-cover rounded-xl shadow-2xl border-4 border-white"
+                                      />
+                                      {/* Indicador de imagem destacada */}
+                                      {index === (selectedNews.featured_image_index || 0) && (
+                                        <div className="absolute top-2 right-2 bg-yellow-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg z-10">
+                                          Principal
+                                        </div>
+                                      )}
                                     </div>
-                                  )}
-                                </div>
-                              </CarouselItem>
-                            ))
-                          ) : (
-                            /* Fallback para image_url antiga */
-                            <CarouselItem className="h-full">
-                              <div className="relative w-full h-full max-h-[80vh] flex items-center justify-center">
-                                <img 
-                                  src={selectedNews.image_url} 
-                                  alt={selectedNews.title}
-                                  className="w-full h-full object-contain rounded-xl shadow-2xl border-4 border-white"
-                                />
-                                <div className="absolute inset-0 rounded-xl bg-gradient-to-t from-black/5 via-transparent to-transparent pointer-events-none" />
-                              </div>
-                            </CarouselItem>
+                                  </CarouselItem>
+                                ))
+                              ) : (
+                                /* Fallback para image_url antiga */
+                                <CarouselItem>
+                                  <div className="relative w-full aspect-[4/3] flex items-center justify-center">
+                                    <img 
+                                      src={selectedNews.image_url} 
+                                      alt={selectedNews.title}
+                                      className="w-full h-full object-cover rounded-xl shadow-2xl border-4 border-white"
+                                    />
+                                  </div>
+                                </CarouselItem>
+                              )}
+                            </CarouselContent>
+                            {/* Controles do carrossel - visíveis apenas quando há múltiplas imagens */}
+                            {selectedNews.images && selectedNews.images.length > 1 && (
+                              <>
+                                <CarouselPrevious className="left-2 md:left-4 z-20 bg-white hover:bg-gray-100 shadow-xl border-2 border-gray-300 h-8 w-8 md:h-10 md:w-10" />
+                                <CarouselNext className="right-2 md:right-4 z-20 bg-white hover:bg-gray-100 shadow-xl border-2 border-gray-300 h-8 w-8 md:h-10 md:w-10" />
+                              </>
+                            )}
+                          </Carousel>
+                          {/* Indicador de quantidade de imagens */}
+                          {selectedNews.images && selectedNews.images.length > 1 && (
+                            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-black/70 text-white text-xs px-3 py-1 rounded-full z-20">
+                              {selectedNews.images.length} imagens
+                            </div>
                           )}
-                        </CarouselContent>
-                        {/* Controles do carrossel apenas se houver múltiplas imagens */}
-                        {selectedNews.images && selectedNews.images.length > 1 && (
-                          <>
-                            <CarouselPrevious className="left-2" />
-                            <CarouselNext className="right-2" />
-                          </>
-                        )}
-                      </Carousel>
-                    </div>
-                  ) : (
-                    <div className="h-full w-full flex items-center justify-center p-6">
-                      <div className="text-center max-w-md">
-                        <div className={cn(
-                          "w-24 h-24 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg",
-                          getCategoryData(selectedNews.category || 'desenvolvimento').color
-                        )}>
-                          {React.createElement(getCategoryData(selectedNews.category || 'desenvolvimento').icon, {
-                            className: "w-12 h-12 text-white"
-                          })}
                         </div>
-                        <h3 className="text-lg font-semibold text-gray-700 mb-2">Sem imagem</h3>
-                        <p className="text-sm text-gray-500">Esta notícia não possui imagem associada</p>
                       </div>
+                    ) : (
+                      <div className="w-full flex items-center justify-center p-6 min-h-[200px]">
+                        <div className="text-center">
+                          <div className={cn(
+                            "w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg",
+                            getCategoryData(selectedNews.category || 'desenvolvimento').color
+                          )}>
+                            {React.createElement(getCategoryData(selectedNews.category || 'desenvolvimento').icon, {
+                              className: "w-10 h-10 text-white"
+                            })}
+                          </div>
+                          <h3 className="text-base font-semibold text-gray-700 mb-1">Sem imagem</h3>
+                          <p className="text-sm text-gray-500">Esta notícia não possui imagem</p>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Badge de categoria sobre a imagem */}
+                    <div className="absolute top-4 left-4 z-10">
+                      <Badge className={cn(
+                        "text-xs md:text-sm font-medium shadow-lg backdrop-blur-sm",
+                        getCategoryData(selectedNews.category || 'desenvolvimento').color,
+                        "text-white border-0"
+                      )}>
+                        {React.createElement(getCategoryData(selectedNews.category || 'desenvolvimento').icon, {
+                          className: "w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2"
+                        })}
+                        {getCategoryData(selectedNews.category || 'desenvolvimento').name}
+                      </Badge>
                     </div>
-                  )}
-                  
-                  {/* Badge de categoria sobre a imagem */}
-                  <div className="absolute top-6 left-6 z-10">
-                    <Badge className={cn(
-                      "text-sm font-medium shadow-lg backdrop-blur-sm",
-                      getCategoryData(selectedNews.category || 'desenvolvimento').color,
-                      "text-white border-0"
-                    )}>
-                      {React.createElement(getCategoryData(selectedNews.category || 'desenvolvimento').icon, {
-                        className: "w-4 h-4 mr-2"
-                      })}
-                      {getCategoryData(selectedNews.category || 'desenvolvimento').name}
-                    </Badge>
                   </div>
-                </div>
-                
-                {/* Coluna do Conteúdo - Lado Direito */}
-                <div className="w-1/2 flex flex-col h-full bg-white">
-                  {/* Área de scroll do conteúdo */}
-                  <div className="flex-1 overflow-y-auto" style={{maxHeight: 'calc(95vh - 100px)'}}>
-                    <div className="p-8 pb-24">
+                  
+                  {/* Coluna do Conteúdo - Lado Direito */}
+                  <div className="w-full md:w-1/2 flex flex-col bg-white">
+                    {/* Conteúdo com padding */}
+                    <div className="p-4 md:p-6 lg:p-8">
                       {/* Header do conteúdo */}
-                      <div className="mb-8">
-                        <h1 className="text-3xl font-bold leading-tight mb-6 text-gray-900">
+                      <div className="mb-4 md:mb-6">
+                        <h1 className="text-lg md:text-2xl lg:text-3xl font-bold leading-tight mb-3 md:mb-4 text-gray-900" style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
                           {selectedNews.title}
                         </h1>
                         
                         {/* Meta informações */}
-                        <div className="meta-info">
-                          <div className="flex items-center gap-2">
-                            <CalendarIcon className="w-4 h-4" />
+                        <div className="flex flex-wrap gap-2 md:gap-3 text-xs md:text-sm text-gray-600">
+                          <div className="flex items-center gap-1">
+                            <CalendarIcon className="w-3 h-3 md:w-4 md:h-4 flex-shrink-0" />
                             <span className="font-medium">{formatDate(selectedNews.created_at)}</span>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <ClockIcon className="w-4 h-4" />
+                          <div className="flex items-center gap-1">
+                            <ClockIcon className="w-3 h-3 md:w-4 md:h-4 flex-shrink-0" />
                             <span>{getTimeAgo(selectedNews.created_at)}</span>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <EyeIcon className="w-4 h-4" />
-                            <span>{selectedNews.views || 0} visualizações</span>
+                          <div className="flex items-center gap-1">
+                            <EyeIcon className="w-3 h-3 md:w-4 md:h-4 flex-shrink-0" />
+                            <span>{selectedNews.views || 0} views</span>
                           </div>
                         </div>
                         
                         {/* Autor */}
                         {selectedNews.author_name && (
-                          <div className="author-card mt-6">
-                            <div className="flex items-center gap-3">
-                              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg border-2 border-white">
-                                <UserIcon className="w-6 h-6 text-white" />
+                          <div className="mt-3 md:mt-4 bg-gray-50 rounded-lg p-3">
+                            <div className="flex items-center gap-2 md:gap-3">
+                              <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow flex-shrink-0">
+                                <UserIcon className="w-4 h-4 md:w-5 md:h-5 text-white" />
                               </div>
-                              <div>
-                                <p className="font-semibold text-gray-900">Por {selectedNews.author_name}</p>
-                                <p className="text-sm text-gray-600">Autor da publicação</p>
+                              <div className="min-w-0 flex-1">
+                                <p className="font-semibold text-gray-900 text-sm md:text-base truncate">Por {selectedNews.author_name}</p>
+                                <p className="text-xs md:text-sm text-gray-600">Autor da publicação</p>
                               </div>
                             </div>
                           </div>
@@ -855,48 +862,47 @@ const AllNews = () => {
                       </div>
                       
                       {/* Conteúdo da notícia */}
-                      <div className="space-y-8 news-content">
+                      <div className="space-y-4 md:space-y-6">
                         {/* Excerpt */}
                         {selectedNews.excerpt && (
-                          <div className="mb-8">
-                            <div className="news-excerpt">
-                              <blockquote className="pl-6">
-                                <p className="text-xl text-gray-700 leading-relaxed font-medium italic">
-                                  "{selectedNews.excerpt}"
-                                </p>
-                              </blockquote>
-                            </div>
+                          <div className="border-l-4 border-yellow-500 bg-yellow-50 rounded-r-lg overflow-hidden">
+                            <blockquote className="p-3 md:p-4">
+                              <p className="text-sm md:text-base lg:text-lg text-gray-700 leading-relaxed font-medium italic" style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
+                                "{selectedNews.excerpt}"
+                              </p>
+                            </blockquote>
                           </div>
                         )}
                         
                         {/* Conteúdo principal */}
-                        <div className="prose prose-lg max-w-none">
-                          <div className="text-gray-800 leading-relaxed text-base whitespace-pre-wrap">
+                        <div className="max-w-full overflow-hidden">
+                          <div 
+                            className="text-gray-800 leading-relaxed text-sm md:text-base whitespace-pre-wrap"
+                            style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
+                          >
                             {selectedNews.content}
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  
-                  {/* Footer com ações - Fixo na parte inferior */}
-                  <div className="modal-footer bg-gradient-to-r from-blue-50 to-purple-50" style={{height: '80px', minHeight: '80px'}}>
-                    <div className="flex items-center justify-between h-full px-6">
-                      <div className="flex items-center gap-4">
+                    
+                    {/* Footer com ações */}
+                    <div className="mt-auto bg-gradient-to-r from-blue-50 to-purple-50 border-t border-gray-200">
+                      <div className="flex items-center justify-between h-14 md:h-16 px-4 md:px-6">
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={() => shareNews(selectedNews)}
-                          className="action-button hover:bg-blue-50 hover:border-blue-200 bg-white shadow-lg"
+                          className="hover:bg-blue-50 hover:border-blue-200 bg-white shadow text-xs md:text-sm h-8 md:h-9"
                         >
-                          <ShareIcon className="w-4 h-4 mr-2" />
-                          Compartilhar
+                          <ShareIcon className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
+                          Partilhar
                         </Button>
-                      </div>
-                      
-                      <div className="text-xs text-gray-500 flex items-center gap-1">
-                        <EyeIcon className="w-3 h-3" />
-                        {selectedNews.views || 0} visualizações
+                        
+                        <div className="text-xs text-gray-500 flex items-center gap-1">
+                          <EyeIcon className="w-3 h-3" />
+                          {selectedNews.views || 0}
+                        </div>
                       </div>
                     </div>
                   </div>
