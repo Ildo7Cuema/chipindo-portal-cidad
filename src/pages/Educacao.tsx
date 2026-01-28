@@ -394,51 +394,48 @@ const Educacao = () => {
             <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-center mb-6 sm:mb-8 md:mb-10">
               Informações de Contacto
             </h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5 md:gap-6">
-              {setor?.contactos.map((contacto, index) => (
-                <div key={index} className="text-center p-3 sm:p-4 bg-white/50 dark:bg-gray-800/50 rounded-xl transition-all duration-200 hover:bg-white/80 dark:hover:bg-gray-800/80">
-                  <div className="w-11 h-11 sm:w-12 sm:h-12 md:w-14 md:h-14 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-3">
-                    <BuildingIcon className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-primary" />
+            {(() => {
+              const contacto = setor.contactos[0];
+              return (
+                <>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5 md:gap-6">
+                    <div className="text-center p-3 sm:p-4 bg-white/50 dark:bg-gray-800/50 rounded-xl transition-all duration-200 hover:bg-white/80 dark:hover:bg-gray-800/80">
+                      <div className="w-11 h-11 sm:w-12 sm:h-12 md:w-14 md:h-14 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-3">
+                        <BuildingIcon className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-primary" />
+                      </div>
+                      <h3 className="font-semibold mb-1.5 sm:mb-2 text-sm sm:text-base">Endereço</h3>
+                      <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">{contacto.endereco}</p>
+                    </div>
+                    <div className="text-center p-3 sm:p-4 bg-white/50 dark:bg-gray-800/50 rounded-xl transition-all duration-200 hover:bg-white/80 dark:hover:bg-gray-800/80">
+                      <div className="w-11 h-11 sm:w-12 sm:h-12 md:w-14 md:h-14 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-3">
+                        <PhoneIcon className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-primary" />
+                      </div>
+                      <h3 className="font-semibold mb-1.5 sm:mb-2 text-sm sm:text-base">Telefone</h3>
+                      <p className="text-xs sm:text-sm text-muted-foreground">{contacto.telefone}</p>
+                    </div>
+                    <div className="text-center p-3 sm:p-4 bg-white/50 dark:bg-gray-800/50 rounded-xl transition-all duration-200 hover:bg-white/80 dark:hover:bg-gray-800/80">
+                      <div className="w-11 h-11 sm:w-12 sm:h-12 md:w-14 md:h-14 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-3">
+                        <MailIcon className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-primary" />
+                      </div>
+                      <h3 className="font-semibold mb-1.5 sm:mb-2 text-sm sm:text-base">Email</h3>
+                      <p className="text-xs sm:text-sm text-muted-foreground break-all">{contacto.email}</p>
+                    </div>
+                    <div className="text-center p-3 sm:p-4 bg-white/50 dark:bg-gray-800/50 rounded-xl transition-all duration-200 hover:bg-white/80 dark:hover:bg-gray-800/80">
+                      <div className="w-11 h-11 sm:w-12 sm:h-12 md:w-14 md:h-14 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-3">
+                        <CalendarIcon className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-primary" />
+                      </div>
+                      <h3 className="font-semibold mb-1.5 sm:mb-2 text-sm sm:text-base">Horário</h3>
+                      <p className="text-xs sm:text-sm text-muted-foreground">{contacto.horario}</p>
+                    </div>
                   </div>
-                  <h3 className="font-semibold mb-1.5 sm:mb-2 text-sm sm:text-base">Endereço</h3>
-                  <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">{contacto.endereco}</p>
-                </div>
-              ))}
-              {setor?.contactos.map((contacto, index) => (
-                <div key={`phone-${index}`} className="text-center p-3 sm:p-4 bg-white/50 dark:bg-gray-800/50 rounded-xl transition-all duration-200 hover:bg-white/80 dark:hover:bg-gray-800/80">
-                  <div className="w-11 h-11 sm:w-12 sm:h-12 md:w-14 md:h-14 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-3">
-                    <PhoneIcon className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-primary" />
+                  <div className="text-center mt-6 sm:mt-8 pt-5 sm:pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <p className="text-sm sm:text-base text-muted-foreground">
+                      <strong>Responsável:</strong> {contacto.responsavel}
+                    </p>
                   </div>
-                  <h3 className="font-semibold mb-1.5 sm:mb-2 text-sm sm:text-base">Telefone</h3>
-                  <p className="text-xs sm:text-sm text-muted-foreground">{contacto.telefone}</p>
-                </div>
-              ))}
-              {setor?.contactos.map((contacto, index) => (
-                <div key={`email-${index}`} className="text-center p-3 sm:p-4 bg-white/50 dark:bg-gray-800/50 rounded-xl transition-all duration-200 hover:bg-white/80 dark:hover:bg-gray-800/80">
-                  <div className="w-11 h-11 sm:w-12 sm:h-12 md:w-14 md:h-14 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-3">
-                    <MailIcon className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-primary" />
-                  </div>
-                  <h3 className="font-semibold mb-1.5 sm:mb-2 text-sm sm:text-base">Email</h3>
-                  <p className="text-xs sm:text-sm text-muted-foreground break-all">{contacto.email}</p>
-                </div>
-              ))}
-              {setor?.contactos.map((contacto, index) => (
-                <div key={`hours-${index}`} className="text-center p-3 sm:p-4 bg-white/50 dark:bg-gray-800/50 rounded-xl transition-all duration-200 hover:bg-white/80 dark:hover:bg-gray-800/80">
-                  <div className="w-11 h-11 sm:w-12 sm:h-12 md:w-14 md:h-14 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-3">
-                    <CalendarIcon className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-primary" />
-                  </div>
-                  <h3 className="font-semibold mb-1.5 sm:mb-2 text-sm sm:text-base">Horário</h3>
-                  <p className="text-xs sm:text-sm text-muted-foreground">{contacto.horario}</p>
-                </div>
-              ))}
-            </div>
-            {setor?.contactos.map((contacto, index) => (
-              <div key={`responsavel-${index}`} className="text-center mt-6 sm:mt-8 pt-5 sm:pt-6 border-t border-gray-200 dark:border-gray-700">
-                <p className="text-sm sm:text-base text-muted-foreground">
-                  <strong>Responsável:</strong> {contacto.responsavel}
-                </p>
-              </div>
-            ))}
+                </>
+              );
+            })()}
           </section>
         )}
       </main>
