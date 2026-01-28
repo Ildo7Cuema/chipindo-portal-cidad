@@ -223,41 +223,52 @@ const Events = () => {
       <main className="pt-20">
 
         {/* Filters Section */}
-        <section className="py-8 bg-gray-50 dark:bg-gray-900">
+        <section className="py-6 md:py-8 bg-gray-50 dark:bg-gray-900">
           <div className="container mx-auto px-4">
-            <div className="flex flex-col md:flex-row gap-4">
+            <div className="space-y-3 md:space-y-0 md:flex md:flex-row md:gap-4">
+              {/* Search Input - Touch Friendly */}
               <div className="flex-1">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 md:w-4 md:h-4 md:left-3" />
                   <Input
                     placeholder="Pesquisar eventos..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
+                    className="pl-12 md:pl-10 h-12 md:h-10 text-base md:text-sm rounded-xl transition-all duration-200 focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
               </div>
 
+              {/* Category Select */}
               <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger className="w-full md:w-48">
+                <SelectTrigger className="w-full md:w-48 h-12 md:h-10 rounded-xl text-base md:text-sm transition-all duration-200">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   {categories.map((category) => (
-                    <SelectItem key={category.value} value={category.value}>
+                    <SelectItem 
+                      key={category.value} 
+                      value={category.value}
+                      className="min-h-[44px] md:min-h-[36px] flex items-center"
+                    >
                       {category.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
 
+              {/* Status Select */}
               <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-                <SelectTrigger className="w-full md:w-48">
+                <SelectTrigger className="w-full md:w-48 h-12 md:h-10 rounded-xl text-base md:text-sm transition-all duration-200">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   {statusOptions.map((status) => (
-                    <SelectItem key={status.value} value={status.value}>
+                    <SelectItem 
+                      key={status.value} 
+                      value={status.value}
+                      className="min-h-[44px] md:min-h-[36px] flex items-center"
+                    >
                       {status.label}
                     </SelectItem>
                   ))}
@@ -268,71 +279,85 @@ const Events = () => {
         </section>
 
         {/* Events Grid */}
-        <section id="events-list" className="py-12">
+        <section id="events-list" className="py-8 md:py-12">
           <div className="container mx-auto px-4">
             {eventsLoading ? (
-              <div className="text-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                <h3 className="text-xl font-semibold text-gray-600 mb-2">Carregando eventos...</h3>
-                <p className="text-gray-500">Aguarde enquanto buscamos os eventos</p>
+              /* Loading State - Larger spinner for mobile */
+              <div className="flex flex-col items-center justify-center py-16 md:py-20">
+                <div className="animate-spin rounded-full h-14 w-14 md:h-12 md:w-12 border-b-2 border-blue-600 mb-6"></div>
+                <h3 className="text-lg md:text-xl font-semibold text-gray-600 dark:text-gray-300 mb-2 text-center">
+                  Carregando eventos...
+                </h3>
+                <p className="text-sm md:text-base text-gray-500 dark:text-gray-400 text-center px-4">
+                  Aguarde enquanto buscamos os eventos
+                </p>
               </div>
             ) : filteredEvents.length === 0 ? (
-              <div className="text-center py-12">
-                <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-600 mb-2">Nenhum evento encontrado</h3>
-                <p className="text-gray-500">Tente ajustar os filtros de pesquisa</p>
+              /* Empty State - Properly sized for all screens */
+              <div className="flex flex-col items-center justify-center py-16 md:py-20">
+                <Calendar className="w-14 h-14 md:w-16 md:h-16 text-gray-400 mb-6" />
+                <h3 className="text-lg md:text-xl font-semibold text-gray-600 dark:text-gray-300 mb-2 text-center">
+                  Nenhum evento encontrado
+                </h3>
+                <p className="text-sm md:text-base text-gray-500 dark:text-gray-400 text-center px-4 max-w-md">
+                  Tente ajustar os filtros de pesquisa
+                </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                 {filteredEvents.map((event) => (
                   <Card
                     key={event.id}
                     className={cn(
-                      "overflow-hidden hover:shadow-lg transition-all duration-300",
+                      "overflow-hidden shadow-md hover:shadow-xl transition-all duration-200 rounded-xl",
+                      "active:scale-[0.98] md:hover:-translate-y-1",
                       event.featured && "ring-2 ring-yellow-400"
                     )}
                   >
                     {event.featured && (
-                      <div className="bg-yellow-400 text-yellow-900 px-3 py-1 text-xs font-semibold text-center">
+                      <div className="bg-yellow-400 text-yellow-900 px-3 py-1.5 text-xs font-semibold text-center">
                         ⭐ Evento Destacado
                       </div>
                     )}
 
-                    <CardHeader className="pb-4">
-                      <div className="flex items-start justify-between">
-                        <CardTitle className="text-lg leading-tight">{event.title}</CardTitle>
-                        <Badge className={getStatusColor(event.status)}>
+                    <CardHeader className="p-4 md:p-6 pb-3 md:pb-4">
+                      <div className="flex items-start justify-between gap-2">
+                        <CardTitle className="text-base md:text-lg leading-tight line-clamp-2">
+                          {event.title}
+                        </CardTitle>
+                        <Badge className={cn(getStatusColor(event.status), "text-xs shrink-0")}>
                           {getStatusLabel(event.status)}
                         </Badge>
                       </div>
-                      <Badge variant="outline" className="w-fit">
+                      <Badge variant="outline" className="w-fit text-xs mt-2">
                         {event.category}
                       </Badge>
                     </CardHeader>
 
-                    <CardContent className="space-y-4">
+                    <CardContent className="p-4 md:p-6 pt-0 md:pt-0 space-y-4">
                       <p className="text-sm text-muted-foreground line-clamp-3">
                         {event.description}
                       </p>
 
-                      <div className="space-y-2 text-sm">
+                      {/* Meta Info - Responsive and Wrappable */}
+                      <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm">
                         <div className="flex items-center gap-2">
-                          <Calendar className="w-4 h-4 text-blue-600" />
+                          <Calendar className="w-4 h-4 text-blue-600 shrink-0" />
                           <span className="font-medium">{formatDate(event.date)}</span>
                         </div>
 
                         <div className="flex items-center gap-2">
-                          <Clock className="w-4 h-4 text-green-600" />
+                          <Clock className="w-4 h-4 text-green-600 shrink-0" />
                           <span>{event.event_time}</span>
                         </div>
 
-                        <div className="flex items-center gap-2">
-                          <MapPin className="w-4 h-4 text-red-600" />
-                          <span>{event.location}</span>
+                        <div className="flex items-center gap-2 w-full md:w-auto">
+                          <MapPin className="w-4 h-4 text-red-600 shrink-0" />
+                          <span className="line-clamp-1">{event.location}</span>
                         </div>
 
                         <div className="flex items-center gap-2">
-                          <Users className="w-4 h-4 text-purple-600" />
+                          <Users className="w-4 h-4 text-purple-600 shrink-0" />
                           <span>
                             {event.current_participants} inscritos
                             {event.max_participants > 0 && ` / ${event.max_participants} vagas`}
@@ -340,31 +365,32 @@ const Events = () => {
                         </div>
 
                         <div className="flex items-center gap-2">
-                          <span className="font-semibold text-lg">{event.price}</span>
+                          <span className="font-semibold text-base md:text-lg">{event.price}</span>
                         </div>
                       </div>
 
+                      {/* Organizer & Contact Buttons */}
                       <div className="border-t pt-4">
-                        <p className="text-sm font-medium mb-2">Organizador: {event.organizer}</p>
+                        <p className="text-sm font-medium mb-3">Organizador: {event.organizer}</p>
 
                         <div className="flex flex-wrap gap-2">
                           <Button
                             size="sm"
                             variant="outline"
-                            className="text-xs border-gray-300 text-gray-700 hover:bg-gray-50 font-medium"
+                            className="text-xs min-h-[40px] md:min-h-[36px] px-3 border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800 font-medium rounded-lg transition-all duration-200 active:scale-[0.98]"
                             onClick={() => handleContact(event, 'phone')}
                           >
-                            <Phone className="w-3 h-3 mr-1" />
+                            <Phone className="w-3.5 h-3.5 mr-1.5" />
                             Contactar
                           </Button>
 
                           <Button
                             size="sm"
                             variant="outline"
-                            className="text-xs border-gray-300 text-gray-700 hover:bg-gray-50 font-medium"
+                            className="text-xs min-h-[40px] md:min-h-[36px] px-3 border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800 font-medium rounded-lg transition-all duration-200 active:scale-[0.98]"
                             onClick={() => handleContact(event, 'email')}
                           >
-                            <Mail className="w-3 h-3 mr-1" />
+                            <Mail className="w-3.5 h-3.5 mr-1.5" />
                             Email
                           </Button>
 
@@ -372,19 +398,20 @@ const Events = () => {
                             <Button
                               size="sm"
                               variant="outline"
-                              className="text-xs border-gray-300 text-gray-700 hover:bg-gray-50 font-medium"
+                              className="text-xs min-h-[40px] md:min-h-[36px] px-3 border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800 font-medium rounded-lg transition-all duration-200 active:scale-[0.98]"
                               onClick={() => handleContact(event, 'website')}
                             >
-                              <Globe className="w-3 h-3 mr-1" />
+                              <Globe className="w-3.5 h-3.5 mr-1.5" />
                               Website
                             </Button>
                           )}
                         </div>
                       </div>
 
-                      <div className="flex gap-2">
+                      {/* Action Buttons - Large Touch Targets */}
+                      <div className="flex gap-2 pt-2">
                         <Button
-                          className="flex-1"
+                          className="flex-1 min-h-[44px] md:min-h-[40px] rounded-xl text-sm md:text-base font-medium transition-all duration-200 active:scale-[0.98]"
                           onClick={() => handleParticipate(event)}
                           disabled={event.max_participants > 0 && event.current_participants >= event.max_participants}
                         >
@@ -395,22 +422,21 @@ const Events = () => {
                         </Button>
                         <Button
                           variant="outline"
-                          size="sm"
                           onClick={() => handleFavorite(event)}
                           className={cn(
-                            "border-gray-300 text-gray-700 hover:bg-gray-50",
-                            favoriteEvents.includes(event.id) ? 'bg-red-50 border-red-200 text-red-600 hover:bg-red-100' : ''
+                            "min-w-[44px] min-h-[44px] md:min-w-[40px] md:min-h-[40px] p-0 rounded-xl transition-all duration-200 active:scale-[0.98]",
+                            "border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800",
+                            favoriteEvents.includes(event.id) && "bg-red-50 border-red-200 text-red-600 hover:bg-red-100 dark:bg-red-900/20 dark:border-red-800 dark:text-red-400"
                           )}
                         >
-                          <Heart className={cn("w-4 h-4", favoriteEvents.includes(event.id) && "fill-current")} />
+                          <Heart className={cn("w-5 h-5", favoriteEvents.includes(event.id) && "fill-current")} />
                         </Button>
                         <Button
                           variant="outline"
-                          size="sm"
                           onClick={() => handleShare(event)}
-                          className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                          className="min-w-[44px] min-h-[44px] md:min-w-[40px] md:min-h-[40px] p-0 rounded-xl border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800 transition-all duration-200 active:scale-[0.98]"
                         >
-                          <Share2 className="w-4 h-4" />
+                          <Share2 className="w-5 h-5" />
                         </Button>
                       </div>
                     </CardContent>
@@ -422,17 +448,20 @@ const Events = () => {
         </section>
 
         {/* Call to Action */}
-        <section id="guidelines-section" className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-16">
+        <section id="guidelines-section" className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-10 md:py-16">
           <div className="container mx-auto px-4 text-center">
-            <h2 className="text-3xl font-bold mb-4">Organiza um Evento?</h2>
-            <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+            <h2 className="text-2xl md:text-3xl font-bold mb-3 md:mb-4">
+              Organiza um Evento?
+            </h2>
+            <p className="text-base md:text-xl text-blue-100 mb-6 md:mb-8 max-w-2xl mx-auto px-2">
               Quer promover o seu evento em Chipindo? Entre em contacto connosco para divulgar o seu evento na nossa plataforma.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col gap-3 md:flex-row md:gap-4 justify-center max-w-md md:max-w-none mx-auto">
               <Button
                 size="lg"
                 variant="secondary"
                 onClick={handleContactAdministration}
+                className="min-h-[48px] md:min-h-[44px] rounded-xl text-base font-medium transition-all duration-200 active:scale-[0.98]"
               >
                 <MessageCircle className="w-5 h-5 mr-2" />
                 Contactar (WhatsApp)
@@ -441,7 +470,7 @@ const Events = () => {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="text-white border-white/80 bg-white/10 hover:bg-white hover:text-blue-600 font-semibold shadow-lg transition-all duration-300"
+                  className="min-h-[48px] md:min-h-[44px] rounded-xl text-base text-white border-white/80 bg-white/10 hover:bg-white hover:text-blue-600 font-semibold shadow-lg transition-all duration-200 active:scale-[0.98]"
                 >
                   <ExternalLink className="w-5 h-5 mr-2" />
                   Ver Diretrizes

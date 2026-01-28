@@ -158,7 +158,7 @@ const Cultura = () => {
         onVerOportunidades={handleVerOportunidades}
       />
 
-      <main className="container mx-auto px-4 py-12">
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
         {/* Breadcrumb */}
         <SetorBreadcrumb setor={setor} />
 
@@ -170,71 +170,83 @@ const Cultura = () => {
 
         {/* Content Tabs */}
         <div data-tabs-container>
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-12">
-            <TabsList className="flex flex-wrap w-full gap-2 p-2 bg-muted/50">
-              <TabsTrigger value="programas" className="flex-1 min-w-0 text-xs sm:text-sm px-2 sm:px-3 py-2 sm:py-1.5">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-8 sm:mt-10 lg:mt-12">
+            <TabsList className="flex w-full gap-1 sm:gap-2 p-1.5 sm:p-2 bg-muted/50 rounded-xl overflow-x-auto scrollbar-hide -mx-1 px-1 sm:mx-0 sm:px-2">
+              <TabsTrigger 
+                value="programas" 
+                className="flex-1 min-w-[80px] sm:min-w-0 min-h-[44px] text-xs sm:text-sm px-3 sm:px-4 py-2.5 sm:py-2 rounded-lg transition-all duration-200 active:scale-[0.98]"
+              >
                 <span className="truncate">Programas</span>
               </TabsTrigger>
-              <TabsTrigger value="oportunidades" className="flex-1 min-w-0 text-xs sm:text-sm px-2 sm:px-3 py-2 sm:py-1.5">
+              <TabsTrigger 
+                value="oportunidades" 
+                className="flex-1 min-w-[100px] sm:min-w-0 min-h-[44px] text-xs sm:text-sm px-3 sm:px-4 py-2.5 sm:py-2 rounded-lg transition-all duration-200 active:scale-[0.98]"
+              >
                 <span className="truncate">Oportunidades</span>
               </TabsTrigger>
-              <TabsTrigger value="infraestruturas" className="flex-1 min-w-0 text-xs sm:text-sm px-2 sm:px-3 py-2 sm:py-1.5">
+              <TabsTrigger 
+                value="infraestruturas" 
+                className="flex-1 min-w-[110px] sm:min-w-0 min-h-[44px] text-xs sm:text-sm px-3 sm:px-4 py-2.5 sm:py-2 rounded-lg transition-all duration-200 active:scale-[0.98]"
+              >
                 <span className="truncate">Infraestruturas</span>
               </TabsTrigger>
-              <TabsTrigger value="contactos" className="flex-1 min-w-0 text-xs sm:text-sm px-2 sm:px-3 py-2 sm:py-1.5">
+              <TabsTrigger 
+                value="contactos" 
+                className="flex-1 min-w-[80px] sm:min-w-0 min-h-[44px] text-xs sm:text-sm px-3 sm:px-4 py-2.5 sm:py-2 rounded-lg transition-all duration-200 active:scale-[0.98]"
+              >
                 <span className="truncate">Contactos</span>
               </TabsTrigger>
             </TabsList>
 
             {/* Programas */}
-            <TabsContent value="programas" className="mt-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <TabsContent value="programas" className="mt-6 sm:mt-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
                 {setor.programas.map((programa, index) => (
-                  <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
-                    <CardHeader className="pb-4">
-                      <div className="flex items-center gap-3 mb-3">
-                        <div className="p-2 bg-purple-100 rounded-lg">
-                          <HeartHandshakeIcon className="w-5 h-5 text-purple-600" />
+                  <Card key={index} className="overflow-hidden rounded-xl hover:shadow-lg transition-all duration-200 active:scale-[0.98]">
+                    <CardHeader className="p-4 sm:p-5 lg:p-6 pb-3 sm:pb-4">
+                      <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+                        <div className="p-2 sm:p-2.5 bg-purple-100 rounded-xl">
+                          <HeartHandshakeIcon className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" />
                         </div>
-                        <Badge className="bg-purple-100 text-purple-800">
+                        <Badge className="bg-purple-100 text-purple-800 text-xs">
                           Programa
                         </Badge>
                       </div>
-                      <CardTitle className="text-lg">{programa.titulo}</CardTitle>
-                      <p className="text-sm text-muted-foreground">
+                      <CardTitle className="text-base sm:text-lg">{programa.titulo}</CardTitle>
+                      <p className="text-xs sm:text-sm text-muted-foreground mt-1">
                         {programa.descricao}
                       </p>
                     </CardHeader>
 
-                    <CardContent>
-                      <div className="space-y-4">
+                    <CardContent className="p-4 sm:p-5 lg:p-6 pt-0">
+                      <div className="space-y-3 sm:space-y-4">
                         <div>
-                          <h4 className="font-medium text-sm mb-2">Benefícios:</h4>
-                          <ul className="space-y-1">
+                          <h4 className="font-medium text-xs sm:text-sm mb-1.5 sm:mb-2">Benefícios:</h4>
+                          <ul className="space-y-1 sm:space-y-1.5">
                             {programa.beneficios?.map((beneficio: string, idx: number) => (
-                              <li key={idx} className="text-sm text-muted-foreground flex items-center gap-2">
-                                <CheckCircleIcon className="w-3 h-3 text-green-500" />
-                                {beneficio}
+                              <li key={idx} className="text-xs sm:text-sm text-muted-foreground flex items-start gap-2">
+                                <CheckCircleIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-green-500 mt-0.5 flex-shrink-0" />
+                                <span>{beneficio}</span>
                               </li>
                             ))}
                           </ul>
                         </div>
 
                         <div>
-                          <h4 className="font-medium text-sm mb-2">Requisitos:</h4>
-                          <ul className="space-y-1">
+                          <h4 className="font-medium text-xs sm:text-sm mb-1.5 sm:mb-2">Requisitos:</h4>
+                          <ul className="space-y-1 sm:space-y-1.5">
                             {programa.requisitos?.map((requisito: string, idx: number) => (
-                              <li key={idx} className="text-sm text-muted-foreground flex items-center gap-2">
-                                <div className="w-1.5 h-1.5 bg-purple-500 rounded-full" />
-                                {requisito}
+                              <li key={idx} className="text-xs sm:text-sm text-muted-foreground flex items-start gap-2">
+                                <div className="w-1.5 h-1.5 bg-purple-500 rounded-full mt-1.5 flex-shrink-0" />
+                                <span>{requisito}</span>
                               </li>
                             ))}
                           </ul>
                         </div>
 
                         {programa.contacto && (
-                          <div className="pt-2 border-t">
-                            <p className="text-sm text-muted-foreground">
+                          <div className="pt-2 sm:pt-3 border-t">
+                            <p className="text-xs sm:text-sm text-muted-foreground">
                               <strong>Contacto:</strong> {programa.contacto}
                             </p>
                           </div>
@@ -242,8 +254,7 @@ const Cultura = () => {
 
                         <Button
                           variant="outline"
-                          size="sm"
-                          className="w-full"
+                          className="w-full h-11 sm:h-12 text-sm sm:text-base rounded-xl transition-all duration-200 active:scale-[0.98]"
                           onClick={() => {
                             setProgramaSelecionado(programa.titulo);
                             setOpenInscricaoPrograma(true);
@@ -260,42 +271,42 @@ const Cultura = () => {
             </TabsContent>
 
             {/* Oportunidades */}
-            <TabsContent value="oportunidades" className="mt-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <TabsContent value="oportunidades" className="mt-6 sm:mt-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
                 {setor.oportunidades.map((oportunidade, index) => (
-                  <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
-                    <CardHeader className="pb-4">
-                      <div className="flex items-center gap-3 mb-3">
-                        <div className="p-2 bg-blue-100 rounded-lg">
-                          <LightbulbIcon className="w-5 h-5 text-blue-600" />
+                  <Card key={index} className="overflow-hidden rounded-xl hover:shadow-lg transition-all duration-200 active:scale-[0.98]">
+                    <CardHeader className="p-4 sm:p-5 lg:p-6 pb-3 sm:pb-4">
+                      <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+                        <div className="p-2 sm:p-2.5 bg-blue-100 rounded-xl">
+                          <LightbulbIcon className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
                         </div>
-                        <Badge className="bg-blue-100 text-blue-800">
+                        <Badge className="bg-blue-100 text-blue-800 text-xs">
                           Oportunidade
                         </Badge>
                       </div>
-                      <CardTitle className="text-lg">{oportunidade.titulo}</CardTitle>
-                      <p className="text-sm text-muted-foreground">
+                      <CardTitle className="text-base sm:text-lg">{oportunidade.titulo}</CardTitle>
+                      <p className="text-xs sm:text-sm text-muted-foreground mt-1">
                         {oportunidade.descricao}
                       </p>
                     </CardHeader>
 
-                    <CardContent>
-                      <div className="space-y-4">
+                    <CardContent className="p-4 sm:p-5 lg:p-6 pt-0">
+                      <div className="space-y-3 sm:space-y-4">
                         <div>
-                          <h4 className="font-medium text-sm mb-2">Requisitos:</h4>
-                          <ul className="space-y-1">
+                          <h4 className="font-medium text-xs sm:text-sm mb-1.5 sm:mb-2">Requisitos:</h4>
+                          <ul className="space-y-1 sm:space-y-1.5">
                             {oportunidade.requisitos?.map((requisito: string, idx: number) => (
-                              <li key={idx} className="text-sm text-muted-foreground flex items-center gap-2">
-                                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full" />
-                                {requisito}
+                              <li key={idx} className="text-xs sm:text-sm text-muted-foreground flex items-start gap-2">
+                                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-1.5 flex-shrink-0" />
+                                <span>{requisito}</span>
                               </li>
                             ))}
                           </ul>
                         </div>
 
                         {oportunidade.contacto && (
-                          <div className="pt-2 border-t">
-                            <p className="text-sm text-muted-foreground">
+                          <div className="pt-2 sm:pt-3 border-t">
+                            <p className="text-xs sm:text-sm text-muted-foreground">
                               <strong>Contacto:</strong> {oportunidade.contacto}
                             </p>
                           </div>
@@ -303,8 +314,7 @@ const Cultura = () => {
 
                         <Button
                           variant="outline"
-                          size="sm"
-                          className="w-full"
+                          className="w-full h-11 sm:h-12 text-sm sm:text-base rounded-xl transition-all duration-200 active:scale-[0.98]"
                           onClick={() => {
                             setOportunidadeSelecionada(oportunidade.titulo);
                             setOpenCandidatura(true);
@@ -321,42 +331,42 @@ const Cultura = () => {
             </TabsContent>
 
             {/* Infraestruturas */}
-            <TabsContent value="infraestruturas" className="mt-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <TabsContent value="infraestruturas" className="mt-6 sm:mt-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
                 {setor.infraestruturas.map((infraestrutura, index) => (
-                  <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
-                    <CardHeader className="pb-4">
-                      <div className="flex items-center gap-3 mb-3">
-                        <div className="p-2 bg-orange-100 rounded-lg">
-                          <BuildingIcon className="w-5 h-5 text-orange-600" />
+                  <Card key={index} className="overflow-hidden rounded-xl hover:shadow-lg transition-all duration-200 active:scale-[0.98]">
+                    <CardHeader className="p-4 sm:p-5 lg:p-6 pb-3 sm:pb-4">
+                      <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+                        <div className="p-2 sm:p-2.5 bg-orange-100 rounded-xl">
+                          <BuildingIcon className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600" />
                         </div>
-                        <Badge className="bg-orange-100 text-orange-800">
+                        <Badge className="bg-orange-100 text-orange-800 text-xs">
                           Infraestrutura
                         </Badge>
                       </div>
-                      <CardTitle className="text-lg">{infraestrutura.nome}</CardTitle>
-                      <p className="text-sm text-muted-foreground">
+                      <CardTitle className="text-base sm:text-lg">{infraestrutura.nome}</CardTitle>
+                      <p className="text-xs sm:text-sm text-muted-foreground mt-1">
                         {infraestrutura.descricao}
                       </p>
                     </CardHeader>
 
-                    <CardContent>
-                      <div className="space-y-4">
+                    <CardContent className="p-4 sm:p-5 lg:p-6 pt-0">
+                      <div className="space-y-3 sm:space-y-4">
                         <div>
-                          <h4 className="font-medium text-sm mb-2">Características:</h4>
-                          <ul className="space-y-1">
+                          <h4 className="font-medium text-xs sm:text-sm mb-1.5 sm:mb-2">Características:</h4>
+                          <ul className="space-y-1 sm:space-y-1.5">
                             {infraestrutura.caracteristicas?.map((caracteristica: string, idx: number) => (
-                              <li key={idx} className="text-sm text-muted-foreground flex items-center gap-2">
-                                <CheckCircleIcon className="w-3 h-3 text-orange-500" />
-                                {caracteristica}
+                              <li key={idx} className="text-xs sm:text-sm text-muted-foreground flex items-start gap-2">
+                                <CheckCircleIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-orange-500 mt-0.5 flex-shrink-0" />
+                                <span>{caracteristica}</span>
                               </li>
                             ))}
                           </ul>
                         </div>
 
                         {infraestrutura.localizacao && (
-                          <div className="pt-2 border-t">
-                            <p className="text-sm text-muted-foreground">
+                          <div className="pt-2 sm:pt-3 border-t">
+                            <p className="text-xs sm:text-sm text-muted-foreground">
                               <strong>Localização:</strong> {infraestrutura.localizacao}
                             </p>
                           </div>
@@ -364,8 +374,7 @@ const Cultura = () => {
 
                         <Button
                           variant="outline"
-                          size="sm"
-                          className="w-full"
+                          className="w-full h-11 sm:h-12 text-sm sm:text-base rounded-xl transition-all duration-200 active:scale-[0.98]"
                           onClick={() => {
                             setDetalheInfra(infraestrutura);
                             setOpenDetalhes(true);
@@ -382,52 +391,58 @@ const Cultura = () => {
             </TabsContent>
 
             {/* Contactos */}
-            <TabsContent value="contactos" className="mt-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <TabsContent value="contactos" className="mt-6 sm:mt-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
                 {setor.contactos.map((contacto, index) => (
-                  <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
-                    <CardHeader className="pb-4">
-                      <div className="flex items-center gap-3 mb-3">
-                        <div className="p-2 bg-purple-100 rounded-lg">
-                          <PhoneIcon className="w-5 h-5 text-purple-600" />
+                  <Card key={index} className="overflow-hidden rounded-xl hover:shadow-lg transition-all duration-200 active:scale-[0.98]">
+                    <CardHeader className="p-4 sm:p-5 lg:p-6 pb-3 sm:pb-4">
+                      <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+                        <div className="p-2 sm:p-2.5 bg-purple-100 rounded-xl">
+                          <PhoneIcon className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" />
                         </div>
-                        <Badge className="bg-purple-100 text-purple-800">
+                        <Badge className="bg-purple-100 text-purple-800 text-xs">
                           Contacto
                         </Badge>
                       </div>
-                      <CardTitle className="text-lg">{contacto.nome}</CardTitle>
-                      <p className="text-sm text-muted-foreground">
+                      <CardTitle className="text-base sm:text-lg">{contacto.nome}</CardTitle>
+                      <p className="text-xs sm:text-sm text-muted-foreground mt-1">
                         {contacto.cargo}
                       </p>
                     </CardHeader>
 
-                    <CardContent>
-                      <div className="space-y-3">
+                    <CardContent className="p-4 sm:p-5 lg:p-6 pt-0">
+                      <div className="space-y-2.5 sm:space-y-3">
                         {contacto.telefone && (
-                          <div className="flex items-center gap-2">
-                            <PhoneIcon className="w-4 h-4 text-muted-foreground" />
-                            <span className="text-sm">{contacto.telefone}</span>
-                          </div>
+                          <a 
+                            href={`tel:${contacto.telefone}`}
+                            className="flex items-center gap-2 sm:gap-3 min-h-[44px] p-2 -m-2 rounded-xl hover:bg-muted/50 transition-all duration-200 active:scale-[0.98]"
+                          >
+                            <PhoneIcon className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                            <span className="text-xs sm:text-sm">{contacto.telefone}</span>
+                          </a>
                         )}
 
                         {contacto.email && (
-                          <div className="flex items-center gap-2">
-                            <MailIcon className="w-4 h-4 text-muted-foreground" />
-                            <span className="text-sm">{contacto.email}</span>
-                          </div>
+                          <a 
+                            href={`mailto:${contacto.email}`}
+                            className="flex items-center gap-2 sm:gap-3 min-h-[44px] p-2 -m-2 rounded-xl hover:bg-muted/50 transition-all duration-200 active:scale-[0.98]"
+                          >
+                            <MailIcon className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                            <span className="text-xs sm:text-sm break-all">{contacto.email}</span>
+                          </a>
                         )}
 
                         {contacto.endereco && (
-                          <div className="flex items-center gap-2">
-                            <MapPinIcon className="w-4 h-4 text-muted-foreground" />
-                            <span className="text-sm">{contacto.endereco}</span>
+                          <div className="flex items-start gap-2 sm:gap-3 py-2">
+                            <MapPinIcon className="w-4 h-4 text-muted-foreground flex-shrink-0 mt-0.5" />
+                            <span className="text-xs sm:text-sm">{contacto.endereco}</span>
                           </div>
                         )}
 
                         {contacto.horario && (
-                          <div className="flex items-center gap-2">
-                            <CalendarIcon className="w-4 h-4 text-muted-foreground" />
-                            <span className="text-sm">{contacto.horario}</span>
+                          <div className="flex items-start gap-2 sm:gap-3 py-2">
+                            <CalendarIcon className="w-4 h-4 text-muted-foreground flex-shrink-0 mt-0.5" />
+                            <span className="text-xs sm:text-sm">{contacto.horario}</span>
                           </div>
                         )}
                       </div>
@@ -456,47 +471,53 @@ const Cultura = () => {
       />
 
       <Dialog open={openDetalhes} onOpenChange={setOpenDetalhes}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>{detalheInfra?.nome}</DialogTitle>
-            <DialogDescription>{detalheInfra?.descricao}</DialogDescription>
-          </DialogHeader>
+        <DialogContent className="w-full h-full sm:h-auto sm:max-h-[90vh] max-w-full sm:max-w-2xl m-0 sm:m-4 rounded-none sm:rounded-xl p-0 overflow-hidden">
+          <div className="flex flex-col h-full max-h-[100dvh] sm:max-h-[85vh]">
+            <DialogHeader className="p-4 sm:p-6 pb-3 sm:pb-4 border-b flex-shrink-0">
+              <DialogTitle className="text-lg sm:text-xl pr-8">{detalheInfra?.nome}</DialogTitle>
+              <DialogDescription className="text-xs sm:text-sm mt-1">{detalheInfra?.descricao}</DialogDescription>
+            </DialogHeader>
 
-          {detalheInfra && (
-            <div className="space-y-4">
-              <div>
-                <h4 className="font-medium mb-2">Características:</h4>
-                <ul className="space-y-1">
-                  {detalheInfra.caracteristicas?.map((caracteristica: string, idx: number) => (
-                    <li key={idx} className="text-sm flex items-center gap-2">
-                      <CheckCircleIcon className="w-3 h-3 text-green-500" />
-                      {caracteristica}
-                    </li>
-                  ))}
-                </ul>
+            {detalheInfra && (
+              <div className="flex-1 overflow-y-auto overscroll-contain p-4 sm:p-6 space-y-4 sm:space-y-5">
+                <div>
+                  <h4 className="font-medium text-sm sm:text-base mb-2 sm:mb-3">Características:</h4>
+                  <ul className="space-y-2 sm:space-y-2.5">
+                    {detalheInfra.caracteristicas?.map((caracteristica: string, idx: number) => (
+                      <li key={idx} className="text-xs sm:text-sm flex items-start gap-2 sm:gap-3">
+                        <CheckCircleIcon className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        <span>{caracteristica}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {detalheInfra.localizacao && (
+                  <div>
+                    <h4 className="font-medium text-sm sm:text-base mb-2 sm:mb-3">Localização:</h4>
+                    <p className="text-xs sm:text-sm text-muted-foreground">{detalheInfra.localizacao}</p>
+                  </div>
+                )}
+
+                {detalheInfra.observacoes && (
+                  <div>
+                    <h4 className="font-medium text-sm sm:text-base mb-2 sm:mb-3">Observações:</h4>
+                    <p className="text-xs sm:text-sm text-muted-foreground">{detalheInfra.observacoes}</p>
+                  </div>
+                )}
               </div>
+            )}
 
-              {detalheInfra.localizacao && (
-                <div>
-                  <h4 className="font-medium mb-2">Localização:</h4>
-                  <p className="text-sm text-muted-foreground">{detalheInfra.localizacao}</p>
-                </div>
-              )}
-
-              {detalheInfra.observacoes && (
-                <div>
-                  <h4 className="font-medium mb-2">Observações:</h4>
-                  <p className="text-sm text-muted-foreground">{detalheInfra.observacoes}</p>
-                </div>
-              )}
-            </div>
-          )}
-
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setOpenDetalhes(false)}>
-              Fechar
-            </Button>
-          </DialogFooter>
+            <DialogFooter className="p-4 sm:p-6 pt-3 sm:pt-4 border-t flex-shrink-0">
+              <Button 
+                variant="outline" 
+                onClick={() => setOpenDetalhes(false)}
+                className="w-full sm:w-auto h-11 sm:h-12 text-sm sm:text-base rounded-xl transition-all duration-200 active:scale-[0.98]"
+              >
+                Fechar
+              </Button>
+            </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
 

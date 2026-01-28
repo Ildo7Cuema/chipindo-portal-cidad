@@ -28,7 +28,8 @@ import {
   ActivityIcon,
   BabyIcon,
   PillIcon,
-  SparklesIcon
+  SparklesIcon,
+  XIcon
 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import React, { useState, useEffect } from "react";
@@ -38,6 +39,17 @@ import { BookMedicalAppointmentForm } from "@/components/ui/book-medical-appoint
 import { useSetoresEstrategicos } from "@/hooks/useSetoresEstrategicos";
 import { SetorCompleto } from "@/hooks/useSetoresEstrategicos";
 import { cn } from "@/lib/utils";
+
+// CSS for hiding scrollbar while maintaining scroll functionality
+const scrollbarHideStyles = `
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+`;
 
 const Saude = () => {
   const { getSetorBySlug } = useSetoresEstrategicos();
@@ -163,6 +175,9 @@ const Saude = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Inject scrollbar hide styles */}
+      <style>{scrollbarHideStyles}</style>
+      
       <Header />
 
       <SectorHero
@@ -171,7 +186,7 @@ const Saude = () => {
         onVerOportunidades={handleVerOportunidades}
       />
 
-      <main className="container mx-auto px-4 py-12">
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 lg:py-14">
         {/* Breadcrumb */}
         <SetorBreadcrumb setor={setor} />
 
@@ -182,84 +197,113 @@ const Saude = () => {
         <SetorStats setor={setor} />
 
         {/* Content Tabs */}
-        <div data-tabs-container>
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-12">
-            <TabsList className="flex flex-wrap w-full gap-2 p-2 bg-muted/50">
-              <TabsTrigger value="programas" className="flex-1 min-w-0 text-xs sm:text-sm px-2 sm:px-3 py-2 sm:py-1.5">
-                <span className="truncate">Programas</span>
-              </TabsTrigger>
-              <TabsTrigger value="oportunidades" className="flex-1 min-w-0 text-xs sm:text-sm px-2 sm:px-3 py-2 sm:py-1.5">
-                <span className="truncate">Oportunidades</span>
-              </TabsTrigger>
-              <TabsTrigger value="infraestruturas" className="flex-1 min-w-0 text-xs sm:text-sm px-2 sm:px-3 py-2 sm:py-1.5">
-                <span className="truncate">Infraestruturas</span>
-              </TabsTrigger>
-              <TabsTrigger value="contactos" className="flex-1 min-w-0 text-xs sm:text-sm px-2 sm:px-3 py-2 sm:py-1.5">
-                <span className="truncate">Contactos</span>
-              </TabsTrigger>
-            </TabsList>
+        <div data-tabs-container className="scroll-mt-4">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-8 sm:mt-10 lg:mt-14">
+            {/* Mobile: horizontal scroll with touch-friendly targets, Desktop: flex wrap */}
+            <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0 scrollbar-hide pb-1">
+              <TabsList className="inline-flex sm:flex sm:flex-wrap w-max sm:w-full gap-1.5 sm:gap-2 p-1.5 sm:p-2 bg-muted/60 backdrop-blur-sm rounded-xl shadow-sm">
+                <TabsTrigger 
+                  value="programas" 
+                  className="min-h-[48px] sm:min-h-[44px] flex-shrink-0 sm:flex-1 min-w-[110px] sm:min-w-0 text-sm sm:text-sm font-medium px-4 sm:px-5 py-3 sm:py-2.5 rounded-xl data-[state=active]:shadow-md transition-all duration-200 active:scale-[0.98] touch-manipulation"
+                >
+                  <HeartHandshakeIcon className="w-4 h-4 mr-2 sm:hidden" />
+                  <span className="truncate">Programas</span>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="oportunidades" 
+                  className="min-h-[48px] sm:min-h-[44px] flex-shrink-0 sm:flex-1 min-w-[130px] sm:min-w-0 text-sm sm:text-sm font-medium px-4 sm:px-5 py-3 sm:py-2.5 rounded-xl data-[state=active]:shadow-md transition-all duration-200 active:scale-[0.98] touch-manipulation"
+                >
+                  <StarIcon className="w-4 h-4 mr-2 sm:hidden" />
+                  <span className="truncate">Oportunidades</span>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="infraestruturas" 
+                  className="min-h-[48px] sm:min-h-[44px] flex-shrink-0 sm:flex-1 min-w-[145px] sm:min-w-0 text-sm sm:text-sm font-medium px-4 sm:px-5 py-3 sm:py-2.5 rounded-xl data-[state=active]:shadow-md transition-all duration-200 active:scale-[0.98] touch-manipulation"
+                >
+                  <BuildingIcon className="w-4 h-4 mr-2 sm:hidden" />
+                  <span className="truncate">Infraestruturas</span>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="contactos" 
+                  className="min-h-[48px] sm:min-h-[44px] flex-shrink-0 sm:flex-1 min-w-[110px] sm:min-w-0 text-sm sm:text-sm font-medium px-4 sm:px-5 py-3 sm:py-2.5 rounded-xl data-[state=active]:shadow-md transition-all duration-200 active:scale-[0.98] touch-manipulation"
+                >
+                  <PhoneIcon className="w-4 h-4 mr-2 sm:hidden" />
+                  <span className="truncate">Contactos</span>
+                </TabsTrigger>
+              </TabsList>
+            </div>
 
             {/* Programas */}
-            <TabsContent value="programas" className="mt-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <TabsContent value="programas" className="mt-5 sm:mt-8 lg:mt-10 animate-in fade-in-50 duration-300">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
                 {setor.programas.map((programa, index) => (
-                  <Card key={index} className="hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border-0 bg-white dark:bg-gray-800 overflow-hidden group">
-                    <div className="h-1 bg-gradient-to-r from-red-500 to-pink-600 w-full" />
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2 group-hover:text-red-600 transition-colors">
-                        <div className="p-2 rounded-lg bg-red-50 text-red-600 group-hover:bg-red-600 group-hover:text-white transition-all duration-300">
-                          <HeartHandshakeIcon className="w-5 h-5" />
+                  <Card 
+                    key={index} 
+                    className="group relative flex flex-col hover:shadow-2xl hover:shadow-red-100/50 dark:hover:shadow-red-900/20 transition-all duration-300 hover:-translate-y-1 border-0 bg-white dark:bg-gray-800/90 backdrop-blur-sm overflow-hidden rounded-xl"
+                  >
+                    {/* Gradient accent bar */}
+                    <div className="h-1.5 sm:h-1 bg-gradient-to-r from-red-500 to-pink-600 w-full" />
+                    
+                    <CardHeader className="p-4 sm:p-5 lg:p-6 pb-3 sm:pb-4">
+                      <CardTitle className="flex items-start gap-3 text-base sm:text-lg group-hover:text-red-600 transition-all duration-200">
+                        <div className="p-2.5 sm:p-3 rounded-xl bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 group-hover:bg-red-600 group-hover:text-white transition-all duration-200 shrink-0">
+                          <HeartHandshakeIcon className="w-5 h-5 sm:w-5 sm:h-5" />
                         </div>
-                        {programa.titulo}
+                        <span className="line-clamp-2 pt-1">{programa.titulo}</span>
                       </CardTitle>
-                      <p className="text-muted-foreground leading-relaxed">{programa.descricao}</p>
+                      <p className="text-sm text-muted-foreground leading-relaxed mt-3">{programa.descricao}</p>
                     </CardHeader>
-                    <CardContent className="space-y-6">
-                      <div className="space-y-3">
-                        <h4 className="font-semibold text-sm uppercase tracking-wider text-gray-500 flex items-center gap-2">
+                    
+                    <CardContent className="flex-1 flex flex-col p-4 sm:p-5 lg:p-6 pt-0 space-y-4 sm:space-y-5">
+                      {/* Benefícios */}
+                      <div className="space-y-2.5 sm:space-y-3">
+                        <h4 className="font-semibold text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400 flex items-center gap-2">
                           <CheckCircleIcon className="w-4 h-4 text-green-500" />
                           Benefícios
                         </h4>
                         <ul className="grid gap-2">
                           {programa.beneficios?.map((beneficio: string, idx: number) => (
-                            <li key={idx} className="text-sm text-gray-600 flex items-start gap-2">
-                              <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-1.5 shrink-0" />
-                              {beneficio}
+                            <li key={idx} className="text-sm text-gray-600 dark:text-gray-300 flex items-start gap-2.5">
+                              <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 shrink-0" />
+                              <span>{beneficio}</span>
                             </li>
                           ))}
                         </ul>
                       </div>
 
-                      <div className="space-y-3">
-                        <h4 className="font-semibold text-sm uppercase tracking-wider text-gray-500 flex items-center gap-2">
+                      {/* Requisitos */}
+                      <div className="space-y-2.5 sm:space-y-3">
+                        <h4 className="font-semibold text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400 flex items-center gap-2">
                           <StarIcon className="w-4 h-4 text-red-500" />
                           Requisitos
                         </h4>
                         <ul className="grid gap-2">
                           {programa.requisitos?.map((requisito: string, idx: number) => (
-                            <li key={idx} className="text-sm text-gray-600 flex items-start gap-2">
-                              <div className="w-1.5 h-1.5 bg-red-500 rounded-full mt-1.5 shrink-0" />
-                              {requisito}
+                            <li key={idx} className="text-sm text-gray-600 dark:text-gray-300 flex items-start gap-2.5">
+                              <div className="w-1.5 h-1.5 bg-red-500 rounded-full mt-2 shrink-0" />
+                              <span>{requisito}</span>
                             </li>
                           ))}
                         </ul>
                       </div>
 
-                      <div className="pt-4 border-t border-gray-100 mt-auto">
+                      {/* Footer */}
+                      <div className="pt-4 border-t border-gray-100 dark:border-gray-700 mt-auto">
                         {programa.contacto && (
-                          <p className="text-sm text-gray-500 mb-4 flex items-center gap-2">
-                            <PhoneIcon className="w-4 h-4" />
-                            <strong>Contacto:</strong> <span className="truncate">{programa.contacto}</span>
+                          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 flex items-center gap-2">
+                            <PhoneIcon className="w-4 h-4 shrink-0" />
+                            <strong className="font-medium">Contacto:</strong> 
+                            <span className="truncate">{programa.contacto}</span>
                           </p>
                         )}
                         <Button
-                          className="w-full bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white shadow-lg shadow-red-200"
+                          className="w-full min-h-[48px] sm:min-h-[44px] bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white font-medium shadow-lg shadow-red-200/50 dark:shadow-red-900/30 rounded-xl transition-all duration-200 active:scale-[0.98] touch-manipulation"
                           onClick={() => {
                             setProgramaSelecionado(programa.titulo);
                             setOpenInscricaoPrograma(true);
                           }}
                         >
-                          Inscrever-se Agora
+                          <span>Inscrever-se Agora</span>
                           <ArrowRightIcon className="w-4 h-4 ml-2" />
                         </Button>
                       </div>
@@ -270,58 +314,69 @@ const Saude = () => {
             </TabsContent>
 
             {/* Oportunidades */}
-            <TabsContent value="oportunidades" className="mt-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <TabsContent value="oportunidades" className="mt-5 sm:mt-8 lg:mt-10 animate-in fade-in-50 duration-300">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
                 {setor.oportunidades.map((oportunidade, index) => (
-                  <Card key={index} className="hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border-0 bg-white dark:bg-gray-800 overflow-hidden group">
-                    <div className="h-1 bg-gradient-to-r from-blue-500 to-cyan-500 w-full" />
-                    <CardHeader>
-                      <div className="flex justify-between items-start mb-2">
-                        <Badge variant="secondary" className="bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors">
+                  <Card 
+                    key={index} 
+                    className="group relative flex flex-col hover:shadow-2xl hover:shadow-blue-100/50 dark:hover:shadow-blue-900/20 transition-all duration-300 hover:-translate-y-1 border-0 bg-white dark:bg-gray-800/90 backdrop-blur-sm overflow-hidden rounded-xl"
+                  >
+                    {/* Gradient accent bar */}
+                    <div className="h-1.5 sm:h-1 bg-gradient-to-r from-blue-500 to-cyan-500 w-full" />
+                    
+                    <CardHeader className="p-4 sm:p-5 lg:p-6 pb-3 sm:pb-4">
+                      {/* Badges row */}
+                      <div className="flex flex-wrap justify-between items-center gap-2 mb-3">
+                        <Badge variant="secondary" className="bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-all duration-200 text-xs font-medium px-2.5 py-1">
                           {oportunidade.vagas || 'Várias'} vagas
                         </Badge>
-                        <Badge variant="outline" className="text-xs border-blue-200 text-blue-600">
+                        <Badge variant="outline" className="text-xs border-blue-200 dark:border-blue-700 text-blue-600 dark:text-blue-400 px-2.5 py-1">
                           {oportunidade.prazo ? `Até ${new Date(oportunidade.prazo).toLocaleDateString('pt-AO')}` : 'Aberto'}
                         </Badge>
                       </div>
-                      <CardTitle className="text-lg group-hover:text-blue-600 transition-colors">{oportunidade.titulo}</CardTitle>
-                      <p className="text-sm text-muted-foreground leading-relaxed">
+                      
+                      <CardTitle className="text-base sm:text-lg group-hover:text-blue-600 transition-all duration-200 line-clamp-2">
+                        {oportunidade.titulo}
+                      </CardTitle>
+                      <p className="text-sm text-muted-foreground leading-relaxed mt-3">
                         {oportunidade.descricao}
                       </p>
                     </CardHeader>
 
-                    <CardContent className="space-y-6">
-                      <div className="space-y-3">
-                        <h4 className="font-semibold text-sm uppercase tracking-wider text-gray-500 flex items-center gap-2">
+                    <CardContent className="flex-1 flex flex-col p-4 sm:p-5 lg:p-6 pt-0 space-y-4 sm:space-y-5">
+                      {/* Requisitos */}
+                      <div className="space-y-2.5 sm:space-y-3">
+                        <h4 className="font-semibold text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400 flex items-center gap-2">
                           <StarIcon className="w-4 h-4 text-blue-500" />
                           Requisitos
                         </h4>
                         <ul className="grid gap-2">
                           {oportunidade.requisitos?.map((requisito: string, idx: number) => (
-                            <li key={idx} className="text-sm text-gray-600 flex items-start gap-2">
-                              <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-1.5 shrink-0" />
-                              {requisito}
+                            <li key={idx} className="text-sm text-gray-600 dark:text-gray-300 flex items-start gap-2.5">
+                              <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 shrink-0" />
+                              <span>{requisito}</span>
                             </li>
                           ))}
                         </ul>
                       </div>
 
-                      <div className="pt-4 border-t border-gray-100 mt-auto">
+                      {/* Footer */}
+                      <div className="pt-4 border-t border-gray-100 dark:border-gray-700 mt-auto">
                         {oportunidade.contacto && (
-                          <p className="text-sm text-gray-500 mb-4 flex items-center gap-2">
-                            <PhoneIcon className="w-4 h-4" />
+                          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 flex items-center gap-2">
+                            <PhoneIcon className="w-4 h-4 shrink-0" />
                             <span className="truncate">{oportunidade.contacto}</span>
                           </p>
                         )}
 
                         <Button
-                          className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-lg shadow-blue-200"
+                          className="w-full min-h-[48px] sm:min-h-[44px] bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-medium shadow-lg shadow-blue-200/50 dark:shadow-blue-900/30 rounded-xl transition-all duration-200 active:scale-[0.98] touch-manipulation"
                           onClick={() => {
                             setOportunidadeSelecionada(oportunidade.titulo);
                             setOpenCandidatura(true);
                           }}
                         >
-                          Candidatar-se
+                          <span>Candidatar-se</span>
                           <ArrowRightIcon className="w-4 h-4 ml-2" />
                         </Button>
                       </div>
@@ -332,59 +387,69 @@ const Saude = () => {
             </TabsContent>
 
             {/* Infraestruturas */}
-            <TabsContent value="infraestruturas" className="mt-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <TabsContent value="infraestruturas" className="mt-5 sm:mt-8 lg:mt-10 animate-in fade-in-50 duration-300">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
                 {setor.infraestruturas.map((infraestrutura, index) => (
-                  <Card key={index} className="hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border-0 bg-white dark:bg-gray-800 overflow-hidden group">
-                    <div className="h-1 bg-gradient-to-r from-orange-500 to-amber-500 w-full" />
-                    <CardHeader>
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="p-2 bg-orange-50 rounded-lg text-orange-600 group-hover:bg-orange-600 group-hover:text-white transition-all duration-300">
+                  <Card 
+                    key={index} 
+                    className="group relative flex flex-col hover:shadow-2xl hover:shadow-orange-100/50 dark:hover:shadow-orange-900/20 transition-all duration-300 hover:-translate-y-1 border-0 bg-white dark:bg-gray-800/90 backdrop-blur-sm overflow-hidden rounded-xl"
+                  >
+                    {/* Gradient accent bar */}
+                    <div className="h-1.5 sm:h-1 bg-gradient-to-r from-orange-500 to-amber-500 w-full" />
+                    
+                    <CardHeader className="p-4 sm:p-5 lg:p-6 pb-3 sm:pb-4">
+                      <div className="flex items-center justify-between mb-3 gap-2">
+                        <div className="p-2.5 sm:p-3 bg-orange-50 dark:bg-orange-900/30 rounded-xl text-orange-600 dark:text-orange-400 group-hover:bg-orange-600 group-hover:text-white transition-all duration-200 shrink-0">
                           <BuildingIcon className="w-5 h-5" />
                         </div>
-                        <Badge variant="outline" className="border-orange-200 text-orange-700 bg-orange-50">
+                        <Badge variant="outline" className="border-orange-200 dark:border-orange-700 text-orange-700 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/30 text-xs px-2.5 py-1">
                           Infraestrutura
                         </Badge>
                       </div>
-                      <CardTitle className="text-lg group-hover:text-orange-600 transition-colors">{infraestrutura.nome}</CardTitle>
-                      <p className="text-sm text-muted-foreground leading-relaxed">
+                      
+                      <CardTitle className="text-base sm:text-lg group-hover:text-orange-600 transition-all duration-200 line-clamp-2">
+                        {infraestrutura.nome}
+                      </CardTitle>
+                      <p className="text-sm text-muted-foreground leading-relaxed mt-3">
                         {infraestrutura.descricao}
                       </p>
                     </CardHeader>
 
-                    <CardContent className="space-y-6">
-                      <div className="space-y-3">
-                        <h4 className="font-semibold text-sm uppercase tracking-wider text-gray-500 flex items-center gap-2">
+                    <CardContent className="flex-1 flex flex-col p-4 sm:p-5 lg:p-6 pt-0 space-y-4 sm:space-y-5">
+                      {/* Características */}
+                      <div className="space-y-2.5 sm:space-y-3">
+                        <h4 className="font-semibold text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400 flex items-center gap-2">
                           <CheckCircleIcon className="w-4 h-4 text-orange-500" />
                           Características
                         </h4>
                         <ul className="grid gap-2">
                           {infraestrutura.caracteristicas?.map((caracteristica: string, idx: number) => (
-                            <li key={idx} className="text-sm text-gray-600 flex items-start gap-2">
-                              <div className="w-1.5 h-1.5 bg-orange-500 rounded-full mt-1.5 shrink-0" />
-                              {caracteristica}
+                            <li key={idx} className="text-sm text-gray-600 dark:text-gray-300 flex items-start gap-2.5">
+                              <div className="w-1.5 h-1.5 bg-orange-500 rounded-full mt-2 shrink-0" />
+                              <span>{caracteristica}</span>
                             </li>
                           ))}
                         </ul>
                       </div>
 
-                      <div className="pt-4 border-t border-gray-100 mt-auto">
+                      {/* Footer */}
+                      <div className="pt-4 border-t border-gray-100 dark:border-gray-700 mt-auto">
                         {infraestrutura.localizacao && (
-                          <p className="text-sm text-gray-500 mb-4 flex items-center gap-2">
-                            <MapPinIcon className="w-4 h-4" />
+                          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 flex items-center gap-2">
+                            <MapPinIcon className="w-4 h-4 shrink-0" />
                             <span className="truncate">{infraestrutura.localizacao}</span>
                           </p>
                         )}
 
                         <Button
                           variant="outline"
-                          className="w-full border-orange-200 text-orange-700 hover:bg-orange-50 hover:text-orange-800"
+                          className="w-full min-h-[48px] sm:min-h-[44px] border-orange-200 dark:border-orange-700 text-orange-700 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/30 hover:text-orange-800 dark:hover:text-orange-300 font-medium rounded-xl transition-all duration-200 active:scale-[0.98] touch-manipulation"
                           onClick={() => {
                             setDetalheInfra(infraestrutura);
                             setOpenDetalhes(true);
                           }}
                         >
-                          Ver Detalhes
+                          <span>Ver Detalhes</span>
                           <ArrowRightIcon className="w-4 h-4 ml-2" />
                         </Button>
                       </div>
@@ -395,52 +460,70 @@ const Saude = () => {
             </TabsContent>
 
             {/* Contactos */}
-            <TabsContent value="contactos" className="mt-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <TabsContent value="contactos" className="mt-5 sm:mt-8 lg:mt-10 animate-in fade-in-50 duration-300">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
                 {setor.contactos.map((contacto, index) => (
-                  <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
-                    <CardHeader className="pb-4">
+                  <Card 
+                    key={index} 
+                    className="group relative overflow-hidden hover:shadow-xl hover:shadow-purple-100/50 dark:hover:shadow-purple-900/20 transition-all duration-300 hover:-translate-y-0.5 border-0 bg-white dark:bg-gray-800/90 backdrop-blur-sm rounded-xl"
+                  >
+                    {/* Gradient accent bar */}
+                    <div className="h-1.5 sm:h-1 bg-gradient-to-r from-purple-500 to-violet-500 w-full" />
+                    
+                    <CardHeader className="p-4 sm:p-5 lg:p-6 pb-3 sm:pb-4">
                       <div className="flex items-center gap-3 mb-3">
-                        <div className="p-2 bg-purple-100 rounded-lg">
-                          <PhoneIcon className="w-5 h-5 text-purple-600" />
+                        <div className="p-2.5 sm:p-3 bg-purple-100 dark:bg-purple-900/30 rounded-xl shrink-0">
+                          <PhoneIcon className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                         </div>
-                        <Badge className="bg-purple-100 text-purple-800">
+                        <Badge className="bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 text-xs px-2.5 py-1 hover:bg-purple-100">
                           Contacto
                         </Badge>
                       </div>
-                      <CardTitle className="text-lg">{contacto.nome}</CardTitle>
-                      <p className="text-sm text-muted-foreground">
+                      <CardTitle className="text-base sm:text-lg line-clamp-2 group-hover:text-purple-600 transition-all duration-200">
+                        {contacto.nome}
+                      </CardTitle>
+                      <p className="text-sm text-muted-foreground mt-1">
                         {contacto.cargo}
                       </p>
                     </CardHeader>
 
-                    <CardContent>
-                      <div className="space-y-3">
+                    <CardContent className="p-4 sm:p-5 lg:p-6 pt-0">
+                      <div className="space-y-1">
                         {contacto.telefone && (
-                          <div className="flex items-center gap-2">
-                            <PhoneIcon className="w-4 h-4 text-muted-foreground" />
-                            <span className="text-sm">{contacto.telefone}</span>
-                          </div>
+                          <a 
+                            href={`tel:${contacto.telefone}`} 
+                            className="flex items-center gap-3 min-h-[48px] sm:min-h-[44px] py-2 px-3 -mx-3 rounded-xl hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all duration-200 active:scale-[0.98] touch-manipulation"
+                          >
+                            <PhoneIcon className="w-4 h-4 text-purple-500 shrink-0" />
+                            <span className="text-sm hover:text-purple-600 dark:hover:text-purple-400 transition-colors truncate">
+                              {contacto.telefone}
+                            </span>
+                          </a>
                         )}
 
                         {contacto.email && (
-                          <div className="flex items-center gap-2">
-                            <MailIcon className="w-4 h-4 text-muted-foreground" />
-                            <span className="text-sm">{contacto.email}</span>
-                          </div>
+                          <a 
+                            href={`mailto:${contacto.email}`} 
+                            className="flex items-center gap-3 min-h-[48px] sm:min-h-[44px] py-2 px-3 -mx-3 rounded-xl hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all duration-200 active:scale-[0.98] touch-manipulation"
+                          >
+                            <MailIcon className="w-4 h-4 text-purple-500 shrink-0" />
+                            <span className="text-sm hover:text-purple-600 dark:hover:text-purple-400 transition-colors truncate">
+                              {contacto.email}
+                            </span>
+                          </a>
                         )}
 
                         {contacto.endereco && (
-                          <div className="flex items-center gap-2">
-                            <MapPinIcon className="w-4 h-4 text-muted-foreground" />
-                            <span className="text-sm">{contacto.endereco}</span>
+                          <div className="flex items-start gap-3 min-h-[48px] sm:min-h-[44px] py-2 px-3 -mx-3">
+                            <MapPinIcon className="w-4 h-4 text-purple-500 shrink-0 mt-0.5" />
+                            <span className="text-sm text-gray-600 dark:text-gray-300">{contacto.endereco}</span>
                           </div>
                         )}
 
                         {contacto.horario && (
-                          <div className="flex items-center gap-2">
-                            <CalendarIcon className="w-4 h-4 text-muted-foreground" />
-                            <span className="text-sm">{contacto.horario}</span>
+                          <div className="flex items-center gap-3 min-h-[48px] sm:min-h-[44px] py-2 px-3 -mx-3">
+                            <CalendarIcon className="w-4 h-4 text-purple-500 shrink-0" />
+                            <span className="text-sm text-gray-600 dark:text-gray-300">{contacto.horario}</span>
                           </div>
                         )}
                       </div>
@@ -469,47 +552,86 @@ const Saude = () => {
       />
 
       <Dialog open={openDetalhes} onOpenChange={setOpenDetalhes}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>{detalheInfra?.nome}</DialogTitle>
-            <DialogDescription>{detalheInfra?.descricao}</DialogDescription>
-          </DialogHeader>
-
-          {detalheInfra && (
-            <div className="space-y-4">
-              <div>
-                <h4 className="font-medium mb-2">Características:</h4>
-                <ul className="space-y-1">
-                  {detalheInfra.caracteristicas?.map((caracteristica: string, idx: number) => (
-                    <li key={idx} className="text-sm flex items-center gap-2">
-                      <CheckCircleIcon className="w-3 h-3 text-green-500" />
-                      {caracteristica}
-                    </li>
-                  ))}
-                </ul>
+        <DialogContent className="w-full max-w-2xl h-[100dvh] sm:h-auto sm:max-h-[85vh] rounded-none sm:rounded-2xl p-0 overflow-hidden border-0 sm:border gap-0">
+          <div className="flex flex-col h-full">
+            {/* Header with gradient accent */}
+            <div className="h-1.5 sm:h-1 bg-gradient-to-r from-orange-500 to-amber-500 w-full shrink-0" />
+            
+            <DialogHeader className="p-5 sm:p-6 pb-4 border-b border-gray-100 dark:border-gray-800 shrink-0 relative">
+              {/* Mobile close button */}
+              <button
+                onClick={() => setOpenDetalhes(false)}
+                className="sm:hidden absolute right-4 top-4 p-2 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-200 active:scale-[0.95] touch-manipulation"
+                aria-label="Fechar"
+              >
+                <XIcon className="w-5 h-5 text-gray-500" />
+              </button>
+              
+              <div className="flex items-start gap-3 pr-10 sm:pr-0">
+                <div className="p-2.5 bg-orange-50 dark:bg-orange-900/30 rounded-xl text-orange-600 dark:text-orange-400 shrink-0">
+                  <BuildingIcon className="w-5 h-5" />
+                </div>
+                <div>
+                  <DialogTitle className="text-lg sm:text-xl font-semibold">{detalheInfra?.nome}</DialogTitle>
+                  <DialogDescription className="text-sm mt-1">{detalheInfra?.descricao}</DialogDescription>
+                </div>
               </div>
+            </DialogHeader>
 
-              {detalheInfra.localizacao && (
+            {detalheInfra && (
+              <div className="flex-1 overflow-y-auto overscroll-contain scroll-smooth p-5 sm:p-6 space-y-5 sm:space-y-6">
+                {/* Características */}
                 <div>
-                  <h4 className="font-medium mb-2">Localização:</h4>
-                  <p className="text-sm text-muted-foreground">{detalheInfra.localizacao}</p>
+                  <h4 className="font-semibold text-sm sm:text-base mb-3 flex items-center gap-2">
+                    <CheckCircleIcon className="w-4 h-4 text-green-500" />
+                    Características
+                  </h4>
+                  <ul className="space-y-2.5">
+                    {detalheInfra.caracteristicas?.map((caracteristica: string, idx: number) => (
+                      <li key={idx} className="text-sm flex items-start gap-3 py-1.5 px-3 -mx-3 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+                        <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 shrink-0" />
+                        <span className="text-gray-700 dark:text-gray-300">{caracteristica}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-              )}
 
-              {detalheInfra.observacoes && (
-                <div>
-                  <h4 className="font-medium mb-2">Observações:</h4>
-                  <p className="text-sm text-muted-foreground">{detalheInfra.observacoes}</p>
-                </div>
-              )}
-            </div>
-          )}
+                {detalheInfra.localizacao && (
+                  <div>
+                    <h4 className="font-semibold text-sm sm:text-base mb-3 flex items-center gap-2">
+                      <MapPinIcon className="w-4 h-4 text-orange-500" />
+                      Localização
+                    </h4>
+                    <p className="text-sm text-muted-foreground py-2 px-3 -mx-3 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+                      {detalheInfra.localizacao}
+                    </p>
+                  </div>
+                )}
 
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setOpenDetalhes(false)}>
-              Fechar
-            </Button>
-          </DialogFooter>
+                {detalheInfra.observacoes && (
+                  <div>
+                    <h4 className="font-semibold text-sm sm:text-base mb-3 flex items-center gap-2">
+                      <LightbulbIcon className="w-4 h-4 text-amber-500" />
+                      Observações
+                    </h4>
+                    <p className="text-sm text-muted-foreground py-2 px-3 -mx-3 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+                      {detalheInfra.observacoes}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            <DialogFooter className="p-5 sm:p-6 pt-4 border-t border-gray-100 dark:border-gray-800 shrink-0 bg-gray-50/50 dark:bg-gray-900/50">
+              <Button 
+                variant="outline" 
+                onClick={() => setOpenDetalhes(false)}
+                className="w-full sm:w-auto min-h-[48px] sm:min-h-[44px] font-medium rounded-xl border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 active:scale-[0.98] touch-manipulation"
+              >
+                Fechar
+              </Button>
+            </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
 

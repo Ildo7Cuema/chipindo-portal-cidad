@@ -228,38 +228,38 @@ export default function Organigrama() {
     // Nó raiz virtual
     if (member.id === "virtual-root") {
       return (
-        <div className="flex flex-col items-center justify-center p-6 bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-2xl shadow-xl min-w-[220px] border-2 border-primary-foreground/20">
-          <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mb-4 backdrop-blur-sm">
-            <UsersIcon className="h-10 w-10" />
+        <div className="flex flex-col items-center justify-center p-4 sm:p-6 bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-xl sm:rounded-2xl shadow-xl min-w-[160px] sm:min-w-[220px] border-2 border-primary-foreground/20 transition-all duration-200 active:scale-[0.98]">
+          <div className="w-14 h-14 sm:w-20 sm:h-20 bg-white/20 rounded-full flex items-center justify-center mb-3 sm:mb-4 backdrop-blur-sm">
+            <UsersIcon className="h-7 w-7 sm:h-10 sm:w-10" />
           </div>
-          <h3 className="font-bold text-xl text-center leading-tight mb-2">{member.nome}</h3>
-          <p className="text-sm opacity-90 text-center">{member.cargo}</p>
+          <h3 className="font-bold text-base sm:text-xl text-center leading-tight mb-1 sm:mb-2">{member.nome}</h3>
+          <p className="text-xs sm:text-sm opacity-90 text-center">{member.cargo}</p>
         </div>
       );
     }
 
     return (
       <div
-        className="group relative cursor-pointer flex flex-col items-center"
+        className="group relative cursor-pointer flex flex-col items-center min-h-[44px] transition-all duration-200 active:scale-[0.98]"
         onClick={() => setSelectedMember(member)}
       >
         {/* Container da imagem circular - centralizada para as linhas conectarem */}
-        <div className="relative mb-3">
-          <div className="relative w-32 h-32 rounded-full bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 shadow-lg hover:shadow-xl transition-all duration-300 border-4 border-primary-500 overflow-hidden">
+        <div className="relative mb-2 sm:mb-3">
+          <div className="relative w-20 h-20 sm:w-28 md:w-32 sm:h-28 md:h-32 rounded-full bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 shadow-lg hover:shadow-xl transition-all duration-200 border-3 sm:border-4 border-primary-500 overflow-hidden">
             {/* Imagem do membro */}
             <Avatar className="w-full h-full rounded-full">
               <AvatarImage src={member.foto_url || ''} alt={member.nome} className="object-cover" />
-              <AvatarFallback className="text-2xl font-bold bg-gradient-to-br from-primary to-primary/80 text-white">
+              <AvatarFallback className="text-lg sm:text-2xl font-bold bg-gradient-to-br from-primary to-primary/80 text-white">
                 {formatInitials(member.nome)}
               </AvatarFallback>
             </Avatar>
 
             {/* Overlay com informações implícitas */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3">
-              <h4 className="text-white font-semibold text-sm leading-tight line-clamp-2 mb-1">
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-200 flex flex-col justify-end p-2 sm:p-3">
+              <h4 className="text-white font-semibold text-xs sm:text-sm leading-tight line-clamp-2 mb-0.5 sm:mb-1">
                 {member.nome}
               </h4>
-              <p className="text-white/90 text-xs line-clamp-1 font-medium">
+              <p className="text-white/90 text-[10px] sm:text-xs line-clamp-1 font-medium">
                 {member.cargo}
               </p>
             </div>
@@ -268,7 +268,7 @@ export default function Organigrama() {
           {/* Badge de nível hierárquico (pequeno, no canto inferior direito da imagem) */}
           {hierarchyLevel === 0 && (
             <div className="absolute -bottom-1 -right-1 z-10">
-              <Badge variant="secondary" className="text-xs bg-yellow-500/90 text-yellow-100 border-yellow-400/30 px-1.5 py-0.5 rounded-full shadow-md">
+              <Badge variant="secondary" className="text-[10px] sm:text-xs bg-yellow-500/90 text-yellow-100 border-yellow-400/30 px-1 sm:px-1.5 py-0.5 rounded-full shadow-md">
                 Dirigente
               </Badge>
             </div>
@@ -276,21 +276,22 @@ export default function Organigrama() {
         </div>
 
         {/* Informações abaixo da imagem - centralizadas */}
-        <div className="flex flex-col items-center gap-1 text-center">
+        <div className="flex flex-col items-center gap-0.5 sm:gap-1 text-center">
           {/* Nome do membro */}
-          <h4 className="font-semibold text-sm text-foreground leading-tight line-clamp-2 max-w-32">
+          <h4 className="font-semibold text-xs sm:text-sm text-foreground leading-tight line-clamp-2 max-w-24 sm:max-w-32 truncate">
             {member.nome}
           </h4>
 
           {/* Cargo */}
-          <p className="text-xs text-muted-foreground line-clamp-1 max-w-32">
+          <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-1 max-w-24 sm:max-w-32 truncate">
             {member.cargo}
           </p>
 
           {/* Badge do departamento */}
-          <Badge className={cn("text-xs px-2 py-1 rounded-full shadow-sm mt-1", directionData.color, "text-white border-0")}>
-            <IconComponent className="w-3 h-3 mr-1" />
-            {member.departamento}
+          <Badge className={cn("text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full shadow-sm mt-0.5 sm:mt-1 transition-all duration-200", directionData.color, "text-white border-0")}>
+            <IconComponent className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-0.5 sm:mr-1" />
+            <span className="hidden sm:inline">{member.departamento}</span>
+            <span className="sm:hidden">{member.departamento.split(' ').slice(0, 2).join(' ')}</span>
           </Badge>
         </div>
       </div>
@@ -405,18 +406,18 @@ export default function Organigrama() {
 
       <main>
         {/* Hero Section */}
-        <Section className="relative min-h-[450px] bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 overflow-hidden" size="lg">
+        <Section className="relative min-h-[280px] sm:min-h-[350px] md:min-h-[450px] bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 overflow-hidden" size="lg">
           {/* Background Pattern */}
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-30"></div>
 
           <SectionContent>
-            <div className="text-center space-y-8 relative z-10">
-              <div className="flex items-center justify-center gap-4 mb-8">
-                <div className="w-20 h-20 bg-white/10 rounded-3xl flex items-center justify-center backdrop-blur-xl border border-white/20 shadow-2xl">
-                  <UsersIcon className="w-10 h-10 text-white" />
+            <div className="text-center space-y-4 sm:space-y-6 md:space-y-8 relative z-10 py-4 sm:py-0">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-4 sm:mb-8">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 bg-white/10 rounded-2xl sm:rounded-3xl flex items-center justify-center backdrop-blur-xl border border-white/20 shadow-2xl transition-all duration-200">
+                  <UsersIcon className="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 text-white" />
                 </div>
-                <div className="text-left">
-                  <h1 className="text-5xl md:text-6xl font-bold text-white leading-tight drop-shadow-sm">
+                <div className="text-center sm:text-left">
+                  <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight drop-shadow-sm">
                     Organigrama
                     <span className="block bg-gradient-to-r from-yellow-200 to-orange-200 bg-clip-text text-transparent">
                       Municipal
@@ -425,22 +426,23 @@ export default function Organigrama() {
                 </div>
               </div>
 
-              <p className="text-xl text-blue-50/90 max-w-3xl mx-auto leading-relaxed font-light">
+              <p className="text-base sm:text-lg md:text-xl text-blue-50/90 max-w-3xl mx-auto leading-relaxed font-light px-4 sm:px-0">
                 Conheça a estrutura organizacional da nossa administração municipal
                 e os responsáveis por cada área de actuação.
               </p>
 
-              <div className="flex items-center justify-center gap-6 flex-wrap pt-4">
-                <Badge className="bg-white/10 backdrop-blur-md text-white border-white/20 px-6 py-2.5 text-sm font-medium hover:bg-white/20 transition-all">
-                  <UsersIcon className="w-4 h-4 mr-2" />
-                  {totalMembers} Membros da Equipe
+              <div className="flex items-center justify-center gap-2 sm:gap-4 md:gap-6 flex-wrap pt-2 sm:pt-4 px-2 sm:px-0">
+                <Badge className="bg-white/10 backdrop-blur-md text-white border-white/20 px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 md:py-2.5 text-xs sm:text-sm font-medium hover:bg-white/20 transition-all duration-200 active:scale-[0.98] min-h-[36px] sm:min-h-[40px]">
+                  <UsersIcon className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
+                  <span className="hidden sm:inline">{totalMembers} Membros da Equipe</span>
+                  <span className="sm:hidden">{totalMembers} Membros</span>
                 </Badge>
-                <Badge className="bg-emerald-500/20 backdrop-blur-md text-emerald-100 border-emerald-400/30 px-6 py-2.5 text-sm font-medium hover:bg-emerald-500/30 transition-all">
-                  <BuildingIcon className="w-4 h-4 mr-2" />
+                <Badge className="bg-emerald-500/20 backdrop-blur-md text-emerald-100 border-emerald-400/30 px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 md:py-2.5 text-xs sm:text-sm font-medium hover:bg-emerald-500/30 transition-all duration-200 active:scale-[0.98] min-h-[36px] sm:min-h-[40px]">
+                  <BuildingIcon className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
                   {totalDirections} Direcções
                 </Badge>
-                <Badge className="bg-amber-500/20 backdrop-blur-md text-amber-100 border-amber-400/30 px-6 py-2.5 text-sm font-medium hover:bg-amber-500/30 transition-all">
-                  <CrownIcon className="w-4 h-4 mr-2" />
+                <Badge className="bg-amber-500/20 backdrop-blur-md text-amber-100 border-amber-400/30 px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 md:py-2.5 text-xs sm:text-sm font-medium hover:bg-amber-500/30 transition-all duration-200 active:scale-[0.98] min-h-[36px] sm:min-h-[40px]">
+                  <CrownIcon className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
                   {totalLeaders} Dirigentes
                 </Badge>
               </div>
@@ -451,29 +453,29 @@ export default function Organigrama() {
         {/* Search and Filters Section */}
         <Section variant="muted" size="md">
           <SectionContent>
-            <Card className="border-0 shadow-xl bg-white/50 dark:bg-gray-900/50 backdrop-blur-xl">
-              <CardContent className="p-6">
-                <div className="space-y-6">
+            <Card className="border-0 shadow-xl bg-white/50 dark:bg-gray-900/50 backdrop-blur-xl rounded-xl">
+              <CardContent className="p-4 sm:p-6">
+                <div className="space-y-4 sm:space-y-6">
                   {/* Main Search */}
                   <div className="relative">
-                    <SearchIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+                    <SearchIcon className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4 sm:w-5 sm:h-5" />
                     <Input
                       type="text"
-                      placeholder="Pesquisar por nome, cargo ou responsabilidades..."
+                      placeholder="Pesquisar por nome, cargo..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-12 pr-4 py-3 text-lg border-2 border-border/50 focus:border-primary"
+                      className="pl-10 sm:pl-12 pr-4 h-12 text-base sm:text-lg border-2 border-border/50 focus:border-primary rounded-xl transition-all duration-200"
                     />
                   </div>
 
                   {/* Filters Row */}
-                  <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
-                    <div className="flex flex-wrap gap-3 items-center">
+                  <div className="flex flex-col gap-3 sm:gap-4">
+                    <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
                       <Button
                         variant="outline"
-                        size="sm"
+                        size="default"
                         onClick={() => setShowFilters(!showFilters)}
-                        className="flex items-center gap-2"
+                        className="flex items-center justify-center gap-2 h-11 sm:h-10 min-h-[44px] rounded-xl transition-all duration-200 active:scale-[0.98]"
                       >
                         <FilterIcon className="w-4 h-4" />
                         Filtros
@@ -481,11 +483,11 @@ export default function Organigrama() {
                       </Button>
 
                       <Select value={selectedDirection} onValueChange={setSelectedDirection}>
-                        <SelectTrigger className="w-48">
-                          <BuildingIcon className="w-4 h-4 mr-2" />
+                        <SelectTrigger className="w-full sm:w-48 h-11 sm:h-10 min-h-[44px] rounded-xl transition-all duration-200">
+                          <BuildingIcon className="w-4 h-4 mr-2 flex-shrink-0" />
                           <SelectValue placeholder="Direcção" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="rounded-xl">
                           <SelectItem value="todos">
                             <div className="flex items-center gap-2">
                               <BuildingIcon className="w-4 h-4" />
@@ -499,7 +501,7 @@ export default function Organigrama() {
                                   const IconComponent = getDirectionData(direction.nome).icon;
                                   return <IconComponent className="w-4 h-4" />;
                                 })()}
-                                {direction.nome}
+                                <span className="truncate">{direction.nome}</span>
                               </div>
                             </SelectItem>
                           ))}
@@ -507,10 +509,10 @@ export default function Organigrama() {
                       </Select>
 
                       <Select value={sortBy} onValueChange={setSortBy}>
-                        <SelectTrigger className="w-44">
+                        <SelectTrigger className="w-full sm:w-44 h-11 sm:h-10 min-h-[44px] rounded-xl transition-all duration-200">
                           <SelectValue placeholder="Ordenar por" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="rounded-xl">
                           <SelectItem value="direction">
                             <div className="flex items-center gap-2">
                               <SortDescIcon className="w-4 h-4" />
@@ -538,8 +540,6 @@ export default function Organigrama() {
                         </SelectContent>
                       </Select>
                     </div>
-
-                    {/* Removido: Botões de alternância de visualização */}
                   </div>
 
                   {/* Direction Filters */}
@@ -551,7 +551,7 @@ export default function Organigrama() {
                           variant={selectedDirection === 'todos' ? "default" : "outline"}
                           size="sm"
                           onClick={() => setSelectedDirection('todos')}
-                          className="flex items-center gap-2"
+                          className="flex items-center gap-1.5 sm:gap-2 h-10 min-h-[44px] px-3 sm:px-4 rounded-xl transition-all duration-200 active:scale-[0.98]"
                         >
                           <BuildingIcon className="w-4 h-4" />
                           Todas
@@ -564,10 +564,10 @@ export default function Organigrama() {
                               variant={selectedDirection === direction.nome ? "default" : "outline"}
                               size="sm"
                               onClick={() => setSelectedDirection(direction.nome)}
-                              className="flex items-center gap-2"
+                              className="flex items-center gap-1.5 sm:gap-2 h-10 min-h-[44px] px-3 sm:px-4 rounded-xl transition-all duration-200 active:scale-[0.98]"
                             >
-                              <IconComponent className="w-4 h-4" />
-                              {direction.nome}
+                              <IconComponent className="w-4 h-4 flex-shrink-0" />
+                              <span className="truncate max-w-[120px] sm:max-w-none">{direction.nome}</span>
                             </Button>
                           );
                         })}
@@ -576,7 +576,7 @@ export default function Organigrama() {
                   )}
 
                   {/* Results Summary */}
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-xs sm:text-sm text-muted-foreground">
                     <span>
                       {filteredMembers.length} membro{filteredMembers.length !== 1 ? 's' : ''} encontrado{filteredMembers.length !== 1 ? 's' : ''}
                       {searchTerm && ` para "${searchTerm}"`}
@@ -607,10 +607,10 @@ export default function Organigrama() {
 
           <SectionContent>
             {filteredMembers.length === 0 ? (
-              <div className="text-center py-16">
-                <UsersIcon className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-foreground mb-2">Nenhum membro encontrado</h3>
-                <p className="text-muted-foreground mb-6">
+              <div className="text-center py-8 sm:py-12 md:py-16 px-4">
+                <UsersIcon className="w-12 h-12 sm:w-16 sm:h-16 text-muted-foreground mx-auto mb-3 sm:mb-4" />
+                <h3 className="text-lg sm:text-xl font-semibold text-foreground mb-2">Nenhum membro encontrado</h3>
+                <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6">
                   {searchTerm || selectedDirection !== 'todos'
                     ? "Tente ajustar seus filtros de busca."
                     : "O organigrama está sendo estruturado. Volte em breve."
@@ -623,7 +623,7 @@ export default function Organigrama() {
                       setSelectedDirection("todos");
                       setSortBy("direction");
                     }}
-                    className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white"
+                    className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white h-11 min-h-[44px] px-6 rounded-xl transition-all duration-200 active:scale-[0.98]"
                   >
                     Limpar Filtros
                   </Button>
@@ -631,23 +631,23 @@ export default function Organigrama() {
               </div>
             ) : (
               /* Sempre mostrar a visualização hierárquica */
-              <div className="p-4 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 rounded-2xl shadow-inner overflow-x-auto min-h-[600px] flex items-center justify-center">
+              <div className="p-3 sm:p-4 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 rounded-xl sm:rounded-2xl shadow-inner overflow-x-auto overflow-y-hidden min-h-[400px] sm:min-h-[500px] md:min-h-[600px] flex items-start sm:items-center justify-start sm:justify-center -mx-4 sm:mx-0 touch-pan-x">
                 {rootMember && treeChildrenData.length > 0 ? (
-                  <div className="w-full h-full flex items-center justify-center">
+                  <div className="w-max min-w-full h-full flex items-center justify-center py-4 sm:py-6 px-4 sm:px-8">
                     <Tree
-                      lineWidth={'3px'}
+                      lineWidth={'2px'}
                       lineColor={'#8b5cf6'}
-                      lineBorderRadius={'15px'}
+                      lineBorderRadius={'12px'}
                       label={<OrgChartNode member={rootMember} />}
                     >
                       {treeChildrenData}
                     </Tree>
                   </div>
                 ) : rootMember && treeChildrenData.length === 0 ? (
-                  <div className="text-center py-16">
-                    <UsersIcon className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                    <h3 className="text-xl font-semibold text-foreground mb-2">Estrutura Hierárquica Simples</h3>
-                    <p className="text-muted-foreground mb-6">
+                  <div className="text-center py-8 sm:py-12 md:py-16 px-4 w-full">
+                    <UsersIcon className="w-12 h-12 sm:w-16 sm:h-16 text-muted-foreground mx-auto mb-3 sm:mb-4" />
+                    <h3 className="text-lg sm:text-xl font-semibold text-foreground mb-2">Estrutura Hierárquica Simples</h3>
+                    <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6">
                       Apenas o membro raiz foi encontrado. Adicione mais membros para visualizar a estrutura hierárquica completa.
                     </p>
                     <div className="flex justify-center">
@@ -655,14 +655,14 @@ export default function Organigrama() {
                     </div>
                   </div>
                 ) : (
-                  <div className="text-center py-16">
-                    <UsersIcon className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                    <h3 className="text-xl font-semibold text-foreground mb-2">Organigrama não disponível</h3>
-                    <p className="text-muted-foreground mb-6">
+                  <div className="text-center py-8 sm:py-12 md:py-16 px-4 w-full">
+                    <UsersIcon className="w-12 h-12 sm:w-16 sm:h-16 text-muted-foreground mx-auto mb-3 sm:mb-4" />
+                    <h3 className="text-lg sm:text-xl font-semibold text-foreground mb-2">Organigrama não disponível</h3>
+                    <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6">
                       Não foi possível carregar a estrutura do organigrama ou nenhum membro foi encontrado.
                     </p>
                     {members.length > 0 && (
-                      <div className="text-sm text-muted-foreground">
+                      <div className="text-xs sm:text-sm text-muted-foreground">
                         <p>Membros encontrados: {members.length}</p>
                         <p>Membros de nível superior: {topLevelMembers.length}</p>
                       </div>
@@ -684,7 +684,7 @@ export default function Organigrama() {
           />
 
           <SectionContent>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
               {directionStats.map(direction => {
                 const directionData = getDirectionData(direction.nome);
                 const IconComponent = directionData.icon;
@@ -692,22 +692,22 @@ export default function Organigrama() {
                 return (
                   <Card
                     key={direction.id}
-                    className="hover:shadow-lg transition-shadow cursor-pointer"
+                    className="hover:shadow-lg transition-all duration-200 cursor-pointer rounded-xl active:scale-[0.98] min-h-[44px]"
                     onClick={() => setSelectedDirection(direction.nome)}
                   >
-                    <CardContent className="p-6 text-center">
-                      <div className={cn("w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4", directionData.color)}>
-                        <IconComponent className="w-6 h-6 text-white" />
+                    <CardContent className="p-3 sm:p-4 md:p-6 text-center">
+                      <div className={cn("w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center mx-auto mb-2 sm:mb-3 md:mb-4 transition-all duration-200", directionData.color)}>
+                        <IconComponent className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                       </div>
-                      <h3 className="font-semibold text-foreground mb-2 text-sm leading-tight">
+                      <h3 className="font-semibold text-foreground mb-1 sm:mb-2 text-xs sm:text-sm leading-tight line-clamp-2">
                         {direction.nome}
                       </h3>
-                      <div className="text-2xl font-bold text-primary mb-1">{direction.memberCount}</div>
-                      <p className="text-sm text-muted-foreground">
+                      <div className="text-xl sm:text-2xl font-bold text-primary mb-0.5 sm:mb-1">{direction.memberCount}</div>
+                      <p className="text-xs sm:text-sm text-muted-foreground">
                         {direction.memberCount === 1 ? 'membro' : 'membros'}
                       </p>
                       {direction.directorCount > 0 && (
-                        <Badge variant="outline" className="mt-2 text-xs">
+                        <Badge variant="outline" className="mt-1.5 sm:mt-2 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full">
                           {direction.directorCount} dirigente{direction.directorCount !== 1 ? 's' : ''}
                         </Badge>
                       )}
@@ -721,25 +721,25 @@ export default function Organigrama() {
 
         {/* Member Detail Modal */}
         <Dialog open={!!selectedMember} onOpenChange={() => setSelectedMember(null)}>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="w-full max-w-2xl h-[100dvh] sm:h-auto sm:max-h-[90vh] overflow-y-auto overscroll-contain rounded-none sm:rounded-xl p-4 sm:p-6">
             {selectedMember && (
               <>
-                <DialogHeader>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <Avatar className="h-16 w-16">
+                <DialogHeader className="space-y-3 sm:space-y-4">
+                  <div className="flex items-start sm:items-center justify-between gap-3">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+                      <Avatar className="h-14 w-14 sm:h-16 sm:w-16 flex-shrink-0">
                         <AvatarImage src={selectedMember.foto_url || ''} alt={selectedMember.nome} />
-                        <AvatarFallback className="text-lg">
+                        <AvatarFallback className="text-base sm:text-lg">
                           {formatInitials(selectedMember.nome)}
                         </AvatarFallback>
                       </Avatar>
-                      <div>
-                        <DialogTitle className="text-2xl">{selectedMember.nome}</DialogTitle>
-                        <DialogDescription className="flex items-center gap-2">
-                          <Badge className={cn(getDirectionData(selectedMember.departamento).color, "text-white")}>
-                            {selectedMember.departamento}
+                      <div className="min-w-0 flex-1">
+                        <DialogTitle className="text-xl sm:text-2xl leading-tight line-clamp-2">{selectedMember.nome}</DialogTitle>
+                        <DialogDescription className="flex flex-wrap items-center gap-1.5 sm:gap-2 mt-1.5 sm:mt-2">
+                          <Badge className={cn(getDirectionData(selectedMember.departamento).color, "text-white text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full")}>
+                            <span className="truncate max-w-[120px] sm:max-w-none">{selectedMember.departamento}</span>
                           </Badge>
-                          <Badge variant="outline">
+                          <Badge variant="outline" className="text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full">
                             {getHierarchyLevel(selectedMember) === 0 ? 'Dirigente' : `Nível ${getHierarchyLevel(selectedMember) + 1}`}
                           </Badge>
                         </DialogDescription>
@@ -749,68 +749,72 @@ export default function Organigrama() {
                       variant="ghost"
                       size="sm"
                       onClick={() => setSelectedMember(null)}
+                      className="h-11 w-11 min-h-[44px] min-w-[44px] p-0 rounded-xl transition-all duration-200 active:scale-[0.98] flex-shrink-0"
                     >
                       <XIcon className="w-5 h-5" />
                     </Button>
                   </div>
                 </DialogHeader>
 
-                <div className="space-y-6">
+                <div className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
                   <div>
-                    <h4 className="font-semibold text-foreground mb-2">Cargo</h4>
-                    <p className="text-primary font-medium text-lg">{selectedMember.cargo}</p>
+                    <h4 className="font-semibold text-foreground mb-1.5 sm:mb-2 text-sm sm:text-base">Cargo</h4>
+                    <p className="text-primary font-medium text-base sm:text-lg">{selectedMember.cargo}</p>
                   </div>
 
                   {selectedMember.descricao && (
                     <div>
-                      <h4 className="font-semibold text-foreground mb-2">Responsabilidades</h4>
-                      <p className="text-muted-foreground leading-relaxed">{selectedMember.descricao}</p>
+                      <h4 className="font-semibold text-foreground mb-1.5 sm:mb-2 text-sm sm:text-base">Responsabilidades</h4>
+                      <p className="text-muted-foreground leading-relaxed text-sm sm:text-base">{selectedMember.descricao}</p>
                     </div>
                   )}
 
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div>
-                      <h4 className="font-semibold text-foreground mb-2">Informações de Contacto</h4>
-                      <div className="space-y-3">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                    <div className="p-3 sm:p-4 bg-muted/50 rounded-xl">
+                      <h4 className="font-semibold text-foreground mb-2 sm:mb-3 text-sm sm:text-base">Informações de Contacto</h4>
+                      <div className="space-y-2 sm:space-y-3">
                         {selectedMember.email && (
-                          <div className="flex items-center gap-2">
-                            <MailIcon className="w-4 h-4 text-muted-foreground" />
-                            <a
-                              href={`mailto:${selectedMember.email}`}
-                              className="text-primary hover:underline"
-                            >
-                              {selectedMember.email}
-                            </a>
-                          </div>
+                          <a
+                            href={`mailto:${selectedMember.email}`}
+                            className="flex items-center gap-2 sm:gap-3 p-2 sm:p-2.5 bg-background rounded-lg hover:bg-muted transition-all duration-200 active:scale-[0.98] min-h-[44px]"
+                          >
+                            <div className="w-9 h-9 sm:w-10 sm:h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                              <MailIcon className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
+                            </div>
+                            <span className="text-primary text-sm sm:text-base truncate">{selectedMember.email}</span>
+                          </a>
                         )}
                         {selectedMember.telefone && (
-                          <div className="flex items-center gap-2">
-                            <PhoneIcon className="w-4 h-4 text-muted-foreground" />
-                            <a
-                              href={`tel:${selectedMember.telefone}`}
-                              className="text-primary hover:underline"
-                            >
-                              {selectedMember.telefone}
-                            </a>
-                          </div>
+                          <a
+                            href={`tel:${selectedMember.telefone}`}
+                            className="flex items-center gap-2 sm:gap-3 p-2 sm:p-2.5 bg-background rounded-lg hover:bg-muted transition-all duration-200 active:scale-[0.98] min-h-[44px]"
+                          >
+                            <div className="w-9 h-9 sm:w-10 sm:h-10 bg-green-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                              <PhoneIcon className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
+                            </div>
+                            <span className="text-primary text-sm sm:text-base">{selectedMember.telefone}</span>
+                          </a>
+                        )}
+                        {!selectedMember.email && !selectedMember.telefone && (
+                          <p className="text-muted-foreground text-sm">Nenhum contacto disponível</p>
                         )}
                       </div>
                     </div>
 
-                    <div>
-                      <h4 className="font-semibold text-foreground mb-2">Estrutura Hierárquica</h4>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
+                    <div className="p-3 sm:p-4 bg-muted/50 rounded-xl">
+                      <h4 className="font-semibold text-foreground mb-2 sm:mb-3 text-sm sm:text-base">Estrutura Hierárquica</h4>
+                      <div className="space-y-2 sm:space-y-2.5 text-sm">
+                        <div className="flex justify-between items-center p-2 bg-background rounded-lg min-h-[40px]">
                           <span className="text-muted-foreground">Direcção:</span>
-                          <span className="font-medium">{selectedMember.departamento}</span>
+                          <span className="font-medium text-right truncate max-w-[50%]">{selectedMember.departamento}</span>
                         </div>
                         {getSuperiorName(selectedMember.superior_id) && (
-                          <div className="flex justify-between">
+                          <div className="flex justify-between items-center p-2 bg-background rounded-lg min-h-[40px]">
                             <span className="text-muted-foreground">Superior:</span>
-                            <span className="font-medium">{getSuperiorName(selectedMember.superior_id)}</span>
+                            <span className="font-medium text-right truncate max-w-[50%]">{getSuperiorName(selectedMember.superior_id)}</span>
                           </div>
                         )}
-                        <div className="flex justify-between">
+                        <div className="flex justify-between items-center p-2 bg-background rounded-lg min-h-[40px]">
                           <span className="text-muted-foreground">Nível:</span>
                           <span className="font-medium">
                             {getHierarchyLevel(selectedMember) === 0 ? 'Dirigente' : `Nível ${getHierarchyLevel(selectedMember) + 1}`}

@@ -158,7 +158,7 @@ const Tecnologia = () => {
         onVerOportunidades={handleVerOportunidades}
       />
 
-      <main className="container mx-auto px-4 py-12">
+      <main className="container mx-auto px-4 py-8 md:py-12">
         {/* Breadcrumb */}
         <SetorBreadcrumb setor={setor} />
 
@@ -170,51 +170,66 @@ const Tecnologia = () => {
 
         {/* Content Tabs */}
         <div data-tabs-container>
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-12">
-            <TabsList className="flex flex-wrap w-full gap-2 p-2 bg-muted/50">
-              <TabsTrigger value="programas" className="flex-1 min-w-0 text-xs sm:text-sm px-2 sm:px-3 py-2 sm:py-1.5">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-8 md:mt-12">
+            <TabsList className="flex w-full gap-1 md:gap-2 p-1.5 md:p-2 bg-muted/50 rounded-xl overflow-x-auto scrollbar-hide -mx-4 px-4 md:mx-0 md:px-2">
+              <TabsTrigger 
+                value="programas" 
+                className="flex-shrink-0 md:flex-1 min-h-[44px] text-xs sm:text-sm px-4 md:px-3 py-2.5 rounded-lg transition-all duration-200 active:scale-[0.98]"
+              >
                 <span className="truncate">Programas</span>
               </TabsTrigger>
-              <TabsTrigger value="oportunidades" className="flex-1 min-w-0 text-xs sm:text-sm px-2 sm:px-3 py-2 sm:py-1.5">
+              <TabsTrigger 
+                value="oportunidades" 
+                className="flex-shrink-0 md:flex-1 min-h-[44px] text-xs sm:text-sm px-4 md:px-3 py-2.5 rounded-lg transition-all duration-200 active:scale-[0.98]"
+              >
                 <span className="truncate">Oportunidades</span>
               </TabsTrigger>
-              <TabsTrigger value="infraestruturas" className="flex-1 min-w-0 text-xs sm:text-sm px-2 sm:px-3 py-2 sm:py-1.5">
+              <TabsTrigger 
+                value="infraestruturas" 
+                className="flex-shrink-0 md:flex-1 min-h-[44px] text-xs sm:text-sm px-4 md:px-3 py-2.5 rounded-lg transition-all duration-200 active:scale-[0.98]"
+              >
                 <span className="truncate">Infraestruturas</span>
               </TabsTrigger>
-              <TabsTrigger value="contactos" className="flex-1 min-w-0 text-xs sm:text-sm px-2 sm:px-3 py-2 sm:py-1.5">
+              <TabsTrigger 
+                value="contactos" 
+                className="flex-shrink-0 md:flex-1 min-h-[44px] text-xs sm:text-sm px-4 md:px-3 py-2.5 rounded-lg transition-all duration-200 active:scale-[0.98]"
+              >
                 <span className="truncate">Contactos</span>
               </TabsTrigger>
             </TabsList>
 
             {/* Programas */}
-            <TabsContent value="programas" className="mt-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <TabsContent value="programas" className="mt-6 md:mt-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                 {setor.programas.map((programa, index) => (
-                  <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
-                    <CardHeader className="pb-4">
+                  <Card 
+                    key={index} 
+                    className="overflow-hidden rounded-xl hover:shadow-lg transition-all duration-200 active:scale-[0.98]"
+                  >
+                    <CardHeader className="p-4 md:p-6 pb-3 md:pb-4">
                       <div className="flex items-center gap-3 mb-3">
-                        <div className="p-2 bg-indigo-100 rounded-lg">
+                        <div className="p-2 bg-indigo-100 rounded-xl">
                           <HeartHandshakeIcon className="w-5 h-5 text-indigo-600" />
                         </div>
                         <Badge className="bg-indigo-100 text-indigo-800">
                           Programa
                         </Badge>
                       </div>
-                      <CardTitle className="text-lg">{programa.titulo}</CardTitle>
+                      <CardTitle className="text-base md:text-lg">{programa.titulo}</CardTitle>
                       <p className="text-sm text-muted-foreground">
                         {programa.descricao}
                       </p>
                     </CardHeader>
 
-                    <CardContent>
+                    <CardContent className="p-4 md:p-6 pt-0">
                       <div className="space-y-4">
                         <div>
                           <h4 className="font-medium text-sm mb-2">Benefícios:</h4>
-                          <ul className="space-y-1">
+                          <ul className="space-y-1.5">
                             {programa.beneficios?.map((beneficio: string, idx: number) => (
-                              <li key={idx} className="text-sm text-muted-foreground flex items-center gap-2">
-                                <CheckCircleIcon className="w-3 h-3 text-green-500" />
-                                {beneficio}
+                              <li key={idx} className="text-sm text-muted-foreground flex items-start gap-2">
+                                <CheckCircleIcon className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
+                                <span>{beneficio}</span>
                               </li>
                             ))}
                           </ul>
@@ -222,11 +237,11 @@ const Tecnologia = () => {
 
                         <div>
                           <h4 className="font-medium text-sm mb-2">Requisitos:</h4>
-                          <ul className="space-y-1">
+                          <ul className="space-y-1.5">
                             {programa.requisitos?.map((requisito: string, idx: number) => (
-                              <li key={idx} className="text-sm text-muted-foreground flex items-center gap-2">
-                                <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full" />
-                                {requisito}
+                              <li key={idx} className="text-sm text-muted-foreground flex items-start gap-2">
+                                <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full flex-shrink-0 mt-2" />
+                                <span>{requisito}</span>
                               </li>
                             ))}
                           </ul>
@@ -242,8 +257,7 @@ const Tecnologia = () => {
 
                         <Button
                           variant="outline"
-                          size="sm"
-                          className="w-full"
+                          className="w-full min-h-[44px] rounded-xl transition-all duration-200 active:scale-[0.98]"
                           onClick={() => {
                             setProgramaSelecionado(programa.titulo);
                             setOpenInscricaoPrograma(true);
@@ -260,34 +274,37 @@ const Tecnologia = () => {
             </TabsContent>
 
             {/* Oportunidades */}
-            <TabsContent value="oportunidades" className="mt-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <TabsContent value="oportunidades" className="mt-6 md:mt-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                 {setor.oportunidades.map((oportunidade, index) => (
-                  <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
-                    <CardHeader className="pb-4">
+                  <Card 
+                    key={index} 
+                    className="overflow-hidden rounded-xl hover:shadow-lg transition-all duration-200 active:scale-[0.98]"
+                  >
+                    <CardHeader className="p-4 md:p-6 pb-3 md:pb-4">
                       <div className="flex items-center gap-3 mb-3">
-                        <div className="p-2 bg-blue-100 rounded-lg">
+                        <div className="p-2 bg-blue-100 rounded-xl">
                           <LightbulbIcon className="w-5 h-5 text-blue-600" />
                         </div>
                         <Badge className="bg-blue-100 text-blue-800">
                           Oportunidade
                         </Badge>
                       </div>
-                      <CardTitle className="text-lg">{oportunidade.titulo}</CardTitle>
+                      <CardTitle className="text-base md:text-lg">{oportunidade.titulo}</CardTitle>
                       <p className="text-sm text-muted-foreground">
                         {oportunidade.descricao}
                       </p>
                     </CardHeader>
 
-                    <CardContent>
+                    <CardContent className="p-4 md:p-6 pt-0">
                       <div className="space-y-4">
                         <div>
                           <h4 className="font-medium text-sm mb-2">Requisitos:</h4>
-                          <ul className="space-y-1">
+                          <ul className="space-y-1.5">
                             {oportunidade.requisitos?.map((requisito: string, idx: number) => (
-                              <li key={idx} className="text-sm text-muted-foreground flex items-center gap-2">
-                                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full" />
-                                {requisito}
+                              <li key={idx} className="text-sm text-muted-foreground flex items-start gap-2">
+                                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full flex-shrink-0 mt-2" />
+                                <span>{requisito}</span>
                               </li>
                             ))}
                           </ul>
@@ -303,8 +320,7 @@ const Tecnologia = () => {
 
                         <Button
                           variant="outline"
-                          size="sm"
-                          className="w-full"
+                          className="w-full min-h-[44px] rounded-xl transition-all duration-200 active:scale-[0.98]"
                           onClick={() => {
                             setOportunidadeSelecionada(oportunidade.titulo);
                             setOpenCandidatura(true);
@@ -321,34 +337,37 @@ const Tecnologia = () => {
             </TabsContent>
 
             {/* Infraestruturas */}
-            <TabsContent value="infraestruturas" className="mt-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <TabsContent value="infraestruturas" className="mt-6 md:mt-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                 {setor.infraestruturas.map((infraestrutura, index) => (
-                  <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
-                    <CardHeader className="pb-4">
+                  <Card 
+                    key={index} 
+                    className="overflow-hidden rounded-xl hover:shadow-lg transition-all duration-200 active:scale-[0.98]"
+                  >
+                    <CardHeader className="p-4 md:p-6 pb-3 md:pb-4">
                       <div className="flex items-center gap-3 mb-3">
-                        <div className="p-2 bg-orange-100 rounded-lg">
+                        <div className="p-2 bg-orange-100 rounded-xl">
                           <BuildingIcon className="w-5 h-5 text-orange-600" />
                         </div>
                         <Badge className="bg-orange-100 text-orange-800">
                           Infraestrutura
                         </Badge>
                       </div>
-                      <CardTitle className="text-lg">{infraestrutura.nome}</CardTitle>
+                      <CardTitle className="text-base md:text-lg">{infraestrutura.nome}</CardTitle>
                       <p className="text-sm text-muted-foreground">
                         {infraestrutura.descricao}
                       </p>
                     </CardHeader>
 
-                    <CardContent>
+                    <CardContent className="p-4 md:p-6 pt-0">
                       <div className="space-y-4">
                         <div>
                           <h4 className="font-medium text-sm mb-2">Características:</h4>
-                          <ul className="space-y-1">
+                          <ul className="space-y-1.5">
                             {infraestrutura.caracteristicas?.map((caracteristica: string, idx: number) => (
-                              <li key={idx} className="text-sm text-muted-foreground flex items-center gap-2">
-                                <CheckCircleIcon className="w-3 h-3 text-orange-500" />
-                                {caracteristica}
+                              <li key={idx} className="text-sm text-muted-foreground flex items-start gap-2">
+                                <CheckCircleIcon className="w-4 h-4 text-orange-500 flex-shrink-0 mt-0.5" />
+                                <span>{caracteristica}</span>
                               </li>
                             ))}
                           </ul>
@@ -364,8 +383,7 @@ const Tecnologia = () => {
 
                         <Button
                           variant="outline"
-                          size="sm"
-                          className="w-full"
+                          className="w-full min-h-[44px] rounded-xl transition-all duration-200 active:scale-[0.98]"
                           onClick={() => {
                             setDetalheInfra(infraestrutura);
                             setOpenDetalhes(true);
@@ -382,51 +400,54 @@ const Tecnologia = () => {
             </TabsContent>
 
             {/* Contactos */}
-            <TabsContent value="contactos" className="mt-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <TabsContent value="contactos" className="mt-6 md:mt-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                 {setor.contactos.map((contacto, index) => (
-                  <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
-                    <CardHeader className="pb-4">
+                  <Card 
+                    key={index} 
+                    className="overflow-hidden rounded-xl hover:shadow-lg transition-all duration-200 active:scale-[0.98]"
+                  >
+                    <CardHeader className="p-4 md:p-6 pb-3 md:pb-4">
                       <div className="flex items-center gap-3 mb-3">
-                        <div className="p-2 bg-purple-100 rounded-lg">
+                        <div className="p-2 bg-purple-100 rounded-xl">
                           <PhoneIcon className="w-5 h-5 text-purple-600" />
                         </div>
                         <Badge className="bg-purple-100 text-purple-800">
                           Contacto
                         </Badge>
                       </div>
-                      <CardTitle className="text-lg">{contacto.nome}</CardTitle>
+                      <CardTitle className="text-base md:text-lg">{contacto.nome}</CardTitle>
                       <p className="text-sm text-muted-foreground">
                         {contacto.cargo}
                       </p>
                     </CardHeader>
 
-                    <CardContent>
+                    <CardContent className="p-4 md:p-6 pt-0">
                       <div className="space-y-3">
                         {contacto.telefone && (
-                          <div className="flex items-center gap-2">
-                            <PhoneIcon className="w-4 h-4 text-muted-foreground" />
+                          <div className="flex items-center gap-3 min-h-[44px] p-2 -m-2 rounded-xl hover:bg-muted/50 transition-all duration-200">
+                            <PhoneIcon className="w-5 h-5 text-muted-foreground flex-shrink-0" />
                             <span className="text-sm">{contacto.telefone}</span>
                           </div>
                         )}
 
                         {contacto.email && (
-                          <div className="flex items-center gap-2">
-                            <MailIcon className="w-4 h-4 text-muted-foreground" />
-                            <span className="text-sm">{contacto.email}</span>
+                          <div className="flex items-center gap-3 min-h-[44px] p-2 -m-2 rounded-xl hover:bg-muted/50 transition-all duration-200">
+                            <MailIcon className="w-5 h-5 text-muted-foreground flex-shrink-0" />
+                            <span className="text-sm break-all">{contacto.email}</span>
                           </div>
                         )}
 
                         {contacto.endereco && (
-                          <div className="flex items-center gap-2">
-                            <MapPinIcon className="w-4 h-4 text-muted-foreground" />
+                          <div className="flex items-start gap-3 min-h-[44px] p-2 -m-2 rounded-xl hover:bg-muted/50 transition-all duration-200">
+                            <MapPinIcon className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-0.5" />
                             <span className="text-sm">{contacto.endereco}</span>
                           </div>
                         )}
 
                         {contacto.horario && (
-                          <div className="flex items-center gap-2">
-                            <CalendarIcon className="w-4 h-4 text-muted-foreground" />
+                          <div className="flex items-center gap-3 min-h-[44px] p-2 -m-2 rounded-xl hover:bg-muted/50 transition-all duration-200">
+                            <CalendarIcon className="w-5 h-5 text-muted-foreground flex-shrink-0" />
                             <span className="text-sm">{contacto.horario}</span>
                           </div>
                         )}
@@ -456,47 +477,53 @@ const Tecnologia = () => {
       />
 
       <Dialog open={openDetalhes} onOpenChange={setOpenDetalhes}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>{detalheInfra?.nome}</DialogTitle>
-            <DialogDescription>{detalheInfra?.descricao}</DialogDescription>
-          </DialogHeader>
+        <DialogContent className="w-full h-full md:h-auto md:max-h-[90vh] max-w-full md:max-w-2xl rounded-none md:rounded-xl p-0 overflow-hidden">
+          <div className="flex flex-col h-full max-h-screen md:max-h-[90vh]">
+            <DialogHeader className="p-4 md:p-6 pb-0 flex-shrink-0">
+              <DialogTitle className="text-lg md:text-xl pr-8">{detalheInfra?.nome}</DialogTitle>
+              <DialogDescription className="text-sm">{detalheInfra?.descricao}</DialogDescription>
+            </DialogHeader>
 
-          {detalheInfra && (
-            <div className="space-y-4">
-              <div>
-                <h4 className="font-medium mb-2">Características:</h4>
-                <ul className="space-y-1">
-                  {detalheInfra.caracteristicas?.map((caracteristica: string, idx: number) => (
-                    <li key={idx} className="text-sm flex items-center gap-2">
-                      <CheckCircleIcon className="w-3 h-3 text-green-500" />
-                      {caracteristica}
-                    </li>
-                  ))}
-                </ul>
+            {detalheInfra && (
+              <div className="flex-1 overflow-y-auto overscroll-contain p-4 md:p-6 space-y-4 scroll-smooth">
+                <div>
+                  <h4 className="font-medium mb-2">Características:</h4>
+                  <ul className="space-y-2">
+                    {detalheInfra.caracteristicas?.map((caracteristica: string, idx: number) => (
+                      <li key={idx} className="text-sm flex items-start gap-2">
+                        <CheckCircleIcon className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
+                        <span>{caracteristica}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {detalheInfra.localizacao && (
+                  <div>
+                    <h4 className="font-medium mb-2">Localização:</h4>
+                    <p className="text-sm text-muted-foreground">{detalheInfra.localizacao}</p>
+                  </div>
+                )}
+
+                {detalheInfra.observacoes && (
+                  <div>
+                    <h4 className="font-medium mb-2">Observações:</h4>
+                    <p className="text-sm text-muted-foreground">{detalheInfra.observacoes}</p>
+                  </div>
+                )}
               </div>
+            )}
 
-              {detalheInfra.localizacao && (
-                <div>
-                  <h4 className="font-medium mb-2">Localização:</h4>
-                  <p className="text-sm text-muted-foreground">{detalheInfra.localizacao}</p>
-                </div>
-              )}
-
-              {detalheInfra.observacoes && (
-                <div>
-                  <h4 className="font-medium mb-2">Observações:</h4>
-                  <p className="text-sm text-muted-foreground">{detalheInfra.observacoes}</p>
-                </div>
-              )}
-            </div>
-          )}
-
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setOpenDetalhes(false)}>
-              Fechar
-            </Button>
-          </DialogFooter>
+            <DialogFooter className="p-4 md:p-6 pt-4 border-t flex-shrink-0">
+              <Button 
+                variant="outline" 
+                onClick={() => setOpenDetalhes(false)}
+                className="w-full md:w-auto min-h-[44px] rounded-xl transition-all duration-200 active:scale-[0.98]"
+              >
+                Fechar
+              </Button>
+            </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
 

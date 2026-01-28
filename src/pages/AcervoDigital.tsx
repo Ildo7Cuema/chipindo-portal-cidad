@@ -440,13 +440,14 @@ export default function AcervoDigital() {
         <main>
           <Section variant="primary" size="lg">
             <SectionContent>
-              <div className="text-center space-y-6">
-                <Skeleton className="h-16 w-16 rounded-2xl mx-auto" />
-                <Skeleton className="h-12 w-96 mx-auto" />
-                <Skeleton className="h-6 w-64 mx-auto" />
-                <div className="flex justify-center gap-4">
-                  <Skeleton className="h-8 w-32" />
-                  <Skeleton className="h-8 w-32" />
+              <div className="text-center space-y-4 md:space-y-6 px-4">
+                <Skeleton className="h-12 w-12 md:h-16 md:w-16 rounded-xl md:rounded-2xl mx-auto" />
+                <Skeleton className="h-8 md:h-12 w-48 md:w-96 mx-auto rounded-xl" />
+                <Skeleton className="h-4 md:h-6 w-40 md:w-64 mx-auto rounded-lg" />
+                <div className="flex justify-center gap-2 md:gap-4 flex-wrap">
+                  <Skeleton className="h-8 w-20 md:w-32 rounded-xl" />
+                  <Skeleton className="h-8 w-20 md:w-32 rounded-xl" />
+                  <Skeleton className="h-8 w-20 md:w-32 rounded-xl" />
                 </div>
               </div>
             </SectionContent>
@@ -465,41 +466,41 @@ export default function AcervoDigital() {
         {/* Hero Section */}
         <Section variant="primary" size="lg">
           <SectionContent>
-            <div className="text-center space-y-6">
-              <div className="flex items-center justify-center gap-3 mb-6">
-                <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-xl">
-                  <ArchiveIcon className="w-8 h-8 text-white" />
+            <div className="text-center space-y-4 md:space-y-6 px-4 md:px-6">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4 mb-4 md:mb-6">
+                <div className="w-12 h-12 md:w-16 md:h-16 bg-white/20 rounded-xl md:rounded-2xl flex items-center justify-center backdrop-blur-xl transition-all duration-200">
+                  <ArchiveIcon className="w-6 h-6 md:w-8 md:h-8 text-white" />
                 </div>
-                <div className="text-left">
-                  <h1 className="text-4xl md:text-5xl font-bold text-white">
+                <div className="text-center sm:text-left">
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white transition-all duration-200">
                     Acervo Digital
                   </h1>
-                  <p className="text-primary-foreground/90 text-lg">
+                  <p className="text-primary-foreground/90 text-sm md:text-lg">
                     Administração Municipal de Chipindo
                   </p>
                 </div>
               </div>
 
-              <p className="text-xl text-primary-foreground/95 max-w-3xl mx-auto leading-relaxed">
+              <p className="text-base md:text-xl text-primary-foreground/95 max-w-3xl mx-auto leading-relaxed px-2">
                 Explore nossa coleção digital com documentos oficiais, imagens históricas e vídeos
                 institucionais das diferentes direcções municipais.
               </p>
 
-              <div className="flex items-center justify-center gap-4 flex-wrap">
-                <Badge className="bg-white/20 text-white border-white/30 px-4 py-2">
-                  <ArchiveIcon className="w-4 h-4 mr-2" />
-                  {items.length} Itens Disponíveis
+              <div className="flex items-center justify-center gap-2 md:gap-4 flex-wrap">
+                <Badge className="bg-white/20 text-white border-white/30 px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm rounded-xl transition-all duration-200 active:scale-[0.98]">
+                  <ArchiveIcon className="w-3 h-3 md:w-4 md:h-4 mr-1.5 md:mr-2" />
+                  {items.length} Itens
                 </Badge>
-                <Badge className="bg-blue-500/20 text-blue-100 border-blue-400/30 px-4 py-2">
-                  <FileTextIcon className="w-4 h-4 mr-2" />
-                  {items.filter(i => i.type === 'documento').length} Documentos
+                <Badge className="bg-blue-500/20 text-blue-100 border-blue-400/30 px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm rounded-xl transition-all duration-200 active:scale-[0.98]">
+                  <FileTextIcon className="w-3 h-3 md:w-4 md:h-4 mr-1.5 md:mr-2" />
+                  {items.filter(i => i.type === 'documento').length} Docs
                 </Badge>
-                <Badge className="bg-green-500/20 text-green-100 border-green-400/30 px-4 py-2">
-                  <ImageIcon className="w-4 h-4 mr-2" />
-                  {items.filter(i => i.type === 'imagem').length} Imagens
+                <Badge className="bg-green-500/20 text-green-100 border-green-400/30 px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm rounded-xl transition-all duration-200 active:scale-[0.98]">
+                  <ImageIcon className="w-3 h-3 md:w-4 md:h-4 mr-1.5 md:mr-2" />
+                  {items.filter(i => i.type === 'imagem').length} Imgs
                 </Badge>
-                <Badge className="bg-purple-500/20 text-purple-100 border-purple-400/30 px-4 py-2">
-                  <VideoIcon className="w-4 h-4 mr-2" />
+                <Badge className="bg-purple-500/20 text-purple-100 border-purple-400/30 px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm rounded-xl transition-all duration-200 active:scale-[0.98]">
+                  <VideoIcon className="w-3 h-3 md:w-4 md:h-4 mr-1.5 md:mr-2" />
                   {items.filter(i => i.type === 'video').length} Vídeos
                 </Badge>
               </div>
@@ -510,29 +511,29 @@ export default function AcervoDigital() {
         {/* Search and Filters Section */}
         <Section variant="muted" size="md">
           <SectionContent>
-            <Card className="border-0 shadow-xl bg-white/50 dark:bg-gray-900/50 backdrop-blur-xl">
-              <CardContent className="p-6">
-                <div className="space-y-6">
+            <Card className="border-0 shadow-xl bg-white/50 dark:bg-gray-900/50 backdrop-blur-xl rounded-xl">
+              <CardContent className="p-4 md:p-6">
+                <div className="space-y-4 md:space-y-6">
                   {/* Main Search */}
                   <div className="relative">
-                    <SearchIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+                    <SearchIcon className="absolute left-3 md:left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
                     <Input
                       type="text"
                       placeholder="Pesquisar documentos, imagens, vídeos..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-12 pr-4 py-3 text-lg border-2 border-border/50 focus:border-primary"
+                      className="pl-10 md:pl-12 pr-4 h-12 text-base md:text-lg border-2 border-border/50 focus:border-primary rounded-xl transition-all duration-200"
                     />
                   </div>
 
                   {/* Filters Row */}
-                  <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
-                    <div className="flex flex-wrap gap-3 items-center">
+                  <div className="flex flex-col gap-4">
+                    {/* Mobile: Stack vertically, Desktop: Row */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-wrap gap-3 items-stretch lg:items-center">
                       <Button
                         variant="outline"
-                        size="sm"
                         onClick={() => setShowFilters(!showFilters)}
-                        className="flex items-center gap-2"
+                        className="flex items-center justify-center gap-2 h-11 min-h-[44px] rounded-xl transition-all duration-200 active:scale-[0.98]"
                       >
                         <FilterIcon className="w-4 h-4" />
                         Filtros
@@ -540,9 +541,9 @@ export default function AcervoDigital() {
                       </Button>
 
                       <Select value={selectedDirection} onValueChange={setSelectedDirection}>
-                        <SelectTrigger className="w-48">
-                          <Building2 className="w-4 h-4 mr-2" />
-                          <SelectValue placeholder="direcção" />
+                        <SelectTrigger className="w-full lg:w-48 h-11 min-h-[44px] rounded-xl transition-all duration-200">
+                          <Building2 className="w-4 h-4 mr-2 flex-shrink-0" />
+                          <SelectValue placeholder="Direcção" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="todos">
@@ -566,8 +567,8 @@ export default function AcervoDigital() {
                       </Select>
 
                       <Select value={selectedType} onValueChange={setSelectedType}>
-                        <SelectTrigger className="w-40">
-                          <FolderIcon className="w-4 h-4 mr-2" />
+                        <SelectTrigger className="w-full lg:w-40 h-11 min-h-[44px] rounded-xl transition-all duration-200">
+                          <FolderIcon className="w-4 h-4 mr-2 flex-shrink-0" />
                           <SelectValue placeholder="Tipo" />
                         </SelectTrigger>
                         <SelectContent>
@@ -586,7 +587,7 @@ export default function AcervoDigital() {
                       </Select>
 
                       <Select value={sortBy} onValueChange={setSortBy}>
-                        <SelectTrigger className="w-44">
+                        <SelectTrigger className="w-full lg:w-44 h-11 min-h-[44px] rounded-xl transition-all duration-200">
                           <SelectValue placeholder="Ordenar por" />
                         </SelectTrigger>
                         <SelectContent>
@@ -624,32 +625,36 @@ export default function AcervoDigital() {
                       </Select>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant={viewMode === 'grid' ? 'default' : 'outline'}
-                        size="sm"
-                        onClick={() => setViewMode('grid')}
-                      >
-                        <GridIcon className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant={viewMode === 'list' ? 'default' : 'outline'}
-                        size="sm"
-                        onClick={() => setViewMode('list')}
-                      >
-                        <ListIcon className="w-4 h-4" />
-                      </Button>
+                    {/* View Mode and Carousel */}
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-1 bg-muted/50 p-1 rounded-xl">
+                        <Button
+                          variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                          size="sm"
+                          onClick={() => setViewMode('grid')}
+                          className="h-9 w-9 p-0 rounded-lg transition-all duration-200 active:scale-[0.98]"
+                        >
+                          <GridIcon className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant={viewMode === 'list' ? 'default' : 'ghost'}
+                          size="sm"
+                          onClick={() => setViewMode('list')}
+                          className="h-9 w-9 p-0 rounded-lg transition-all duration-200 active:scale-[0.98]"
+                        >
+                          <ListIcon className="w-4 h-4" />
+                        </Button>
+                      </div>
 
                       {/* Botão do Carrossel */}
                       {getMediaItems().length > 0 && (
                         <Button
-                          variant="outline"
-                          size="sm"
                           onClick={() => openCarousel(getMediaItems())}
-                          className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white border-0 hover:from-blue-600 hover:to-purple-700"
+                          className="flex items-center gap-2 h-11 min-h-[44px] px-4 md:px-6 bg-gradient-to-r from-blue-500 to-purple-600 text-white border-0 hover:from-blue-600 hover:to-purple-700 rounded-xl shadow-lg transition-all duration-200 active:scale-[0.98]"
                         >
                           <ImageIcon className="w-4 h-4" />
-                          Carrossel ({getMediaItems().length})
+                          <span className="hidden sm:inline">Carrossel</span>
+                          <span className="text-white/80">({getMediaItems().length})</span>
                         </Button>
                       )}
                     </div>
@@ -663,9 +668,8 @@ export default function AcervoDigital() {
                         <div className="flex flex-wrap gap-2">
                           <Button
                             variant={selectedDirection === 'todos' ? "default" : "outline"}
-                            size="sm"
                             onClick={() => setSelectedDirection('todos')}
-                            className="flex items-center gap-2"
+                            className="flex items-center gap-2 h-10 min-h-[44px] px-3 rounded-xl transition-all duration-200 active:scale-[0.98]"
                           >
                             <Building2 className="w-4 h-4" />
                             Todos
@@ -676,12 +680,12 @@ export default function AcervoDigital() {
                               <Button
                                 key={dir.key}
                                 variant={selectedDirection === dir.key ? "default" : "outline"}
-                                size="sm"
                                 onClick={() => setSelectedDirection(dir.key)}
-                                className="flex items-center gap-2"
+                                className="flex items-center gap-2 h-10 min-h-[44px] px-3 rounded-xl transition-all duration-200 active:scale-[0.98]"
                               >
                                 <IconComponent className="w-4 h-4" />
-                                {dir.label}
+                                <span className="hidden sm:inline">{dir.label}</span>
+                                <span className="sm:hidden">{dir.label.split(' ')[0]}</span>
                               </Button>
                             );
                           })}
@@ -697,9 +701,8 @@ export default function AcervoDigital() {
                               <Button
                                 key={type.id}
                                 variant={selectedType === type.id ? "default" : "outline"}
-                                size="sm"
                                 onClick={() => setSelectedType(type.id)}
-                                className="flex items-center gap-2"
+                                className="flex items-center gap-2 h-10 min-h-[44px] px-3 rounded-xl transition-all duration-200 active:scale-[0.98]"
                               >
                                 <IconComponent className="w-4 h-4" />
                                 {type.name}
@@ -712,7 +715,7 @@ export default function AcervoDigital() {
                   )}
 
                   {/* Results Summary */}
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-xs md:text-sm text-muted-foreground px-1">
                     <span>
                       {filteredItems.length} item{filteredItems.length !== 1 ? 's' : ''} encontrado{filteredItems.length !== 1 ? 's' : ''}
                       {searchTerm && ` para "${searchTerm}"`}
@@ -744,10 +747,10 @@ export default function AcervoDigital() {
 
           <SectionContent>
             {filteredItems.length === 0 ? (
-              <div className="text-center py-16">
-                <ArchiveIcon className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-foreground mb-2">Nenhum item encontrado</h3>
-                <p className="text-muted-foreground mb-6">
+              <div className="text-center py-12 md:py-16 px-4">
+                <ArchiveIcon className="w-12 h-12 md:w-16 md:h-16 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg md:text-xl font-semibold text-foreground mb-2">Nenhum item encontrado</h3>
+                <p className="text-sm md:text-base text-muted-foreground mb-6">
                   {searchTerm || selectedDirection !== 'todos' || selectedType !== 'todos'
                     ? "Tente ajustar seus filtros de busca."
                     : "O acervo digital está sendo organizado. Volte em breve."
@@ -761,7 +764,7 @@ export default function AcervoDigital() {
                       setSelectedType("todos");
                       setSortBy("recent");
                     }}
-                    className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white"
+                    className="h-11 min-h-[44px] px-6 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-xl transition-all duration-200 active:scale-[0.98]"
                   >
                     Limpar Filtros
                   </Button>
@@ -770,8 +773,8 @@ export default function AcervoDigital() {
             ) : (
               <>
                 <div className={cn(
-                  "grid gap-6",
-                  viewMode === 'grid' ? "md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid-cols-1"
+                  "grid gap-4 md:gap-6",
+                  viewMode === 'grid' ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid-cols-1"
                 )}>
                   {paginatedItems.map((item) => {
                     const directionData = getDirectionData(item.direction);
@@ -781,7 +784,7 @@ export default function AcervoDigital() {
                       <Card
                         key={item.id}
                         className={cn(
-                          "group cursor-pointer overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1",
+                          "group cursor-pointer overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-200 hover:-translate-y-1 rounded-xl active:scale-[0.98]",
                           viewMode === 'list' && "md:flex"
                         )}
                         onClick={async () => {
@@ -791,9 +794,9 @@ export default function AcervoDigital() {
                       >
                         <div className={cn(
                           "relative overflow-hidden",
-                          viewMode === 'list' ? "md:w-64 flex-shrink-0" : ""
+                          viewMode === 'list' ? "md:w-48 lg:w-64 flex-shrink-0" : ""
                         )}>
-                          <div className="aspect-video bg-gradient-to-br from-gray-100 to-gray-200 relative group-hover:scale-105 transition-transform duration-500">
+                          <div className="aspect-video h-40 sm:h-44 md:h-48 bg-gradient-to-br from-gray-100 to-gray-200 relative group-hover:scale-105 transition-transform duration-200 overflow-hidden">
                             {(() => {
                               // Debug do item para identificar problemas
                               debugFileUrl(item);
@@ -842,12 +845,11 @@ export default function AcervoDigital() {
                                       }}
                                     />
                                     {/* Botões de ação para imagens */}
-                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-200 flex items-center justify-center opacity-0 group-hover:opacity-100">
                                       <div className="flex gap-2">
                                         <Button
-                                          size="sm"
                                           variant="secondary"
-                                          className="bg-white/90 text-black hover:bg-white"
+                                          className="w-10 h-10 md:w-11 md:h-11 min-h-[44px] p-0 bg-white/90 text-black hover:bg-white rounded-xl transition-all duration-200 active:scale-[0.98]"
                                           onClick={(e) => {
                                             e.stopPropagation();
                                             openFullscreen(item);
@@ -856,9 +858,8 @@ export default function AcervoDigital() {
                                           <MaximizeIcon className="w-4 h-4" />
                                         </Button>
                                         <Button
-                                          size="sm"
                                           variant="secondary"
-                                          className="bg-white/90 text-black hover:bg-white"
+                                          className="w-10 h-10 md:w-11 md:h-11 min-h-[44px] p-0 bg-white/90 text-black hover:bg-white rounded-xl transition-all duration-200 active:scale-[0.98]"
                                           onClick={(e) => {
                                             e.stopPropagation();
                                             downloadFile(item);
@@ -905,18 +906,17 @@ export default function AcervoDigital() {
                                       }}
                                     />
                                     {/* Overlay com ícone de play */}
-                                    <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
-                                      <div className="w-12 h-12 bg-white/90 rounded-full flex items-center justify-center">
-                                        <PlayIcon className="w-6 h-6 text-black" />
+                                    <div className="absolute inset-0 bg-black/20 flex items-center justify-center pointer-events-none">
+                                      <div className="w-11 h-11 md:w-14 md:h-14 bg-white/90 rounded-xl md:rounded-full flex items-center justify-center transition-all duration-200">
+                                        <PlayIcon className="w-5 h-5 md:w-6 md:h-6 text-black ml-0.5" />
                                       </div>
                                     </div>
                                     {/* Botões de ação para vídeos */}
-                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-200 flex items-center justify-center opacity-0 group-hover:opacity-100">
                                       <div className="flex gap-2">
                                         <Button
-                                          size="sm"
                                           variant="secondary"
-                                          className="bg-white/90 text-black hover:bg-white"
+                                          className="w-10 h-10 md:w-11 md:h-11 min-h-[44px] p-0 bg-white/90 text-black hover:bg-white rounded-xl transition-all duration-200 active:scale-[0.98]"
                                           onClick={(e) => {
                                             e.stopPropagation();
                                             openFullscreen(item);
@@ -925,9 +925,8 @@ export default function AcervoDigital() {
                                           <MaximizeIcon className="w-4 h-4" />
                                         </Button>
                                         <Button
-                                          size="sm"
                                           variant="secondary"
-                                          className="bg-white/90 text-black hover:bg-white"
+                                          className="w-10 h-10 md:w-11 md:h-11 min-h-[44px] p-0 bg-white/90 text-black hover:bg-white rounded-xl transition-all duration-200 active:scale-[0.98]"
                                           onClick={(e) => {
                                             e.stopPropagation();
                                             downloadFile(item);
@@ -1002,51 +1001,49 @@ export default function AcervoDigital() {
                           </div>
                         </div>
 
-                        <div className="flex-1 p-4">
+                        <div className="flex-1 p-3 md:p-4">
                           {/* Título - mais proeminente */}
                           <CardTitle className={cn(
-                            "leading-tight group-hover:text-primary transition-colors duration-300 mb-2",
-                            viewMode === 'list' ? "text-base" : "text-lg"
+                            "leading-tight group-hover:text-primary transition-colors duration-200 mb-2 line-clamp-2",
+                            viewMode === 'list' ? "text-sm md:text-base" : "text-base md:text-lg"
                           )}>
                             {item.title}
                           </CardTitle>
 
                           {/* Informações essenciais em uma linha */}
-                          <div className="flex items-center gap-3 text-xs text-muted-foreground mb-3">
+                          <div className="flex items-center gap-2 md:gap-3 text-xs text-muted-foreground mb-3 flex-wrap">
                             <span className="flex items-center gap-1">
                               <CalendarIcon className="w-3 h-3" />
                               {formatDate(item.created_at)}
                             </span>
                             {item.category && (
-                              <span className="text-primary/70">{item.category}</span>
+                              <span className="text-primary/70 truncate max-w-[100px]">{item.category}</span>
                             )}
                           </div>
 
-                          {/* Botões de ação - mais compactos */}
+                          {/* Botões de ação - touch-friendly */}
                           <div className="flex gap-2">
                             <Button
                               variant="outline"
-                              size="sm"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setSelectedItem(item);
                               }}
-                              className="flex-1 text-xs h-8"
+                              className="flex-1 text-xs h-10 min-h-[44px] rounded-xl transition-all duration-200 active:scale-[0.98]"
                             >
-                              <EyeIcon className="w-3 h-3 mr-1" />
+                              <EyeIcon className="w-4 h-4 mr-1" />
                               Ver
                             </Button>
                             {item.file_url && (
                               <Button
                                 variant="default"
-                                size="sm"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   downloadFile(item);
                                 }}
-                                className="flex-1 text-xs h-8 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
+                                className="flex-1 text-xs h-10 min-h-[44px] bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 rounded-xl transition-all duration-200 active:scale-[0.98]"
                               >
-                                <DownloadIcon className="w-3 h-3 mr-1" />
+                                <DownloadIcon className="w-4 h-4 mr-1" />
                                 Baixar
                               </Button>
                             )}
@@ -1059,35 +1056,54 @@ export default function AcervoDigital() {
 
                 {/* Pagination */}
                 {totalPages > 1 && (
-                  <div className="flex items-center justify-center gap-2 mt-12">
+                  <div className="flex items-center justify-center gap-1 md:gap-2 mt-8 md:mt-12 px-4">
                     <Button
                       variant="outline"
-                      size="sm"
                       onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                       disabled={currentPage === 1}
+                      className="h-10 md:h-11 min-h-[44px] px-3 md:px-4 rounded-xl transition-all duration-200 active:scale-[0.98]"
                     >
-                      Anterior
+                      <ChevronLeftIcon className="w-4 h-4 md:mr-1" />
+                      <span className="hidden md:inline">Anterior</span>
                     </Button>
 
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                      <Button
-                        key={page}
-                        variant={page === currentPage ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setCurrentPage(page)}
-                        className="w-8 h-8 p-0"
-                      >
-                        {page}
-                      </Button>
-                    ))}
+                    <div className="flex items-center gap-1 overflow-x-auto max-w-[200px] md:max-w-none">
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => {
+                        // Show limited pages on mobile
+                        const shouldShow = totalPages <= 5 || 
+                          page === 1 || 
+                          page === totalPages || 
+                          Math.abs(page - currentPage) <= 1;
+                        
+                        if (!shouldShow && page === 2 && currentPage > 3) {
+                          return <span key={page} className="px-1 text-muted-foreground">...</span>;
+                        }
+                        if (!shouldShow && page === totalPages - 1 && currentPage < totalPages - 2) {
+                          return <span key={page} className="px-1 text-muted-foreground">...</span>;
+                        }
+                        if (!shouldShow) return null;
+
+                        return (
+                          <Button
+                            key={page}
+                            variant={page === currentPage ? "default" : "outline"}
+                            onClick={() => setCurrentPage(page)}
+                            className="w-10 h-10 md:w-11 md:h-11 min-h-[44px] p-0 rounded-xl transition-all duration-200 active:scale-[0.98]"
+                          >
+                            {page}
+                          </Button>
+                        );
+                      })}
+                    </div>
 
                     <Button
                       variant="outline"
-                      size="sm"
                       onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                       disabled={currentPage === totalPages}
+                      className="h-10 md:h-11 min-h-[44px] px-3 md:px-4 rounded-xl transition-all duration-200 active:scale-[0.98]"
                     >
-                      Próxima
+                      <span className="hidden md:inline">Próxima</span>
+                      <ChevronRightIcon className="w-4 h-4 md:ml-1" />
                     </Button>
                   </div>
                 )}
@@ -1106,19 +1122,22 @@ export default function AcervoDigital() {
           />
 
           <SectionContent>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 md:gap-4 lg:gap-6">
               {directionStats.map(dir => {
                 const IconComponent = dir.icon;
                 return (
-                  <Card key={dir.key} className="hover:shadow-lg transition-shadow cursor-pointer"
-                    onClick={() => setSelectedDirection(dir.key)}>
-                    <CardContent className="p-6 text-center">
-                      <div className={cn("w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4", dir.color)}>
-                        <IconComponent className="w-6 h-6 text-white" />
+                  <Card 
+                    key={dir.key} 
+                    className="hover:shadow-lg transition-all duration-200 cursor-pointer rounded-xl active:scale-[0.98]"
+                    onClick={() => setSelectedDirection(dir.key)}
+                  >
+                    <CardContent className="p-3 md:p-4 lg:p-6 text-center">
+                      <div className={cn("w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-full flex items-center justify-center mx-auto mb-2 md:mb-4 transition-all duration-200", dir.color)}>
+                        <IconComponent className="w-5 h-5 md:w-6 md:h-6 text-white" />
                       </div>
-                      <h3 className="font-semibold text-foreground mb-2">{dir.label}</h3>
-                      <div className="text-2xl font-bold text-primary mb-1">{dir.count}</div>
-                      <p className="text-sm text-muted-foreground">
+                      <h3 className="font-semibold text-foreground mb-1 md:mb-2 text-xs md:text-sm lg:text-base line-clamp-2">{dir.label}</h3>
+                      <div className="text-xl md:text-2xl font-bold text-primary mb-0.5 md:mb-1">{dir.count}</div>
+                      <p className="text-xs md:text-sm text-muted-foreground">
                         {dir.count === 1 ? 'item' : 'itens'}
                       </p>
                     </CardContent>
@@ -1131,60 +1150,65 @@ export default function AcervoDigital() {
 
         {/* Item Detail Modal */}
         <Dialog open={!!selectedItem} onOpenChange={() => setSelectedItem(null)}>
-          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-4xl w-[95vw] md:w-full max-h-[95vh] md:max-h-[90vh] overflow-y-auto rounded-xl md:rounded-2xl p-4 md:p-6 scroll-smooth">
             {selectedItem && (
               <>
                 <DialogHeader>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className={getTypeColor(selectedItem.type)}>
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                    <div className="flex items-start sm:items-center gap-3">
+                      <div className={cn("p-2 rounded-xl flex-shrink-0", getTypeColor(selectedItem.type))}>
                         {getTypeIcon(selectedItem.type)}
                       </div>
-                      <div>
-                        <DialogTitle className="text-xl">{selectedItem.title}</DialogTitle>
-                        <DialogDescription className="flex items-center gap-2 text-sm">
-                          <Badge className={cn(getDirectionData(selectedItem.direction).color, "text-white")}>
+                      <div className="flex-1 min-w-0">
+                        <DialogTitle className="text-lg md:text-xl line-clamp-2">{selectedItem.title}</DialogTitle>
+                        <DialogDescription className="flex flex-wrap items-center gap-1.5 md:gap-2 text-xs md:text-sm mt-1">
+                          <Badge className={cn(getDirectionData(selectedItem.direction).color, "text-white text-xs rounded-lg")}>
                             {getDirectionData(selectedItem.direction).label}
                           </Badge>
                           {selectedItem.category && (
-                            <Badge variant="outline">{selectedItem.category}</Badge>
+                            <Badge variant="outline" className="text-xs rounded-lg">{selectedItem.category}</Badge>
                           )}
-                          <span>• {formatDate(selectedItem.created_at)}</span>
+                          <span className="hidden sm:inline">• {formatDate(selectedItem.created_at)}</span>
                           {selectedItem.views && selectedItem.views > 0 && (
-                            <span>• {selectedItem.views} visualizações</span>
+                            <span className="hidden sm:inline">• {selectedItem.views} visualizações</span>
                           )}
                         </DialogDescription>
+                        <div className="flex sm:hidden items-center gap-2 text-xs text-muted-foreground mt-1">
+                          <span>{formatDate(selectedItem.created_at)}</span>
+                          {selectedItem.views && selectedItem.views > 0 && (
+                            <span>• {selectedItem.views} views</span>
+                          )}
+                        </div>
                       </div>
                     </div>
                     <Button
                       variant="ghost"
-                      size="sm"
                       onClick={() => setSelectedItem(null)}
+                      className="absolute top-2 right-2 sm:relative sm:top-auto sm:right-auto h-10 w-10 min-h-[44px] p-0 rounded-xl transition-all duration-200 active:scale-[0.98]"
                     >
                       <XIcon className="w-5 h-5" />
                     </Button>
                   </div>
                 </DialogHeader>
 
-                <div className="space-y-4">
+                <div className="space-y-4 mt-4">
                   {/* Descrição - apenas se existir */}
                   {selectedItem.description && (
                     <div>
-                      <h4 className="font-semibold text-foreground mb-2">Descrição</h4>
-                      <p className="text-muted-foreground leading-relaxed">{selectedItem.description}</p>
+                      <h4 className="font-semibold text-foreground mb-2 text-sm md:text-base">Descrição</h4>
+                      <p className="text-muted-foreground leading-relaxed text-sm md:text-base">{selectedItem.description}</p>
                     </div>
                   )}
 
                   {/* Visualização do arquivo - foco principal */}
                   {selectedItem.file_url && (
                     <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <h4 className="font-semibold text-foreground">Arquivo</h4>
-                        <div className="flex gap-2">
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                        <h4 className="font-semibold text-foreground text-sm md:text-base">Arquivo</h4>
+                        <div className="flex gap-2 w-full sm:w-auto">
                           <Button
                             onClick={() => window.open(selectedItem.file_url!, '_blank')}
-                            className="flex items-center gap-2"
-                            size="sm"
+                            className="flex-1 sm:flex-none flex items-center justify-center gap-2 h-11 min-h-[44px] rounded-xl transition-all duration-200 active:scale-[0.98]"
                           >
                             <EyeIcon className="w-4 h-4" />
                             Abrir
@@ -1192,8 +1216,7 @@ export default function AcervoDigital() {
                           <Button
                             variant="outline"
                             onClick={() => downloadFile(selectedItem)}
-                            className="flex items-center gap-2"
-                            size="sm"
+                            className="flex-1 sm:flex-none flex items-center justify-center gap-2 h-11 min-h-[44px] rounded-xl transition-all duration-200 active:scale-[0.98]"
                           >
                             <DownloadIcon className="w-4 h-4" />
                             Download
@@ -1203,18 +1226,18 @@ export default function AcervoDigital() {
 
                       {/* Visualização do arquivo - foco na imagem/vídeo */}
                       {selectedItem.type === 'imagem' && selectedItem.file_url && isValidImage(selectedItem.file_url) && (
-                        <div className="border rounded-lg overflow-hidden">
+                        <div className="border rounded-xl overflow-hidden">
                           <img
                             src={selectedItem.file_url}
                             alt={selectedItem.title}
-                            className="w-full h-auto max-h-96 object-contain"
+                            className="w-full h-auto max-h-64 md:max-h-96 object-contain"
                             onError={(e) => {
                               const target = e.target as HTMLImageElement;
                               target.style.display = 'none';
                               const parent = target.parentElement;
                               if (parent) {
                                 const fallback = document.createElement('div');
-                                fallback.className = 'w-full h-48 flex items-center justify-center bg-gray-100 border rounded-lg';
+                                fallback.className = 'w-full h-48 flex items-center justify-center bg-gray-100 border rounded-xl';
                                 fallback.innerHTML = '<div class="text-center"><svg class="w-12 h-12 text-gray-400 mx-auto mb-2" fill="currentColor" viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg><p class="text-sm text-gray-500">Imagem não disponível</p></div>';
                                 parent.appendChild(fallback);
                               }
@@ -1224,11 +1247,11 @@ export default function AcervoDigital() {
                       )}
 
                       {selectedItem.type === 'video' && selectedItem.file_url && (
-                        <div className="border rounded-lg overflow-hidden">
+                        <div className="border rounded-xl overflow-hidden">
                           <video
                             src={selectedItem.file_url}
                             controls
-                            className="w-full h-auto max-h-96"
+                            className="w-full h-auto max-h-64 md:max-h-96"
                             preload="metadata"
                           >
                             Seu navegador não suporta o elemento de vídeo.
@@ -1237,19 +1260,18 @@ export default function AcervoDigital() {
                       )}
 
                       {selectedItem.type === 'documento' && selectedItem.file_url && (
-                        <div className="border rounded-lg overflow-hidden bg-gray-50 p-6">
+                        <div className="border rounded-xl overflow-hidden bg-gray-50 p-4 md:p-6">
                           <div className="text-center">
-                            <FileTextIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                            <h5 className="font-semibold text-gray-700 mb-2">{selectedItem.title}</h5>
-                            <p className="text-sm text-gray-500 mb-4">
+                            <FileTextIcon className="w-12 h-12 md:w-16 md:h-16 text-gray-400 mx-auto mb-3 md:mb-4" />
+                            <h5 className="font-semibold text-gray-700 mb-2 text-sm md:text-base line-clamp-2">{selectedItem.title}</h5>
+                            <p className="text-xs md:text-sm text-gray-500 mb-4">
                               {selectedItem.mime_type && `Formato: ${selectedItem.mime_type}`}
                               {selectedItem.file_size && ` • Tamanho: ${formatFileSize(selectedItem.file_size)}`}
                             </p>
-                            <div className="flex gap-2 justify-center">
+                            <div className="flex flex-col sm:flex-row gap-2 justify-center">
                               <Button
                                 onClick={() => window.open(selectedItem.file_url!, '_blank')}
-                                className="flex items-center gap-2"
-                                size="sm"
+                                className="flex items-center justify-center gap-2 h-11 min-h-[44px] rounded-xl transition-all duration-200 active:scale-[0.98]"
                               >
                                 <EyeIcon className="w-4 h-4" />
                                 Abrir Documento
@@ -1257,8 +1279,7 @@ export default function AcervoDigital() {
                               <Button
                                 variant="outline"
                                 onClick={() => downloadFile(selectedItem)}
-                                className="flex items-center gap-2"
-                                size="sm"
+                                className="flex items-center justify-center gap-2 h-11 min-h-[44px] rounded-xl transition-all duration-200 active:scale-[0.98]"
                               >
                                 <DownloadIcon className="w-4 h-4" />
                                 Download
@@ -1271,10 +1292,10 @@ export default function AcervoDigital() {
                   )}
 
                   {/* Informações técnicas - mais compactas */}
-                  <div className="grid md:grid-cols-2 gap-4 pt-4 border-t border-border">
-                    <div>
-                      <h4 className="font-semibold text-foreground mb-2">Informações do Arquivo</h4>
-                      <div className="space-y-1 text-sm">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-border">
+                    <div className="bg-muted/30 p-3 md:p-4 rounded-xl">
+                      <h4 className="font-semibold text-foreground mb-2 text-sm md:text-base">Informações do Arquivo</h4>
+                      <div className="space-y-1.5 text-xs md:text-sm">
                         <div className="flex justify-between">
                           <span className="text-muted-foreground">Tipo:</span>
                           <span className="font-medium">{getTypeData(selectedItem.type).name}</span>
@@ -1282,7 +1303,7 @@ export default function AcervoDigital() {
                         {selectedItem.mime_type && (
                           <div className="flex justify-between">
                             <span className="text-muted-foreground">Formato:</span>
-                            <span className="font-medium">{selectedItem.mime_type}</span>
+                            <span className="font-medium truncate max-w-[150px]">{selectedItem.mime_type}</span>
                           </div>
                         )}
                         {selectedItem.file_size && (
@@ -1294,16 +1315,16 @@ export default function AcervoDigital() {
                       </div>
                     </div>
 
-                    <div>
-                      <h4 className="font-semibold text-foreground mb-2">Metadados</h4>
-                      <div className="space-y-1 text-sm">
+                    <div className="bg-muted/30 p-3 md:p-4 rounded-xl">
+                      <h4 className="font-semibold text-foreground mb-2 text-sm md:text-base">Metadados</h4>
+                      <div className="space-y-1.5 text-xs md:text-sm">
                         <div className="flex justify-between">
                           <span className="text-muted-foreground">Data:</span>
                           <span className="font-medium">{formatDate(selectedItem.created_at)}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-muted-foreground">Direcção:</span>
-                          <span className="font-medium">{getDirectionData(selectedItem.direction).label}</span>
+                          <span className="font-medium truncate max-w-[150px]">{getDirectionData(selectedItem.direction).label}</span>
                         </div>
                         {selectedItem.views && selectedItem.views > 0 && (
                           <div className="flex justify-between">
@@ -1323,39 +1344,36 @@ export default function AcervoDigital() {
 
       {/* Modal do Carrossel */}
       {showCarousel && carouselItems.length > 0 && (
-        <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center">
           <div className="relative w-full h-full flex items-center justify-center">
             {/* Botão de fechar */}
             <Button
               variant="ghost"
-              size="sm"
               onClick={closeCarousel}
-              className="absolute top-4 right-4 z-10 bg-white/20 text-white hover:bg-white/30"
+              className="absolute top-3 right-3 md:top-4 md:right-4 z-10 w-11 h-11 md:w-12 md:h-12 min-h-[44px] p-0 bg-white/20 text-white hover:bg-white/30 rounded-xl transition-all duration-200 active:scale-[0.98]"
             >
-              <XIcon className="w-6 h-6" />
+              <XIcon className="w-5 h-5 md:w-6 md:h-6" />
             </Button>
 
             {/* Botões de navegação */}
             <Button
               variant="ghost"
-              size="sm"
               onClick={prevCarouselItem}
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10 bg-white/20 text-white hover:bg-white/30"
+              className="absolute left-2 md:left-4 top-1/2 transform -translate-y-1/2 z-10 w-11 h-14 md:w-14 md:h-16 min-h-[44px] p-0 bg-white/20 text-white hover:bg-white/30 rounded-xl transition-all duration-200 active:scale-[0.98]"
             >
-              <ChevronLeftIcon className="w-8 h-8" />
+              <ChevronLeftIcon className="w-6 h-6 md:w-8 md:h-8" />
             </Button>
 
             <Button
               variant="ghost"
-              size="sm"
               onClick={nextCarouselItem}
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 bg-white/20 text-white hover:bg-white/30"
+              className="absolute right-2 md:right-4 top-1/2 transform -translate-y-1/2 z-10 w-11 h-14 md:w-14 md:h-16 min-h-[44px] p-0 bg-white/20 text-white hover:bg-white/30 rounded-xl transition-all duration-200 active:scale-[0.98]"
             >
-              <ChevronRightIcon className="w-8 h-8" />
+              <ChevronRightIcon className="w-6 h-6 md:w-8 md:h-8" />
             </Button>
 
             {/* Conteúdo do carrossel */}
-            <div className="w-full h-full flex items-center justify-center p-8">
+            <div className="w-full h-full flex items-center justify-center p-4 md:p-8">
               <div className="max-w-4xl max-h-full w-full">
                 {(() => {
                   const currentItem = carouselItems[currentCarouselIndex];
@@ -1366,19 +1384,19 @@ export default function AcervoDigital() {
                         <img
                           src={currentItem.file_url}
                           alt={currentItem.title}
-                          className="w-full h-auto max-h-[80vh] object-contain mx-auto"
+                          className="w-full h-auto max-h-[70vh] md:max-h-[80vh] object-contain mx-auto rounded-lg"
                         />
                         {/* Informações da imagem */}
-                        <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white p-4">
-                          <h3 className="text-lg font-semibold">{currentItem.title}</h3>
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent text-white p-3 md:p-4 rounded-b-lg">
+                          <h3 className="text-sm md:text-lg font-semibold line-clamp-1">{currentItem.title}</h3>
                           {currentItem.description && (
-                            <p className="text-sm text-gray-300 mt-1">{currentItem.description}</p>
+                            <p className="text-xs md:text-sm text-gray-300 mt-1 line-clamp-2 hidden sm:block">{currentItem.description}</p>
                           )}
-                          <div className="flex items-center gap-4 mt-2 text-xs text-gray-300">
-                            <span>{getDirectionData(currentItem.direction).label}</span>
-                            <span>{formatDate(currentItem.created_at)}</span>
+                          <div className="flex items-center gap-2 md:gap-4 mt-1.5 md:mt-2 text-[10px] md:text-xs text-gray-300 flex-wrap">
+                            <span className="truncate max-w-[100px] md:max-w-none">{getDirectionData(currentItem.direction).label}</span>
+                            <span className="hidden sm:inline">{formatDate(currentItem.created_at)}</span>
                             {currentItem.views && currentItem.views > 0 && (
-                              <span>{currentItem.views} visualizações</span>
+                              <span>{currentItem.views} views</span>
                             )}
                           </div>
                         </div>
@@ -1392,22 +1410,22 @@ export default function AcervoDigital() {
                         <video
                           src={currentItem.file_url}
                           controls
-                          className="w-full h-auto max-h-[80vh] mx-auto"
+                          className="w-full h-auto max-h-[70vh] md:max-h-[80vh] mx-auto rounded-lg"
                           autoPlay
                         >
                           Seu navegador não suporta o elemento de vídeo.
                         </video>
                         {/* Informações do vídeo */}
-                        <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white p-4">
-                          <h3 className="text-lg font-semibold">{currentItem.title}</h3>
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent text-white p-3 md:p-4 rounded-b-lg">
+                          <h3 className="text-sm md:text-lg font-semibold line-clamp-1">{currentItem.title}</h3>
                           {currentItem.description && (
-                            <p className="text-sm text-gray-300 mt-1">{currentItem.description}</p>
+                            <p className="text-xs md:text-sm text-gray-300 mt-1 line-clamp-2 hidden sm:block">{currentItem.description}</p>
                           )}
-                          <div className="flex items-center gap-4 mt-2 text-xs text-gray-300">
-                            <span>{getDirectionData(currentItem.direction).label}</span>
-                            <span>{formatDate(currentItem.created_at)}</span>
+                          <div className="flex items-center gap-2 md:gap-4 mt-1.5 md:mt-2 text-[10px] md:text-xs text-gray-300 flex-wrap">
+                            <span className="truncate max-w-[100px] md:max-w-none">{getDirectionData(currentItem.direction).label}</span>
+                            <span className="hidden sm:inline">{formatDate(currentItem.created_at)}</span>
                             {currentItem.views && currentItem.views > 0 && (
-                              <span>{currentItem.views} visualizações</span>
+                              <span>{currentItem.views} views</span>
                             )}
                           </div>
                         </div>
@@ -1420,23 +1438,25 @@ export default function AcervoDigital() {
               </div>
             </div>
 
-            {/* Indicadores */}
-            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
+            {/* Indicadores - Touch-friendly */}
+            <div className="absolute bottom-16 md:bottom-4 left-1/2 transform -translate-x-1/2 flex gap-1.5 md:gap-2 max-w-[80%] overflow-x-auto py-2 px-3">
               {carouselItems.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setCurrentCarouselIndex(index)}
                   className={cn(
-                    "w-3 h-3 rounded-full transition-colors",
-                    index === currentCarouselIndex ? "bg-white" : "bg-white/50"
+                    "w-2.5 h-2.5 md:w-3 md:h-3 min-w-[10px] rounded-full transition-all duration-200 flex-shrink-0",
+                    index === currentCarouselIndex 
+                      ? "bg-white scale-110" 
+                      : "bg-white/50 hover:bg-white/70"
                   )}
                 />
               ))}
             </div>
 
             {/* Contador */}
-            <div className="absolute top-4 left-4 text-white text-sm">
-              {currentCarouselIndex + 1} de {carouselItems.length}
+            <div className="absolute top-3 left-3 md:top-4 md:left-4 bg-black/50 text-white text-xs md:text-sm px-3 py-1.5 rounded-lg backdrop-blur-sm">
+              {currentCarouselIndex + 1} / {carouselItems.length}
             </div>
           </div>
         </div>
@@ -1444,26 +1464,25 @@ export default function AcervoDigital() {
 
       {/* Modal de Visualização em Tela Cheia */}
       <Dialog open={isFullscreenOpen} onOpenChange={setIsFullscreenOpen}>
-        <DialogContent className="max-w-7xl max-h-[90vh] p-0 overflow-hidden">
+        <DialogContent className="max-w-7xl w-[95vw] md:w-full max-h-[95vh] md:max-h-[90vh] p-0 overflow-hidden rounded-xl md:rounded-2xl">
           {fullscreenItem && (
             <div className="relative w-full h-full">
               {/* Botão de fechar */}
               <Button
                 variant="ghost"
-                size="sm"
                 onClick={closeFullscreen}
-                className="absolute top-4 right-4 z-10 bg-black/50 text-white hover:bg-black/70"
+                className="absolute top-3 right-3 md:top-4 md:right-4 z-10 w-11 h-11 md:w-12 md:h-12 min-h-[44px] p-0 bg-black/50 text-white hover:bg-black/70 rounded-xl transition-all duration-200 active:scale-[0.98]"
               >
-                <XIcon className="w-6 h-6" />
+                <XIcon className="w-5 h-5 md:w-6 md:h-6" />
               </Button>
 
               {/* Conteúdo */}
-              <div className="w-full h-full flex items-center justify-center p-8">
+              <div className="w-full h-full flex items-center justify-center p-4 md:p-8">
                 {fullscreenItem.type === 'imagem' && fullscreenItem.file_url && (
                   <img
                     src={fullscreenItem.file_url}
                     alt={fullscreenItem.title}
-                    className="w-full h-auto max-h-[80vh] object-contain"
+                    className="w-full h-auto max-h-[70vh] md:max-h-[80vh] object-contain rounded-lg"
                   />
                 )}
 
@@ -1471,7 +1490,7 @@ export default function AcervoDigital() {
                   <video
                     src={fullscreenItem.file_url}
                     controls
-                    className="w-full h-auto max-h-[80vh]"
+                    className="w-full h-auto max-h-[70vh] md:max-h-[80vh] rounded-lg"
                     autoPlay
                   >
                     Seu navegador não suporta o elemento de vídeo.
@@ -1480,16 +1499,16 @@ export default function AcervoDigital() {
               </div>
 
               {/* Informações */}
-              <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white p-4">
-                <h3 className="text-lg font-semibold">{fullscreenItem.title}</h3>
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent text-white p-3 md:p-4">
+                <h3 className="text-sm md:text-lg font-semibold line-clamp-1">{fullscreenItem.title}</h3>
                 {fullscreenItem.description && (
-                  <p className="text-sm text-gray-300 mt-1">{fullscreenItem.description}</p>
+                  <p className="text-xs md:text-sm text-gray-300 mt-1 line-clamp-2 hidden sm:block">{fullscreenItem.description}</p>
                 )}
-                <div className="flex items-center gap-4 mt-2 text-xs text-gray-300">
-                  <span>{getDirectionData(fullscreenItem.direction).label}</span>
-                  <span>{formatDate(fullscreenItem.created_at)}</span>
+                <div className="flex items-center gap-2 md:gap-4 mt-1.5 md:mt-2 text-[10px] md:text-xs text-gray-300 flex-wrap">
+                  <span className="truncate max-w-[120px] md:max-w-none">{getDirectionData(fullscreenItem.direction).label}</span>
+                  <span className="hidden sm:inline">{formatDate(fullscreenItem.created_at)}</span>
                   {fullscreenItem.views && fullscreenItem.views > 0 && (
-                    <span>{fullscreenItem.views} visualizações</span>
+                    <span>{fullscreenItem.views} views</span>
                   )}
                 </div>
               </div>
