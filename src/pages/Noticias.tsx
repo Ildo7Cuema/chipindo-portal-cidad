@@ -826,7 +826,7 @@ const Noticias = () => {
                   </SheetHeader>
 
                   {/* Handle de arraste visual */}
-                  <div className="flex justify-center pt-3 pb-2 sticky top-0 bg-white z-10">
+                  <div className="flex justify-center pt-5 pb-4 sticky top-0 bg-white z-10 border-b border-gray-100">
                     <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
                   </div>
 
@@ -899,9 +899,9 @@ const Noticias = () => {
                     </div>
 
                     {/* Conteúdo */}
-                    <div className="p-4 pb-32 space-y-4">
+                    <div className="relative bg-white px-4 pt-6 pb-32 space-y-4 -mt-4 rounded-t-2xl z-20">
                       {/* Título */}
-                      <h1 className="text-xl font-bold leading-tight text-gray-900">
+                      <h1 className="text-base font-bold leading-snug text-gray-900">
                         {selectedNews.title}
                       </h1>
 
