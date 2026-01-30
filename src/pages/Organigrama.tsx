@@ -341,7 +341,7 @@ export default function Organigrama() {
       superior_id: null,
       email: null,
       telefone: null,
-      descricao: "Representa a estrutura de nível mais alto da administração municipal.",
+      descricao: "Representa a estrutura de nível mais alto da Administração Municipal.",
       foto_url: null,
       ordem: 0,
       ativo: true,
@@ -427,7 +427,7 @@ export default function Organigrama() {
               </div>
 
               <p className="text-base sm:text-lg md:text-xl text-blue-50/90 max-w-3xl mx-auto leading-relaxed font-light px-4 sm:px-0">
-                Conheça a estrutura organizacional da nossa administração municipal
+                Conheça a estrutura organizacional da nossa Administração Municipal
                 e os responsáveis por cada área de actuação.
               </p>
 
@@ -601,7 +601,7 @@ export default function Organigrama() {
                 </span>
               </span>
             }
-            description="Conheça os responsáveis pelas diferentes áreas da administração municipal"
+            description="Conheça os responsáveis pelas diferentes áreas da Administração Municipal"
             centered={true}
           />
 

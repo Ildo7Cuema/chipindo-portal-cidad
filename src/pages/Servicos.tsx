@@ -818,7 +818,7 @@ export default function Servicos() {
                 </span>
               </h2>
               <p className="text-base md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed px-4 md:px-0">
-                Conheça todos os serviços oferecidos pela Administração municipal.
+                Conheça todos os serviços oferecidos pela Administração Municipal.
                 <span className="hidden sm:inline"> Processos simplificados para melhor servir os nossos cidadãos.</span>
               </p>
             </div>
