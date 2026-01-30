@@ -25,7 +25,7 @@ export const Header = () => {
         : "bg-background border-b border-border/30"
     )}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between min-h-[4.5rem] py-2 gap-4">
+        <div className="flex items-center justify-between min-h-[3.5rem] py-2 gap-4">
           {/* Logo - aligned within TopBar margins */}
           <div className="flex items-center gap-2 shrink-0 min-w-0">
             <div className="w-8 h-8 shrink-0 bg-gradient-surface rounded-lg flex items-center justify-center shadow-sm border border-border/30 p-1 transition-all duration-300 group-hover:shadow-md">
@@ -35,11 +35,11 @@ export const Header = () => {
                 className="w-full h-full object-contain"
               />
             </div>
-            <div className="flex items-center h-[4rem]">
+            <div className="flex items-center h-[2.75rem]">
               <img
                 src={headerLogo}
                 alt="Chipindo - Huíla"
-                className="max-h-[4rem] w-auto object-contain object-center border-0 outline-none block"
+                className="max-h-[2.75rem] w-auto object-contain object-center border-0 outline-none block"
               />
             </div>
           </div>
