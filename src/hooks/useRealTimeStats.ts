@@ -63,7 +63,8 @@ export function useRealTimeStats(role?: string, setorId?: string | null) {
         supabase.from('departamentos').select('id, ativo'),
         supabase.from('organigrama').select('id, ativo'),
         role === 'admin' ? supabase.from('profiles').select('id') : Promise.resolve({ data: [] }),
-        supabase.from('site_visits').select('*', { count: 'exact', head: true })
+        // Contagem real: apenas acessos à página inicial pública (/)
+        supabase.from('site_visits').select('*', { count: 'exact', head: true }).eq('page_path', '/')
       ]);
 
       // Calculate statistics

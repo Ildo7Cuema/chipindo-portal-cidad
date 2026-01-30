@@ -24,6 +24,7 @@ import { useAcervoViews } from '@/hooks/useAcervoViews';
 import { BatchUploadModal } from './BatchUploadModal';
 import 'chart.js/auto';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { prepareFileForUpload } from '@/lib/fileCompression';
 
 interface AcervoItem {
   id: string;
@@ -186,18 +187,30 @@ export default function AcervoDigitalManager() {
     }
   };
 
-  const handleFileUpload = async (file: File): Promise<string | null> => {
+  const handleFileUpload = async (file: File, department: string): Promise<{ url: string; file: File } | null> => {
     try {
       setUploadProgress(0);
-      const fileExt = file.name.split('.').pop();
+
+      // Compress (client-side) to reduce storage usage.
+      const prepared = await prepareFileForUpload(file);
+      const fileToUpload = prepared.file;
+
+      if (prepared.wasCompressed) {
+        const savedPct = Math.round((1 - fileToUpload.size / prepared.originalSize) * 100);
+        toast.message('Arquivo optimizado para upload', {
+          description: `Redução aproximada: ${Math.max(0, savedPct)}%`,
+        });
+      }
+
+      const fileExt = fileToUpload.name.split('.').pop();
       const timestamp = Date.now();
       const randomId = Math.random().toString(36).substring(2, 15);
       const fileName = `${timestamp}-${randomId}.${fileExt}`;
-      const filePath = `${formData.department}/${fileName}`;
+      const filePath = `${department}/${fileName}`;
       
       const { data, error } = await supabase.storage
         .from('acervo-digital')
-        .upload(filePath, file, {
+        .upload(filePath, fileToUpload, {
           upsert: false
         });
       
@@ -208,7 +221,7 @@ export default function AcervoDigitalManager() {
         .getPublicUrl(filePath);
       
       setUploadProgress(null);
-      return urlData.publicUrl;
+      return { url: urlData.publicUrl, file: fileToUpload };
     } catch (error) {
       setUploadProgress(null);
       console.error('Error uploading file:', error);
@@ -223,10 +236,10 @@ export default function AcervoDigitalManager() {
 
     setUploading(true);
     try {
-      let fileUrl = null;
+      let uploaded: { url: string; file: File } | null = null;
       if (formData.file) {
-        fileUrl = await handleFileUpload(formData.file);
-        if (!fileUrl) return;
+        uploaded = await handleFileUpload(formData.file, formData.department);
+        if (!uploaded) return;
       }
 
       const itemData = {
@@ -235,16 +248,16 @@ export default function AcervoDigitalManager() {
         type: formData.type,
         category: formData.category || null,
         department: formData.department,
-        file_size: formData.file?.size || null,
-        mime_type: formData.file?.type || null,
+        file_size: uploaded?.file.size || formData.file?.size || null,
+        mime_type: uploaded?.file.type || formData.file?.type || null,
         is_public: formData.is_public,
         author_id: user.id,
         file_url: null as string | null
       };
 
       // Se há um novo arquivo, adicionar o URL
-      if (fileUrl) {
-        itemData.file_url = fileUrl;
+      if (uploaded?.url) {
+        itemData.file_url = uploaded.url;
       }
 
       if (editingItem) {
@@ -262,7 +275,7 @@ export default function AcervoDigitalManager() {
         toast.success('Item actualizado com sucesso!');
       } else {
         // Para novo item, file_url deve ser obrigatório
-        if (!fileUrl) {
+        if (!uploaded?.url) {
           toast.error('É necessário selecionar um arquivo para criar um novo item');
           setUploading(false);
           return;
@@ -302,8 +315,6 @@ export default function AcervoDigitalManager() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Tem certeza que deseja excluir este item?')) return;
-
     try {
       const { error } = await supabase
         .from('acervo_digital')
@@ -625,11 +636,11 @@ export default function AcervoDigitalManager() {
 
         try {
           // Upload do arquivo
-          const fileUrl = await handleFileUpload(file);
+          const uploaded = await handleFileUpload(file, batchUploadDepartment);
 
-          if (fileUrl) {
+          if (uploaded?.url) {
             // Determinar tipo do arquivo
-            const fileType = getFileType(file);
+            const fileType = getFileType(uploaded.file);
             
             // Criar entrada no acervo
             const { data, error } = await supabase
@@ -639,9 +650,9 @@ export default function AcervoDigitalManager() {
                 description: `Arquivo carregado em lote para ${departments.find(d => d.value === batchUploadDepartment)?.label}`,
                 type: fileType,
                 department: batchUploadDepartment,
-                file_url: fileUrl,
-                file_size: file.size,
-                mime_type: file.type,
+                file_url: uploaded.url,
+                file_size: uploaded.file.size,
+                mime_type: uploaded.file.type,
                 is_public: false,
                 author_id: user?.id
               })
@@ -1246,15 +1257,36 @@ export default function AcervoDigitalManager() {
 
       {/* Modal de Confirmação de Exclusão */}
       <AlertDialog open={!!confirmDeleteId} onOpenChange={() => setConfirmDeleteId(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
-            <AlertDialogDescription>
-              Tem certeza que deseja excluir este item do acervo? Esta ação não pode ser desfeita.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+        <AlertDialogContent className="sm:max-w-[500px] border-0 shadow-2xl">
+          <div className="flex flex-col items-center text-center space-y-4 py-4">
+            {/* Ícone de alerta com gradiente */}
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-red-100 to-red-200 flex items-center justify-center shadow-lg">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center">
+                <Trash2 className="w-6 h-6 text-white" />
+              </div>
+            </div>
+            
+            {/* Título e descrição */}
+            <AlertDialogHeader className="space-y-2">
+              <AlertDialogTitle className="text-xl font-bold text-foreground">
+                Confirmar Exclusão
+              </AlertDialogTitle>
+              <AlertDialogDescription className="text-base text-muted-foreground px-4">
+                Tem certeza que deseja excluir este item?
+              </AlertDialogDescription>
+              <p className="text-sm text-muted-foreground/80 px-4 pt-2">
+                Esta ação não pode ser desfeita e o item será permanentemente removido do acervo digital.
+              </p>
+            </AlertDialogHeader>
+          </div>
+          
+          <AlertDialogFooter className="flex-row gap-3 sm:gap-3 pt-4 border-t">
+            <AlertDialogCancel 
+              className="flex-1 sm:flex-initial bg-muted hover:bg-muted/80 text-foreground border-0 shadow-sm"
+              onClick={() => setConfirmDeleteId(null)}
+            >
+              Cancelar
+            </AlertDialogCancel>
             <AlertDialogAction 
               onClick={() => {
                 if (confirmDeleteId) {
@@ -1262,9 +1294,10 @@ export default function AcervoDigitalManager() {
                   setConfirmDeleteId(null);
                 }
               }}
-              className="bg-red-600 hover:bg-red-700"
+              className="flex-1 sm:flex-initial bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white shadow-lg border-0 font-medium"
             >
-              Excluir
+              <Trash2 className="w-4 h-4 mr-2" />
+              Excluir Item
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

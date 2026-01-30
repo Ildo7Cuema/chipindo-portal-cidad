@@ -31,6 +31,7 @@ interface NavigationProps {
 export const Navigation = ({ className }: NavigationProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSetoresOpen, setIsSetoresOpen] = useState(false);
+  const [isInformacaoOpen, setIsInformacaoOpen] = useState(false);
   const [activeItem, setActiveItem] = useState("/");
 
   useEffect(() => {
@@ -39,12 +40,15 @@ export const Navigation = ({ className }: NavigationProps) => {
 
   const navItems = [
     { label: "Início", href: "/", icon: HomeIcon },
-    { label: "Notícias", href: "/noticias", icon: FileTextIcon },
-    { label: "Concursos", href: "/concursos", icon: CalendarIcon },
-    { label: "Acervo", href: "/acervo", icon: ImageIcon },
     { label: "Organigrama", href: "/organigrama", icon: UserIcon },
     { label: "Serviços", href: "/servicos", icon: WrenchIcon },
     { label: "Contactos", href: "/contactos", icon: PhoneIcon },
+  ];
+
+  const informacaoItems = [
+    { label: "Notícias", href: "/noticias", icon: FileTextIcon },
+    { label: "Concursos", href: "/concursos", icon: CalendarIcon },
+    { label: "Acervo", href: "/acervo", icon: ImageIcon },
   ];
 
   const setoresItems = [
@@ -69,7 +73,7 @@ export const Navigation = ({ className }: NavigationProps) => {
   return (
     <nav className={cn("relative", className)}>
       {/* Desktop Navigation */}
-      <div className="hidden lg:flex items-center space-x-0.5">
+      <div className="hidden lg:flex items-center flex-wrap gap-0.5">
         {navItems.map((item) => {
           const IconComponent = item.icon;
           const active = isActive(item.href);
@@ -92,6 +96,64 @@ export const Navigation = ({ className }: NavigationProps) => {
             </Button>
           );
         })}
+
+        {/* Informação Dropdown (Notícias, Concursos, Acervo) */}
+        <div className="relative">
+          <Button
+            variant="ghost"
+            size="sm"
+            className={cn(
+              "h-8 px-2 text-xs font-medium transition-colors duration-200",
+              isInformacaoOpen || informacaoItems.some(item => isActive(item.href))
+                ? "bg-primary/10 text-primary"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+            )}
+            onClick={() => setIsInformacaoOpen(!isInformacaoOpen)}
+            onMouseEnter={() => setIsInformacaoOpen(true)}
+            onMouseLeave={() => setIsInformacaoOpen(false)}
+          >
+            <FileTextIcon className="w-3 h-3 mr-1.5" />
+            Informação
+            <ChevronDownIcon className={cn(
+              "w-3 h-3 ml-1 transition-transform duration-200",
+              isInformacaoOpen && "rotate-180"
+            )} />
+          </Button>
+
+          {isInformacaoOpen && (
+            <div
+              className="absolute top-full left-0 mt-1 w-52 bg-card border border-border rounded-lg shadow-floating z-50"
+              onMouseEnter={() => setIsInformacaoOpen(true)}
+              onMouseLeave={() => setIsInformacaoOpen(false)}
+            >
+              <div className="p-2">
+                {informacaoItems.map((item) => {
+                  const IconComponent = item.icon;
+                  const active = isActive(item.href);
+
+                  return (
+                    <button
+                      key={item.label}
+                      className={cn(
+                        "w-full flex items-center gap-3 text-left p-2.5 rounded-md transition-colors duration-200",
+                        active
+                          ? "bg-primary/10 text-primary"
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                      )}
+                      onClick={() => {
+                        handleNavClick(item.href);
+                        setIsInformacaoOpen(false);
+                      }}
+                    >
+                      <IconComponent className="w-4 h-4" />
+                      <span className="font-medium text-sm">{item.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* Setores Dropdown */}
         <div className="relative">
@@ -202,6 +264,33 @@ export const Navigation = ({ className }: NavigationProps) => {
                   </button>
                 );
               })}
+
+              {/* Informação Section in Mobile */}
+              <div className="border-t border-border mt-2 pt-2">
+                <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  Informação
+                </div>
+                {informacaoItems.map((item) => {
+                  const IconComponent = item.icon;
+                  const active = isActive(item.href);
+
+                  return (
+                    <button
+                      key={item.label}
+                      className={cn(
+                        "w-full flex items-center gap-3 text-left p-2.5 rounded-md transition-colors duration-200",
+                        active
+                          ? "bg-primary/10 text-primary"
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                      )}
+                      onClick={() => handleNavClick(item.href)}
+                    >
+                      <IconComponent className="w-4 h-4" />
+                      <span className="font-medium text-sm">{item.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
 
               {/* Setores Section in Mobile */}
               <div className="border-t border-border mt-2 pt-2">

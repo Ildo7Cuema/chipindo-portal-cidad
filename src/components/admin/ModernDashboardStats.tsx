@@ -656,7 +656,7 @@ export const ModernDashboardStats = () => {
           icon={Eye}
           label="Total de Acessos"
           value={stats.totalVisits}
-          description="Visualizações de página"
+          description="Acessos à página inicial"
           variant="glass"
           trend={{ value: 10, isPositive: true }}
           className="bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-orange-950/20 dark:to-yellow-950/20 border-orange-200 dark:border-orange-800 shadow-lg hover:shadow-xl transition-all duration-300"

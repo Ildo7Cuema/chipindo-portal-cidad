@@ -6,7 +6,7 @@ import { Section, SectionContent } from "@/components/ui/section";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { cn } from "@/lib/utils";
 import insigniaAngola from "@/assets/insignia-angola.png";
-import logoGovernoFooter from "@/assets/logo_governo_footer.png";
+import logoGovernoFooter from "@/assets/logo_Rodape_huila.png";
 import {
   MapPinIcon,
   PhoneIcon,
@@ -295,7 +295,7 @@ export const Footer = () => {
                 <img
                   src={logoGovernoFooter}
                   alt="Governo de Angola e Governo Provincial de Huíla"
-                  className="max-w-[300px] w-full h-auto object-contain hover:scale-105 transition-transform duration-300 drop-shadow-lg"
+                  className="max-w-[380px] w-full h-auto object-contain hover:scale-105 transition-transform duration-300 mix-blend-lighten border-0 outline-none block shadow-none"
                 />
               </div>
             </div>

@@ -1,10 +1,9 @@
 import { Navigation } from "@/components/ui/navigation";
 import { MobileNavigation } from "@/components/ui/mobile-navigation";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import insigniaAngola from "@/assets/insignia-angola.png";
-import headerLogo from "@/assets/logo_governo_footer.png";
+import headerLogo from "@/assets/logo_Rodape_huila.png";
 
 export const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -14,7 +13,7 @@ export const Header = () => {
       setIsScrolled(window.scrollY > 20);
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -26,31 +25,23 @@ export const Header = () => {
         : "bg-background border-b border-border/30"
     )}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo and Title - Mobile Optimized */}
-          <div className="flex items-center space-x-2 group">
-            <div className="w-8 h-8 bg-gradient-surface rounded-lg flex items-center justify-center shadow-sm border border-border/30 p-1 transition-all duration-300 group-hover:shadow-md">
+        <div className="flex items-center justify-between min-h-[4.5rem] py-2 gap-4">
+          {/* Logo - aligned within TopBar margins */}
+          <div className="flex items-center gap-2 shrink-0 min-w-0">
+            <div className="w-8 h-8 shrink-0 bg-gradient-surface rounded-lg flex items-center justify-center shadow-sm border border-border/30 p-1 transition-all duration-300 group-hover:shadow-md">
               <img
                 src={insigniaAngola}
                 alt="Insígnia da República de Angola"
                 className="w-full h-full object-contain"
               />
             </div>
-
-            <div className="flex flex-col justify-center">
+            <div className="flex items-center h-[4rem]">
               <img
                 src={headerLogo}
                 alt="Chipindo - Huíla"
-                className="h-[3.25rem] w-auto object-contain"
+                className="max-h-[4rem] w-auto object-contain object-center border-0 outline-none block"
               />
             </div>
-
-            <Badge
-              variant="outline"
-              className="hidden md:inline-flex bg-gradient-to-r from-yellow-500/10 to-orange-500/10 text-primary border-primary/30 text-xs px-2 py-0.5 ml-3 font-medium"
-            >
-              Oficial
-            </Badge>
           </div>
 
           {/* Desktop Navigation */}
