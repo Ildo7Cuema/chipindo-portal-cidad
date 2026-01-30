@@ -75,7 +75,7 @@ export const PushNotificationManager = () => {
       return "Não suportado";
     }
     if (isEnabled && subscription) {
-      return "Ativo";
+      return "Activo";
     }
     if (permission === 'denied' as any) {
       return "Permissão negada";
@@ -191,7 +191,7 @@ export const PushNotificationManager = () => {
               <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                 {subscription ? '1' : '0'}
               </div>
-              <p className="text-sm text-muted-foreground">Subscrições Ativas</p>
+              <p className="text-sm text-muted-foreground">Subscrições Activas</p>
             </div>
             
             <div className="text-center">
@@ -232,7 +232,7 @@ export const PushNotificationManager = () => {
                   <p className="text-sm text-muted-foreground">Notícias e atualizações</p>
                 </div>
               </div>
-              <Badge variant="default">Ativo</Badge>
+              <Badge variant="default">Activo</Badge>
             </div>
             
             <div className="flex items-center justify-between p-3 border rounded-lg">
@@ -243,7 +243,7 @@ export const PushNotificationManager = () => {
                   <p className="text-sm text-muted-foreground">Alertas importantes</p>
                 </div>
               </div>
-              <Badge variant="default">Ativo</Badge>
+              <Badge variant="default">Activo</Badge>
             </div>
             
             <div className="flex items-center justify-between p-3 border rounded-lg">
@@ -254,7 +254,7 @@ export const PushNotificationManager = () => {
                   <p className="text-sm text-muted-foreground">Manutenção e updates</p>
                 </div>
               </div>
-              <Badge variant="default">Ativo</Badge>
+              <Badge variant="default">Activo</Badge>
             </div>
           </div>
 

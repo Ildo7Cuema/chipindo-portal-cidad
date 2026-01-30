@@ -354,7 +354,7 @@ const Noticias = () => {
               <div className="space-y-3 md:space-y-4">
                 <div className="flex items-center justify-center gap-2 mb-2 md:mb-3">
                   <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-green-400 rounded-full animate-pulse"></div>
-                  <span className="text-green-300 text-xs md:text-sm font-medium tracking-wide uppercase">Atualizado</span>
+                  <span className="text-green-300 text-xs md:text-sm font-medium tracking-wide uppercase">Actualizado</span>
                   <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-green-400 rounded-full animate-pulse"></div>
                 </div>
                 <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-tight tracking-tight">

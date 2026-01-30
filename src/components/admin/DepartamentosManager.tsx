@@ -271,7 +271,7 @@ export function DepartamentosManager() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-green-600 dark:text-green-400">Ativas</p>
+                <p className="text-sm font-medium text-green-600 dark:text-green-400">Activas</p>
                 <p className="text-2xl font-bold text-green-900 dark:text-green-100">{stats.active}</p>
               </div>
               <CheckCircle className="h-8 w-8 text-green-600 dark:text-green-400" />
@@ -295,7 +295,7 @@ export function DepartamentosManager() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-purple-600 dark:text-purple-400">Taxa Ativa</p>
+                <p className="text-sm font-medium text-purple-600 dark:text-purple-400">Taxa Activa</p>
                 <p className="text-2xl font-bold text-purple-900 dark:text-purple-100">
                   {stats.total > 0 ? Math.round((stats.active / stats.total) * 100) : 0}%
                 </p>
@@ -480,7 +480,7 @@ export function DepartamentosManager() {
                               onCheckedChange={(checked) => setFormData({ ...formData, ativo: checked })}
                             />
                             <Label htmlFor="ativo" className="text-sm">
-                              {formData.ativo ? 'Ativo' : 'Inativo'}
+                              {formData.ativo ? 'Activo' : 'Inactivo'}
                             </Label>
                           </div>
                         </div>
@@ -605,7 +605,7 @@ export function DepartamentosManager() {
                       <div className="flex items-center gap-2 mb-2">
                         <CardTitle className="text-lg truncate">{direccao.nome}</CardTitle>
                         <Badge variant={direccao.ativo ? "default" : "secondary"} className="text-xs">
-                          {direccao.ativo ? 'Ativo' : 'Inativo'}
+                          {direccao.ativo ? 'Activo' : 'Inactivo'}
                         </Badge>
                       </div>
                       {direccao.codigo && (

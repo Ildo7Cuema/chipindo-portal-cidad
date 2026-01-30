@@ -338,8 +338,8 @@ export const TurismoAmbienteCarouselManager = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todos</SelectItem>
-                <SelectItem value="active">Ativas</SelectItem>
-                <SelectItem value="inactive">Inativas</SelectItem>
+                <SelectItem value="active">Activas</SelectItem>
+                <SelectItem value="inactive">Inactivas</SelectItem>
               </SelectContent>
             </Select>
             <Select value={filterCategory} onValueChange={(value: any) => setFilterCategory(value)}>
@@ -533,7 +533,7 @@ export const TurismoAmbienteCarouselManager = () => {
                   checked={formData.active}
                   onCheckedChange={(checked) => setFormData(prev => ({ ...prev, active: checked }))}
                 />
-                <Label htmlFor="active">Ativa</Label>
+                <Label htmlFor="active">Activa</Label>
               </div>
             </div>
 

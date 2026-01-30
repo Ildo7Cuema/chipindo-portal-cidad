@@ -673,7 +673,7 @@ export const ServicosSetorManager = ({ setorNome, setorId }: ServicosSetorManage
                         />
                         <Label htmlFor="ativo" className="flex items-center gap-2">
                           <CheckCircleIcon className="w-4 h-4 text-green-600" />
-                          Serviço Ativo
+                          Serviço Activo
                         </Label>
                       </div>
                       <div className="flex items-center space-x-2">
@@ -728,7 +728,7 @@ export const ServicosSetorManager = ({ setorNome, setorId }: ServicosSetorManage
                 <div className="flex items-center gap-2">
                   {getPriorityBadge(servico.prioridade)}
                   <Badge variant={servico.ativo ? "default" : "secondary"}>
-                    {servico.ativo ? "Ativo" : "Inativo"}
+                    {servico.ativo ? "Activo" : "Inactivo"}
                   </Badge>
                 </div>
               </div>

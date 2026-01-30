@@ -37,7 +37,7 @@ export const MunicipalityCharacterization = ({ className }: MunicipalityCharacte
     {
       icon: MapPin,
       title: "Localização Estratégica",
-      description: "Situado na província da Huíla, Chipindo é um município de importância regional",
+      description: "Situado na Província da Huíla, Chipindo é um município de importância regional",
       color: "text-blue-600",
       bgColor: "bg-blue-50 dark:bg-blue-900/20"
     },
@@ -135,7 +135,7 @@ export const MunicipalityCharacterization = ({ className }: MunicipalityCharacte
             </span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Descubra as características únicas que fazem de Chipindo um município especial na província da Huíla
+            Descubra as características únicas que fazem de Chipindo um Município especial na Província da Huíla
           </p>
         </div>
 
@@ -448,7 +448,7 @@ export const MunicipalityCharacterization = ({ className }: MunicipalityCharacte
             <ArrowRight className="w-5 h-5 ml-2" />
           </Button>
           <p className="text-muted-foreground mt-4">
-            Descubra mais sobre Chipindo e participe das nossas atividades culturais
+            Descubra mais sobre Chipindo e participe das nossas actividades culturais
           </p>
         </div>
       </div>

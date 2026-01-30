@@ -100,7 +100,7 @@ export const SystemSettings = () => {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-blue-600 dark:text-blue-400">Utilizadores Ativos</p>
+                <p className="text-sm font-medium text-blue-600 dark:text-blue-400">Utilizadores Activos</p>
                 <p className="text-2xl font-bold text-blue-900 dark:text-blue-100">
                   {mockStats.activeUsers}
                 </p>

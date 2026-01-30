@@ -346,7 +346,7 @@ export const SetoresOportunidadesManager = ({ setorId, setorNome }: SetoresOport
                     checked={formData.ativo}
                     onCheckedChange={(checked) => setFormData({ ...formData, ativo: checked })}
                   />
-                  <Label htmlFor="ativo">Ativo</Label>
+                  <Label htmlFor="ativo">Activo</Label>
                 </div>
               </div>
 
@@ -380,7 +380,7 @@ export const SetoresOportunidadesManager = ({ setorId, setorNome }: SetoresOport
                 </div>
                 <div className="flex items-center gap-2">
                   <Badge variant={oportunidade.ativo ? "default" : "secondary"}>
-                    {oportunidade.ativo ? "Ativa" : "Inativa"}
+                    {oportunidade.ativo ? "Activa" : "Inactiva"}
                   </Badge>
                   <Badge variant="outline" className="text-xs">
                     Ordem: {oportunidade.ordem}

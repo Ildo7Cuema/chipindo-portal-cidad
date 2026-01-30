@@ -663,7 +663,7 @@ export const ConcursosManager = () => {
         metadata: {
           'Total de Concursos': concursos.length,
           'Publicados': concursos.filter(c => c.published).length,
-          'Ativos': concursos.filter(c => c.status === 'active').length,
+          'Activos': concursos.filter(c => c.status === 'active').length,
           'Fechados': concursos.filter(c => c.status === 'closed').length
         }
       };
@@ -706,11 +706,11 @@ export const ConcursosManager = () => {
 
   const getStatusLabel = (status?: string): string => {
     switch (status) {
-      case 'active': return 'Ativo';
+      case 'active': return 'Activo';
       case 'closed': return 'Fechado';
       case 'suspended': return 'Suspenso';
       case 'draft': return 'Rascunho';
-      default: return 'Ativo';
+      default: return 'Activo';
     }
   };
 
@@ -1493,7 +1493,7 @@ export const ConcursosManager = () => {
           <CardContent className="p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div className="min-w-0 flex-1">
-                <p className="text-emerald-600 dark:text-emerald-400 text-xs sm:text-sm font-medium truncate">Ativos</p>
+                <p className="text-emerald-600 dark:text-emerald-400 text-xs sm:text-sm font-medium truncate">Activos</p>
                 <p className="text-lg sm:text-2xl font-bold text-emerald-900 dark:text-emerald-100">{activeCount}</p>
               </div>
               <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8 text-emerald-600 flex-shrink-0" />
@@ -1587,7 +1587,7 @@ export const ConcursosManager = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todos os status</SelectItem>
-                  <SelectItem value="active">Ativos</SelectItem>
+                  <SelectItem value="active">Activos</SelectItem>
                   <SelectItem value="closed">Fechados</SelectItem>
                   <SelectItem value="suspended">Suspensos</SelectItem>
                   <SelectItem value="draft">Rascunhos</SelectItem>
@@ -1620,7 +1620,7 @@ export const ConcursosManager = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todos os status</SelectItem>
-                  <SelectItem value="active">Ativos</SelectItem>
+                  <SelectItem value="active">Activos</SelectItem>
                   <SelectItem value="closed">Fechados</SelectItem>
                   <SelectItem value="suspended">Suspensos</SelectItem>
                   <SelectItem value="draft">Rascunhos</SelectItem>
@@ -1707,8 +1707,8 @@ export const ConcursosManager = () => {
             </TabsTrigger>
             <TabsTrigger value="active" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
               <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4" />
-              <span className="hidden sm:inline">Ativos</span>
-              <span className="sm:hidden">Ativos</span>
+              <span className="hidden sm:inline">Activos</span>
+              <span className="sm:hidden">Activos</span>
               <span className="hidden sm:inline">({activeCount})</span>
               <span className="sm:hidden text-xs">({activeCount})</span>
             </TabsTrigger>

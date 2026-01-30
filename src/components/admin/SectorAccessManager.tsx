@@ -497,7 +497,7 @@ export function SectorAccessManager({ currentUserRole, currentUserSetorId }: Sec
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Utilizadores Ativos</p>
+                <p className="text-sm font-medium text-muted-foreground">Utilizadores Activos</p>
                 <p className="text-2xl font-bold">{sectorStats.active_users}</p>
               </div>
               <Activity className="h-8 w-8 text-green-600" />
@@ -635,7 +635,7 @@ export function SectorAccessManager({ currentUserRole, currentUserSetorId }: Sec
                     </div>
                     <div className="flex items-center gap-2">
                       <Badge variant={sector.ativo ? "default" : "secondary"} className="text-xs">
-                        {sector.ativo ? "Ativo" : "Inativo"}
+                        {sector.ativo ? "Activo" : "Inactivo"}
                       </Badge>
                       <Button
                         size="sm"
@@ -753,7 +753,7 @@ export function SectorAccessManager({ currentUserRole, currentUserSetorId }: Sec
                     </div>
                     <div className="flex items-center gap-2">
                       <Badge variant={user.status === 'active' ? 'default' : 'secondary'} className="text-xs">
-                        {user.status === 'active' ? 'Ativo' : 'Inativo'}
+                        {user.status === 'active' ? 'Activo' : 'Inactivo'}
                       </Badge>
                       <Badge variant="outline" className="text-xs">
                         {getSectorName(user.role as UserRole)}
@@ -1024,7 +1024,7 @@ export function SectorAccessManager({ currentUserRole, currentUserSetorId }: Sec
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Todos os Utilizadores</SelectItem>
-                    <SelectItem value="active">Utilizadores Ativos</SelectItem>
+                    <SelectItem value="active">Utilizadores Activos</SelectItem>
                     <SelectItem value="specific">Específicos</SelectItem>
                   </SelectContent>
                 </Select>

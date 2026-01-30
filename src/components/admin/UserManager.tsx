@@ -593,7 +593,7 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-green-600 dark:text-green-400">Ativos</p>
+                <p className="text-sm font-medium text-green-600 dark:text-green-400">Activos</p>
                 <p className="text-2xl font-bold text-green-900 dark:text-green-100">{stats.active}</p>
               </div>
               <UserCheck className="h-8 w-8 text-green-600 dark:text-green-400" />
@@ -605,7 +605,7 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-orange-600 dark:text-orange-400">Inativos</p>
+                <p className="text-sm font-medium text-orange-600 dark:text-orange-400">Inactivos</p>
                 <p className="text-2xl font-bold text-orange-900 dark:text-orange-100">{stats.inactive}</p>
               </div>
               <UserX className="h-8 w-8 text-orange-600 dark:text-orange-400" />
@@ -958,7 +958,7 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
                             </span>
                           </div>
                           <Badge variant={user.role !== null ? "default" : "secondary"} className="text-xs">
-                            {user.role !== null ? 'Ativo' : 'Inativo'}
+                            {user.role !== null ? 'Activo' : 'Inactivo'}
                           </Badge>
                         </div>
                       </div>

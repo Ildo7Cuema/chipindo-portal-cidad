@@ -469,7 +469,7 @@ export default function Servicos() {
                 <div className="space-y-2 md:space-y-3">
                   <div className="flex items-center justify-center gap-2 mb-2">
                     <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-green-400 rounded-full animate-pulse"></div>
-                    <span className="text-green-300 text-xs md:text-sm font-medium tracking-wide uppercase">Serviços Ativos</span>
+                    <span className="text-green-300 text-xs md:text-sm font-medium tracking-wide uppercase">Serviços Activos</span>
                     <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-green-400 rounded-full animate-pulse"></div>
                   </div>
                   <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold text-white leading-tight">
@@ -487,7 +487,7 @@ export default function Servicos() {
               {/* Enhanced Description */}
               <div className="max-w-4xl mx-auto space-y-4 md:space-y-6">
                 <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/95 leading-relaxed font-light px-2 md:px-0">
-                  Acesso <span className="font-semibold text-white">rápido e eficiente</span> aos serviços oferecidos pela nossa administração.
+                  Acesso <span className="font-semibold text-white">rápido e eficiente</span> aos serviços oferecidos pela nossa Administração.
                   <span className="hidden sm:inline"> Facilitamos a vida dos cidadãos através de processos <span className="font-semibold text-white">transparentes e ágeis</span>.</span>
                 </p>
 
@@ -818,7 +818,7 @@ export default function Servicos() {
                 </span>
               </h2>
               <p className="text-base md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed px-4 md:px-0">
-                Conheça todos os serviços oferecidos pela administração municipal.
+                Conheça todos os serviços oferecidos pela Administração municipal.
                 <span className="hidden sm:inline"> Processos simplificados para melhor servir os nossos cidadãos.</span>
               </p>
             </div>

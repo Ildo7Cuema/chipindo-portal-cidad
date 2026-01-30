@@ -204,7 +204,7 @@ export function useServiceRequests() {
       calculateStats(requests.map(r => r.id === requestId ? data : r));
 
       toast({
-        title: "Status Atualizado",
+        title: "Status Actualizado",
         description: `Solicitação marcada como ${status}`,
       });
 

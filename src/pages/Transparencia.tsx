@@ -427,7 +427,7 @@ const Transparencia = () => {
               <CardContent className="p-4 sm:p-6">
                 <div className="flex items-center justify-between gap-2">
                   <div className="min-w-0">
-                    <p className="text-xs sm:text-sm font-medium text-slate-600 truncate">Projectos Ativos</p>
+                    <p className="text-xs sm:text-sm font-medium text-slate-600 truncate">Projectos Activos</p>
                     <p className="text-xl sm:text-2xl font-bold text-slate-900">{activeProjects}</p>
                   </div>
                   <div className="w-10 h-10 sm:w-12 sm:h-12 bg-orange-100 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -755,7 +755,7 @@ const Transparencia = () => {
                               <p className="text-slate-600 text-sm sm:text-base mb-3">{project.description}</p>
                             </div>
                             <Badge className={cn(getProjectStatusColor(project.status), "text-xs self-start flex-shrink-0")}>
-                              {project.status === 'active' ? 'Ativo' :
+                              {project.status === 'active' ? 'Activo' :
                                 project.status === 'completed' ? 'Concluído' : 'Planeado'}
                             </Badge>
                           </div>

@@ -315,7 +315,7 @@ export const HeroCarouselManager = () => {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-green-600 dark:text-green-400">Ativas</p>
+                <p className="text-sm font-medium text-green-600 dark:text-green-400">Activas</p>
                 <p className="text-2xl font-bold text-green-900 dark:text-green-100">{stats.active}</p>
               </div>
               <Eye className="h-8 w-8 text-green-600 dark:text-green-400" />
@@ -327,7 +327,7 @@ export const HeroCarouselManager = () => {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-orange-600 dark:text-orange-400">Inativas</p>
+                <p className="text-sm font-medium text-orange-600 dark:text-orange-400">Inactivas</p>
                 <p className="text-2xl font-bold text-orange-900 dark:text-orange-100">{stats.inactive}</p>
               </div>
               <EyeOff className="h-8 w-8 text-orange-600 dark:text-orange-400" />
@@ -525,7 +525,7 @@ export const HeroCarouselManager = () => {
                                 onCheckedChange={(checked) => setFormData(prev => ({ ...prev, active: checked }))}
                               />
                               <Label htmlFor="active" className="text-sm">
-                                {formData.active ? 'Ativa' : 'Inativa'}
+                                {formData.active ? 'Activa' : 'Inactiva'}
                               </Label>
                             </div>
                           </div>
@@ -589,8 +589,8 @@ export const HeroCarouselManager = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todos</SelectItem>
-                  <SelectItem value="active">Ativos</SelectItem>
-                  <SelectItem value="inactive">Inativos</SelectItem>
+                  <SelectItem value="active">Activos</SelectItem>
+                  <SelectItem value="inactive">Inactivos</SelectItem>
                 </SelectContent>
               </Select>
 
@@ -675,7 +675,7 @@ export const HeroCarouselManager = () => {
                     {!image.active && (
                       <Badge variant="secondary" className="bg-black/50 text-white">
                         <EyeOff className="h-3 w-3 mr-1" />
-                        Inativa
+                        Inactiva
                       </Badge>
                     )}
                     {/* Removed link_url reference since property doesn't exist */}

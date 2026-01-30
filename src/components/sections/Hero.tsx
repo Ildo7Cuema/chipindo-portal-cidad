@@ -299,7 +299,7 @@ export const Hero = () => {
                   icon={FileTextIcon}
                   label="Projectos"
                   value={heroStatsLoading ? '...' : `${projects}+`}
-                  description="Iniciativas ativas"
+                  description="Iniciativas activas"
                   variant="glass"
                   size="lg"
                   className="hover:scale-105 transition-all duration-500 hover:shadow-2xl hover:shadow-blue-500/10"
@@ -333,7 +333,7 @@ export const Hero = () => {
                     <div className="absolute inset-0 w-4 h-4 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full animate-ping opacity-75" />
                   </div>
                   <span className="text-primary-foreground/95 font-bold text-lg">
-                    {currentImage?.category || 'Portal Atualizado'}
+                    {currentImage?.category || 'Portal Actualizado'}
                   </span>
                   <Badge className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 text-yellow-200 border-yellow-400/30">
                     Ao Vivo
@@ -356,7 +356,7 @@ export const Hero = () => {
               Potencialidades de Chipindo
             </h3>
             <p className="text-primary-foreground/70 text-lg max-w-2xl mx-auto">
-              Conheça as riquezas que fazem de Chipindo um município próspero e cheio de oportunidades
+              Conheça as riquezas que fazem de Chipindo um Município próspero e cheio de oportunidades
             </p>
           </div>
 

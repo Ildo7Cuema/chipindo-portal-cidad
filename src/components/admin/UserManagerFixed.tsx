@@ -348,7 +348,7 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-green-600 dark:text-green-400">Ativos</p>
+                <p className="text-sm font-medium text-green-600 dark:text-green-400">Activos</p>
                 <p className="text-2xl font-bold text-green-900 dark:text-green-100">{stats.active}</p>
               </div>
               <UserCheck className="h-8 w-8 text-green-600 dark:text-green-400" />
@@ -542,8 +542,8 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todos</SelectItem>
-                  <SelectItem value="active">Ativos</SelectItem>
-                  <SelectItem value="inactive">Inativos</SelectItem>
+                  <SelectItem value="active">Activos</SelectItem>
+                  <SelectItem value="inactive">Inactivos</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -635,7 +635,7 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
                             </span>
                           </div>
                           <Badge variant={user.role !== null ? "default" : "secondary"} className="text-xs">
-                            {user.role !== null ? 'Ativo' : 'Inativo'}
+                            {user.role !== null ? 'Activo' : 'Inactivo'}
                           </Badge>
                         </div>
                       </div>

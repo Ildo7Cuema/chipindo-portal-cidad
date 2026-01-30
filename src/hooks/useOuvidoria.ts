@@ -286,7 +286,7 @@ export function useOuvidoria() {
       }
 
       toast({
-        title: "Status Atualizado",
+        title: "Status Actualizado",
         description: "Status da manifestação atualizado com sucesso",
       });
 

@@ -166,18 +166,18 @@ export const Footer = () => {
 
                 {/* Social media description */}
                 <p className="text-xs text-slate-400 leading-relaxed">
-                  Siga-nos nas redes sociais para ficar atualizado sobre as últimas notícias e serviços municipais.
+                  Siga-nos nas redes sociais para ficar actualizado sobre as últimas notícias e serviços Municipais.
                 </p>
 
                 {/* Social media stats */}
                 <div className="flex items-center gap-4 text-xs text-slate-500">
                   <div className="flex items-center gap-1">
                     <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
-                    <span>Ativo 24/7</span>
+                    <span>Activo 24/7</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <Users2Icon className="w-3 h-3" />
-                    <span>Comunidade Ativa</span>
+                    <span>Comunidade Activa</span>
                   </div>
                 </div>
               </div>

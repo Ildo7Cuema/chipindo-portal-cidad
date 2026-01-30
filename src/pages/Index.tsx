@@ -138,7 +138,7 @@ const Index = () => {
                 icon={BuildingIcon}
                 label="Direcções"
                 value={statsLoading ? '...' : stats.totalDirecoes.toString()}
-                description="Direcções ativas"
+                description="Direcções activas"
                 variant="elevated"
                 size="lg"
                 className="hover:scale-105 transition-all duration-500 hover:shadow-2xl hover:shadow-emerald-500/20"
@@ -191,7 +191,7 @@ const Index = () => {
               subtitle="Serviços Municipais"
               title={
                 <span className="bg-gradient-to-r from-yellow-500 via-orange-500 to-yellow-600 bg-clip-text text-transparent font-bold">
-                  Direcções Ativas
+                  Direcções Activas
                 </span>
               }
               description="Conheça as principais direcções da Administração Municipal que servem a comunidade de Chipindo"
@@ -300,7 +300,7 @@ const Index = () => {
                       </h3>
                     </div>
                     <p className="text-primary-foreground/95 max-w-3xl mx-auto text-lg">
-                      Em caso de emergência, contacte imediatamente os serviços de emergência oficiais do município
+                      Em caso de emergência, contacte imediatamente os serviços de emergência oficiais do Município
                     </p>
                   </div>
 
@@ -344,7 +344,7 @@ const Index = () => {
                         <GlobeIcon className="w-8 h-8 text-primary-foreground group-hover:scale-110 transition-transform duration-300" />
                         <div className="text-left">
                           <p className="text-primary-foreground font-bold text-lg">Cobertura Total</p>
-                          <p className="text-primary-foreground/90 text-sm">Todo o município</p>
+                          <p className="text-primary-foreground/90 text-sm">Todo o Município</p>
                         </div>
                       </CardContent>
                     </Card>

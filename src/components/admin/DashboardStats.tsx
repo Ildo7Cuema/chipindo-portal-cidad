@@ -278,7 +278,7 @@ export const DashboardStats = () => {
       icon: Shield
     },
     {
-      title: "Concursos Ativos",
+      title: "Concursos Activos",
       value: activeRate,
       target: 80,
       unit: "%",
@@ -559,7 +559,7 @@ export const DashboardStats = () => {
         
         <StatCard
           icon={Users}
-          label="Usuários Ativos"
+          label="Usuários Activos"
           value={stats.totalUsers}
           description="Total de administradores"
           variant="glass"
@@ -645,7 +645,7 @@ export const DashboardStats = () => {
               icon={Trophy}
               label="Concursos"
               value={stats.totalConcursos}
-              description={`${stats.activeConcursos} ativos`}
+              description={`${stats.activeConcursos} activos`}
               trend={{ value: activeRate >= 50 ? 8 : -5, isPositive: activeRate >= 50 }}
               size="md"
               className="shadow-lg hover:shadow-xl transition-all duration-300"
@@ -786,7 +786,7 @@ export const DashboardStats = () => {
                   </div>
                   <div className="p-4 bg-white dark:bg-slate-800 rounded-lg shadow-sm">
                     <div className="text-2xl font-bold text-purple-600">{stats.activeConcursos}</div>
-                    <div className="text-sm text-muted-foreground">Concursos Ativos</div>
+                    <div className="text-sm text-muted-foreground">Concursos Activos</div>
                     <div className="text-xs text-purple-600 mt-1">+3 este mês</div>
                   </div>
                   <div className="p-4 bg-white dark:bg-slate-800 rounded-lg shadow-sm">
@@ -895,7 +895,7 @@ export const DashboardStats = () => {
               <CardContent className="space-y-4">
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">Usuários Ativos</span>
+                    <span className="text-sm font-medium">Usuários Activos</span>
                     <span className="text-sm font-bold">{stats.totalUsers}</span>
                   </div>
                   <Progress value={75} className="h-2" />

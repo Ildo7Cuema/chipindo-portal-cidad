@@ -285,7 +285,7 @@ export const SetoresInfraestruturasManager = ({ setorId, setorNome }: SetoresInf
                     checked={formData.ativo}
                     onCheckedChange={(checked) => setFormData({ ...formData, ativo: checked })}
                   />
-                  <Label htmlFor="ativo">Ativo</Label>
+                  <Label htmlFor="ativo">Activo</Label>
                 </div>
               </div>
 
@@ -319,7 +319,7 @@ export const SetoresInfraestruturasManager = ({ setorId, setorNome }: SetoresInf
                 </div>
                 <div className="flex items-center gap-2">
                   <Badge variant={infraestrutura.ativo ? "default" : "secondary"}>
-                    {infraestrutura.ativo ? "Ativa" : "Inativa"}
+                    {infraestrutura.ativo ? "Activa" : "Inactiva"}
                   </Badge>
                   <Badge variant="outline" className="text-xs">
                     Ordem: {infraestrutura.ordem}

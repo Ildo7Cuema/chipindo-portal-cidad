@@ -112,7 +112,7 @@ export const NewsSection = () => {
         <SectionHeader
           subtitle="Informações"
           title="Últimas Notícias"
-          description="Mantenha-se informado sobre os principais acontecimentos e desenvolvimentos do município de Chipindo"
+          description="Mantenha-se informado sobre os principais acontecimentos e desenvolvimentos do Município de Chipindo"
         />
         <SectionContent>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -135,8 +135,8 @@ export const NewsSection = () => {
       <SectionHeader
         subtitle="Informações"
         title="Últimas Notícias"
-        description="Mantenha-se informado sobre os principais acontecimentos e desenvolvimentos do município de Chipindo"
-        badge="Atualizado"
+        description="Mantenha-se informado sobre os principais acontecimentos e desenvolvimentos do Município de Chipindo"
+        badge="Actualizado"
       />
 
       <SectionContent>

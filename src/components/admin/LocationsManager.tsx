@@ -312,7 +312,7 @@ export function LocationsManager() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-green-600 dark:text-green-400">Ativas</p>
+                <p className="text-sm font-medium text-green-600 dark:text-green-400">Activas</p>
                 <p className="text-2xl font-bold text-green-900 dark:text-green-100">{stats.active}</p>
               </div>
               <Eye className="h-8 w-8 text-green-600 dark:text-green-400" />
@@ -324,7 +324,7 @@ export function LocationsManager() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-orange-600 dark:text-orange-400">Inativas</p>
+                <p className="text-sm font-medium text-orange-600 dark:text-orange-400">Inactivas</p>
                 <p className="text-2xl font-bold text-orange-900 dark:text-orange-100">{stats.inactive}</p>
               </div>
               <EyeOff className="h-8 w-8 text-orange-600 dark:text-orange-400" />
@@ -550,7 +550,7 @@ export function LocationsManager() {
                                 onCheckedChange={(checked) => setFormData({ ...formData, active: checked })}
                               />
                               <Label htmlFor="active" className="text-sm">
-                                {formData.active ? 'Ativa' : 'Inativa'}
+                                {formData.active ? 'Activa' : 'Inactiva'}
                               </Label>
                             </div>
                           </div>
@@ -611,8 +611,8 @@ export function LocationsManager() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todos</SelectItem>
-                  <SelectItem value="active">Ativos</SelectItem>
-                  <SelectItem value="inactive">Inativos</SelectItem>
+                  <SelectItem value="active">Activos</SelectItem>
+                  <SelectItem value="inactive">Inactivos</SelectItem>
                 </SelectContent>
               </Select>
 
@@ -697,7 +697,7 @@ export function LocationsManager() {
                         <div className="flex items-center gap-2 mb-2">
                           <CardTitle className="text-lg truncate">{location.name}</CardTitle>
                           <Badge variant={location.active ? "default" : "secondary"} className="text-xs">
-                            {location.active ? 'Ativo' : 'Inativo'}
+                            {location.active ? 'Activo' : 'Inactivo'}
                           </Badge>
                         </div>
                         <div className="flex items-center gap-2">

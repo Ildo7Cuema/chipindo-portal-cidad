@@ -262,7 +262,7 @@ export const ModernDashboardStats = () => {
       icon: Shield
     },
     {
-      title: "Concursos Ativos",
+      title: "Concursos Activos",
       value: activeRate,
       target: 80,
       unit: "%",
@@ -635,7 +635,7 @@ export const ModernDashboardStats = () => {
 
         <StatCard
           icon={Users}
-          label="Usuários Ativos"
+          label="Usuários Activos"
           value={stats.totalUsers}
           description="Total de administradores"
           variant="glass"
@@ -779,7 +779,7 @@ export const ModernDashboardStats = () => {
               icon={Users}
               label="Organigrama"
               value={stats.totalOrganigramaMembers}
-              description="Membros ativos"
+              description="Membros activos"
               size="md"
               className="shadow-lg hover:shadow-xl transition-all duration-300"
             />
@@ -1010,7 +1010,7 @@ export const ModernDashboardStats = () => {
               <CardContent className="space-y-4">
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">Usuários Ativos</span>
+                    <span className="text-sm font-medium">Usuários Activos</span>
                     <span className="text-sm font-bold">{stats.totalUsers}</span>
                   </div>
                   <Progress value={75} className="h-2" />

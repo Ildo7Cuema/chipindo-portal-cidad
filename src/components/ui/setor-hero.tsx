@@ -494,7 +494,7 @@ export const SectorHero: React.FC<SectorHeroProps> = ({ setor, className, onExpl
                     )}>
                       {setor.programas?.length || 0}
                     </div>
-                    <div className={cn(`text-${sectorColors.icon} text-xs sm:text-sm font-bold drop-shadow-md`)}>Ativos</div>
+                    <div className={cn(`text-${sectorColors.icon} text-xs sm:text-sm font-bold drop-shadow-md`)}>Activos</div>
                   </CardContent>
                 </Card>
               </div>
