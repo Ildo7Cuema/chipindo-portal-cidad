@@ -210,9 +210,10 @@ export default function Servicos() {
       setServicos(mappedServicos);
       setDepartamentos(deptData || []);
 
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Erro ao carregar dados dos serviços';
       console.error('Error fetching data:', error);
-      setError(error.message || 'Erro ao carregar dados dos serviços');
+      setError(message);
       toast({
         title: "Erro",
         description: "Erro ao carregar dados dos serviços. Tente novamente.",
@@ -243,9 +244,10 @@ export default function Servicos() {
           return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
         case 'alphabetical':
           return a.title.localeCompare(b.title);
-        case 'priority':
+        case 'priority': {
           const priorityOrder = { 'alta': 3, 'media': 2, 'baixa': 1 };
           return priorityOrder[b.prioridade] - priorityOrder[a.prioridade];
+        }
         default:
           return 0;
       }
