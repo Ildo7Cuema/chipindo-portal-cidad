@@ -1,27 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Portal de Chipindo - Administração Municipal</title>
-    <meta name="description" content="Portal oficial da Administração Municipal de Chipindo. Notícias, concursos públicos, acervo digital e serviços aos cidadãos." />
-    <meta name="author" content="Administração Municipal de Chipindo" />
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="/angola-coat-of-arms.png" />
-    <link rel="apple-touch-icon" href="/angola-coat-of-arms.png" />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portal de Chipindo - Administração Municipal</title>
+  <meta name="description"
+    content="Portal oficial da Administração Municipal de Chipindo. Notícias, concursos públicos, acervo digital e serviços aos cidadãos." />
+  <meta name="author" content="Administração Municipal de Chipindo" />
 
-    <meta property="og:title" content="Portal de Chipindo - Administração Municipal" />
-    <meta property="og:description" content="Portal oficial da Administração Municipal de Chipindo. Notícias, concursos públicos, acervo digital e serviços aos cidadãos." />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="/angola-coat-of-arms.png" />
+  <!-- Favicon - múltiplos formatos para compatibilidade -->
+  <link rel="icon" type="image/png" sizes="192x192" href="/insignia-angola.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/insignia-angola.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/insignia-angola.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/insignia-angola.png" />
+  <link rel="shortcut icon" type="image/png" href="/insignia-angola.png" />
 
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:image" content="/angola-coat-of-arms.png" />
-  </head>
+  <!-- Open Graph / Facebook - URLs absolutas para o Google -->
+  <meta property="og:url" content="https://chipindo.com" />
+  <meta property="og:title" content="Portal de Chipindo - Administração Municipal" />
+  <meta property="og:description"
+    content="Portal oficial da Administração Municipal de Chipindo. Notícias, concursos públicos, acervo digital e serviços aos cidadãos." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://chipindo.com/insignia-angola.png" />
+  <meta property="og:image:width" content="512" />
+  <meta property="og:image:height" content="512" />
+  <meta property="og:site_name" content="Portal de Chipindo" />
 
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Portal de Chipindo - Administração Municipal" />
+  <meta name="twitter:description" content="Portal oficial da Administração Municipal de Chipindo." />
+  <meta name="twitter:image" content="https://chipindo.com/insignia-angola.png" />
+
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://chipindo.com" />
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
 </html>
