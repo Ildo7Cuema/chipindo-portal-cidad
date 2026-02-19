@@ -78,7 +78,7 @@ interface FormData {
 
 const userRoles = [
   { value: 'user', label: 'Usuário', icon: Users, color: 'gray', description: 'Acesso básico ao sistema' },
-  { value: 'editor', label: 'Editor', icon: Edit, color: 'blue', description: 'Pode editar conteúdo' },
+  { value: 'editor', label: 'Editor', icon: Edit, color: 'teal', description: 'Gestão de Notícias e Acervo Digital' },
   { value: 'admin', label: 'Administrador', icon: Crown, color: 'red', description: 'Acesso total ao sistema' },
   { value: 'educacao', label: 'Direção de Educação', icon: GraduationCap, color: 'blue', description: 'Acesso à área de Educação' },
   { value: 'saude', label: 'Direção de Saúde', icon: Heart, color: 'red', description: 'Acesso à área de Saúde' },
@@ -259,85 +259,59 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
         setorId = setor?.id || null;
       }
 
-      // Verificar se o email já existe na tabela profiles
-      const { data: existingProfile } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('email', formData.email)
-        .single();
-
-      if (existingProfile) {
-        toast.error('Já existe um utilizador com este email');
-        return;
-      }
-
       // Gerar uma senha temporária
       const tempPassword = formData.customPassword || Math.random().toString(36).slice(-8) + '!1A';
 
-      // 1. Criar utilizador no Supabase Auth
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: formData.email,
-        password: tempPassword,
-        options: {
-          data: {
-            full_name: formData.full_name,
-            role: formData.role
-          }
+      // Chamar a Edge Function create-admin-user que usa auth.admin.createUser (service role)
+      // Usamos supabase.functions.invoke() que gere automaticamente auth e CORS
+      const { data: result, error: fnError } = await supabase.functions.invoke('create-admin-user', {
+        body: {
+          email: formData.email,
+          password: tempPassword,
+          full_name: formData.full_name,
+          role: formData.role,
+          setor_id: setorId
         }
       });
 
-      if (authError) {
-        console.error('Error creating auth user:', authError);
-        toast.error(`Erro ao criar utilizador: ${authError.message}`);
+      if (fnError) {
+        console.error('Error creating user via Edge Function:', fnError);
+        // Tentar extrair a mensagem de erro real da resposta
+        let errorMsg = fnError.message || 'Erro ao criar utilizador';
+        try {
+          // FunctionsHttpError tem um método context ou podemos ler o body
+          const ctx = (fnError as any).context;
+          if (ctx) {
+            const body = await ctx.json?.();
+            if (body?.error) errorMsg = body.error;
+          }
+        } catch (_) {
+          // ignorar erro de parsing
+        }
+        console.error('Detalhe do erro:', errorMsg);
+        toast.error(errorMsg);
         return;
       }
 
-      if (!authData.user) {
-        toast.error('Erro: Utilizador não foi criado no sistema de autenticação');
-        return;
-      }
-
-      // 2. Criar perfil na tabela profiles
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .upsert({
-          user_id: authData.user.id,
-          email: formData.email,
-          full_name: formData.full_name,
-          role: formData.role,
-          setor_id: setorId,
-          updated_at: new Date().toISOString()
-        });
-
-      if (profileError) {
-        console.error('Error creating profile:', profileError);
-        toast.error(`Erro ao criar perfil: ${profileError.message}`);
+      if (result?.error) {
+        console.error('Error creating user via Edge Function:', result);
+        toast.error(result.error || 'Erro ao criar utilizador');
         return;
       }
 
       toast.success('Utilizador criado com sucesso!');
-
-      if (formData.customPassword) {
-        toast.info(`Senha personalizada definida: ${tempPassword}`, {
+      toast.info(
+        formData.customPassword
+          ? `Senha personalizada definida: ${tempPassword}`
+          : `Senha temporária gerada: ${tempPassword}`,
+        {
           duration: 10000,
           description: 'O utilizador deve alterar esta senha no primeiro login'
-        });
-      } else {
-        toast.info(`Senha temporária gerada: ${tempPassword}`, {
-          duration: 10000,
-          description: 'O utilizador deve alterar esta senha no primeiro login'
-        });
-      }
+        }
+      );
 
       setShowAddDialog(false);
-      setFormData({
-        email: '',
-        full_name: '',
-        role: 'user',
-        customPassword: ''
-      });
-
-      // Recarregar a lista de utilizadores
+      setFormData({ email: '', full_name: '', role: 'user', customPassword: '' });
       fetchUsers();
     } catch (error) {
       console.error('Error adding user:', error);
@@ -692,7 +666,7 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
                           <SelectTrigger>
                             <SelectValue />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent position="popper" className="max-h-[300px] overflow-y-auto">
                             {userRoles.map((role) => (
                               <SelectItem key={role.value} value={role.value}>
                                 <div className="flex items-center gap-2">
@@ -733,6 +707,21 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
                           </p>
                         )}
                       </div>
+
+                      {formData.role === 'editor' && (
+                        <div className="p-4 bg-teal-50 dark:bg-teal-900/20 rounded-lg border border-teal-200 dark:border-teal-800">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Edit className="h-4 w-4 text-teal-600" />
+                            <span className="font-medium text-teal-900 dark:text-teal-100">
+                              Permissões do Editor
+                            </span>
+                          </div>
+                          <p className="text-sm text-teal-700 dark:text-teal-300">
+                            Este utilizador terá acesso exclusivo às secções de <strong>Notícias</strong> e <strong>Acervo Digital</strong>.
+                            Poderá criar, editar e publicar notícias, bem como gerir documentos e ficheiros do acervo digital do município.
+                          </p>
+                        </div>
+                      )}
 
                       {/* Mostrar informações sobre o setor selecionado */}
                       {isSectorRole(formData.role) && (
@@ -1031,7 +1020,7 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent position="popper" className="max-h-[300px] overflow-y-auto">
                   {userRoles.map((role) => (
                     <SelectItem key={role.value} value={role.value}>
                       <div className="flex items-center gap-2">
@@ -1046,6 +1035,21 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
                 </SelectContent>
               </Select>
             </div>
+
+            {newRole === 'editor' && (
+              <div className="p-4 bg-teal-50 dark:bg-teal-900/20 rounded-lg border border-teal-200 dark:border-teal-800">
+                <div className="flex items-center gap-2 mb-2">
+                  <Edit className="h-4 w-4 text-teal-600" />
+                  <span className="font-medium text-teal-900 dark:text-teal-100">
+                    Permissões do Editor
+                  </span>
+                </div>
+                <p className="text-sm text-teal-700 dark:text-teal-300">
+                  Este utilizador terá acesso exclusivo às secções de <strong>Notícias</strong> e <strong>Acervo Digital</strong>.
+                  Poderá criar, editar e publicar notícias, bem como gerir documentos e ficheiros do acervo digital do município.
+                </p>
+              </div>
+            )}
 
             {isSectorRole(newRole) && (
               <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">

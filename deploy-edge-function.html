@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<title>Deploy Edge Function - Supabase</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; }
+  button { padding: 12px 24px; background: #3ECF8E; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; width: 100%; }
+  button:hover { background: #2daf77; }
+  #status { margin-top: 20px; padding: 15px; border-radius: 6px; display: none; white-space: pre-wrap; font-family: monospace; font-size: 13px; }
+  .success { background: #d4edda; border: 1px solid #28a745; color: #155724; }
+  .error { background: #f8d7da; border: 1px solid #dc3545; color: #721c24; }
+  .loading { background: #d1ecf1; border: 1px solid #0c5460; color: #0c5460; }
+</style>
+</head>
+<body>
+<h2>🚀 Deploy Edge Function: create-admin-user</h2>
+<p>Clique no botão para fazer deploy da Edge Function <strong>create-admin-user</strong> no projecto Supabase.</p>
+<button id="deployBtn" onclick="deployFunction()">Fazer Deploy</button>
+<div id="status"></div>
+
+<script>
+const PAT = 'sbp_0f0b4a1aa4ac0ac4375ad1b0e0418add665dac84';
+const PROJECT_REF = 'murdhrdqqnuntfxmwtqx';
+const FUNCTION_NAME = 'create-admin-user';
+
+const functionCode = `import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { createClient } from 'jsr:@supabase/supabase-js@2';
+
+Deno.serve(async (req) => {
+  if (req.method !== 'POST') {
+    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+      status: 405, headers: { 'Content-Type': 'application/json' }
+    });
+  }
+  try {
+    const supabaseAdmin = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+      { auth: { autoRefreshToken: false, persistSession: false } }
+    );
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) return new Response(JSON.stringify({ error: 'Missing authorization header' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user: callerUser }, error: callerError } = await supabaseAdmin.auth.getUser(token);
+    if (callerError || !callerUser) return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
+    const { data: callerProfile } = await supabaseAdmin.from('profiles').select('role').eq('user_id', callerUser.id).single();
+    if (callerProfile?.role !== 'admin') return new Response(JSON.stringify({ error: 'Forbidden: admin role required' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
+    const { email, password, full_name, role, setor_id } = await req.json();
+    if (!email || !password || !full_name || !role) return new Response(JSON.stringify({ error: 'Missing required fields' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+    const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({ email, password, email_confirm: true, user_metadata: { full_name, role } });
+    if (createError) {
+      const status = createError.message?.toLowerCase().includes('already') ? 409 : 400;
+      const message = status === 409 ? 'Este email ja esta registado no sistema de autenticacao' : createError.message;
+      return new Response(JSON.stringify({ error: message }), { status, headers: { 'Content-Type': 'application/json' } });
+    }
+    const { error: profileError } = await supabaseAdmin.from('profiles').upsert({ user_id: newUser.user.id, email, full_name, role, setor_id: setor_id || null, updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
+    if (profileError) {
+      await supabaseAdmin.auth.admin.deleteUser(newUser.user.id);
+      return new Response(JSON.stringify({ error: 'Erro ao criar perfil: ' + profileError.message }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+    }
+    return new Response(JSON.stringify({ success: true, user_id: newUser.user.id, email: newUser.user.email }), { status: 200, headers: { 'Content-Type': 'application/json', 'Connection': 'keep-alive' } });
+  } catch (err) {
+    return new Response(JSON.stringify({ error: 'Internal server error' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+  }
+});`;
+
+async function deployFunction() {
+  const btn = document.getElementById('deployBtn');
+  const status = document.getElementById('status');
+  btn.disabled = true;
+  status.className = 'loading';
+  status.style.display = 'block';
+  status.textContent = '⏳ A verificar se a função já existe...';
+
+  try {
+    // Verificar se existe
+    const checkRes = await fetch(`https://api.supabase.com/v1/projects/${PROJECT_REF}/functions/${FUNCTION_NAME}`, {
+      headers: { 'Authorization': `Bearer ${PAT}` }
+    });
+    const exists = checkRes.status === 200;
+    status.textContent = `ℹ️ Função ${exists ? 'já existe (será actualizada)' : 'não existe (será criada)'}...\n⏳ A fazer deploy...`;
+
+    const method = exists ? 'PATCH' : 'POST';
+    const url = exists
+      ? `https://api.supabase.com/v1/projects/${PROJECT_REF}/functions/${FUNCTION_NAME}`
+      : `https://api.supabase.com/v1/projects/${PROJECT_REF}/functions`;
+
+    const res = await fetch(url, {
+      method,
+      headers: {
+        'Authorization': `Bearer ${PAT}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        slug: FUNCTION_NAME,
+        name: FUNCTION_NAME,
+        verify_jwt: true,
+        body: functionCode
+      })
+    });
+
+    const result = await res.json();
+
+    if (res.ok) {
+      status.className = 'success';
+      status.textContent = `✅ SUCESSO! Edge Function deployada!\n\nHTTP: ${res.status}\nResposta: ${JSON.stringify(result, null, 2)}`;
+    } else {
+      status.className = 'error';
+      status.textContent = `❌ ERRO (HTTP ${res.status}):\n${JSON.stringify(result, null, 2)}`;
+    }
+  } catch (err) {
+    status.className = 'error';
+    status.textContent = `❌ Erro de rede: ${err.message}`;
+  } finally {
+    btn.disabled = false;
+  }
+}
+</script>
+</body>
+</html>

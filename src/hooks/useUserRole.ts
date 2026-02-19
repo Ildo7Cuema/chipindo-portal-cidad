@@ -156,20 +156,10 @@ export function useUserRole(user: User | null = null) {
       'audit-logs'
     ];
 
-    // Itens que editor pode aceder
+    // Itens que editor pode aceder (apenas Notícias e Acervo Digital)
     const editorItems = [
-      'gestao-conteudo',
-      'gestao-noticias',
-      'gestao-eventos',
-      'gestao-concursos',
-      'gestao-servicos',
-      'gestao-departamentos',
-      'gestao-organigrama',
-      'gestao-acervo',
-      'gestao-turismo',
-      'gestao-caracterizacao',
-      'gestao-inscricoes',
-      'gestao-atividades'
+      'news',
+      'acervo',
     ];
 
     // Verificar se é item apenas para admin

@@ -77,7 +77,7 @@ interface FormData {
 
 const userRoles = [
   { value: 'user', label: 'Usuário', icon: Users, color: 'gray', description: 'Acesso básico ao sistema' },
-  { value: 'editor', label: 'Editor', icon: Edit, color: 'blue', description: 'Pode editar conteúdo' },
+  { value: 'editor', label: 'Editor', icon: Edit, color: 'teal', description: 'Gestão de Notícias e Acervo Digital' },
   { value: 'admin', label: 'Administrador', icon: Crown, color: 'red', description: 'Acesso total ao sistema' },
   { value: 'educacao', label: 'Direção de Educação', icon: GraduationCap, color: 'blue', description: 'Acesso à área de Educação' },
   { value: 'saude', label: 'Direção de Saúde', icon: Heart, color: 'red', description: 'Acesso à área de Saúde' },
@@ -268,16 +268,18 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
         return;
       }
 
-      // 2. Criar perfil na tabela profiles
+      // 2. Criar/actualizar perfil na tabela profiles
+      // Usa upsert porque o trigger handle_new_user já cria o perfil automaticamente
       const { error: profileError } = await supabase
         .from('profiles')
-        .insert({
+        .upsert({
           user_id: authData.user.id,
           email: formData.email,
           full_name: formData.full_name,
           role: formData.role,
-          setor_id: setorId
-        });
+          setor_id: setorId,
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'user_id' });
 
       if (profileError) {
         console.error('Error creating profile:', profileError);
@@ -533,7 +535,7 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
                           <SelectTrigger>
                             <SelectValue />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent position="popper" className="max-h-[300px] overflow-y-auto">
                             {userRoles.map((role) => (
                               <SelectItem key={role.value} value={role.value}>
                                 <div className="flex items-center gap-2">
@@ -548,6 +550,21 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
                           </SelectContent>
                         </Select>
                       </div>
+
+                      {formData.role === 'editor' && (
+                        <div className="p-4 bg-teal-50 dark:bg-teal-900/20 rounded-lg border border-teal-200 dark:border-teal-800">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Edit className="h-4 w-4 text-teal-600" />
+                            <span className="font-medium text-teal-900 dark:text-teal-100">
+                              Permissões do Editor
+                            </span>
+                          </div>
+                          <p className="text-sm text-teal-700 dark:text-teal-300">
+                            Este utilizador terá acesso exclusivo às secções de <strong>Notícias</strong> e <strong>Acervo Digital</strong>.
+                            Poderá criar, editar e publicar notícias, bem como gerir documentos e ficheiros do acervo digital do município.
+                          </p>
+                        </div>
+                      )}
 
                       {isSectorRole(formData.role) && (
                         <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">

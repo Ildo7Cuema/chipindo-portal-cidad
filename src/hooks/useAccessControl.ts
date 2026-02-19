@@ -23,8 +23,6 @@ export const defaultAccessConfig: AccessControlConfig = {
     'users',
     'sector-access',
     'settings',
-    'news',
-    'acervo',
     'organigrama',
     'departamentos',
     'content',
@@ -39,7 +37,9 @@ export const defaultAccessConfig: AccessControlConfig = {
     'characterization'
   ],
   editorItems: [
-    // Editores não têm acesso específico - apenas admin e setores
+    // Editor tem acesso exclusivo a Notícias e Acervo Digital
+    'news',
+    'acervo',
   ],
   sectorItems: {
     'educacao': [
