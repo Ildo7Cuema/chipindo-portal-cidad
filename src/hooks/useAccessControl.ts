@@ -43,52 +43,60 @@ export const defaultAccessConfig: AccessControlConfig = {
   ],
   sectorItems: {
     'educacao': [
-      'concursos',           // Gestão de Concursos
-      'service-requests',    // Gestão de Solicitações
-      'ouvidoria',          // Ouvidoria
-      'interest-registrations' // Gestão de Informações/Estatísticas
+      'sector-content',        // Gestão do Conteúdo da Página Pública do Sector
+      'concursos',             // Gestão de Concursos
+      'service-requests',      // Gestão de Solicitações
+      'ouvidoria',             // Ouvidoria
+      'interest-registrations' // Registos de Interesse
     ],
     'saude': [
-      'concursos',           // Gestão de Concursos
-      'service-requests',    // Gestão de Solicitações
-      'ouvidoria',          // Ouvidoria
-      'interest-registrations' // Gestão de Informações/Estatísticas
+      'sector-content',
+      'concursos',
+      'service-requests',
+      'ouvidoria',
+      'interest-registrations'
     ],
     'agricultura': [
-      'concursos',           // Gestão de Concursos
-      'service-requests',    // Gestão de Solicitações
-      'ouvidoria',          // Ouvidoria
-      'interest-registrations' // Gestão de Informações/Estatísticas
+      'sector-content',
+      'concursos',
+      'service-requests',
+      'ouvidoria',
+      'interest-registrations'
     ],
     'setor-mineiro': [
-      'concursos',           // Gestão de Concursos
-      'service-requests',    // Gestão de Solicitações
-      'ouvidoria',          // Ouvidoria
-      'interest-registrations' // Gestão de Informações/Estatísticas
+      'sector-content',
+      'concursos',
+      'service-requests',
+      'ouvidoria',
+      'interest-registrations'
     ],
     'desenvolvimento-economico': [
-      'concursos',           // Gestão de Concursos
-      'service-requests',    // Gestão de Solicitações
-      'ouvidoria',          // Ouvidoria
-      'interest-registrations' // Gestão de Informações/Estatísticas
+      'sector-content',
+      'concursos',
+      'service-requests',
+      'ouvidoria',
+      'interest-registrations'
     ],
     'cultura': [
-      'concursos',           // Gestão de Concursos
-      'service-requests',    // Gestão de Solicitações
-      'ouvidoria',          // Ouvidoria
-      'interest-registrations' // Gestão de Informações/Estatísticas
+      'sector-content',
+      'concursos',
+      'service-requests',
+      'ouvidoria',
+      'interest-registrations'
     ],
     'tecnologia': [
-      'concursos',           // Gestão de Concursos
-      'service-requests',    // Gestão de Solicitações
-      'ouvidoria',          // Ouvidoria
-      'interest-registrations' // Gestão de Informações/Estatísticas
+      'sector-content',
+      'concursos',
+      'service-requests',
+      'ouvidoria',
+      'interest-registrations'
     ],
     'energia-agua': [
-      'concursos',           // Gestão de Concursos
-      'service-requests',    // Gestão de Solicitações
-      'ouvidoria',          // Ouvidoria
-      'interest-registrations' // Gestão de Informações/Estatísticas
+      'sector-content',
+      'concursos',
+      'service-requests',
+      'ouvidoria',
+      'interest-registrations'
     ]
   },
   publicItems: [

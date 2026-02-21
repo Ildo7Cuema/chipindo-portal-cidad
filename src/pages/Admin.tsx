@@ -46,6 +46,7 @@ import { InterestRegistrationsManager } from "@/components/admin/InterestRegistr
 import { SectorAccessManager } from "@/components/admin/SectorAccessManager";
 import { AuditLogsManager } from "@/components/admin/AuditLogsManager";
 import { AccessDenied } from "@/components/ui/access-denied";
+import { SectorContentManager } from "@/components/admin/SectorContentManager";
 import { SiteVisitsReport } from "@/components/admin/SiteVisitsReport";
 interface NavigationItem {
   id: string;
@@ -229,6 +230,12 @@ const Admin = () => {
     icon: ImageIcon,
     description: "Gerir carrossel turístico e ambiental",
     category: "Conteúdo"
+  }, {
+    id: "sector-content",
+    label: "Conteúdo do Meu Sector",
+    icon: Building2,
+    description: "Editar estatísticas, programas e oportunidades do sector",
+    category: "Sector"
   }, {
     id: "users",
     label: "Utilizadores",
@@ -545,6 +552,7 @@ const Admin = () => {
               {activeTab === "events" && <EventsManager />}
               {activeTab === "event-registrations" && <EventRegistrationsManager />}
               {activeTab === "turismo-carousel" && <TurismoAmbienteCarouselManager />}
+              {activeTab === "sector-content" && <SectorContentManager currentUserRole={role} />}
               {activeTab === "users" && (canManageUsers ? <UserManager currentUserRole={role} /> : <AccessDenied title="Gestão de Utilizadores" message="Apenas administradores podem gerir utilizadores do sistema." />)}
               {activeTab === "sector-access" && (canManageUsers ? <SectorAccessManager currentUserRole={role} currentUserSetorId={profile?.setor_id} /> : <AccessDenied title="Acesso por Setor" message="Apenas administradores podem configurar acesso por setor." />)}
               {activeTab === "audit-logs" && (canViewAuditLogs ? <AuditLogsManager currentUserRole={role} /> : <AccessDenied title="Logs de Auditoria" message="Apenas administradores podem visualizar logs de auditoria." />)}

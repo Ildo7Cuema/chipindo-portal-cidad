@@ -297,7 +297,7 @@ export const ConcursosManager = () => {
 
   const fetchConcursos = async () => {
     try {
-      // Simplificar a query para evitar problemas com colunas inexistentes
+      // Carregar concursos com todos os campos reais do banco de dados
       const { data, error } = await supabase
         .from('concursos')
         .select('*')
@@ -320,7 +320,6 @@ export const ConcursosManager = () => {
         const currentSectorName = getCurrentSectorName();
 
         if (currentSector && currentSectorName) {
-          // Filtrar no frontend por título ou descrição
           filteredData = filteredData.filter(concurso =>
             (concurso.title && concurso.title.toLowerCase().includes(currentSectorName.toLowerCase())) ||
             (concurso.description && concurso.description.toLowerCase().includes(currentSectorName.toLowerCase()))
@@ -328,17 +327,35 @@ export const ConcursosManager = () => {
         }
       }
 
-      // Simular campos adicionais baseados no ID
-      const enrichedData = filteredData.map((item, index) => ({
+      // Carregar contagem real de candidaturas por concurso
+      const concursoIds = filteredData.map(c => c.id);
+      let applicationCounts: Record<string, number> = {};
+
+      if (concursoIds.length > 0) {
+        const { data: inscricoesData, error: inscricoesError } = await supabase
+          .from('inscricoes')
+          .select('concurso_id')
+          .in('concurso_id', concursoIds);
+
+        if (!inscricoesError && inscricoesData) {
+          // Contar candidaturas por concurso
+          applicationCounts = inscricoesData.reduce((acc, row) => {
+            acc[row.concurso_id] = (acc[row.concurso_id] || 0) + 1;
+            return acc;
+          }, {} as Record<string, number>);
+        }
+      }
+
+      // Usar apenas dados reais da base de dados — sem simulação
+      const enrichedData = filteredData.map((item) => ({
         ...item,
-        category: getCategoryByIndex(index),
-        location: getLocationByIndex(index),
-        salary_range: getSalaryRangeByIndex(index),
-        positions_available: getPositionsAvailableByIndex(index),
+        // Status calculado com base na data limite (lógica de UI)
         status: getStatusByDeadline(item.deadline),
-        priority: getPriorityByIndex(index),
-        views_count: Math.floor(Math.random() * 1000) + 50,
-        applications_count: Math.floor(Math.random() * 200) + 10,
+        // Candidaturas reais contadas da tabela inscricoes
+        applications_count: applicationCounts[item.id] || 0,
+        // views_count já vem da coluna real na DB (padrão 0)
+        views_count: item.views_count || 0,
+        // categorias_disponiveis parseadas do formato de armazenamento
         categorias_disponiveis: parseCategoriasDisponiveis(item.categorias_disponiveis)
       }));
 
@@ -353,31 +370,6 @@ export const ConcursosManager = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  // Funções para simular dados baseados no hash do ID
-  const getCategoryByIndex = (index: number): ConcursoCategory => {
-    const categories: ConcursoCategory[] = ['administracao', 'educacao', 'saude', 'obras', 'tecnico', 'seguranca'];
-    return categories[index % categories.length];
-  };
-
-  const getLocationByIndex = (index: number): string => {
-    const locations = ['Chipindo Sede', 'Chibia', 'Humpata', 'Quilengues', 'Caconda', 'Lubango'];
-    return locations[index % locations.length];
-  };
-
-  const getSalaryRangeByIndex = (index: number): string => {
-    const ranges = ['150.000 - 200.000 Kz', '200.000 - 300.000 Kz', '300.000 - 450.000 Kz', '450.000 - 600.000 Kz', '600.000+ Kz'];
-    return ranges[index % ranges.length];
-  };
-
-  const getPositionsAvailableByIndex = (index: number): number => {
-    return (index % 10) + 1;
-  };
-
-  const getPriorityByIndex = (index: number): ConcursoPriority => {
-    const priorities: ConcursoPriority[] = ['low', 'normal', 'high', 'urgent'];
-    return priorities[index % priorities.length];
   };
 
   const getStatusByDeadline = (deadline: string | null): ConcursoStatus => {
@@ -432,7 +424,12 @@ export const ConcursosManager = () => {
         contact_info: formData.contact_info || null,
         published: formData.published,
         area: formData.area,
-        categorias_disponiveis: formData.categorias_disponiveis
+        categorias_disponiveis: formData.categorias_disponiveis,
+        // Campos adicionais reais — guardados no banco de dados
+        salary_range: formData.salary_range || null,
+        location: formData.location || null,
+        positions_available: formData.positions_available || 1,
+        priority: formData.priority || 'normal'
       };
 
       if (editingConcurso) {
