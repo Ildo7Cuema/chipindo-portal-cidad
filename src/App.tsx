@@ -38,6 +38,14 @@ import TurismoMeioAmbiente from "./pages/TurismoMeioAmbiente";
 import TestPage from "./pages/TestPage";
 import EducacaoSimple from "./pages/EducacaoSimple";
 import Events from "./pages/Events";
+import RecursosHumanos from "./pages/RecursosHumanos";
+import Juridico from "./pages/Juridico";
+import Infraestrutura from "./pages/Infraestrutura";
+import Transporte from "./pages/Transporte";
+import Ambiente from "./pages/Ambiente";
+import Urbanismo from "./pages/Urbanismo";
+import Fiscalizacao from "./pages/Fiscalizacao";
+import Aniesa from "./pages/Aniesa";
 import { usePageTracking } from "./hooks/usePageTracking";
 
 const queryClient = new QueryClient({
@@ -101,6 +109,15 @@ const App = () => (
                 <Route path="/test" element={<TestPage />} />
                 <Route path="/educacao-simple" element={<EducacaoSimple />} />
                 <Route path="/eventos" element={<Events />} />
+                {/* Novos Sectores Estratégicos */}
+                <Route path="/recursos-humanos" element={<RecursosHumanos />} />
+                <Route path="/juridico" element={<Juridico />} />
+                <Route path="/infraestrutura" element={<Infraestrutura />} />
+                <Route path="/transporte" element={<Transporte />} />
+                <Route path="/ambiente" element={<Ambiente />} />
+                <Route path="/urbanismo" element={<Urbanismo />} />
+                <Route path="/fiscalizacao" element={<Fiscalizacao />} />
+                <Route path="/aniesa" element={<Aniesa />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </MaintenanceMode>

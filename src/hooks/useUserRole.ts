@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { User } from '@supabase/supabase-js';
 
-export type UserRole = 'admin' | 'editor' | 'user' | 'educacao' | 'saude' | 'agricultura' | 'setor-mineiro' | 'desenvolvimento-economico' | 'cultura' | 'tecnologia' | 'energia-agua';
+export type UserRole = 'admin' | 'editor' | 'user' | string;
 
 interface UserProfile {
   id: string;
@@ -16,40 +16,30 @@ interface UserProfile {
 }
 
 // Função para verificar se um role é de setor específico
-export const isSectorRole = (role: UserRole): boolean => {
-  return ['educacao', 'saude', 'agricultura', 'setor-mineiro', 'desenvolvimento-economico', 'cultura', 'tecnologia', 'energia-agua'].includes(role);
+export const isSectorRole = (role: UserRole | null | undefined): boolean => {
+  if (!role) return false;
+  return !['admin', 'editor', 'user'].includes(role as string);
 };
 
 // Função para obter o nome do setor a partir do role
-export const getSectorName = (role: UserRole): string => {
-  const sectorNames: Record<string, string> = {
-    'educacao': 'Educação',
-    'saude': 'Saúde',
-    'agricultura': 'Agricultura',
-    'setor-mineiro': 'Sector Mineiro',
-    'desenvolvimento-economico': 'Desenvolvimento Económico',
-    'cultura': 'Cultura',
-    'tecnologia': 'Tecnologia',
-    'energia-agua': 'Energia e Água'
-  };
+export const getSectorName = (role: UserRole, setores?: { slug: string; nome: string }[]): string => {
+  if (!role) return '';
+  if (setores && setores.length > 0) {
+    const setor = setores.find(s => s.slug === role);
+    if (setor) return setor.nome;
+  }
 
-  return sectorNames[role] || role;
+  // Decote basico do slug para fallback
+  return String(role)
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
 };
 
 // Função para obter o slug do setor a partir do role
 export const getSectorSlug = (role: UserRole): string => {
-  const sectorSlugs: Record<string, string> = {
-    'educacao': 'educacao',
-    'saude': 'saude',
-    'agricultura': 'agricultura',
-    'setor-mineiro': 'setor-mineiro',
-    'desenvolvimento-economico': 'desenvolvimento-economico',
-    'cultura': 'cultura',
-    'tecnologia': 'tecnologia',
-    'energia-agua': 'energia-agua'
-  };
-
-  return sectorSlugs[role] || '';
+  if (isSectorRole(role)) return String(role);
+  return '';
 };
 
 export function useUserRole(user: User | null = null) {
@@ -135,16 +125,7 @@ export function useUserRole(user: User | null = null) {
     const userRole = profile?.role as UserRole;
 
     // Mapeamento de itens por setor
-    const sectorItems: Record<string, string[]> = {
-      'educacao': ['educacao', 'gestao-educacao', 'estatisticas-educacao'],
-      'saude': ['saude', 'gestao-saude', 'estatisticas-saude'],
-      'agricultura': ['agricultura', 'gestao-agricultura', 'estatisticas-agricultura'],
-      'setor-mineiro': ['setor-mineiro', 'gestao-mineiro', 'estatisticas-mineiro'],
-      'desenvolvimento-economico': ['desenvolvimento-economico', 'gestao-economico', 'estatisticas-economico'],
-      'cultura': ['cultura', 'gestao-cultura', 'estatisticas-cultura'],
-      'tecnologia': ['tecnologia', 'gestao-tecnologia', 'estatisticas-tecnologia'],
-      'energia-agua': ['energia-agua', 'gestao-energia', 'estatisticas-energia']
-    };
+    const getGenericSectorItems = (r: UserRole) => [String(r), `gestao-${String(r)}`, `estatisticas-${String(r)}`];
 
     // Itens que apenas admin pode aceder
     const adminOnlyItems = [
@@ -173,8 +154,9 @@ export function useUserRole(user: User | null = null) {
     }
 
     // Verificar se é item específico do setor
-    if (isSectorUser && sectorItems[userRole]) {
-      return sectorItems[userRole].includes(itemId);
+    if (isSectorUser) {
+      const genericSectorItems = getGenericSectorItems(userRole);
+      return genericSectorItems.includes(itemId);
     }
 
     return false;

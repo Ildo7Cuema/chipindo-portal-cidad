@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { matchesSectorArea } from '@/lib/sector-utils';
 
 export interface ServiceRequest {
   id: string;
@@ -55,6 +56,7 @@ export function useServiceRequests() {
   const { toast } = useToast();
 
   // Fetch all service requests
+  // sectorFilter: pode ser 'all', ou o UUID do departamento (setor_id)
   const fetchRequests = async (sectorFilter?: string) => {
     try {
       setLoading(true);
@@ -66,56 +68,43 @@ export function useServiceRequests() {
       if (error) throw error;
 
       let filteredRequests = data || [];
-      
-      // Filtrar por setor se especificado
+
+      // Filtrar por setor se especificado e não for 'all'
       if (sectorFilter && sectorFilter !== 'all') {
-        console.log('ServiceRequests - Aplicando filtro para setor:', sectorFilter);
+        // Buscar o nome oficial do departamento via ID
+        const { data: deptData } = await supabase
+          .from('departamentos')
+          .select('nome')
+          .eq('id', sectorFilter)
+          .maybeSingle();
+
+        const sectorDisplayName = deptData?.nome || sectorFilter;
+        console.log('ServiceRequests - Filtrando por setor:', sectorDisplayName);
+
         filteredRequests = (data || []).filter(request => {
-          const serviceName = request.service_name?.toLowerCase() || '';
-          const serviceDirection = request.service_direction?.toLowerCase() || '';
-          const subject = request.subject?.toLowerCase() || '';
-          const message = request.message?.toLowerCase() || '';
-          const sectorName = sectorFilter.toLowerCase();
-          
-          // Mapeamento de setores para palavras-chave
-          const sectorKeywords: Record<string, string[]> = {
-            'educação': ['educação', 'escola', 'escolar', 'académico', 'professor', 'aluno'],
-            'saúde': ['saúde', 'hospital', 'médico', 'enfermeiro', 'clínica', 'atendimento médico'],
-            'agricultura': ['agricultura', 'agricultor', 'fazenda', 'colheita', 'campo'],
-            'setor mineiro': ['mina', 'mineiro', 'mineração', 'mineral'],
-            'desenvolvimento económico': ['desenvolvimento económico', 'emprego', 'economia', 'negócio'],
-            'cultura': ['cultura', 'cultural', 'arte', 'evento cultural', 'teatro'],
-            'tecnologia': ['tecnologia', 'tecnológico', 'sistema', 'digital', 'computador'],
-            'energia e água': ['energia', 'água', 'eletricidade', 'abastecimento de água']
-          };
-          
-          // Verificar se o setor tem palavras-chave específicas
-          const keywords = sectorKeywords[sectorName] || [sectorName];
-          
-          // Filtrar baseado no serviço ou conteúdo da solicitação
-          const matches = keywords.some(keyword => 
-            serviceName.includes(keyword) || 
-            serviceDirection.includes(keyword) ||
-            subject.includes(keyword) ||
-            message.includes(keyword)
-          );
-          
+          // Comparar directamente com service_name e service_direction
+          const areasToMatch = [
+            request.service_name || '',
+            request.service_direction || ''
+          ];
+
+          const matches = matchesSectorArea(areasToMatch, sectorDisplayName);
+
           if (matches) {
             console.log('ServiceRequests - Match encontrado:', {
-              serviceName,
-              subject,
-              sectorName,
-              keywords
+              serviceName: request.service_name,
+              serviceDirection: request.service_direction,
+              sectorDisplayName
             });
           }
-          
+
           return matches;
         });
         console.log('ServiceRequests - Total filtrado:', filteredRequests.length);
       }
 
-      setRequests(filteredRequests);
-      calculateStats(filteredRequests);
+      setRequests(filteredRequests as ServiceRequest[]);
+      calculateStats(filteredRequests as ServiceRequest[]);
     } catch (error: any) {
       console.error('Error fetching service requests:', error);
       toast({
@@ -131,7 +120,7 @@ export function useServiceRequests() {
   // Calculate statistics
   const calculateStats = (requestsList: ServiceRequest[]) => {
     const today = new Date().toDateString();
-    
+
     const stats: ServiceRequestStats = {
       total: requestsList.length,
       pending: requestsList.filter(r => r.status === 'pending').length,
@@ -139,7 +128,7 @@ export function useServiceRequests() {
       completed: requestsList.filter(r => r.status === 'completed').length,
       cancelled: requestsList.filter(r => r.status === 'cancelled').length,
       urgent: requestsList.filter(r => r.priority === 'urgent').length,
-      today: requestsList.filter(r => 
+      today: requestsList.filter(r =>
         new Date(r.created_at).toDateString() === today
       ).length
     };
@@ -159,8 +148,8 @@ export function useServiceRequests() {
       if (error) throw error;
 
       // Update local state
-      setRequests(prev => [data, ...prev]);
-      calculateStats([data, ...requests]);
+      setRequests(prev => [data as ServiceRequest, ...prev]);
+      calculateStats([data as ServiceRequest, ...requests]);
 
       toast({
         title: "Solicitação Enviada!",
@@ -200,8 +189,8 @@ export function useServiceRequests() {
       if (error) throw error;
 
       // Update local state
-      setRequests(prev => prev.map(r => r.id === requestId ? data : r));
-      calculateStats(requests.map(r => r.id === requestId ? data : r));
+      setRequests(prev => prev.map(r => r.id === requestId ? data as ServiceRequest : r));
+      calculateStats(requests.map(r => r.id === requestId ? data as ServiceRequest : r));
 
       toast({
         title: "Status Actualizado",
@@ -233,7 +222,7 @@ export function useServiceRequests() {
       if (error) throw error;
 
       // Update local state
-      setRequests(prev => prev.map(r => r.id === requestId ? data : r));
+      setRequests(prev => prev.map(r => r.id === requestId ? data as ServiceRequest : r));
 
       toast({
         title: "Solicitação Atribuída",
@@ -295,7 +284,7 @@ export function useServiceRequests() {
   // Get today's requests
   const getTodayRequests = () => {
     const today = new Date().toDateString();
-    return requests.filter(r => 
+    return requests.filter(r =>
       new Date(r.created_at).toDateString() === today
     );
   };

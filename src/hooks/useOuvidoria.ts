@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { matchesSectorKeywords } from '@/lib/sector-utils';
 
 export interface OuvidoriaCategory {
   id: string;
@@ -93,75 +94,34 @@ export function useOuvidoria() {
       if (error) throw error;
 
       let filteredManifestacoes = (data as unknown as OuvidoriaItem[]) || [];
-      
+
       // Filtrar por setor se especificado
       if (sectorFilter && sectorFilter !== 'all') {
         console.log('Ouvidoria - Aplicando filtro para setor:', sectorFilter);
-        
+
         filteredManifestacoes = ((data as unknown as OuvidoriaItem[]) || []).filter(manifestacao => {
-          const assunto = manifestacao.assunto?.toLowerCase() || '';
-          const descricao = manifestacao.descricao?.toLowerCase() || '';
-          const departamento = manifestacao.departamento_responsavel?.toLowerCase() || '';
-          const sectorName = sectorFilter.toLowerCase();
-          
-          // Mapeamento de setores para palavras-chave mais específicas
-          const sectorKeywords: Record<string, string[]> = {
-            'educação': ['escola', 'escolar', 'académico', 'professor', 'aluno', 'educacional', 'sala de aula', 'parque infantil'],
-            'saúde': ['hospital', 'médico', 'enfermeiro', 'clínica', 'atendimento médico', 'sanitário', 'saúde pública'],
-            'agricultura': ['agricultura', 'agricultor', 'fazenda', 'colheita', 'campo', 'rural', 'apoio técnico'],
-            'setor mineiro': ['mina', 'mineiro', 'mineração', 'mineral', 'extrativo', 'segurança na mina'],
-            'desenvolvimento económico': ['desenvolvimento económico', 'emprego', 'economia', 'negócio', 'comercial', 'oportunidades'],
-            'cultura': ['cultura', 'cultural', 'arte', 'evento cultural', 'teatro', 'artístico', 'arte local'],
-            'tecnologia': ['tecnologia', 'tecnológico', 'sistema', 'digital', 'computador', 'informática', 'modernizar sistemas'],
-            'energia e água': ['energia', 'água', 'eletricidade', 'abastecimento de água', 'saneamento', 'iluminação pública']
-          };
-          
-          // Verificar se o setor tem palavras-chave específicas
-          const keywords = sectorKeywords[sectorName] || [sectorName];
-          
-          // Filtrar baseado no conteúdo da manifestação com lógica mais precisa
-          let matches = false;
-          
-          // Priorizar departamento_responsavel se estiver preenchido
-          if (departamento) {
-            const departamentoMatch = keywords.some(keyword => 
-              departamento.includes(keyword)
-            );
-            if (departamentoMatch) {
-              matches = true;
-            }
-          }
-          
-          // Se não encontrou no departamento, verificar assunto e descrição
-          if (!matches) {
-            // Verificar se o assunto contém palavras-chave específicas
-            const assuntoMatch = keywords.some(keyword => 
-              assunto.includes(keyword)
-            );
-            
-            // Verificar se a descrição contém palavras-chave específicas
-            const descricaoMatch = keywords.some(keyword => 
-              descricao.includes(keyword)
-            );
-            
-            matches = assuntoMatch || descricaoMatch;
-          }
-          
+          const textsToMatch = [
+            manifestacao.assunto || '',
+            manifestacao.descricao || '',
+            manifestacao.departamento_responsavel || ''
+          ];
+
+          const matches = matchesSectorKeywords(textsToMatch, sectorFilter);
+
           if (matches) {
             console.log('Ouvidoria - Match encontrado:', {
-              assunto,
-              departamento,
-              sectorName,
-              keywords
+              assunto: manifestacao.assunto,
+              departamento: manifestacao.departamento_responsavel,
+              sectorFilter
             });
           }
-          
+
           return matches;
         });
-        
+
         console.log('Ouvidoria - Total filtrado:', filteredManifestacoes.length);
       }
-      
+
       setManifestacoes(filteredManifestacoes);
       setError(null);
     } catch (err) {
@@ -220,12 +180,12 @@ export function useOuvidoria() {
 
       // Atualizar lista local
       setManifestacoes(prev => [newManifestacao as unknown as OuvidoriaItem, ...prev]);
-      
+
       // Atualizar estatísticas
       await fetchStats();
-      
+
       setError(null);
-      
+
       toast({
         title: "Manifestação Enviada!",
         description: "Sua manifestação foi enviada com sucesso. Protocolo: " + protocolo,
@@ -249,7 +209,7 @@ export function useOuvidoria() {
   const updateManifestacaoStatus = async (id: string, status: string, resposta?: string) => {
     try {
       console.log('Tentando atualizar manifestação:', { id, status, resposta });
-      
+
       // Usar a função RPC que contorna as políticas RLS
       const { data, error } = await (supabase as any).rpc('update_manifestacao_status', {
         p_id: id,
@@ -280,7 +240,7 @@ export function useOuvidoria() {
         // Não falhar aqui, apenas logar o erro
       } else if (updatedManifestacao) {
         // Atualizar lista local
-        setManifestacoes(prev => 
+        setManifestacoes(prev =>
           prev.map(m => m.id === id ? updatedManifestacao as unknown as OuvidoriaItem : m)
         );
       }
@@ -293,7 +253,7 @@ export function useOuvidoria() {
       return updatedManifestacao || data;
     } catch (err) {
       console.error('Error updating manifestação:', err);
-      
+
       // Mensagem de erro mais específica
       let errorMessage = "Erro ao atualizar status da manifestação";
       if (err instanceof Error) {
@@ -305,7 +265,7 @@ export function useOuvidoria() {
           errorMessage = err.message;
         }
       }
-      
+
       toast({
         title: "Erro",
         description: errorMessage,
@@ -318,7 +278,7 @@ export function useOuvidoria() {
   const rateManifestacao = async (id: string, avaliacao: number, comentario?: string) => {
     try {
       console.log('Tentando avaliar manifestação:', { id, avaliacao, comentario });
-      
+
       // Usar a função RPC que contorna as políticas RLS
       const { data, error } = await (supabase as any).rpc('rate_manifestacao', {
         p_id: id,
@@ -349,7 +309,7 @@ export function useOuvidoria() {
         // Não falhar aqui, apenas logar o erro
       } else if (updatedManifestacao) {
         // Atualizar lista local
-        setManifestacoes(prev => 
+        setManifestacoes(prev =>
           prev.map(m => m.id === id ? updatedManifestacao as unknown as OuvidoriaItem : m)
         );
       }

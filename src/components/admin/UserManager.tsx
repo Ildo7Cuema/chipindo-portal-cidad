@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -76,18 +76,10 @@ interface FormData {
   customPassword?: string;
 }
 
-const userRoles = [
+const baseUserRoles = [
   { value: 'user', label: 'Usuário', icon: Users, color: 'gray', description: 'Acesso básico ao sistema' },
   { value: 'editor', label: 'Editor', icon: Edit, color: 'teal', description: 'Gestão de Notícias e Acervo Digital' },
-  { value: 'admin', label: 'Administrador', icon: Crown, color: 'red', description: 'Acesso total ao sistema' },
-  { value: 'educacao', label: 'Direção de Educação', icon: GraduationCap, color: 'blue', description: 'Acesso à área de Educação' },
-  { value: 'saude', label: 'Direção de Saúde', icon: Heart, color: 'red', description: 'Acesso à área de Saúde' },
-  { value: 'agricultura', label: 'Direção de Agricultura', icon: Sprout, color: 'green', description: 'Acesso à área de Agricultura' },
-  { value: 'setor-mineiro', label: 'Direção do Setor Mineiro', icon: Pickaxe, color: 'yellow', description: 'Acesso ao Setor Mineiro' },
-  { value: 'desenvolvimento-economico', label: 'Direção de Desenvolvimento Económico', icon: TrendingUp, color: 'emerald', description: 'Acesso ao Desenvolvimento Económico' },
-  { value: 'cultura', label: 'Direção de Cultura', icon: Palette, color: 'purple', description: 'Acesso à área de Cultura' },
-  { value: 'tecnologia', label: 'Direção de Tecnologia', icon: Cpu, color: 'indigo', description: 'Acesso à área de Tecnologia' },
-  { value: 'energia-agua', label: 'Direção de Energia e Água', icon: Zap, color: 'cyan', description: 'Acesso à área de Energia e Água' }
+  { value: 'admin', label: 'Administrador', icon: Crown, color: 'red', description: 'Acesso total ao sistema' }
 ];
 
 // Dados mockados para demonstração
@@ -138,6 +130,17 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
     role: 'user',
     customPassword: ''
   });
+
+  const userRoles = useMemo(() => {
+    const sectorRoles = setores.map(setor => ({
+      value: setor.slug,
+      label: `Direção de ${setor.nome}`,
+      icon: Building2,
+      color: 'blue',
+      description: `Acesso à área de ${setor.nome}`
+    }));
+    return [...baseUserRoles, ...sectorRoles];
+  }, [setores]);
 
   // Fetch setores estratégicos
   const fetchSetores = async () => {

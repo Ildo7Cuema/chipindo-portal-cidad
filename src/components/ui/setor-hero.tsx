@@ -206,6 +206,7 @@ export const SectorHero: React.FC<SectorHeroProps> = ({ setor, className, onExpl
   const [isVisible, setIsVisible] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [expandedMission, setExpandedMission] = useState(false);
 
   // Parallax mouse effect
   useEffect(() => {
@@ -443,7 +444,7 @@ export const SectorHero: React.FC<SectorHeroProps> = ({ setor, className, onExpl
                         <UsersIcon className={cn(`w-4 h-4 sm:w-5 sm:h-5 text-${sectorColors.icon} drop-shadow-md`)} />
                         <div>
                           <div className={cn(`text-${sectorColors.text} text-xs sm:text-sm font-black drop-shadow-md`)}>Comunidade</div>
-                          <div className={cn(`text-${sectorColors.icon} text-xs font-bold drop-shadow-md`)}>Engajada</div>
+                          <div className={cn(`text-${sectorColors.icon} text-xs font-bold drop-shadow-md`)}>Envolvida</div>
                         </div>
                       </div>
                     </Card>
@@ -470,15 +471,33 @@ export const SectorHero: React.FC<SectorHeroProps> = ({ setor, className, onExpl
 
               {/* Enhanced Info Cards */}
               <div className="mt-8 sm:mt-12 grid grid-cols-2 gap-4 sm:gap-6">
-                <Card className={cn(
-                  `bg-gradient-to-r from-${sectorColors.light}/90 to-${sectorColors.medium}/70 backdrop-blur-xl border-2 border-${sectorColors.border}/60 hover:scale-105 transition-all duration-300`,
-                  `shadow-xl hover:shadow-${sectorColors.medium}/25`
-                )}>
+                <Card
+                  className={cn(
+                    `bg-gradient-to-r from-${sectorColors.light}/90 to-${sectorColors.medium}/70 backdrop-blur-xl border-2 border-${sectorColors.border}/60 transition-all duration-300 cursor-pointer group/mission`,
+                    `shadow-xl hover:shadow-${sectorColors.medium}/30`,
+                    expandedMission ? 'scale-100 ring-2 ring-offset-1 ring-offset-transparent' : 'hover:scale-105',
+                    `ring-${sectorColors.border}/40`
+                  )}
+                  onClick={() => setExpandedMission(prev => !prev)}
+                  title={expandedMission ? 'Clique para fechar' : 'Clique para ler a missão completa'}
+                >
                   <CardContent className="p-4 sm:p-6 text-center">
-                    <TargetIcon className={cn(`w-6 h-6 sm:w-8 sm:h-8 text-${sectorColors.icon} mx-auto mb-2 sm:mb-3 drop-shadow-md`)} />
+                    <TargetIcon className={cn(`w-6 h-6 sm:w-8 sm:h-8 text-${sectorColors.icon} mx-auto mb-2 sm:mb-3 drop-shadow-md transition-transform duration-300`, expandedMission && 'rotate-12')} />
                     <div className={cn(`text-${sectorColors.text} font-black text-sm sm:text-lg mb-1 sm:mb-2 drop-shadow-md`)}>Missão</div>
-                    <div className={cn(`text-${sectorColors.icon} text-xs sm:text-sm leading-relaxed font-bold drop-shadow-md`)}>
-                      {setor.missao?.substring(0, 50)}...
+                    <div className={cn(`text-${sectorColors.icon} text-xs sm:text-sm leading-relaxed font-bold drop-shadow-md transition-all duration-500`)}>
+                      {expandedMission ? (
+                        <>
+                          <span className="block">{setor.missao}</span>
+                          <span className={cn(`block mt-2 text-[10px] font-semibold opacity-70 group-hover/mission:opacity-100 transition-opacity`)}>↑ Fechar</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>{setor.missao && setor.missao.length > 60 ? setor.missao.substring(0, 60) + '…' : setor.missao}</span>
+                          {setor.missao && setor.missao.length > 60 && (
+                            <span className={cn(`block mt-1.5 text-[10px] font-semibold opacity-60 group-hover/mission:opacity-100 transition-opacity`)}>Ver mais ↓</span>
+                          )}
+                        </>
+                      )}
                     </div>
                   </CardContent>
                 </Card>

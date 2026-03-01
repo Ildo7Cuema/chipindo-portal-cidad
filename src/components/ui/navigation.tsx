@@ -20,7 +20,14 @@ import {
   TrendingUpIcon,
   PaletteIcon,
   CpuIcon,
-  ZapIcon
+  ZapIcon,
+  Users2Icon,
+  ScaleIcon,
+  TruckIcon,
+  LeafIcon,
+  Building2Icon,
+  SearchIcon,
+  ShieldIcon
 } from "lucide-react";
 import { useState, useEffect } from "react";
 
@@ -60,6 +67,14 @@ export const Navigation = ({ className }: NavigationProps) => {
     { label: "Cultura", href: "/cultura", icon: PaletteIcon },
     { label: "Tecnologia", href: "/tecnologia", icon: CpuIcon },
     { label: "Energia e Água", href: "/energia-agua", icon: ZapIcon },
+    { label: "Recursos Humanos", href: "/recursos-humanos", icon: Users2Icon },
+    { label: "Jurídico", href: "/juridico", icon: ScaleIcon },
+    { label: "Infraestrutura", href: "/infraestrutura", icon: Building2Icon },
+    { label: "Transporte", href: "/transporte", icon: TruckIcon },
+    { label: "Ambiente", href: "/ambiente", icon: LeafIcon },
+    { label: "Urbanismo", href: "/urbanismo", icon: BuildingIcon },
+    { label: "Fiscalização", href: "/fiscalizacao", icon: SearchIcon },
+    { label: "ANIESA", href: "/aniesa", icon: ShieldIcon },
   ];
 
   const handleNavClick = (href: string) => {

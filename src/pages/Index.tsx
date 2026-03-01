@@ -7,8 +7,6 @@ import { MunicipalityCharacterization } from "@/components/sections/Municipality
 import { Section, SectionHeader, SectionContent } from "@/components/ui/section";
 import { StatCard } from "@/components/ui/stat-card";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { FloatingElements } from "@/components/ui/floating-elements";
 import {
   ArrowRightIcon,
@@ -25,7 +23,6 @@ import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useMunicipalStats } from "@/hooks/useMunicipalStats";
-import { useDepartamentos } from "@/hooks/useDepartamentos";
 import { useEmergencyContacts } from "@/hooks/useEmergencyContacts";
 import { usePopulationData } from "@/hooks/usePopulationData";
 
@@ -36,7 +33,6 @@ const Index = () => {
   // Real data hooks
   const { settings } = useSiteSettings();
   const { stats, loading: statsLoading } = useMunicipalStats();
-  const { direcoes: direccoes, loading: direccoesLoading } = useDepartamentos();
   const { contacts: emergencyContacts, loading: emergencyLoading } = useEmergencyContacts();
   const {
     currentPopulation,
@@ -59,39 +55,25 @@ const Index = () => {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  // Transform departments into service cards
-  const getServiceIcon = (codigo: string | null) => {
-    switch (codigo) {
-      case 'EDU': return '📚';
-      case 'SAU': return '🏥';
-      case 'OBR': return '🚧';
-      case 'AGR': return '🌾';
-      case 'FIN': return '💰';
-      case 'SEG': return '🛡️';
-      case 'CUL': return '🎭';
-      case 'AGU': return '💧';
-      default: return '🏛️';
-    }
-  };
-
-  const getServiceGradient = (codigo: string | null) => {
-    switch (codigo) {
-      case 'EDU': return 'from-blue-500 to-cyan-500';
-      case 'SAU': return 'from-emerald-500 to-green-500';
-      case 'OBR': return 'from-orange-500 to-red-500';
-      case 'AGR': return 'from-green-500 to-emerald-500';
-      case 'FIN': return 'from-yellow-500 to-orange-500';
-      case 'SEG': return 'from-gray-500 to-slate-500';
-      case 'CUL': return 'from-purple-500 to-pink-500';
-      case 'AGU': return 'from-blue-500 to-teal-500';
-      default: return 'from-primary to-secondary';
-    }
-  };
-
-  // Filter main service departments (limit to 6)
-  const mainDirecoes = (direccoes || [])
-    .filter(dept => ['EDU', 'SAU', 'OBR', 'AGR', 'FIN', 'CUL'].includes(dept.codigo || ''))
-    .slice(0, 6);
+  // All sector pages (static list)
+  const todosSetores = [
+    { href: '/educacao', emoji: '📚', label: 'Educação', descricao: 'Ensino e formação académica', gradient: 'from-blue-500 to-cyan-500' },
+    { href: '/saude', emoji: '🏥', label: 'Saúde', descricao: 'Serviços de saúde pública', gradient: 'from-emerald-500 to-green-500' },
+    { href: '/agricultura', emoji: '🌾', label: 'Agricultura', descricao: 'Produção agrícola e pecuária', gradient: 'from-green-500 to-lime-500' },
+    { href: '/setor-mineiro', emoji: '⛏️', label: 'Sector Mineiro', descricao: 'Recursos minerais e geologia', gradient: 'from-stone-500 to-zinc-500' },
+    { href: '/desenvolvimento-economico', emoji: '📈', label: 'Desenvolvimento Económico', descricao: 'Crescimento e investimento local', gradient: 'from-yellow-500 to-orange-500' },
+    { href: '/cultura', emoji: '🎭', label: 'Cultura', descricao: 'Artes, cultura e património', gradient: 'from-purple-500 to-pink-500' },
+    { href: '/tecnologia', emoji: '💻', label: 'Tecnologia', descricao: 'Inovação e transformação digital', gradient: 'from-indigo-500 to-violet-500' },
+    { href: '/energia-agua', emoji: '⚡', label: 'Energia e Água', descricao: 'Redes eléctricas e abastecimento', gradient: 'from-blue-500 to-teal-500' },
+    { href: '/recursos-humanos', emoji: '👥', label: 'Recursos Humanos', descricao: 'Gestão de pessoal e emprego', gradient: 'from-indigo-500 to-purple-600' },
+    { href: '/juridico', emoji: '⚖️', label: 'Jurídico', descricao: 'Assessoria legal e legislação', gradient: 'from-slate-500 to-gray-600' },
+    { href: '/infraestrutura', emoji: '🏗️', label: 'Infraestrutura', descricao: 'Obras e construções municipais', gradient: 'from-orange-500 to-red-500' },
+    { href: '/transporte', emoji: '🚌', label: 'Transporte', descricao: 'Mobilidade e transporte público', gradient: 'from-sky-500 to-blue-500' },
+    { href: '/ambiente', emoji: '🌿', label: 'Ambiente', descricao: 'Protecção ambiental e recursos naturais', gradient: 'from-green-500 to-emerald-600' },
+    { href: '/urbanismo', emoji: '🏙️', label: 'Urbanismo', descricao: 'Planeamento e ordenamento urbano', gradient: 'from-amber-500 to-yellow-500' },
+    { href: '/fiscalizacao', emoji: '🔍', label: 'Fiscalização', descricao: 'Controlo, inspecção e regulação', gradient: 'from-red-500 to-rose-500' },
+    { href: '/aniesa', emoji: '🛡️', label: 'ANIESA', descricao: 'Acção social e assistência à comunidade', gradient: 'from-teal-500 to-cyan-600' },
+  ];
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
@@ -176,95 +158,66 @@ const Index = () => {
 
 
 
-        {/* Services Section - Only show if we have directions */}
-        {mainDirecoes.length > 0 && (
-          <Section variant="default" size="lg" pattern="dots" className="relative">
-            {/* Background gradient effect */}
-            <div
-              className="absolute inset-0 bg-gradient-to-br from-yellow-500/5 via-orange-500/5 to-red-500/5 transition-all duration-1000"
-              style={{
-                transform: `translate(${(mousePosition.x - 50) * 0.1}px, ${(mousePosition.y - 50) * 0.1}px)`
-              }}
-            />
+        {/* Services Section */}
+        <Section variant="default" size="lg" pattern="dots" className="relative">
+          {/* Background gradient effect */}
+          <div
+            className="absolute inset-0 bg-gradient-to-br from-yellow-500/5 via-orange-500/5 to-red-500/5 transition-all duration-1000"
+            style={{
+              transform: `translate(${(mousePosition.x - 50) * 0.1}px, ${(mousePosition.y - 50) * 0.1}px)`
+            }}
+          />
 
-            <SectionHeader
-              subtitle="Serviços Municipais"
-              title={
-                <span className="bg-gradient-to-r from-yellow-500 via-orange-500 to-yellow-600 bg-clip-text text-transparent font-bold">
-                  Direcções Activas
-                </span>
-              }
-              description="Conheça as principais direcções da Administração Municipal que servem a comunidade de Chipindo"
-              centered={true}
-              className="relative z-10"
-            />
+          <SectionHeader
+            subtitle="Serviços Municipais"
+            title={
+              <span className="bg-gradient-to-r from-yellow-500 via-orange-500 to-yellow-600 bg-clip-text text-transparent font-bold">
+                Direcções Activas
+              </span>
+            }
+            description="Conheça as principais direcções da Administração Municipal que servem a comunidade de Chipindo"
+            centered={true}
+            className="relative z-10"
+          />
 
-            <SectionContent className="relative z-10">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {mainDirecoes.map((direccao) => (
-                  <Card
-                    key={direccao.id}
-                    className={cn(
-                      "group overflow-hidden border-0 shadow-2xl hover:shadow-3xl transition-all duration-700",
-                      "hover:scale-105 hover:-translate-y-2 cursor-pointer relative"
-                    )}
-                  >
-                    {/* Gradient background */}
-                    <div className={`absolute inset-0 bg-gradient-to-br ${getServiceGradient(direccao.codigo)} opacity-0 group-hover:opacity-10 transition-all duration-500`} />
+          <SectionContent className="relative z-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+              {todosSetores.map((setor) => (
+                <Card
+                  key={setor.href}
+                  className={cn(
+                    "group overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-500",
+                    "hover:scale-105 hover:-translate-y-1 cursor-pointer relative"
+                  )}
+                  onClick={() => window.location.href = setor.href}
+                >
+                  {/* Top gradient bar */}
+                  <div className={`h-1 bg-gradient-to-r ${setor.gradient} w-full`} />
 
-                    <CardContent className="p-8 relative">
-                      <div className="text-center space-y-6">
-                        {/* Icon with animation */}
-                        <div className="relative">
-                          <div className="text-6xl group-hover:scale-125 transition-transform duration-500 mb-4">
-                            {getServiceIcon(direccao.codigo)}
-                          </div>
-                          <Badge
-                            className={cn(
-                              "absolute -top-2 -right-2 bg-gradient-to-r",
-                              getServiceGradient(direccao.codigo),
-                              "text-white border-0 shadow-lg font-bold"
-                            )}
-                          >
-                            {direccao.codigo}
-                          </Badge>
-                        </div>
-
-                        {/* Content */}
-                        <div>
-                          <h3 className="text-xl font-bold text-foreground group-hover:bg-gradient-to-r group-hover:from-yellow-500 group-hover:to-orange-500 group-hover:bg-clip-text group-hover:text-transparent transition-all duration-500">
-                            {direccao.nome}
-                          </h3>
-                          {direccao.descricao && (
-                            <p className="text-sm text-muted-foreground mt-3 leading-relaxed">
-                              {direccao.descricao}
-                            </p>
-                          )}
-                        </div>
-
-                        {/* Action button */}
-                        <Button
-                          size="sm"
-                          className={cn(
-                            "w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600",
-                            "text-white font-semibold border-0 shadow-lg hover:shadow-xl transition-all duration-500",
-                            "hover:scale-105 group/btn"
-                          )}
-                          onClick={() => window.location.href = '/servicos'}
-                        >
-                          Ver Serviços
-                          <ArrowRightIcon className="w-4 h-4 ml-2 group-hover/btn:translate-x-1 transition-transform duration-300" />
-                        </Button>
+                  <CardContent className="p-5 relative">
+                    <div className="flex items-start gap-3">
+                      <div className="text-3xl group-hover:scale-125 transition-transform duration-300">
+                        {setor.emoji}
                       </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </SectionContent>
-          </Section>
-        )}
-
-
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors duration-300 leading-tight">
+                          {setor.label}
+                        </h3>
+                        <p className="text-xs text-muted-foreground mt-1 leading-relaxed line-clamp-2">
+                          {setor.descricao}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="mt-3 flex items-center gap-1 text-xs font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <span>Ver mais</span>
+                      <ArrowRightIcon className="w-3 h-3 group-hover:translate-x-1 transition-transform duration-300" />
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </SectionContent>
+        </Section>
 
 
         <NewsSection />

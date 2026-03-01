@@ -48,6 +48,7 @@ import { AuditLogsManager } from "@/components/admin/AuditLogsManager";
 import { AccessDenied } from "@/components/ui/access-denied";
 import { SectorContentManager } from "@/components/admin/SectorContentManager";
 import { SiteVisitsReport } from "@/components/admin/SiteVisitsReport";
+import { HospitalInfrastructureManager } from "@/components/admin/HospitalInfrastructureManager";
 interface NavigationItem {
   id: string;
   label: string;
@@ -236,6 +237,12 @@ const Admin = () => {
     icon: Building2,
     description: "Editar estatísticas, programas e oportunidades do sector",
     category: "Sector"
+  }, {
+    id: "hospital-infrastructures",
+    label: "Infraestruturas e Saúde",
+    icon: Building2,
+    description: "Gerir infraestruturas hospitalares e serviços de saúde",
+    category: "Serviços"
   }, {
     id: "users",
     label: "Utilizadores",
@@ -553,6 +560,7 @@ const Admin = () => {
               {activeTab === "event-registrations" && <EventRegistrationsManager />}
               {activeTab === "turismo-carousel" && <TurismoAmbienteCarouselManager />}
               {activeTab === "sector-content" && <SectorContentManager currentUserRole={role} />}
+              {activeTab === "hospital-infrastructures" && <HospitalInfrastructureManager />}
               {activeTab === "users" && (canManageUsers ? <UserManager currentUserRole={role} /> : <AccessDenied title="Gestão de Utilizadores" message="Apenas administradores podem gerir utilizadores do sistema." />)}
               {activeTab === "sector-access" && (canManageUsers ? <SectorAccessManager currentUserRole={role} currentUserSetorId={profile?.setor_id} /> : <AccessDenied title="Acesso por Setor" message="Apenas administradores podem configurar acesso por setor." />)}
               {activeTab === "audit-logs" && (canViewAuditLogs ? <AuditLogsManager currentUserRole={role} /> : <AccessDenied title="Logs de Auditoria" message="Apenas administradores podem visualizar logs de auditoria." />)}

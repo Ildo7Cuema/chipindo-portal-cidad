@@ -22,7 +22,14 @@ import {
   CpuIcon,
   ZapIcon,
   BuildingIcon,
-  ChevronRightIcon
+  ChevronRightIcon,
+  Users2Icon,
+  ScaleIcon,
+  TruckIcon,
+  LeafIcon,
+  Building2Icon,
+  SearchIcon,
+  ShieldIcon
 } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 
@@ -83,6 +90,14 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({ className })
     { label: "Cultura", href: "/cultura", icon: PaletteIcon },
     { label: "Tecnologia", href: "/tecnologia", icon: CpuIcon },
     { label: "Energia e Água", href: "/energia-agua", icon: ZapIcon },
+    { label: "Recursos Humanos", href: "/recursos-humanos", icon: Users2Icon },
+    { label: "Jurídico", href: "/juridico", icon: ScaleIcon },
+    { label: "Infraestrutura", href: "/infraestrutura", icon: Building2Icon },
+    { label: "Transporte", href: "/transporte", icon: TruckIcon },
+    { label: "Ambiente", href: "/ambiente", icon: LeafIcon },
+    { label: "Urbanismo", href: "/urbanismo", icon: BuildingIcon },
+    { label: "Fiscalização", href: "/fiscalizacao", icon: SearchIcon },
+    { label: "ANIESA", href: "/aniesa", icon: ShieldIcon },
   ];
 
   const handleNavClick = useCallback((href: string) => {

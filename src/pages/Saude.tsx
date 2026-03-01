@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { supabase } from "@/integrations/supabase/client";
 import {
   HeartIcon,
   StethoscopeIcon,
@@ -29,7 +30,8 @@ import {
   BabyIcon,
   PillIcon,
   SparklesIcon,
-  XIcon
+  XIcon,
+  ImageIcon
 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import React, { useState, useEffect } from "react";
@@ -66,6 +68,10 @@ const Saude = () => {
   const [especialidadeSelecionada, setEspecialidadeSelecionada] = useState<string>("");
   const [activeTab, setActiveTab] = useState("programas");
 
+  const [hospitals, setHospitals] = useState<any[]>([]);
+  const [hospitalServices, setHospitalServices] = useState<any[]>([]);
+  const [hospitalImages, setHospitalImages] = useState<any[]>([]);
+
   // Função para scroll suave para as abas
   const scrollToTabs = () => {
     const tabsElement = document.querySelector('[data-tabs-container]');
@@ -96,7 +102,14 @@ const Saude = () => {
         setLoading(true);
         setError(null);
         const data = await getSetorBySlug('saude');
+
+        // Fetch hospitais
+        const { data: hospData } = await supabase.from('hospital_infrastructures').select('*').eq('is_active', true).order('name');
+        const { data: servData } = await supabase.from('hospital_services').select('*');
+        const { data: imgData } = await supabase.from('hospital_images').select('*');
+
         if (!isMounted) return;
+
         // Garantir que arrays são arrays (parse se vierem como string)
         if (data) {
           data.estatisticas = Array.isArray(data.estatisticas) ? data.estatisticas : [];
@@ -106,6 +119,9 @@ const Saude = () => {
           data.contactos = Array.isArray(data.contactos) ? data.contactos : [];
         }
         setSetor(data);
+        setHospitals(hospData || []);
+        setHospitalServices(servData || []);
+        setHospitalImages(imgData || []);
       } catch (err) {
         setError('Erro ao carregar dados do sector.');
         setSetor(null);
@@ -177,7 +193,7 @@ const Saude = () => {
     <div className="min-h-screen bg-background">
       {/* Inject scrollbar hide styles */}
       <style>{scrollbarHideStyles}</style>
-      
+
       <Header />
 
       <SectorHero
@@ -202,29 +218,29 @@ const Saude = () => {
             {/* Mobile: horizontal scroll with touch-friendly targets, Desktop: flex wrap */}
             <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0 scrollbar-hide pb-1">
               <TabsList className="inline-flex sm:flex sm:flex-wrap w-max sm:w-full gap-1.5 sm:gap-2 p-1.5 sm:p-2 bg-muted/60 backdrop-blur-sm rounded-xl shadow-sm">
-                <TabsTrigger 
-                  value="programas" 
+                <TabsTrigger
+                  value="programas"
                   className="min-h-[48px] sm:min-h-[44px] flex-shrink-0 sm:flex-1 min-w-[110px] sm:min-w-0 text-sm sm:text-sm font-medium px-4 sm:px-5 py-3 sm:py-2.5 rounded-xl data-[state=active]:shadow-md transition-all duration-200 active:scale-[0.98] touch-manipulation"
                 >
                   <HeartHandshakeIcon className="w-4 h-4 mr-2 sm:hidden" />
                   <span className="truncate">Programas</span>
                 </TabsTrigger>
-                <TabsTrigger 
-                  value="oportunidades" 
+                <TabsTrigger
+                  value="oportunidades"
                   className="min-h-[48px] sm:min-h-[44px] flex-shrink-0 sm:flex-1 min-w-[130px] sm:min-w-0 text-sm sm:text-sm font-medium px-4 sm:px-5 py-3 sm:py-2.5 rounded-xl data-[state=active]:shadow-md transition-all duration-200 active:scale-[0.98] touch-manipulation"
                 >
                   <StarIcon className="w-4 h-4 mr-2 sm:hidden" />
                   <span className="truncate">Oportunidades</span>
                 </TabsTrigger>
-                <TabsTrigger 
-                  value="infraestruturas" 
+                <TabsTrigger
+                  value="infraestruturas"
                   className="min-h-[48px] sm:min-h-[44px] flex-shrink-0 sm:flex-1 min-w-[145px] sm:min-w-0 text-sm sm:text-sm font-medium px-4 sm:px-5 py-3 sm:py-2.5 rounded-xl data-[state=active]:shadow-md transition-all duration-200 active:scale-[0.98] touch-manipulation"
                 >
                   <BuildingIcon className="w-4 h-4 mr-2 sm:hidden" />
                   <span className="truncate">Infraestruturas</span>
                 </TabsTrigger>
-                <TabsTrigger 
-                  value="contactos" 
+                <TabsTrigger
+                  value="contactos"
                   className="min-h-[48px] sm:min-h-[44px] flex-shrink-0 sm:flex-1 min-w-[110px] sm:min-w-0 text-sm sm:text-sm font-medium px-4 sm:px-5 py-3 sm:py-2.5 rounded-xl data-[state=active]:shadow-md transition-all duration-200 active:scale-[0.98] touch-manipulation"
                 >
                   <PhoneIcon className="w-4 h-4 mr-2 sm:hidden" />
@@ -237,13 +253,13 @@ const Saude = () => {
             <TabsContent value="programas" className="mt-5 sm:mt-8 lg:mt-10 animate-in fade-in-50 duration-300">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
                 {setor.programas.map((programa, index) => (
-                  <Card 
-                    key={index} 
+                  <Card
+                    key={index}
                     className="group relative flex flex-col hover:shadow-2xl hover:shadow-red-100/50 dark:hover:shadow-red-900/20 transition-all duration-300 hover:-translate-y-1 border-0 bg-white dark:bg-gray-800/90 backdrop-blur-sm overflow-hidden rounded-xl"
                   >
                     {/* Gradient accent bar */}
                     <div className="h-1.5 sm:h-1 bg-gradient-to-r from-red-500 to-pink-600 w-full" />
-                    
+
                     <CardHeader className="p-4 sm:p-5 lg:p-6 pb-3 sm:pb-4">
                       <CardTitle className="flex items-start gap-3 text-base sm:text-lg group-hover:text-red-600 transition-all duration-200">
                         <div className="p-2.5 sm:p-3 rounded-xl bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 group-hover:bg-red-600 group-hover:text-white transition-all duration-200 shrink-0">
@@ -253,7 +269,7 @@ const Saude = () => {
                       </CardTitle>
                       <p className="text-sm text-muted-foreground leading-relaxed mt-3">{programa.descricao}</p>
                     </CardHeader>
-                    
+
                     <CardContent className="flex-1 flex flex-col p-4 sm:p-5 lg:p-6 pt-0 space-y-4 sm:space-y-5">
                       {/* Benefícios */}
                       <div className="space-y-2.5 sm:space-y-3">
@@ -292,7 +308,7 @@ const Saude = () => {
                         {programa.contacto && (
                           <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 flex items-center gap-2">
                             <PhoneIcon className="w-4 h-4 shrink-0" />
-                            <strong className="font-medium">Contacto:</strong> 
+                            <strong className="font-medium">Contacto:</strong>
                             <span className="truncate">{programa.contacto}</span>
                           </p>
                         )}
@@ -317,13 +333,13 @@ const Saude = () => {
             <TabsContent value="oportunidades" className="mt-5 sm:mt-8 lg:mt-10 animate-in fade-in-50 duration-300">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
                 {setor.oportunidades.map((oportunidade, index) => (
-                  <Card 
-                    key={index} 
+                  <Card
+                    key={index}
                     className="group relative flex flex-col hover:shadow-2xl hover:shadow-blue-100/50 dark:hover:shadow-blue-900/20 transition-all duration-300 hover:-translate-y-1 border-0 bg-white dark:bg-gray-800/90 backdrop-blur-sm overflow-hidden rounded-xl"
                   >
                     {/* Gradient accent bar */}
                     <div className="h-1.5 sm:h-1 bg-gradient-to-r from-blue-500 to-cyan-500 w-full" />
-                    
+
                     <CardHeader className="p-4 sm:p-5 lg:p-6 pb-3 sm:pb-4">
                       {/* Badges row */}
                       <div className="flex flex-wrap justify-between items-center gap-2 mb-3">
@@ -334,7 +350,7 @@ const Saude = () => {
                           {oportunidade.prazo ? `Até ${new Date(oportunidade.prazo).toLocaleDateString('pt-AO')}` : 'Aberto'}
                         </Badge>
                       </div>
-                      
+
                       <CardTitle className="text-base sm:text-lg group-hover:text-blue-600 transition-all duration-200 line-clamp-2">
                         {oportunidade.titulo}
                       </CardTitle>
@@ -390,13 +406,13 @@ const Saude = () => {
             <TabsContent value="infraestruturas" className="mt-5 sm:mt-8 lg:mt-10 animate-in fade-in-50 duration-300">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
                 {setor.infraestruturas.map((infraestrutura, index) => (
-                  <Card 
-                    key={index} 
+                  <Card
+                    key={index}
                     className="group relative flex flex-col hover:shadow-2xl hover:shadow-orange-100/50 dark:hover:shadow-orange-900/20 transition-all duration-300 hover:-translate-y-1 border-0 bg-white dark:bg-gray-800/90 backdrop-blur-sm overflow-hidden rounded-xl"
                   >
                     {/* Gradient accent bar */}
                     <div className="h-1.5 sm:h-1 bg-gradient-to-r from-orange-500 to-amber-500 w-full" />
-                    
+
                     <CardHeader className="p-4 sm:p-5 lg:p-6 pb-3 sm:pb-4">
                       <div className="flex items-center justify-between mb-3 gap-2">
                         <div className="p-2.5 sm:p-3 bg-orange-50 dark:bg-orange-900/30 rounded-xl text-orange-600 dark:text-orange-400 group-hover:bg-orange-600 group-hover:text-white transition-all duration-200 shrink-0">
@@ -406,7 +422,7 @@ const Saude = () => {
                           Infraestrutura
                         </Badge>
                       </div>
-                      
+
                       <CardTitle className="text-base sm:text-lg group-hover:text-orange-600 transition-all duration-200 line-clamp-2">
                         {infraestrutura.nome}
                       </CardTitle>
@@ -463,13 +479,13 @@ const Saude = () => {
             <TabsContent value="contactos" className="mt-5 sm:mt-8 lg:mt-10 animate-in fade-in-50 duration-300">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
                 {setor.contactos.map((contacto, index) => (
-                  <Card 
-                    key={index} 
+                  <Card
+                    key={index}
                     className="group relative overflow-hidden hover:shadow-xl hover:shadow-purple-100/50 dark:hover:shadow-purple-900/20 transition-all duration-300 hover:-translate-y-0.5 border-0 bg-white dark:bg-gray-800/90 backdrop-blur-sm rounded-xl"
                   >
                     {/* Gradient accent bar */}
                     <div className="h-1.5 sm:h-1 bg-gradient-to-r from-purple-500 to-violet-500 w-full" />
-                    
+
                     <CardHeader className="p-4 sm:p-5 lg:p-6 pb-3 sm:pb-4">
                       <div className="flex items-center gap-3 mb-3">
                         <div className="p-2.5 sm:p-3 bg-purple-100 dark:bg-purple-900/30 rounded-xl shrink-0">
@@ -490,8 +506,8 @@ const Saude = () => {
                     <CardContent className="p-4 sm:p-5 lg:p-6 pt-0">
                       <div className="space-y-1">
                         {contacto.telefone && (
-                          <a 
-                            href={`tel:${contacto.telefone}`} 
+                          <a
+                            href={`tel:${contacto.telefone}`}
                             className="flex items-center gap-3 min-h-[48px] sm:min-h-[44px] py-2 px-3 -mx-3 rounded-xl hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all duration-200 active:scale-[0.98] touch-manipulation"
                           >
                             <PhoneIcon className="w-4 h-4 text-purple-500 shrink-0" />
@@ -502,8 +518,8 @@ const Saude = () => {
                         )}
 
                         {contacto.email && (
-                          <a 
-                            href={`mailto:${contacto.email}`} 
+                          <a
+                            href={`mailto:${contacto.email}`}
                             className="flex items-center gap-3 min-h-[48px] sm:min-h-[44px] py-2 px-3 -mx-3 rounded-xl hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all duration-200 active:scale-[0.98] touch-manipulation"
                           >
                             <MailIcon className="w-4 h-4 text-purple-500 shrink-0" />
@@ -556,7 +572,7 @@ const Saude = () => {
           <div className="flex flex-col h-full">
             {/* Header with gradient accent */}
             <div className="h-1.5 sm:h-1 bg-gradient-to-r from-orange-500 to-amber-500 w-full shrink-0" />
-            
+
             <DialogHeader className="p-5 sm:p-6 pb-4 border-b border-gray-100 dark:border-gray-800 shrink-0 relative">
               {/* Mobile close button */}
               <button
@@ -566,7 +582,7 @@ const Saude = () => {
               >
                 <XIcon className="w-5 h-5 text-gray-500" />
               </button>
-              
+
               <div className="flex items-start gap-3 pr-10 sm:pr-0">
                 <div className="p-2.5 bg-orange-50 dark:bg-orange-900/30 rounded-xl text-orange-600 dark:text-orange-400 shrink-0">
                   <BuildingIcon className="w-5 h-5" />
@@ -580,51 +596,104 @@ const Saude = () => {
 
             {detalheInfra && (
               <div className="flex-1 overflow-y-auto overscroll-contain scroll-smooth p-5 sm:p-6 space-y-5 sm:space-y-6">
-                {/* Características */}
-                <div>
-                  <h4 className="font-semibold text-sm sm:text-base mb-3 flex items-center gap-2">
-                    <CheckCircleIcon className="w-4 h-4 text-green-500" />
-                    Características
-                  </h4>
-                  <ul className="space-y-2.5">
-                    {detalheInfra.caracteristicas?.map((caracteristica: string, idx: number) => (
-                      <li key={idx} className="text-sm flex items-start gap-3 py-1.5 px-3 -mx-3 rounded-xl bg-gray-50 dark:bg-gray-800/50">
-                        <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 shrink-0" />
-                        <span className="text-gray-700 dark:text-gray-300">{caracteristica}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
 
-                {detalheInfra.localizacao && (
+                {/* Images Gallery */}
+                {(() => {
+                  const images = hospitalImages.filter(img => img.infrastructure_id === detalheInfra.id);
+                  if (images.length === 0) return null;
+                  return (
+                    <div className="mb-6">
+                      <h4 className="font-semibold text-sm sm:text-base mb-3 flex items-center gap-2">
+                        <ImageIcon className="w-4 h-4 text-orange-500" />
+                        Galeria
+                      </h4>
+                      <div className="flex overflow-x-auto gap-3 pb-2 snap-x">
+                        {images.map(img => (
+                          <div key={img.id} className="min-w-[200px] sm:min-w-[280px] h-32 sm:h-48 shrink-0 rounded-xl overflow-hidden relative snap-center">
+                            <img src={img.url} className="w-full h-full object-cover" alt={img.section} />
+                            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-3 pt-6">
+                              <p className="text-white text-xs font-medium">{img.section}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* Serviços */}
+                {(() => {
+                  const services = hospitalServices.filter(srv => srv.infrastructure_id === detalheInfra.id);
+                  if (services.length === 0) return null;
+                  return (
+                    <div>
+                      <h4 className="font-semibold text-sm sm:text-base mb-3 flex items-center gap-2">
+                        <ActivityIcon className="w-4 h-4 text-green-500" />
+                        Serviços Disponíveis
+                      </h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {services.map(srv => (
+                          <div key={srv.id} className="p-3 sm:p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800">
+                            <h5 className="font-medium text-sm text-gray-900 dark:text-gray-100">{srv.name}</h5>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{srv.description}</p>
+                            <Badge className="mt-2 text-[10px] bg-green-100 text-green-800 hover:bg-green-100 dark:bg-green-900/30 dark:text-green-300">{srv.availability}</Badge>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )
+                })()}
+
+                {detalheInfra.location && (
                   <div>
                     <h4 className="font-semibold text-sm sm:text-base mb-3 flex items-center gap-2">
                       <MapPinIcon className="w-4 h-4 text-orange-500" />
                       Localização
                     </h4>
                     <p className="text-sm text-muted-foreground py-2 px-3 -mx-3 rounded-xl bg-gray-50 dark:bg-gray-800/50">
-                      {detalheInfra.localizacao}
+                      {detalheInfra.location}
                     </p>
                   </div>
                 )}
 
-                {detalheInfra.observacoes && (
+                {detalheInfra.operating_hours && (
                   <div>
                     <h4 className="font-semibold text-sm sm:text-base mb-3 flex items-center gap-2">
-                      <LightbulbIcon className="w-4 h-4 text-amber-500" />
-                      Observações
+                      <CalendarIcon className="w-4 h-4 text-orange-500" />
+                      Horário de Funcionamento
                     </h4>
                     <p className="text-sm text-muted-foreground py-2 px-3 -mx-3 rounded-xl bg-gray-50 dark:bg-gray-800/50">
-                      {detalheInfra.observacoes}
+                      {detalheInfra.operating_hours}
                     </p>
+                  </div>
+                )}
+
+                {(detalheInfra.phone || detalheInfra.email) && (
+                  <div>
+                    <h4 className="font-semibold text-sm sm:text-base mb-3 flex items-center gap-2">
+                      <PhoneIcon className="w-4 h-4 text-orange-500" />
+                      Contactos Diretos
+                    </h4>
+                    <div className="space-y-2 py-2 px-3 -mx-3 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+                      {detalheInfra.phone && (
+                        <p className="text-sm text-muted-foreground flex items-center gap-2">
+                          <strong>T:</strong> {detalheInfra.phone}
+                        </p>
+                      )}
+                      {detalheInfra.email && (
+                        <p className="text-sm text-muted-foreground flex items-center gap-2">
+                          <strong>E:</strong> {detalheInfra.email}
+                        </p>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
             )}
 
             <DialogFooter className="p-5 sm:p-6 pt-4 border-t border-gray-100 dark:border-gray-800 shrink-0 bg-gray-50/50 dark:bg-gray-900/50">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => setOpenDetalhes(false)}
                 className="w-full sm:w-auto min-h-[48px] sm:min-h-[44px] font-medium rounded-xl border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 active:scale-[0.98] touch-manipulation"
               >

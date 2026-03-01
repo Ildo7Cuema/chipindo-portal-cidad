@@ -5,8 +5,8 @@ export interface AccessControlConfig {
   adminOnly: string[];
   // Itens que editor pode aceder
   editorItems: string[];
-  // Mapeamento de itens por setor
-  sectorItems: Record<string, string[]>;
+  // Itens padrão que qualquer utilizador de um setor pode aceder
+  defaultSectorItems: string[];
   // Itens que todos os utilizadores autenticados podem aceder
   publicItems: string[];
 }
@@ -41,64 +41,14 @@ export const defaultAccessConfig: AccessControlConfig = {
     'news',
     'acervo',
   ],
-  sectorItems: {
-    'educacao': [
-      'sector-content',        // Gestão do Conteúdo da Página Pública do Sector
-      'concursos',             // Gestão de Concursos
-      'service-requests',      // Gestão de Solicitações
-      'ouvidoria',             // Ouvidoria
-      'interest-registrations' // Registos de Interesse
-    ],
-    'saude': [
-      'sector-content',
-      'concursos',
-      'service-requests',
-      'ouvidoria',
-      'interest-registrations'
-    ],
-    'agricultura': [
-      'sector-content',
-      'concursos',
-      'service-requests',
-      'ouvidoria',
-      'interest-registrations'
-    ],
-    'setor-mineiro': [
-      'sector-content',
-      'concursos',
-      'service-requests',
-      'ouvidoria',
-      'interest-registrations'
-    ],
-    'desenvolvimento-economico': [
-      'sector-content',
-      'concursos',
-      'service-requests',
-      'ouvidoria',
-      'interest-registrations'
-    ],
-    'cultura': [
-      'sector-content',
-      'concursos',
-      'service-requests',
-      'ouvidoria',
-      'interest-registrations'
-    ],
-    'tecnologia': [
-      'sector-content',
-      'concursos',
-      'service-requests',
-      'ouvidoria',
-      'interest-registrations'
-    ],
-    'energia-agua': [
-      'sector-content',
-      'concursos',
-      'service-requests',
-      'ouvidoria',
-      'interest-registrations'
-    ]
-  },
+  defaultSectorItems: [
+    'sector-content',        // Gestão do Conteúdo da Página Pública do Sector
+    'concursos',             // Gestão de Concursos
+    'service-requests',      // Gestão de Solicitações
+    'ouvidoria',             // Ouvidoria
+    'interest-registrations', // Registos de Interesse
+    'hospital-infrastructures' // Acesso apenas validado no hook para o papel correto
+  ],
   publicItems: [
     'dashboard',
     'notifications'
@@ -106,7 +56,7 @@ export const defaultAccessConfig: AccessControlConfig = {
 };
 
 export function useAccessControl(config: AccessControlConfig = defaultAccessConfig) {
-  const { profile, isAdmin, isEditor, isSectorUser, role } = useUserRole();
+  const { profile, isAdmin, isEditor, isSectorUser, role, loading: profileLoading } = useUserRole();
 
   // Função para verificar se o utilizador pode aceder a um item específico
   const canAccessItem = (itemId: string): boolean => {
@@ -130,8 +80,12 @@ export function useAccessControl(config: AccessControlConfig = defaultAccessConf
     }
 
     // Verificar se é item específico do setor
-    if (isSectorUser && config.sectorItems[userRole]) {
-      return config.sectorItems[userRole].includes(itemId);
+    if (isSectorUser && config.defaultSectorItems) {
+      // Especial: 'hospital-infrastructures' apenas para o perfil 'saude'
+      if (itemId === 'hospital-infrastructures' && userRole !== 'saude') {
+        return false;
+      }
+      return config.defaultSectorItems.includes(itemId);
     }
 
     return false;
@@ -184,6 +138,7 @@ export function useAccessControl(config: AccessControlConfig = defaultAccessConf
     isSectorUser,
     role,
     profile,
+    profileLoading,
 
     // Funções de verificação
     canAccessItem,

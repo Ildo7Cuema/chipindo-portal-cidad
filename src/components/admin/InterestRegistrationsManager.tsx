@@ -14,6 +14,7 @@ import { useAccessControl } from "@/hooks/useAccessControl";
 import { SectorFilter } from "@/components/admin/SectorFilter";
 import { Users, Search, Bell, Calendar, TrendingUp, Clock, Trash2, MoreVertical, Eye } from "lucide-react";
 import { ExportRegistrationsList } from "./ExportRegistrationsList";
+import { matchesSectorArea } from "@/lib/sector-utils";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -61,15 +62,10 @@ export const InterestRegistrationsManager = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      let registrationsQuery = supabase
+      const { data: registrationsData, error: registrationsError } = await supabase
         .from('interest_registrations' as any)
         .select('*')
         .order('created_at', { ascending: false });
-
-      // Filtrar por setor se não for admin - será feito no frontend
-      // Removido filtro da query para evitar problemas com colunas inexistentes
-
-      const { data: registrationsData, error: registrationsError } = await registrationsQuery;
 
       if (registrationsError) throw registrationsError;
 
@@ -81,19 +77,46 @@ export const InterestRegistrationsManager = () => {
 
       if (notificationsError) throw notificationsError;
 
-      // Filtrar por setor no frontend se não for admin
       let filteredRegistrations = (registrationsData as unknown as InterestRegistration[]) || [];
+
       if (!isAdmin) {
-        const currentSectorName = getCurrentSectorName();
-        if (currentSectorName) {
-          // Filtrar no frontend por nome ou profissão
-          filteredRegistrations = filteredRegistrations.filter(registration => 
-            (registration.full_name && registration.full_name.toLowerCase().includes(currentSectorName.toLowerCase())) ||
-            (registration.profession && registration.profession.toLowerCase().includes(currentSectorName.toLowerCase()))
-          );
+        // Obter o nome exacto do departamento do utilizador a partir da BD
+        const currentSector = getCurrentSector();
+        let sectorDisplayName: string | null = null;
+
+        if (currentSector) {
+          // Buscar o nome oficial do departamento via setor_id
+          const { data: deptData } = await supabase
+            .from('departamentos')
+            .select('nome')
+            .eq('id', currentSector)
+            .maybeSingle();
+
+          sectorDisplayName = deptData?.nome ?? null;
+        }
+
+        // Fallback: usar o nome derivado do role se não encontrou na BD
+        if (!sectorDisplayName) {
+          sectorDisplayName = getCurrentSectorName();
+        }
+
+        if (sectorDisplayName) {
+          console.log('InterestRegistrations - Filtrando por setor:', sectorDisplayName);
+          filteredRegistrations = filteredRegistrations.filter(registration => {
+            const areasOfInterest = registration.areas_of_interest || [];
+            const matches = matchesSectorArea(areasOfInterest, sectorDisplayName!);
+            if (matches) {
+              console.log('InterestRegistrations - Registo incluído:', {
+                nome: registration.full_name,
+                areas: areasOfInterest
+              });
+            }
+            return matches;
+          });
+          console.log('InterestRegistrations - Total após filtro:', filteredRegistrations.length);
         }
       }
-      
+
       setRegistrations(filteredRegistrations);
       setNotifications((notificationsData as unknown as NotificationItem[]) || []);
     } catch (error) {
@@ -110,15 +133,15 @@ export const InterestRegistrationsManager = () => {
 
   const filteredRegistrations = registrations.filter(registration => {
     const matchesSearch = registration.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         registration.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         (registration.profession && registration.profession.toLowerCase().includes(searchQuery.toLowerCase()));
+      registration.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (registration.profession && registration.profession.toLowerCase().includes(searchQuery.toLowerCase()));
 
     // Corrigir filtro por área - verificar se a área está contida no array
-    const matchesArea = areaFilter === "all" || 
-                       (registration.areas_of_interest && 
-                        registration.areas_of_interest.some(area => 
-                          area.toLowerCase().includes(areaFilter.toLowerCase())
-                        ));
+    const matchesArea = areaFilter === "all" ||
+      (registration.areas_of_interest &&
+        registration.areas_of_interest.some(area =>
+          area.toLowerCase().includes(areaFilter.toLowerCase())
+        ));
 
     return matchesSearch && matchesArea;
   });
@@ -215,7 +238,7 @@ export const InterestRegistrationsManager = () => {
     <div className="space-y-6">
       {/* Sector Filter */}
       <SectorFilter />
-      
+
       {/* Header com estatísticas */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
@@ -394,7 +417,7 @@ export const InterestRegistrationsManager = () => {
                                 <DropdownMenuItem onClick={() => navigator.clipboard.writeText(registration.email)}>
                                   📧 Copiar email
                                 </DropdownMenuItem>
-                                <DropdownMenuItem 
+                                <DropdownMenuItem
                                   onClick={() => setDeleteDialogOpen(registration.id)}
                                   className="text-destructive"
                                 >
@@ -405,7 +428,7 @@ export const InterestRegistrationsManager = () => {
                             </DropdownMenu>
                           </div>
                         </div>
-                        
+
                         <div className="flex items-center gap-4 text-sm text-muted-foreground">
                           <span>📧 {registration.email}</span>
                           {registration.phone && <span>📞 {registration.phone}</span>}
@@ -428,7 +451,7 @@ export const InterestRegistrationsManager = () => {
                       </div>
                     </Card>
                   ))}
-                  
+
                   {filteredRegistrations.length === 0 && (
                     <div className="text-center py-8 text-muted-foreground">
                       <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
@@ -454,9 +477,8 @@ export const InterestRegistrationsManager = () => {
               <ScrollArea className="h-[600px]">
                 <div className="space-y-4">
                   {notifications.map((notification) => (
-                    <Card key={notification.id} className={`p-4 transition-colors ${
-                      !notification.read ? "bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800" : ""
-                    }`}>
+                    <Card key={notification.id} className={`p-4 transition-colors ${!notification.read ? "bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800" : ""
+                      }`}>
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
                           <h3 className="font-semibold">{notification.title}</h3>
@@ -471,14 +493,14 @@ export const InterestRegistrationsManager = () => {
                             </Badge>
                           </div>
                         </div>
-                        
+
                         <p className="text-sm text-muted-foreground">
                           {notification.message}
                         </p>
                       </div>
                     </Card>
                   ))}
-                  
+
                   {notifications.length === 0 && (
                     <div className="text-center py-8 text-muted-foreground">
                       <Bell className="h-12 w-12 mx-auto mb-4 opacity-50" />
@@ -504,7 +526,7 @@ export const InterestRegistrationsManager = () => {
           {showDetails && (() => {
             const registration = registrations.find(r => r.id === showDetails);
             if (!registration) return null;
-            
+
             return (
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
@@ -525,7 +547,7 @@ export const InterestRegistrationsManager = () => {
                     <p className="font-medium">{registration.profession || 'Não informado'}</p>
                   </div>
                 </div>
-                
+
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Áreas de Interesse</p>
                   <div className="flex flex-wrap gap-1 mt-1">
@@ -567,7 +589,7 @@ export const InterestRegistrationsManager = () => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction 
+            <AlertDialogAction
               onClick={() => deleteDialogOpen && handleDelete(deleteDialogOpen)}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >

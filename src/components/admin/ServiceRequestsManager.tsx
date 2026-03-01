@@ -10,10 +10,10 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
-import { 
-  Clock, 
-  CheckCircle, 
-  XCircle, 
+import {
+  Clock,
+  CheckCircle,
+  XCircle,
   AlertTriangle,
   User,
   Mail,
@@ -59,22 +59,25 @@ export const ServiceRequestsManager = () => {
   } = useServiceRequests();
 
   const { toast } = useToast();
-  
+
   // Controle de acesso
-  const { isAdmin, getCurrentSector, getCurrentSectorName } = useAccessControl();
-  
+  const { isAdmin, getCurrentSector, getCurrentSectorName, profileLoading } = useAccessControl();
+
   // Estado para filtro de setor
   const [sectorFilter, setSectorFilter] = useState<string>('all');
   const [selectedRequest, setSelectedRequest] = useState<ServiceRequest | null>(null);
-  
-  // Carregar solicitações com filtro de setor (apenas uma vez)
+
+  // Carregar solicitações com filtro de setor (apenas quando o perfil estiver pronto)
   useEffect(() => {
-    const currentSectorName = getCurrentSectorName();
-    const filter = isAdmin ? 'all' : (currentSectorName || 'all');
-    console.log('ServiceRequests - Setor atual:', currentSectorName, 'Filtro:', filter, 'isAdmin:', isAdmin);
+    if (profileLoading) return; // aguarda o perfil carregar antes de fazer o fetch
+
+    const sectorId = getCurrentSector();
+    const filter = isAdmin ? 'all' : (sectorId || 'all');
+    const sectorName = getCurrentSectorName();
+    console.log('ServiceRequests - Setor ID:', sectorId, 'Nome:', sectorName, 'isAdmin:', isAdmin);
     setSectorFilter(filter);
     fetchRequests(filter);
-  }, [isAdmin]); // Removido getCurrentSectorName e fetchRequests das dependências
+  }, [isAdmin, profileLoading]); // re-executa quando o perfil terminar de carregar
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
   const [showUpdateDialog, setShowUpdateDialog] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -94,14 +97,14 @@ export const ServiceRequestsManager = () => {
   const [selectedRequestForForward, setSelectedRequestForForward] = useState<ServiceRequest | null>(null);
 
   const filteredRequests = requests.filter(request => {
-    const matchesSearch = 
+    const matchesSearch =
       request.requester_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       request.service_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       request.subject.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesStatus = statusFilter === 'all' || request.status === statusFilter;
     const matchesPriority = priorityFilter === 'all' || request.priority === priorityFilter;
-    
+
     return matchesSearch && matchesStatus && matchesPriority;
   });
 
@@ -140,11 +143,11 @@ export const ServiceRequestsManager = () => {
 
     try {
       await updateRequestStatus(
-        selectedRequest.id, 
+        selectedRequest.id,
         updateForm.status as ServiceRequest['status'],
         updateForm.adminNotes
       );
-      
+
       setShowUpdateDialog(false);
       setUpdateForm({ status: '', adminNotes: '' });
       setSelectedRequest(null);
@@ -176,10 +179,10 @@ export const ServiceRequestsManager = () => {
   // Função para abrir modal de reencaminhamento
   const handleForwardRequest = (request: ServiceRequest) => {
     setSelectedRequestForForward(request);
-    
+
     // Gerar mensagem padrão usando o serviço
     const defaultMessage = ForwardService.generateServiceRequestMessage(
-      request, 
+      request,
       request.service_direction
     );
 
@@ -254,7 +257,7 @@ export const ServiceRequestsManager = () => {
     <div className="space-y-6">
       {/* Sector Filter */}
       <SectorFilter />
-      
+
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
@@ -320,7 +323,7 @@ export const ServiceRequestsManager = () => {
                   className="pl-10"
                 />
               </div>
-              
+
               <Select value={statusFilter} onValueChange={setStatusFilter}>
                 <SelectTrigger className="w-40">
                   <SelectValue placeholder="Status" />
@@ -348,7 +351,7 @@ export const ServiceRequestsManager = () => {
               </Select>
             </div>
 
-            <Button onClick={fetchRequests} variant="outline" size="sm">
+            <Button onClick={() => fetchRequests(sectorFilter)} variant="outline" size="sm">
               <RefreshCw className="w-4 h-4 mr-2" />
               Atualizar
             </Button>
@@ -393,7 +396,7 @@ export const ServiceRequestsManager = () => {
                           {getStatusBadge(request.status)}
                           {getPriorityBadge(request.priority)}
                         </div>
-                        
+
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
                           <div className="flex items-center gap-2">
                             <User className="w-4 h-4 text-muted-foreground" />
@@ -450,7 +453,7 @@ export const ServiceRequestsManager = () => {
                             <Edit className="w-4 h-4" />
                             Atualizar
                           </Button>
-                          
+
                           <Button
                             variant="outline"
                             size="sm"
@@ -514,7 +517,7 @@ export const ServiceRequestsManager = () => {
                   Informações completas sobre a solicitação de serviço
                 </DialogDescription>
               </DialogHeader>
-              
+
               <div className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
@@ -601,14 +604,14 @@ export const ServiceRequestsManager = () => {
                 )}
 
                 <div className="flex gap-2 pt-4 border-t border-border">
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     onClick={() => setShowDetailsDialog(false)}
                     className="flex-1"
                   >
                     Fechar
                   </Button>
-                  <Button 
+                  <Button
                     onClick={() => {
                       setShowDetailsDialog(false);
                       setUpdateForm({ status: selectedRequest.status, adminNotes: selectedRequest.admin_notes || '' });
@@ -619,8 +622,8 @@ export const ServiceRequestsManager = () => {
                     <Edit className="w-4 h-4 mr-2" />
                     Atualizar Status
                   </Button>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     onClick={() => {
                       setShowDetailsDialog(false);
                       handleForwardRequest(selectedRequest);
@@ -646,11 +649,11 @@ export const ServiceRequestsManager = () => {
               Atualize o status e adicione notas administrativas
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="space-y-6">
             <div>
               <Label htmlFor="status">Status</Label>
-              <Select value={updateForm.status} onValueChange={(value) => setUpdateForm({...updateForm, status: value})}>
+              <Select value={updateForm.status} onValueChange={(value) => setUpdateForm({ ...updateForm, status: value })}>
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione o status" />
                 </SelectTrigger>
@@ -668,21 +671,21 @@ export const ServiceRequestsManager = () => {
               <Textarea
                 id="adminNotes"
                 value={updateForm.adminNotes}
-                onChange={(e) => setUpdateForm({...updateForm, adminNotes: e.target.value})}
+                onChange={(e) => setUpdateForm({ ...updateForm, adminNotes: e.target.value })}
                 placeholder="Adicione notas ou observações sobre esta solicitação..."
                 rows={4}
               />
             </div>
 
             <div className="flex gap-2 pt-4 border-t border-border">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => setShowUpdateDialog(false)}
                 className="flex-1"
               >
                 Cancelar
               </Button>
-              <Button 
+              <Button
                 onClick={handleUpdateStatus}
                 className="flex-1"
                 disabled={!updateForm.status}
@@ -728,7 +731,7 @@ export const ServiceRequestsManager = () => {
                   </SelectContent>
                 </Select>
               </div>
-              
+
               <div>
                 <Label htmlFor="forward-phone">Telefone do Destinatário</Label>
                 <Input
@@ -758,7 +761,7 @@ export const ServiceRequestsManager = () => {
             </div>
 
             <div className="flex items-center gap-2 pt-4">
-              <Button 
+              <Button
                 onClick={handleForwardMessage}
                 disabled={forwardLoading}
                 className="bg-green-600 hover:bg-green-700"
