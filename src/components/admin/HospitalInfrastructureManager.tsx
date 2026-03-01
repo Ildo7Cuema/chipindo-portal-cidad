@@ -51,7 +51,7 @@ export function HospitalInfrastructureManager() {
     const [images, setImages] = useState<HospitalImage[]>([]);
 
     useEffect(() => {
-        fetchInfrastructures( });
+        fetchInfrastructures()
     }, []);
 
     async function fetchInfrastructures() {
@@ -60,13 +60,13 @@ export function HospitalInfrastructureManager() {
             const { data, error } = await supabase
                 .from('hospital_infrastructures')
                 .select('*')
-                .order('name' });
+                .order('name' );
 
             if (error) throw error;
             setInfrastructures(data || []);
         } catch (error) {
-            console.error('Error fetching infrastructures:', error });
-            toast({ variant: "destructive", description:('Erro ao carregar infraestruturas.' });
+            console.error('Error fetching infrastructures:', error );
+            toast({ variant: "destructive", description: 'Erro ao carregar infraestruturas.'  });
         } finally {
             setLoading(false);
         }
@@ -78,13 +78,13 @@ export function HospitalInfrastructureManager() {
                 .from('hospital_services')
                 .select('*')
                 .eq('infrastructure_id', infrastructureId)
-                .order('name' });
+                .order('name' );
 
             if (error) throw error;
             setServices(data || []);
         } catch (error) {
-            console.error('Error fetching services:', error });
-            toast({ variant: "destructive", description:('Erro ao carregar serviços.' });
+            console.error('Error fetching services:', error );
+            toast({ variant: "destructive", description: 'Erro ao carregar serviços.'  });
         }
     }
 
@@ -94,13 +94,13 @@ export function HospitalInfrastructureManager() {
                 .from('hospital_images')
                 .select('*')
                 .eq('infrastructure_id', infrastructureId)
-                .order('created_at', { ascending: false);
+                .order('created_at', { ascending: false });
 
             if (error) throw error;
             setImages(data || []);
         } catch (error) {
-            console.error('Error fetching images:', error });
-            toast({ variant: "destructive", description:('Erro ao carregar imagens.' });
+            console.error('Error fetching images:', error );
+            toast({ variant: "destructive", description: 'Erro ao carregar imagens.'  });
         }
     }
 
@@ -121,10 +121,10 @@ export function HospitalInfrastructureManager() {
                         capacity_beds: formData.capacity_beds,
                         is_active: formData.is_active
                     })
-                    .eq('id', id });
+                    .eq('id', id );
 
                 if (error) throw error;
-                toast({ description:('Infraestrutura atualizada com sucesso!' });
+                toast({ description: 'Infraestrutura atualizada com sucesso!'  });
             } else {
                 // Create new
                 const { error } = await supabase
@@ -139,19 +139,19 @@ export function HospitalInfrastructureManager() {
                         operating_hours: formData.operating_hours,
                         capacity_beds: formData.capacity_beds || 0,
                         is_active: formData.is_active ?? true
-                    }] });
+                    }] );
 
                 if (error) throw error;
-                toast({ description:('Infraestrutura criada com sucesso!' });
+                toast({ description: 'Infraestrutura criada com sucesso!'  });
             }
 
             setEditingId(null);
             setIsCreating(false);
             setFormData({});
-            fetchInfrastructures( });
+            fetchInfrastructures()
         } catch (error) {
-            console.error('Error saving infrastructure:', error });
-            toast({ variant: "destructive", description:('Erro ao guardar infraestrutura.' });
+            console.error('Error saving infrastructure:', error );
+            toast({ variant: "destructive", description: 'Erro ao guardar infraestrutura.'  });
         }
     };
 
@@ -162,14 +162,14 @@ export function HospitalInfrastructureManager() {
             const { error } = await supabase
                 .from('hospital_infrastructures')
                 .delete()
-                .eq('id', id });
+                .eq('id', id );
 
             if (error) throw error;
-            toast({ description:('Infraestrutura removida com sucesso!' });
-            fetchInfrastructures( });
+            toast({ description: 'Infraestrutura removida com sucesso!'  });
+            fetchInfrastructures()
         } catch (error) {
-            console.error('Error deleting infrastructure:', error });
-            toast({ variant: "destructive", description:('Erro ao remover infraestrutura.' });
+            console.error('Error deleting infrastructure:', error );
+            toast({ variant: "destructive", description: 'Erro ao remover infraestrutura.'  });
         }
     };
 
@@ -177,21 +177,21 @@ export function HospitalInfrastructureManager() {
         if (!managingImagesObj) return;
 
         try {
-            const fileExt = file.name.split('.').pop( });
+            const fileExt = file.name.split('.').pop()
             const fileName = `${Math.random()}.${fileExt}`;
             const filePath = `${managingImagesObj.id}/${fileName}`;
 
             const { error: uploadError } = await supabase.storage
                 .from('hospital_images')
-                .upload(filePath, file });
+                .upload(filePath, file );
 
             if (uploadError) throw uploadError;
 
             const { data: { publicUrl } } = supabase.storage
                 .from('hospital_images')
-                .getPublicUrl(filePath });
+                .getPublicUrl(filePath );
 
-            const section = prompt('Introduza a secção/área desta imagem (ex: Recepção, Urgências, Exterior):', 'Geral' });
+            const section = prompt('Introduza a secção/área desta imagem (ex: Recepção, Urgências, Exterior):', 'Geral' );
             if (!section) return; // cancelled
 
             const { error: dbError } = await supabase
@@ -202,25 +202,25 @@ export function HospitalInfrastructureManager() {
                     section: section,
                     caption: '',
                     featured: images.length === 0
-                }] });
+                }] );
 
             if (dbError) throw dbError;
 
-            toast({ description:('Imagem carregada com sucesso!' });
-            fetchImages(managingImagesObj.id });
+            toast({ description: 'Imagem carregada com sucesso!'  });
+            fetchImages(managingImagesObj.id );
 
         } catch (error) {
-            console.error('Error uploading image:', error });
-            toast({ variant: "destructive", description:('Erro ao fazer upload da imagem.' });
+            console.error('Error uploading image:', error );
+            toast({ variant: "destructive", description: 'Erro ao fazer upload da imagem.'  });
         }
     };
 
     const handleServiceSave = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault( });
+        e.preventDefault()
         if (!managingServicesObj) return;
 
         const form = e.currentTarget;
-        const formDataObj = new FormData(form });
+        const formDataObj = new FormData(form );
 
         try {
             const { error } = await supabase
@@ -230,15 +230,15 @@ export function HospitalInfrastructureManager() {
                     name: formDataObj.get('name') as string,
                     description: formDataObj.get('description') as string,
                     availability: formDataObj.get('availability') as string,
-                }] });
+                }] );
 
             if (error) throw error;
-            toast({ description:('Serviço adicionado com sucesso!' });
-            form.reset( });
-            fetchServices(managingServicesObj.id });
+            toast({ description: 'Serviço adicionado com sucesso!'  });
+            form.reset()
+            fetchServices(managingServicesObj.id );
         } catch (error) {
-            console.error('Error adding service:', error });
-            toast({ variant: "destructive", description:('Erro ao adicionar serviço.' });
+            console.error('Error adding service:', error );
+            toast({ variant: "destructive", description: 'Erro ao adicionar serviço.'  });
         }
     };
 
@@ -247,14 +247,14 @@ export function HospitalInfrastructureManager() {
             const { error } = await supabase
                 .from('hospital_services')
                 .delete()
-                .eq('id', serviceId });
+                .eq('id', serviceId );
 
             if (error) throw error;
-            toast({ description:('Serviço removido com sucesso!' });
-            if (managingServicesObj) fetchServices(managingServicesObj.id });
+            toast({ description: 'Serviço removido com sucesso!'  });
+            if (managingServicesObj) fetchServices(managingServicesObj.id );
         } catch (error) {
-            console.error('Error removing service:', error });
-            toast({ variant: "destructive", description:('Erro ao remover serviço.' });
+            console.error('Error removing service:', error );
+            toast({ variant: "destructive", description: 'Erro ao remover serviço.'  });
         }
     };
 
@@ -263,14 +263,14 @@ export function HospitalInfrastructureManager() {
             const { error } = await supabase
                 .from('hospital_images')
                 .delete()
-                .eq('id', imageId });
+                .eq('id', imageId );
 
             if (error) throw error;
-            toast({ description:('Imagem removida com sucesso!' });
-            if (managingImagesObj) fetchImages(managingImagesObj.id });
+            toast({ description: 'Imagem removida com sucesso!'  });
+            if (managingImagesObj) fetchImages(managingImagesObj.id );
         } catch (error) {
-            console.error('Error removing image:', error });
-            toast({ variant: "destructive", description:('Erro ao remover imagem.' });
+            console.error('Error removing image:', error );
+            toast({ variant: "destructive", description: 'Erro ao remover imagem.'  });
         }
     }
 
@@ -282,19 +282,19 @@ export function HospitalInfrastructureManager() {
             await supabase
                 .from('hospital_images')
                 .update({ featured: false })
-                .eq('infrastructure_id', managingImagesObj.id });
+                .eq('infrastructure_id', managingImagesObj.id );
 
             const { error } = await supabase
                 .from('hospital_images')
                 .update({ featured: true })
-                .eq('id', imageId });
+                .eq('id', imageId );
 
             if (error) throw error;
-            toast({ description:('Imagem principal definida com sucesso!' });
-            fetchImages(managingImagesObj.id });
+            toast({ description: 'Imagem principal definida com sucesso!'  });
+            fetchImages(managingImagesObj.id );
         } catch (error) {
-            console.error('Error updating image feature:', error });
-            toast({ variant: "destructive", description:('Erro ao definir imagem principal.' });
+            console.error('Error updating image feature:', error );
+            toast({ variant: "destructive", description: 'Erro ao definir imagem principal.'  });
         }
     }
 
@@ -470,14 +470,14 @@ export function HospitalInfrastructureManager() {
                                     <div className="flex justify-end gap-2">
                                         <button
                                             title="Gerir Serviços Clínicos/Gerais"
-                                            onClick={() => { setManagingServicesObj(infra }); fetchServices(infra.id }); }}
+                                            onClick={() => { setManagingServicesObj(infra ); fetchServices(infra.id); }}
                                             className="text-blue-600 hover:text-blue-900 dark:hover:text-blue-400 p-1"
                                         >
                                             <BriefcaseMedical size={18} />
                                         </button>
                                         <button
                                             title="Gerir Relatório Fotográfico"
-                                            onClick={() => { setManagingImagesObj(infra }); fetchImages(infra.id }); }}
+                                            onClick={() => { setManagingImagesObj(infra ); fetchImages(infra.id ); }}
                                             className="text-indigo-600 hover:text-indigo-900 dark:hover:text-indigo-400 p-1"
                                         >
                                             <ImageIcon size={18} />
@@ -485,8 +485,8 @@ export function HospitalInfrastructureManager() {
                                         <button
                                             title="Editar Infraestrutura"
                                             onClick={() => {
-                                                setEditingId(infra.id });
-                                                setFormData(infra });
+                                                setEditingId(infra.id);
+                                                setFormData(infra);
                                                 setIsCreating(false);
                                             }}
                                             className="text-gray-600 hover:text-gray-900 dark:hover:text-gray-400 p-1"
@@ -595,7 +595,7 @@ export function HospitalInfrastructureManager() {
                                     accept="image/*"
                                     onChange={(e) => {
                                         if (e.target.files && e.target.files[0]) {
-                                            handleImageUpload(e.target.files[0] });
+                                            handleImageUpload(e.target.files[0] );
                                         }
                                     }}
                                 />
@@ -641,5 +641,5 @@ export function HospitalInfrastructureManager() {
             )}
 
         </div>
-     });
+     );
 } 

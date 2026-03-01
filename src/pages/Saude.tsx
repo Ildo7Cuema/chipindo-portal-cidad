@@ -104,9 +104,9 @@ const Saude = () => {
         const data = await getSetorBySlug('saude');
 
         // Fetch hospitais
-        const { data: hospData } = await supabase.from('hospital_infrastructures').select('*').eq('is_active', true).order('name');
-        const { data: servData } = await supabase.from('hospital_services').select('*');
-        const { data: imgData } = await supabase.from('hospital_images').select('*');
+        const { data: hospData } = await (supabase as any).from('hospital_infrastructures').select('*').eq('is_active', true).order('name');
+        const { data: servData } = await (supabase as any).from('hospital_services').select('*');
+        const { data: imgData } = await (supabase as any).from('hospital_images').select('*');
 
         if (!isMounted) return;
 
@@ -207,7 +207,7 @@ const Saude = () => {
         <SetorBreadcrumb setor={setor} />
 
         {/* Navigation */}
-        <SetorNavigation setor={setor} />
+        <SetorNavigation />
 
         {/* Statistics */}
         <SetorStats setor={setor} />
@@ -404,74 +404,101 @@ const Saude = () => {
 
             {/* Infraestruturas */}
             <TabsContent value="infraestruturas" className="mt-5 sm:mt-8 lg:mt-10 animate-in fade-in-50 duration-300">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
-                {setor.infraestruturas.map((infraestrutura, index) => (
-                  <Card
-                    key={index}
-                    className="group relative flex flex-col hover:shadow-2xl hover:shadow-orange-100/50 dark:hover:shadow-orange-900/20 transition-all duration-300 hover:-translate-y-1 border-0 bg-white dark:bg-gray-800/90 backdrop-blur-sm overflow-hidden rounded-xl"
-                  >
-                    {/* Gradient accent bar */}
-                    <div className="h-1.5 sm:h-1 bg-gradient-to-r from-orange-500 to-amber-500 w-full" />
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {hospitals.map((hospital, index) => {
+                  const images = hospitalImages.filter(img => img.infrastructure_id === hospital.id);
+                  const mainImage = images.find(img => img.featured) || images[0];
 
-                    <CardHeader className="p-4 sm:p-5 lg:p-6 pb-3 sm:pb-4">
-                      <div className="flex items-center justify-between mb-3 gap-2">
-                        <div className="p-2.5 sm:p-3 bg-orange-50 dark:bg-orange-900/30 rounded-xl text-orange-600 dark:text-orange-400 group-hover:bg-orange-600 group-hover:text-white transition-all duration-200 shrink-0">
-                          <BuildingIcon className="w-5 h-5" />
+                  return (
+                    <Card
+                      key={index}
+                      className="group relative flex flex-col hover:shadow-2xl hover:shadow-orange-100/50 dark:hover:shadow-orange-900/20 transition-all duration-300 hover:-translate-y-1 border-0 bg-white dark:bg-gray-800/90 backdrop-blur-sm overflow-hidden rounded-xl"
+                    >
+                      {/* Gradient accent bar */}
+                      <div className="h-1.5 sm:h-1 bg-gradient-to-r from-orange-500 to-amber-500 w-full z-10" />
+
+                      {mainImage && (
+                        <div className="h-48 w-full overflow-hidden relative">
+                          <img
+                            src={mainImage.url}
+                            alt={hospital.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                          <Badge className="absolute bottom-3 left-3 bg-orange-500/90 hover:bg-orange-600 text-white border-0">
+                            {hospital.type === 'hospital_municipal' ? 'Hospital Municipal' :
+                              hospital.type === 'centro_saude' ? 'Centro de Saúde' : 'Posto de Saúde'}
+                          </Badge>
                         </div>
-                        <Badge variant="outline" className="border-orange-200 dark:border-orange-700 text-orange-700 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/30 text-xs px-2.5 py-1">
-                          Infraestrutura
-                        </Badge>
-                      </div>
+                      )}
 
-                      <CardTitle className="text-base sm:text-lg group-hover:text-orange-600 transition-all duration-200 line-clamp-2">
-                        {infraestrutura.nome}
-                      </CardTitle>
-                      <p className="text-sm text-muted-foreground leading-relaxed mt-3">
-                        {infraestrutura.descricao}
-                      </p>
-                    </CardHeader>
-
-                    <CardContent className="flex-1 flex flex-col p-4 sm:p-5 lg:p-6 pt-0 space-y-4 sm:space-y-5">
-                      {/* Características */}
-                      <div className="space-y-2.5 sm:space-y-3">
-                        <h4 className="font-semibold text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400 flex items-center gap-2">
-                          <CheckCircleIcon className="w-4 h-4 text-orange-500" />
-                          Características
-                        </h4>
-                        <ul className="grid gap-2">
-                          {infraestrutura.caracteristicas?.map((caracteristica: string, idx: number) => (
-                            <li key={idx} className="text-sm text-gray-600 dark:text-gray-300 flex items-start gap-2.5">
-                              <div className="w-1.5 h-1.5 bg-orange-500 rounded-full mt-2 shrink-0" />
-                              <span>{caracteristica}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-
-                      {/* Footer */}
-                      <div className="pt-4 border-t border-gray-100 dark:border-gray-700 mt-auto">
-                        {infraestrutura.localizacao && (
-                          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 flex items-center gap-2">
-                            <MapPinIcon className="w-4 h-4 shrink-0" />
-                            <span className="truncate">{infraestrutura.localizacao}</span>
-                          </p>
+                      <CardHeader className={`p-4 sm:p-5 lg:p-6 pb-3 sm:pb-4 flex-none ${!mainImage ? 'pt-6' : 'pt-4'}`}>
+                        {!mainImage && (
+                          <div className="flex items-center justify-between mb-3 gap-2">
+                            <div className="p-2.5 sm:p-3 bg-orange-50 dark:bg-orange-900/30 rounded-xl text-orange-600 dark:text-orange-400 group-hover:bg-orange-600 group-hover:text-white transition-all duration-200 shrink-0">
+                              <BuildingIcon className="w-5 h-5" />
+                            </div>
+                            <Badge variant="outline" className="border-orange-200 dark:border-orange-700 text-orange-700 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/30 text-xs px-2.5 py-1">
+                              {hospital.type === 'hospital_municipal' ? 'Hospital Municipal' :
+                                hospital.type === 'centro_saude' ? 'Centro de Saúde' : 'Posto de Saúde'}
+                            </Badge>
+                          </div>
                         )}
 
-                        <Button
-                          variant="outline"
-                          className="w-full min-h-[48px] sm:min-h-[44px] border-orange-200 dark:border-orange-700 text-orange-700 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/30 hover:text-orange-800 dark:hover:text-orange-300 font-medium rounded-xl transition-all duration-200 active:scale-[0.98] touch-manipulation"
-                          onClick={() => {
-                            setDetalheInfra(infraestrutura);
-                            setOpenDetalhes(true);
-                          }}
-                        >
-                          <span>Ver Detalhes</span>
-                          <ArrowRightIcon className="w-4 h-4 ml-2" />
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                        <CardTitle className="text-base sm:text-lg group-hover:text-orange-600 transition-all duration-200 line-clamp-2">
+                          {hospital.name}
+                        </CardTitle>
+                        <p className="text-sm text-muted-foreground leading-relaxed mt-2 line-clamp-3">
+                          {hospital.description}
+                        </p>
+                      </CardHeader>
+
+                      <CardContent className="flex-1 flex flex-col p-4 sm:p-5 lg:p-6 pt-0 space-y-4 sm:space-y-5">
+                        {/* Status/Hours */}
+                        <div className="flex flex-wrap gap-2 mt-auto">
+                          <Badge variant="secondary" className="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 flex items-center gap-1.5 py-1 px-2.5">
+                            <CalendarIcon className="w-3.5 h-3.5 opacity-70" />
+                            {hospital.operating_hours}
+                          </Badge>
+                          {hospital.capacity_beds > 0 && (
+                            <Badge variant="secondary" className="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 flex items-center gap-1.5 py-1 px-2.5">
+                              <MapPinIcon className="w-3.5 h-3.5 opacity-70" />
+                              {hospital.capacity_beds} Camas
+                            </Badge>
+                          )}
+                        </div>
+
+                        {/* Footer */}
+                        <div className="pt-4 border-t border-gray-100 dark:border-gray-700 mt-auto">
+                          {hospital.location && (
+                            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 flex items-center gap-2">
+                              <MapPinIcon className="w-4 h-4 shrink-0" />
+                              <span className="truncate">{hospital.location}</span>
+                            </p>
+                          )}
+
+                          <Button
+                            variant="outline"
+                            className="w-full min-h-[48px] sm:min-h-[44px] border-orange-200 dark:border-orange-700 text-orange-700 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/30 hover:text-orange-800 dark:hover:text-orange-300 font-medium rounded-xl transition-all duration-200 active:scale-[0.98] touch-manipulation"
+                            onClick={() => {
+                              setDetalheInfra(hospital);
+                              setOpenDetalhes(true);
+                            }}
+                          >
+                            <span>Ver Detalhes e Serviços</span>
+                            <ArrowRightIcon className="w-4 h-4 ml-2" />
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )
+                })}
+                {hospitals.length === 0 && (
+                  <div className="col-span-full py-12 text-center text-gray-500">
+                    <BuildingIcon className="w-12 h-12 mx-auto mb-4 opacity-20" />
+                    <p>Nenhuma infraestrutura registada no momento.</p>
+                  </div>
+                )}
               </div>
             </TabsContent>
 
@@ -496,10 +523,10 @@ const Saude = () => {
                         </Badge>
                       </div>
                       <CardTitle className="text-base sm:text-lg line-clamp-2 group-hover:text-purple-600 transition-all duration-200">
-                        {contacto.nome}
+                        {contacto.responsavel || 'Contacto'}
                       </CardTitle>
                       <p className="text-sm text-muted-foreground mt-1">
-                        {contacto.cargo}
+                        Responsável
                       </p>
                     </CardHeader>
 
@@ -582,14 +609,13 @@ const Saude = () => {
               >
                 <XIcon className="w-5 h-5 text-gray-500" />
               </button>
-
               <div className="flex items-start gap-3 pr-10 sm:pr-0">
                 <div className="p-2.5 bg-orange-50 dark:bg-orange-900/30 rounded-xl text-orange-600 dark:text-orange-400 shrink-0">
                   <BuildingIcon className="w-5 h-5" />
                 </div>
                 <div>
-                  <DialogTitle className="text-lg sm:text-xl font-semibold">{detalheInfra?.nome}</DialogTitle>
-                  <DialogDescription className="text-sm mt-1">{detalheInfra?.descricao}</DialogDescription>
+                  <DialogTitle className="text-lg sm:text-xl font-semibold">{detalheInfra?.name}</DialogTitle>
+                  <DialogDescription className="text-sm mt-1">{detalheInfra?.description}</DialogDescription>
                 </div>
               </div>
             </DialogHeader>
