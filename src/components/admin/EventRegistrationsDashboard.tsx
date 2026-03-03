@@ -4,19 +4,19 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { 
-  Users, 
-  Calendar, 
-  MapPin, 
-  Clock, 
-  Mail, 
-  Phone, 
-  Search, 
-  Filter, 
-  Download, 
-  Eye, 
-  CheckCircle, 
-  XCircle, 
+import {
+  Users,
+  Calendar,
+  MapPin,
+  Clock,
+  Mail,
+  Phone,
+  Search,
+  Filter,
+  Download,
+  Eye,
+  CheckCircle,
+  XCircle,
   Clock as PendingIcon,
   User,
   Building,
@@ -158,93 +158,105 @@ const EventRegistrationsDashboard: React.FC<EventRegistrationsDashboardProps> = 
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Dashboard de Inscrições</h2>
-          <p className="text-gray-600 dark:text-gray-400">
+          <h2 className="text-xl font-bold tracking-tight text-gray-900 dark:text-gray-100">Dashboard de Inscrições</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             {eventId ? 'Gestão de inscrições para evento específico' : 'Gestão completa de inscrições em eventos'}
           </p>
         </div>
-        
+
         <div className="flex gap-2">
-          <Button 
+          <Button
             variant="outline"
+            size="sm"
+            className="rounded-full shadow-sm text-xs h-8 px-3"
             onClick={() => setShowAdvanced(!showAdvanced)}
           >
             {showAdvanced ? (
               <>
-                <Settings className="w-4 h-4 mr-2" />
+                <Settings className="w-3.5 h-3.5 mr-1.5" />
                 Modo Simples
               </>
             ) : (
               <>
-                <Zap className="w-4 h-4 mr-2" />
+                <Zap className="w-3.5 h-3.5 mr-1.5" />
                 Modo Avançado
               </>
             )}
           </Button>
-          <Button variant="outline" onClick={handleExport}>
-            <Download className="w-4 h-4 mr-2" />
+          <Button variant="outline" size="sm" className="rounded-full shadow-sm text-xs h-8 px-3" onClick={handleExport}>
+            <Download className="w-3.5 h-3.5 mr-1.5" />
             Exportar
           </Button>
         </div>
       </div>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <Users className="w-5 h-5 text-blue-600" />
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+        <Card className="border-0 shadow-sm rounded-2xl bg-white dark:bg-slate-900">
+          <CardContent className="p-5">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 rounded-xl">
+                <Users className="w-5 h-5" />
+              </div>
               <div>
-                <p className="text-2xl font-bold">{stats.total}</p>
-                <p className="text-xs text-gray-600">Total</p>
+                <p className="text-2xl font-bold tracking-tight text-foreground">{stats.total}</p>
+                <p className="text-xs font-medium text-muted-foreground mt-0.5 uppercase tracking-wider">Total</p>
               </div>
             </div>
           </CardContent>
         </Card>
-        
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <CheckCircle className="w-5 h-5 text-green-600" />
+
+        <Card className="border-0 shadow-sm rounded-2xl bg-white dark:bg-slate-900">
+          <CardContent className="p-5">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 rounded-xl">
+                <CheckCircle className="w-5 h-5" />
+              </div>
               <div>
-                <p className="text-2xl font-bold">{stats.confirmed}</p>
-                <p className="text-xs text-gray-600">Confirmados</p>
+                <p className="text-2xl font-bold tracking-tight text-foreground">{stats.confirmed}</p>
+                <p className="text-xs font-medium text-muted-foreground mt-0.5 uppercase tracking-wider">Confirmados</p>
               </div>
             </div>
           </CardContent>
         </Card>
-        
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <PendingIcon className="w-5 h-5 text-yellow-600" />
+
+        <Card className="border-0 shadow-sm rounded-2xl bg-white dark:bg-slate-900">
+          <CardContent className="p-5">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 bg-amber-50 dark:bg-amber-900/20 text-amber-600 rounded-xl">
+                <PendingIcon className="w-5 h-5" />
+              </div>
               <div>
-                <p className="text-2xl font-bold">{stats.pending}</p>
-                <p className="text-xs text-gray-600">Pendentes</p>
+                <p className="text-2xl font-bold tracking-tight text-foreground">{stats.pending}</p>
+                <p className="text-xs font-medium text-muted-foreground mt-0.5 uppercase tracking-wider">Pendentes</p>
               </div>
             </div>
           </CardContent>
         </Card>
-        
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <XCircle className="w-5 h-5 text-red-600" />
+
+        <Card className="border-0 shadow-sm rounded-2xl bg-white dark:bg-slate-900">
+          <CardContent className="p-5">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 bg-rose-50 dark:bg-rose-900/20 text-rose-600 rounded-xl">
+                <XCircle className="w-5 h-5" />
+              </div>
               <div>
-                <p className="text-2xl font-bold">{stats.cancelled}</p>
-                <p className="text-xs text-gray-600">Cancelados</p>
+                <p className="text-2xl font-bold tracking-tight text-foreground">{stats.cancelled}</p>
+                <p className="text-xs font-medium text-muted-foreground mt-0.5 uppercase tracking-wider">Cancelados</p>
               </div>
             </div>
           </CardContent>
         </Card>
-        
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <UserCheck className="w-5 h-5 text-blue-600" />
+
+        <Card className="border-0 shadow-sm rounded-2xl bg-white dark:bg-slate-900">
+          <CardContent className="p-5">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 rounded-xl">
+                <UserCheck className="w-5 h-5" />
+              </div>
               <div>
-                <p className="text-2xl font-bold">{stats.attended}</p>
-                <p className="text-xs text-gray-600">Presentes</p>
+                <p className="text-2xl font-bold tracking-tight text-foreground">{stats.attended}</p>
+                <p className="text-xs font-medium text-muted-foreground mt-0.5 uppercase tracking-wider">Presentes</p>
               </div>
             </div>
           </CardContent>
@@ -252,43 +264,45 @@ const EventRegistrationsDashboard: React.FC<EventRegistrationsDashboardProps> = 
       </div>
 
       {/* Main Content */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="overview">Visão Geral</TabsTrigger>
-          <TabsTrigger value="registrations">Inscrições</TabsTrigger>
-          <TabsTrigger value="analytics">Análises</TabsTrigger>
-          <TabsTrigger value="actions">Ações</TabsTrigger>
-        </TabsList>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full space-y-6">
+        <div className="overflow-x-auto pb-2">
+          <TabsList className="inline-flex h-auto gap-2 bg-transparent p-0 min-w-max">
+            <TabsTrigger value="overview" className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md border border-transparent data-[state=inactive]:border-border/50 data-[state=inactive]:bg-background transition-all">Visão Geral</TabsTrigger>
+            <TabsTrigger value="registrations" className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md border border-transparent data-[state=inactive]:border-border/50 data-[state=inactive]:bg-background transition-all">Inscrições</TabsTrigger>
+            <TabsTrigger value="analytics" className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md border border-transparent data-[state=inactive]:border-border/50 data-[state=inactive]:bg-background transition-all">Análises</TabsTrigger>
+            <TabsTrigger value="actions" className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md border border-transparent data-[state=inactive]:border-border/50 data-[state=inactive]:bg-background transition-all">Ações</TabsTrigger>
+          </TabsList>
+        </div>
 
-        <TabsContent value="overview" className="space-y-6">
+        <TabsContent value="overview" className="space-y-6 mt-0">
           {/* Recent Activity */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Activity className="w-5 h-5" />
+          <Card className="border-0 shadow-sm rounded-2xl bg-white dark:bg-slate-900">
+            <CardHeader className="p-6 pb-4">
+              <CardTitle className="text-lg font-bold tracking-tight flex items-center gap-2">
+                <Activity className="w-4 h-4 text-muted-foreground" />
                 Atividade Recente
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-6 pt-0">
               <div className="space-y-3">
                 {filteredRegistrations.slice(0, 5).map((registration) => (
-                  <div key={registration.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center">
-                        <User className="w-4 h-4 text-blue-600" />
+                  <div key={registration.id} className="flex items-center justify-between p-3.5 bg-gray-50/50 hover:bg-gray-50 dark:bg-slate-800/50 dark:hover:bg-slate-800 transition-colors border border-border/40 rounded-xl">
+                    <div className="flex items-center gap-3.5">
+                      <div className="w-9 h-9 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
+                        <User className="w-4 h-4 text-primary" />
                       </div>
-                      <div>
-                        <p className="font-medium">{registration.participant_name}</p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                      <div className="min-w-0">
+                        <p className="font-semibold text-sm tracking-tight truncate">{registration.participant_name}</p>
+                        <p className="text-xs text-muted-foreground truncate max-w-[200px] sm:max-w-none">
                           Inscrito em {registration.event_title}
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Badge className={getStatusColor(registration.status)}>
+                    <div className="flex flex-col sm:flex-row sm:items-center items-end gap-2 shrink-0">
+                      <Badge className={cn("text-[10px] uppercase font-bold tracking-wider py-0 rounded-full", getStatusColor(registration.status))} variant="secondary">
                         {getStatusLabel(registration.status)}
                       </Badge>
-                      <span className="text-sm text-gray-500">
+                      <span className="text-xs text-muted-foreground font-mono">
                         {formatDate(registration.registration_date)}
                       </span>
                     </div>
@@ -300,37 +314,55 @@ const EventRegistrationsDashboard: React.FC<EventRegistrationsDashboardProps> = 
 
           {/* Performance Metrics */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center gap-2">
-                  <Target className="w-5 h-5 text-green-600" />
+            <Card className="border-0 shadow-sm rounded-2xl bg-white dark:bg-slate-900">
+              <CardContent className="p-5">
+                <div className="flex justify-between items-start">
                   <div>
-                    <p className="text-2xl font-bold">{stats.confirmedPercentage.toFixed(1)}%</p>
-                    <p className="text-xs text-gray-600">Taxa de Confirmação</p>
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">
+                      Tx de Confirmação
+                    </p>
+                    <p className="text-2xl font-bold tracking-tight text-foreground">
+                      {stats.confirmedPercentage.toFixed(1)}%
+                    </p>
+                  </div>
+                  <div className="p-2 bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 rounded-xl">
+                    <Target className="w-4 h-4" />
                   </div>
                 </div>
               </CardContent>
             </Card>
-            
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center gap-2">
-                  <Award className="w-5 h-5 text-blue-600" />
+
+            <Card className="border-0 shadow-sm rounded-2xl bg-white dark:bg-slate-900">
+              <CardContent className="p-5">
+                <div className="flex justify-between items-start">
                   <div>
-                    <p className="text-2xl font-bold">{stats.attendedPercentage.toFixed(1)}%</p>
-                    <p className="text-xs text-gray-600">Taxa de Presença</p>
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">
+                      Tx de Presença
+                    </p>
+                    <p className="text-2xl font-bold tracking-tight text-foreground">
+                      {stats.attendedPercentage.toFixed(1)}%
+                    </p>
+                  </div>
+                  <div className="p-2 bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 rounded-xl">
+                    <Award className="w-4 h-4" />
                   </div>
                 </div>
               </CardContent>
             </Card>
-            
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5 text-purple-600" />
+
+            <Card className="border-0 shadow-sm rounded-2xl bg-white dark:bg-slate-900">
+              <CardContent className="p-5">
+                <div className="flex justify-between items-start">
                   <div>
-                    <p className="text-2xl font-bold">{events.length}</p>
-                    <p className="text-xs text-gray-600">Total de Eventos</p>
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">
+                      Total Em Eventos
+                    </p>
+                    <p className="text-2xl font-bold tracking-tight text-foreground">
+                      {events.length}
+                    </p>
+                  </div>
+                  <div className="p-2 bg-purple-50 text-purple-600 dark:bg-purple-900/20 rounded-xl">
+                    <TrendingUp className="w-4 h-4" />
                   </div>
                 </div>
               </CardContent>
@@ -350,57 +382,65 @@ const EventRegistrationsDashboard: React.FC<EventRegistrationsDashboardProps> = 
           )}
         </TabsContent>
 
-        <TabsContent value="analytics" className="space-y-6">
+        <TabsContent value="analytics" className="space-y-6 mt-0">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <PieChart className="w-5 h-5" />
+            <Card className="border-0 shadow-sm rounded-2xl bg-white dark:bg-slate-900">
+              <CardHeader className="p-6 pb-4">
+                <CardTitle className="text-base font-bold tracking-tight flex items-center gap-2">
+                  <PieChart className="w-4 h-4 text-muted-foreground" />
                   Distribuição por Status
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span>Confirmados</span>
-                    <span className="font-semibold">{stats.confirmed} ({stats.confirmedPercentage.toFixed(1)}%)</span>
+              <CardContent className="p-6 pt-0">
+                <div className="space-y-5">
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="font-medium text-emerald-600 dark:text-emerald-400">Confirmados</span>
+                      <span className="font-bold font-mono">{stats.confirmed} ({stats.confirmedPercentage.toFixed(1)}%)</span>
+                    </div>
+                    <Progress value={stats.confirmedPercentage} className="h-1.5 [&>div]:bg-emerald-500 bg-emerald-100 dark:bg-emerald-950" />
                   </div>
-                  <Progress value={stats.confirmedPercentage} className="h-2" />
-                  
-                  <div className="flex items-center justify-between">
-                    <span>Pendentes</span>
-                    <span className="font-semibold">{stats.pending} ({stats.pendingPercentage.toFixed(1)}%)</span>
+
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="font-medium text-amber-600 dark:text-amber-400">Pendentes</span>
+                      <span className="font-bold font-mono">{stats.pending} ({stats.pendingPercentage.toFixed(1)}%)</span>
+                    </div>
+                    <Progress value={stats.pendingPercentage} className="h-1.5 [&>div]:bg-amber-500 bg-amber-100 dark:bg-amber-950" />
                   </div>
-                  <Progress value={stats.pendingPercentage} className="h-2" />
-                  
-                  <div className="flex items-center justify-between">
-                    <span>Cancelados</span>
-                    <span className="font-semibold">{stats.cancelled} ({stats.cancelledPercentage.toFixed(1)}%)</span>
+
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="font-medium text-rose-600 dark:text-rose-400">Cancelados</span>
+                      <span className="font-bold font-mono">{stats.cancelled} ({stats.cancelledPercentage.toFixed(1)}%)</span>
+                    </div>
+                    <Progress value={stats.cancelledPercentage} className="h-1.5 [&>div]:bg-rose-500 bg-rose-100 dark:bg-rose-950" />
                   </div>
-                  <Progress value={stats.cancelledPercentage} className="h-2" />
-                  
-                  <div className="flex items-center justify-between">
-                    <span>Presentes</span>
-                    <span className="font-semibold">{stats.attended} ({stats.attendedPercentage.toFixed(1)}%)</span>
+
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="font-medium text-indigo-600 dark:text-indigo-400">Presentes</span>
+                      <span className="font-bold font-mono">{stats.attended} ({stats.attendedPercentage.toFixed(1)}%)</span>
+                    </div>
+                    <Progress value={stats.attendedPercentage} className="h-1.5 [&>div]:bg-indigo-500 bg-indigo-100 dark:bg-indigo-950" />
                   </div>
-                  <Progress value={stats.attendedPercentage} className="h-2" />
                 </div>
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <BarChart className="w-5 h-5" />
+            <Card className="border-0 shadow-sm rounded-2xl bg-white dark:bg-slate-900">
+              <CardHeader className="p-6 pb-4">
+                <CardTitle className="text-base font-bold tracking-tight flex items-center gap-2">
+                  <BarChart className="w-4 h-4 text-muted-foreground" />
                   Inscrições por Categoria
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-6 pt-0">
                 <div className="space-y-4">
                   {Object.entries(categoryStats).map(([category, count]) => (
-                    <div key={category} className="flex items-center justify-between">
-                      <span>{getCategoryLabel(category)}</span>
-                      <span className="font-semibold">{count} inscrições</span>
+                    <div key={category} className="flex items-center justify-between border-b border-border/40 pb-3 last:border-0 last:pb-0">
+                      <span className="text-sm font-medium">{getCategoryLabel(category)}</span>
+                      <Badge variant="secondary" className="px-2 py-0.5 rounded-md font-mono text-xs">{count} insc.</Badge>
                     </div>
                   ))}
                 </div>
@@ -409,15 +449,15 @@ const EventRegistrationsDashboard: React.FC<EventRegistrationsDashboardProps> = 
           </div>
 
           {/* Event Details */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Calendar className="w-5 h-5" />
+          <Card className="border-0 shadow-sm rounded-2xl bg-white dark:bg-slate-900">
+            <CardHeader className="p-6 pb-4">
+              <CardTitle className="text-base font-bold tracking-tight flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-muted-foreground" />
                 Detalhes por Evento
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
+            <CardContent className="p-6 pt-0">
+              <div className="grid gap-4 sm:grid-cols-2">
                 {events.map((event) => {
                   const eventRegistrations = registrations.filter(reg => reg.event_id === event.id);
                   const eventStats = {
@@ -429,37 +469,37 @@ const EventRegistrationsDashboard: React.FC<EventRegistrationsDashboardProps> = 
                   };
 
                   return (
-                    <div key={event.id} className="p-4 border rounded-lg">
-                      <div className="flex items-center justify-between mb-3">
-                        <div>
-                          <h4 className="font-semibold">{event.title}</h4>
-                          <p className="text-sm text-gray-600">{event.location}</p>
+                    <div key={event.id} className="p-5 border border-border/60 rounded-xl bg-gray-50/30 dark:bg-slate-800/20 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
+                      <div className="flex items-start justify-between mb-4 gap-4">
+                        <div className="min-w-0">
+                          <h4 className="font-semibold text-sm tracking-tight truncate">{event.title}</h4>
+                          <p className="text-xs text-muted-foreground mt-1 truncate">{event.location}</p>
                         </div>
-                        <Badge variant="outline">
+                        <Badge variant="outline" className="text-[10px] font-medium py-0 rounded-md shrink-0">
                           {getCategoryLabel(event.category)}
                         </Badge>
                       </div>
-                      
-                      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
-                        <div>
-                          <span className="text-gray-600">Total:</span>
-                          <span className="font-semibold ml-1">{eventStats.total}</span>
+
+                      <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-muted-foreground">Tot:</span>
+                          <span className="font-bold font-mono">{eventStats.total}</span>
                         </div>
-                        <div>
-                          <span className="text-gray-600">Confirmados:</span>
-                          <span className="font-semibold ml-1 text-green-600">{eventStats.confirmed}</span>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-muted-foreground">Conf:</span>
+                          <span className="font-bold font-mono text-emerald-600 dark:text-emerald-400">{eventStats.confirmed}</span>
                         </div>
-                        <div>
-                          <span className="text-gray-600">Pendentes:</span>
-                          <span className="font-semibold ml-1 text-yellow-600">{eventStats.pending}</span>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-muted-foreground">Pend:</span>
+                          <span className="font-bold font-mono text-amber-600 dark:text-amber-400">{eventStats.pending}</span>
                         </div>
-                        <div>
-                          <span className="text-gray-600">Cancelados:</span>
-                          <span className="font-semibold ml-1 text-red-600">{eventStats.cancelled}</span>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-muted-foreground">Canc:</span>
+                          <span className="font-bold font-mono text-rose-600 dark:text-rose-400">{eventStats.cancelled}</span>
                         </div>
-                        <div>
-                          <span className="text-gray-600">Presentes:</span>
-                          <span className="font-semibold ml-1 text-blue-600">{eventStats.attended}</span>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-muted-foreground">Pres:</span>
+                          <span className="font-bold font-mono text-indigo-600 dark:text-indigo-400">{eventStats.attended}</span>
                         </div>
                       </div>
                     </div>
@@ -470,57 +510,57 @@ const EventRegistrationsDashboard: React.FC<EventRegistrationsDashboardProps> = 
           </Card>
         </TabsContent>
 
-        <TabsContent value="actions" className="space-y-6">
+        <TabsContent value="actions" className="space-y-6 mt-0">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Bell className="w-5 h-5" />
-                  Notificações
+            <Card className="border-0 shadow-sm rounded-2xl bg-white dark:bg-slate-900">
+              <CardHeader className="p-6 pb-4">
+                <CardTitle className="text-base font-bold tracking-tight flex items-center gap-2">
+                  <Bell className="w-4 h-4 text-muted-foreground" />
+                  Gatilhos de Comunicação
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <Button className="w-full">
-                    <Mail className="w-4 h-4 mr-2" />
+              <CardContent className="p-6 pt-0">
+                <div className="space-y-3">
+                  <Button className="w-full text-sm h-10 rounded-xl shadow-sm justify-start">
+                    <Mail className="w-4 h-4 mr-3 text-white/70" />
                     Enviar Notificação Geral
                   </Button>
-                  
-                  <Button variant="outline" className="w-full">
-                    <MessageSquare className="w-4 h-4 mr-2" />
-                    Enviar Lembrete
+
+                  <Button variant="outline" className="w-full text-sm h-10 rounded-xl justify-start bg-gray-50/50 hover:bg-gray-100 dark:bg-slate-800/50 dark:hover:bg-slate-800">
+                    <MessageSquare className="w-4 h-4 mr-3 text-muted-foreground" />
+                    Disparar Lembrete SMS / Email
                   </Button>
-                  
-                  <Button variant="outline" className="w-full">
-                    <RefreshCw className="w-4 h-4 mr-2" />
-                    Atualizar Dados
+
+                  <Button variant="outline" className="w-full text-sm h-10 rounded-xl justify-start bg-gray-50/50 hover:bg-gray-100 dark:bg-slate-800/50 dark:hover:bg-slate-800 border-dashed">
+                    <RefreshCw className="w-4 h-4 mr-3 text-muted-foreground" />
+                    Forçar Sincronização de Dados
                   </Button>
                 </div>
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Settings className="w-5 h-5" />
-                  Ações em Lote
+            <Card className="border-0 shadow-sm rounded-2xl bg-white dark:bg-slate-900">
+              <CardHeader className="p-6 pb-4">
+                <CardTitle className="text-base font-bold tracking-tight flex items-center gap-2">
+                  <Settings className="w-4 h-4 text-muted-foreground" />
+                  Utilitários Administrativos
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <Button className="w-full">
-                    <CheckCircle2 className="w-4 h-4 mr-2" />
-                    Confirmar Todos Pendentes
+              <CardContent className="p-6 pt-0">
+                <div className="space-y-3">
+                  <Button className="w-full text-sm h-10 rounded-xl shadow-sm justify-start bg-emerald-600 hover:bg-emerald-700 text-white border-none">
+                    <CheckCircle2 className="w-4 h-4 mr-3 text-white/70" />
+                    Auto-Aprovar Inscrições Pendentes
                   </Button>
-                  
-                  <Button variant="outline" className="w-full">
-                    <Archive className="w-4 h-4 mr-2" />
-                    Exportar Relatório
+
+                  <Button variant="outline" className="w-full text-sm h-10 rounded-xl justify-start bg-gray-50/50 hover:bg-gray-100 dark:bg-slate-800/50 dark:hover:bg-slate-800">
+                    <Archive className="w-4 h-4 mr-3 text-muted-foreground" />
+                    Exportar Base de Dados Compl. (.csv)
                   </Button>
-                  
-                  <Button variant="outline" className="w-full">
-                    <FileText className="w-4 h-4 mr-2" />
-                    Gerar Relatório
+
+                  <Button variant="outline" className="w-full text-sm h-10 rounded-xl justify-start bg-gray-50/50 hover:bg-gray-100 dark:bg-slate-800/50 dark:hover:bg-slate-800">
+                    <FileText className="w-4 h-4 mr-3 text-muted-foreground" />
+                    Gerar Relatório Resumo em PDF
                   </Button>
                 </div>
               </CardContent>

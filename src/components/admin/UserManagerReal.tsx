@@ -390,17 +390,15 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
 
   if (currentUserRole !== 'admin') {
     return (
-      <Card>
-        <CardContent className="p-6">
-          <div className="text-center">
-            <Lock className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-foreground mb-2">
-              Acesso Restrito
-            </h3>
-            <p className="text-muted-foreground">
-              Apenas administradores podem gerir utilizadores do sistema.
-            </p>
-          </div>
+      <Card className="border-0 shadow-sm rounded-2xl bg-white dark:bg-slate-900 border-dashed border-2 border-slate-200 dark:border-slate-800">
+        <CardContent className="p-12 text-center">
+          <Lock className="h-10 w-10 text-muted-foreground/50 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold tracking-tight text-foreground mb-2">
+            Acesso Restrito
+          </h3>
+          <p className="text-sm font-medium text-muted-foreground">
+            Apenas administradores podem gerir utilizadores do sistema.
+          </p>
         </CardContent>
       </Card>
     );
@@ -421,92 +419,102 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
     <div className="space-y-6">
       {/* Header with Stats */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20">
-          <CardContent className="p-4">
+        <Card className="border-0 shadow-sm rounded-2xl bg-blue-50/50 dark:bg-blue-900/10">
+          <CardContent className="p-5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-blue-600 dark:text-blue-400">Total de Utilizadores</p>
-                <p className="text-2xl font-bold text-blue-900 dark:text-blue-100">{stats.total}</p>
+                <p className="text-xs font-medium text-blue-600/80 dark:text-blue-400/80 uppercase tracking-wider mb-1">Total de Utilizadores</p>
+                <p className="text-2xl font-bold tracking-tight text-blue-900 dark:text-blue-100">{stats.total}</p>
               </div>
-              <Users className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+              <div className="p-2.5 bg-blue-100/50 dark:bg-blue-800/30 text-blue-600 dark:text-blue-400 rounded-xl">
+                <Users className="h-5 w-5" />
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20">
-          <CardContent className="p-4">
+        <Card className="border-0 shadow-sm rounded-2xl bg-emerald-50/50 dark:bg-emerald-900/10">
+          <CardContent className="p-5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-green-600 dark:text-green-400">Activos</p>
-                <p className="text-2xl font-bold text-green-900 dark:text-green-100">{stats.active}</p>
+                <p className="text-xs font-medium text-emerald-600/80 dark:text-emerald-400/80 uppercase tracking-wider mb-1">Activos</p>
+                <p className="text-2xl font-bold tracking-tight text-emerald-900 dark:text-emerald-100">{stats.active}</p>
               </div>
-              <UserCheck className="h-8 w-8 text-green-600 dark:text-green-400" />
+              <div className="p-2.5 bg-emerald-100/50 dark:bg-emerald-800/30 text-emerald-600 dark:text-emerald-400 rounded-xl">
+                <UserCheck className="h-5 w-5" />
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20">
-          <CardContent className="p-4">
+        <Card className="border-0 shadow-sm rounded-2xl bg-amber-50/50 dark:bg-amber-900/10">
+          <CardContent className="p-5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-orange-600 dark:text-orange-400">Inactivos</p>
-                <p className="text-2xl font-bold text-orange-900 dark:text-orange-100">{stats.inactive}</p>
+                <p className="text-xs font-medium text-amber-600/80 dark:text-amber-400/80 uppercase tracking-wider mb-1">Inactivos</p>
+                <p className="text-2xl font-bold tracking-tight text-amber-900 dark:text-amber-100">{stats.inactive}</p>
               </div>
-              <UserX className="h-8 w-8 text-orange-600 dark:text-orange-400" />
+              <div className="p-2.5 bg-amber-100/50 dark:bg-amber-800/30 text-amber-600 dark:text-amber-400 rounded-xl">
+                <UserX className="h-5 w-5" />
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20">
-          <CardContent className="p-4">
+        <Card className="border-0 shadow-sm rounded-2xl bg-purple-50/50 dark:bg-purple-900/10">
+          <CardContent className="p-5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-purple-600 dark:text-purple-400">Administradores</p>
-                <p className="text-2xl font-bold text-purple-900 dark:text-purple-100">
+                <p className="text-xs font-medium text-purple-600/80 dark:text-purple-400/80 uppercase tracking-wider mb-1">Administradores</p>
+                <p className="text-2xl font-bold tracking-tight text-purple-900 dark:text-purple-100">
                   {stats.byRole.admin || 0}
                 </p>
               </div>
-              <Crown className="h-8 w-8 text-purple-600 dark:text-purple-400" />
+              <div className="p-2.5 bg-purple-100/50 dark:bg-purple-800/30 text-purple-600 dark:text-purple-400 rounded-xl">
+                <Crown className="h-5 w-5" />
+              </div>
             </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Controls */}
-      <Card>
+      <Card className="border-0 shadow-sm rounded-2xl bg-white dark:bg-slate-900">
         <CardContent className="p-6">
           <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Users className="h-6 w-6 text-primary" />
-              <h2 className="text-2xl font-bold">Gestão de Utilizadores</h2>
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-primary/10 text-primary rounded-xl">
+                <Users className="h-5 w-5" />
+              </div>
+              <h2 className="text-xl font-bold tracking-tight">Gestão de Utilizadores</h2>
             </div>
 
             <div className="flex items-center gap-2">
               <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
                 <DialogTrigger asChild>
-                  <Button className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70">
+                  <Button size="sm" className="rounded-full shadow-sm">
                     <UserPlus className="h-4 w-4 mr-2" />
                     Adicionar Utilizador
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto sm:rounded-2xl border-0 shadow-xl">
                   <DialogHeader>
-                    <DialogTitle className="flex items-center gap-2">
-                      <UserPlus className="h-5 w-5" />
+                    <DialogTitle className="flex items-center gap-2 text-xl font-bold tracking-tight">
+                      <UserPlus className="h-5 w-5 text-muted-foreground" />
                       Adicionar Novo Utilizador
                     </DialogTitle>
                   </DialogHeader>
 
-                  <div className="space-y-6">
-                    <div className="space-y-4">
-                      <h3 className="text-lg font-semibold flex items-center gap-2">
-                        <Mail className="h-4 w-4" />
+                  <div className="space-y-6 pt-4">
+                    <div className="space-y-5">
+                      <h3 className="text-sm font-bold tracking-tight uppercase text-muted-foreground flex items-center gap-2">
+                        <Mail className="h-3.5 w-3.5" />
                         Informações Básicas
                       </h3>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label htmlFor="email">Email *</Label>
+                          <Label htmlFor="email" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Email *</Label>
                           <Input
                             id="email"
                             type="email"
@@ -514,35 +522,37 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
                             value={formData.email}
                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                             required
+                            className="h-10 px-3 rounded-lg border-muted bg-background"
                           />
                         </div>
 
                         <div className="space-y-2">
-                          <Label htmlFor="full_name">Nome Completo *</Label>
+                          <Label htmlFor="full_name" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Nome Completo *</Label>
                           <Input
                             id="full_name"
                             placeholder="Nome completo do utilizador"
                             value={formData.full_name}
                             onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
                             required
+                            className="h-10 px-3 rounded-lg border-muted bg-background"
                           />
                         </div>
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="role">Função *</Label>
+                        <Label htmlFor="role" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Função *</Label>
                         <Select value={formData.role} onValueChange={(value: UserRole) => setFormData({ ...formData, role: value })}>
-                          <SelectTrigger>
+                          <SelectTrigger className="h-10 px-3 rounded-lg border-muted bg-background">
                             <SelectValue />
                           </SelectTrigger>
-                          <SelectContent position="popper" className="max-h-[300px] overflow-y-auto">
+                          <SelectContent position="popper" className="max-h-[300px] overflow-y-auto rounded-xl">
                             {userRoles.map((role) => (
-                              <SelectItem key={role.value} value={role.value}>
+                              <SelectItem key={role.value} value={role.value} className="py-2">
                                 <div className="flex items-center gap-2">
-                                  <role.icon className="h-4 w-4" />
+                                  <role.icon className="h-4 w-4 text-muted-foreground" />
                                   <div className="flex flex-col">
-                                    <span>{role.label}</span>
-                                    <span className="text-xs text-muted-foreground">{role.description}</span>
+                                    <span className="font-medium text-sm">{role.label}</span>
+                                    <span className="text-[10px] text-muted-foreground leading-tight mt-0.5">{role.description}</span>
                                   </div>
                                 </div>
                               </SelectItem>
@@ -552,14 +562,14 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
                       </div>
 
                       {formData.role === 'editor' && (
-                        <div className="p-4 bg-teal-50 dark:bg-teal-900/20 rounded-lg border border-teal-200 dark:border-teal-800">
+                        <div className="p-4 bg-teal-50/50 dark:bg-teal-900/10 rounded-xl border border-teal-100 dark:border-teal-800/30">
                           <div className="flex items-center gap-2 mb-2">
                             <Edit className="h-4 w-4 text-teal-600" />
-                            <span className="font-medium text-teal-900 dark:text-teal-100">
+                            <span className="font-semibold tracking-tight text-sm text-teal-900 dark:text-teal-100">
                               Permissões do Editor
                             </span>
                           </div>
-                          <p className="text-sm text-teal-700 dark:text-teal-300">
+                          <p className="text-xs leading-relaxed text-teal-700 dark:text-teal-300">
                             Este utilizador terá acesso exclusivo às secções de <strong>Notícias</strong> e <strong>Acervo Digital</strong>.
                             Poderá criar, editar e publicar notícias, bem como gerir documentos e ficheiros do acervo digital do município.
                           </p>
@@ -567,28 +577,28 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
                       )}
 
                       {isSectorRole(formData.role) && (
-                        <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                        <div className="p-4 bg-blue-50/50 dark:bg-blue-900/10 rounded-xl border border-blue-100 dark:border-blue-800/30">
                           <div className="flex items-center gap-2 mb-2">
                             <Building2 className="h-4 w-4 text-blue-600" />
-                            <span className="font-medium text-blue-900 dark:text-blue-100">
+                            <span className="font-semibold tracking-tight text-sm text-blue-900 dark:text-blue-100">
                               Acesso à {getSectorName(formData.role)}
                             </span>
                           </div>
-                          <p className="text-sm text-blue-700 dark:text-blue-300">
+                          <p className="text-xs leading-relaxed text-blue-700 dark:text-blue-300">
                             Este utilizador terá acesso exclusivo às informações e funcionalidades da {getSectorName(formData.role)}.
                             Poderá visualizar inscrições, candidaturas e receber notificações relacionadas com esta área.
                           </p>
                         </div>
                       )}
 
-                      <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
+                      <div className="p-4 bg-amber-50/50 dark:bg-amber-900/10 rounded-xl border border-amber-100 dark:border-amber-800/30">
                         <div className="flex items-center gap-2 mb-2">
-                          <Shield className="h-4 w-4 text-yellow-600" />
-                          <span className="font-medium text-yellow-900 dark:text-yellow-100">
+                          <Shield className="h-4 w-4 text-amber-600" />
+                          <span className="font-semibold tracking-tight text-sm text-amber-900 dark:text-amber-100">
                             Senha Temporária
                           </span>
                         </div>
-                        <p className="text-sm text-yellow-700 dark:text-yellow-300">
+                        <p className="text-xs leading-relaxed text-amber-700 dark:text-amber-300">
                           Uma senha temporária será gerada automaticamente e exibida após a criação do utilizador.
                           O utilizador deve alterar esta senha no primeiro login.
                         </p>
@@ -599,6 +609,8 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
                   <div className="flex justify-end gap-2 pt-6">
                     <Button
                       variant="outline"
+                      size="sm"
+                      className="rounded-full shadow-sm"
                       onClick={() => setShowAddDialog(false)}
                       disabled={saving}
                     >
@@ -606,6 +618,8 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
                       Cancelar
                     </Button>
                     <Button
+                      size="sm"
+                      className="rounded-full shadow-sm"
                       onClick={handleAddUser}
                       disabled={saving || !formData.email || !formData.full_name}
                     >
@@ -630,20 +644,20 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
                 placeholder="Pesquisar utilizadores..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
+                className="pl-10 h-9 rounded-full border-muted text-sm shadow-none focus-visible:ring-1 focus-visible:ring-primary/40 bg-gray-50/50 dark:bg-slate-800/50"
               />
             </div>
 
             <div className="flex items-center gap-2">
               <Select value={filterRole} onValueChange={setFilterRole}>
-                <SelectTrigger className="w-[140px]">
-                  <Shield className="h-4 w-4 mr-2" />
+                <SelectTrigger className="w-[150px] h-9 rounded-full border-muted bg-gray-50/50 dark:bg-slate-800/50 shadow-none text-xs font-medium">
+                  <Shield className="h-3.5 w-3.5 mr-2 text-muted-foreground" />
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todos os Papéis</SelectItem>
+                <SelectContent className="rounded-xl">
+                  <SelectItem value="all" className="text-xs">Todos os Papéis</SelectItem>
                   {userRoles.map((role) => (
-                    <SelectItem key={role.value} value={role.value}>
+                    <SelectItem key={role.value} value={role.value} className="text-xs">
                       {role.label}
                     </SelectItem>
                   ))}
@@ -651,14 +665,14 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
               </Select>
 
               <Select value={filterStatus} onValueChange={(value: 'all' | 'active' | 'inactive') => setFilterStatus(value)}>
-                <SelectTrigger className="w-[140px]">
-                  <UserCheck className="h-4 w-4 mr-2" />
+                <SelectTrigger className="w-[120px] h-9 rounded-full border-muted bg-gray-50/50 dark:bg-slate-800/50 shadow-none text-xs font-medium">
+                  <UserCheck className="h-3.5 w-3.5 mr-2 text-muted-foreground" />
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todos</SelectItem>
-                  <SelectItem value="active">Activos</SelectItem>
-                  <SelectItem value="inactive">Inactivos</SelectItem>
+                <SelectContent className="rounded-xl">
+                  <SelectItem value="all" className="text-xs">Todos</SelectItem>
+                  <SelectItem value="active" className="text-xs">Activos</SelectItem>
+                  <SelectItem value="inactive" className="text-xs">Inactivos</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -692,68 +706,57 @@ export function UserManager({ currentUserRole }: UserManagerProps) {
 
               return (
                 <Card key={user.id} className={cn(
-                  "group hover:shadow-lg transition-all duration-200 hover:-translate-y-1",
-                  user.role === null && "opacity-60"
+                  "border-0 shadow-sm rounded-2xl group transition-all duration-300 hover:shadow-md hover:-translate-y-0.5",
+                  user.role === null ? "opacity-60 bg-muted/40" : "bg-white dark:bg-slate-900"
                 )}>
-                  <CardHeader className="pb-3">
-                    <div className="flex items-start justify-between">
+                  <CardContent className="p-5">
+                    <div className="flex items-start justify-between gap-3 mb-4">
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h3 className="font-semibold truncate">{user.full_name || user.email}</h3>
-                          <Badge variant={roleBadgeVariant} className="text-xs">
+                        <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                          <h3 className="font-bold text-sm tracking-tight truncate">{user.full_name || user.email}</h3>
+                          <Badge variant={roleBadgeVariant} className="text-[10px] uppercase font-bold tracking-wider py-0 rounded-full shrink-0">
                             {getRoleLabel(user.role)}
                           </Badge>
                         </div>
-                        <p className="text-sm text-muted-foreground truncate">{user.email}</p>
+                        <p className="text-xs text-muted-foreground truncate" title={user.email}>{user.email}</p>
                         {isSectorUser && user.setor_id && (
-                          <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                          <p className="text-[10px] uppercase font-semibold text-primary/80 mt-1.5 truncate bg-primary/10 w-max px-2 py-0.5 rounded-full">
                             {getSetorName(user.setor_id)}
                           </p>
                         )}
                       </div>
-                      <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex gap-1 shrink-0 bg-muted/30 rounded-full p-1 border border-border/50 opacity-0 group-hover:opacity-100 transition-opacity">
                         <Button
-                          size="sm"
-                          variant="outline"
+                          size="icon"
+                          variant="ghost"
+                          className="h-6 w-6 rounded-full"
+                          title={user.role !== null ? "Desativar" : "Ativar"}
                           onClick={() => handleToggleStatus(user.id, user.role !== null)}
                         >
                           {user.role !== null ? <UserX className="h-3 w-3" /> : <UserCheck className="h-3 w-3" />}
                         </Button>
                         <Button
-                          size="sm"
-                          variant="outline"
-                          className="text-destructive hover:text-destructive"
+                          size="icon"
+                          variant="ghost"
+                          className="h-6 w-6 rounded-full text-destructive hover:text-destructive hover:bg-destructive/10"
+                          title="Excluir"
                           onClick={() => handleDeleteClick(user.id)}
                         >
                           <Trash2 className="h-3 w-3" />
                         </Button>
                       </div>
                     </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      <div className="grid grid-cols-1 gap-2 text-xs text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                          <Calendar className="h-3 w-3" />
-                          <span className="truncate">
-                            {new Date(user.created_at).toLocaleDateString('pt-BR')}
-                          </span>
-                        </div>
-                      </div>
 
-                      <div className="pt-2 border-t">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <Shield className="h-4 w-4 text-gray-600" />
-                            <span className="text-xs text-muted-foreground">
-                              {getRoleLabel(user.role)}
-                            </span>
-                          </div>
-                          <Badge variant={user.role !== null ? "default" : "secondary"} className="text-xs">
-                            {user.role !== null ? 'Activo' : 'Inactivo'}
-                          </Badge>
-                        </div>
+                    <div className="pt-4 border-t border-border/40 flex items-center justify-between">
+                      <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-medium uppercase tracking-wider">
+                        <Calendar className="h-3 w-3" />
+                        <span className="truncate">
+                          Desde {new Date(user.created_at).toLocaleDateString('pt-BR')}
+                        </span>
                       </div>
+                      <Badge variant={user.role !== null ? "default" : "secondary"} className="text-[10px] font-medium py-0 rounded-md">
+                        {user.role !== null ? 'Activo' : 'Inactivo'}
+                      </Badge>
                     </div>
                   </CardContent>
                 </Card>

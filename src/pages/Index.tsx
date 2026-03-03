@@ -110,7 +110,7 @@ const Index = () => {
                 label="População"
                 value={populationLoading ? '...' : (currentPopulation || 0).toLocaleString('pt-AO')}
                 description={populationError ? 'Erro ao carregar dados' : 'Habitantes registados'}
-                variant="elevated"
+                variant="hero"
                 size="lg"
                 className="hover:scale-105 transition-all duration-500 hover:shadow-2xl hover:shadow-blue-500/20"
                 loading={populationLoading}
@@ -121,7 +121,7 @@ const Index = () => {
                 label="Direcções"
                 value={statsLoading ? '...' : stats.totalDirecoes.toString()}
                 description="Direcções activas"
-                variant="elevated"
+                variant="hero"
                 size="lg"
                 className="hover:scale-105 transition-all duration-500 hover:shadow-2xl hover:shadow-emerald-500/20"
                 loading={statsLoading}
@@ -132,7 +132,7 @@ const Index = () => {
                 label="Publicações"
                 value={statsLoading ? '...' : stats.totalNews.toString()}
                 description="Notícias publicadas"
-                variant="elevated"
+                variant="hero"
                 size="lg"
                 className="hover:scale-105 transition-all duration-500 hover:shadow-2xl hover:shadow-orange-500/20"
                 loading={statsLoading}
@@ -143,7 +143,7 @@ const Index = () => {
                 label="Área Total"
                 value={settings?.area_total_count || '2.100'}
                 description={settings?.area_total_description || 'Quilómetros quadrados'}
-                variant="elevated"
+                variant="hero"
                 size="lg"
                 className="hover:scale-105 transition-all duration-500 hover:shadow-2xl hover:shadow-yellow-500/20"
               />

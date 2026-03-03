@@ -170,7 +170,6 @@ const CircularProgress = ({ value, size = 80, strokeWidth = 8, color = "#3b82f6"
   );
 };
 
-// Componente para métricas de performance
 const PerformanceMetric = ({
   title,
   value,
@@ -190,37 +189,61 @@ const PerformanceMetric = ({
   const isOnTarget = percentage >= 100;
   const isClose = percentage >= 80;
 
+  // Brutalist color mapping - solid backgrounds, intense contrast
   const colorClasses = {
-    blue: "text-blue-600 bg-blue-50 dark:bg-blue-950/20",
-    green: "text-green-600 bg-green-50 dark:bg-green-950/20",
-    yellow: "text-yellow-600 bg-yellow-50 dark:bg-yellow-950/20",
-    red: "text-red-600 bg-red-50 dark:bg-red-950/20",
-    purple: "text-purple-600 bg-purple-50 dark:bg-purple-950/20"
+    blue: "bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400 border border-blue-100 dark:border-blue-500/20",
+    green: "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20",
+    yellow: "bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400 border border-amber-100 dark:border-amber-500/20",
+    red: "bg-rose-50 text-rose-600 dark:bg-rose-500/10 dark:text-rose-400 border border-rose-100 dark:border-rose-500/20",
+    purple: "bg-purple-50 text-purple-600 dark:bg-purple-500/10 dark:text-purple-400 border border-purple-100 dark:border-purple-500/20"
   };
 
   return (
-    <Card className="border-0 shadow-sm hover:shadow-md transition-all duration-300">
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className={cn("p-2 rounded-lg", colorClasses[color as keyof typeof colorClasses])}>
-            <Icon className="w-5 h-5" />
+    <Card className="group overflow-hidden bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+      <CardContent className="p-4 sm:p-5 flex flex-col h-full">
+        <div className="flex items-start justify-between mb-4">
+          <div className={cn("p-2 sm:p-2.5 rounded-xl flex-shrink-0 transition-colors", colorClasses[color as keyof typeof colorClasses])}>
+            <Icon className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={2} />
           </div>
-          <Badge variant={isOnTarget ? "default" : isClose ? "secondary" : "destructive"} className="text-xs">
-            {isOnTarget ? "Meta Atingida" : isClose ? "Próximo" : "Atenção"}
+          <Badge
+            className={cn(
+              "px-2 py-0.5 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider rounded-full border whitespace-nowrap",
+              isOnTarget ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:border-emerald-800 dark:text-emerald-400" :
+                isClose ? "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/30 dark:border-amber-800 dark:text-amber-400" :
+                  "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/30 dark:border-rose-800 dark:text-rose-400"
+            )}
+          >
+            {isOnTarget ? "META ATINGIDA" : isClose ? "PRÓXIMO" : "ATENÇÃO"}
           </Badge>
         </div>
 
-        <div className="space-y-2">
-          <h3 className="font-semibold text-sm text-muted-foreground">{title}</h3>
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-bold">{value}</span>
-            <span className="text-sm text-muted-foreground">{unit}</span>
+        <div className="space-y-3 mt-auto">
+          <h3 className="font-semibold text-xs sm:text-sm text-slate-500 dark:text-slate-400 line-clamp-2 leading-snug" title={title}>
+            {title}
+          </h3>
+          <div className="flex items-baseline gap-1 mt-1">
+            <span className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight break-words leading-tight">
+              {value}
+            </span>
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 flex-shrink-0">{unit}</span>
           </div>
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span>Meta: {target}{unit}</span>
-            <span>{percentage.toFixed(1)}%</span>
+
+          <div className="pt-2">
+            <div className="flex items-center justify-between text-[10px] sm:text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
+              <span className="truncate mr-2">Meta: {target}{unit}</span>
+              <span className="flex-shrink-0 text-slate-900 dark:text-white font-bold">{percentage.toFixed(1)}%</span>
+            </div>
+            {/* Premium Progress Bar - Soft edges, gentle backgrounds */}
+            <div className="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+              <div
+                className={cn(
+                  "h-full transition-all duration-1000 ease-out rounded-full",
+                  isOnTarget ? "bg-emerald-500" : isClose ? "bg-amber-500" : "bg-rose-500"
+                )}
+                style={{ width: `${percentage}%` }}
+              />
+            </div>
           </div>
-          <Progress value={percentage} className="h-2" />
         </div>
       </CardContent>
     </Card>
@@ -434,52 +457,38 @@ export const ModernDashboardStats = () => {
 
   return (
     <div className="space-y-6">
-      {/* Enhanced Dashboard Header - Responsive */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-blue-950/20 dark:to-indigo-950/20 rounded-2xl border border-border/50 shadow-lg">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 bg-grid-slate-100 dark:bg-grid-slate-800 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] dark:[mask-image:linear-gradient(0deg,rgba(255,255,255,0.1),rgba(255,255,255,0.05))]" />
+      {/* Premium Header Component */}
+      <div className="relative overflow-hidden bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800/50 rounded-b-3xl -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 pt-8 pb-10">
+        {/* Subtle radial gradient background for soft depth */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-50/50 via-white to-white dark:from-slate-800/20 dark:via-slate-900 dark:to-slate-900" />
 
-        <div className="relative p-4 sm:p-6 lg:p-8">
+        <div className="relative">
           {/* Mobile Layout */}
-          <div className="block lg:hidden space-y-3">
+          <div className="block lg:hidden space-y-5">
             {/* Mobile Header */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary/70 shadow-lg">
-                  <BarChart3 className="w-6 h-6 text-primary-foreground" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h1 className="text-xl font-extrabold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent leading-tight">
-                    Dashboard Executivo
-                  </h1>
-                  <div className="flex items-center gap-2 mt-1">
-                    <Badge className="bg-primary/10 text-primary border-primary/20 px-2 py-0.5 text-xs font-semibold">
-                      Admin
-                    </Badge>
-                    <Badge className="bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400 px-2 py-0.5 text-xs">
-                      <div className="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5 animate-pulse" />
-                      Online
-                    </Badge>
+            <div className="flex items-start justify-between min-w-0 pb-4 border-b border-slate-100 dark:border-slate-800/60">
+              <div className="flex-1 min-w-0 pr-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center">
+                    <BarChart3 className="w-4 h-4 text-blue-600 dark:text-blue-400" strokeWidth={2} />
                   </div>
+                  <Badge variant="outline" className="border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400 font-medium px-2 py-0 text-[10px] rounded-full">
+                    ADMIN
+                  </Badge>
+                  <Badge variant="outline" className="border-slate-200 bg-slate-50 text-slate-600 dark:border-slate-700/50 dark:bg-slate-800/50 dark:text-slate-400 font-medium px-2 py-0 text-[10px] rounded-full">
+                    <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full mr-1.5 animate-pulse" />
+                    ONLINE
+                  </Badge>
                 </div>
-              </div>
-
-              {/* Mobile Status */}
-              <div className="flex items-center gap-2">
-                <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                  <span className="text-xs font-medium text-green-700 dark:text-green-400">Operacional</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Server className="w-3 h-3 text-muted-foreground" />
-                  <span className="text-xs text-muted-foreground">{responseTime}s</span>
-                </div>
+                <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight break-words">
+                  Dashboard Executivo
+                </h1>
               </div>
             </div>
 
             {/* Mobile Description */}
-            <p className="text-muted-foreground text-sm font-medium leading-normal">
-              Painel de controle executivo com métricas em tempo real
+            <p className="text-slate-600 dark:text-slate-400 text-sm font-semibold max-w-sm line-clamp-2">
+              Painel de controlo com métricas em tempo real e visão global do portal.
             </p>
 
             {/* Mobile Export Buttons */}
@@ -487,133 +496,140 @@ export const ModernDashboardStats = () => {
               <div className="flex items-center gap-1.5">
                 <Button
                   variant="outline"
-                  size="sm"
+                  size="icon"
                   onClick={exportToCSV}
                   disabled={exportLoading === 'csv'}
-                  className="h-8 px-2.5 text-xs font-medium"
+                  className="h-10 w-10 rounded-full border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800"
+                  title="Exportar como CSV"
                 >
                   {exportLoading === 'csv' ? (
-                    <div className="w-3 h-3 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin mr-1.5" />
+                    <div className="w-4 h-4 border-2 border-slate-400 border-t-transparent rounded-full animate-spin" />
                   ) : (
-                    <FileSpreadsheet className="w-3 h-3 mr-1.5" />
+                    <FileSpreadsheet className="w-4 h-4 text-slate-600 dark:text-slate-400" />
                   )}
-                  CSV
                 </Button>
                 <Button
                   variant="outline"
-                  size="sm"
+                  size="icon"
                   onClick={exportToExcel}
                   disabled={exportLoading === 'excel'}
-                  className="h-8 px-2.5 text-xs font-medium"
+                  className="h-10 w-10 rounded-full border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800"
+                  title="Exportar como Excel"
                 >
                   {exportLoading === 'excel' ? (
-                    <div className="w-3 h-3 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin mr-1.5" />
+                    <div className="w-4 h-4 border-2 border-slate-400 border-t-transparent rounded-full animate-spin" />
                   ) : (
-                    <FileDown className="w-3 h-3 mr-1.5" />
+                    <FileDown className="w-4 h-4 text-slate-600 dark:text-slate-400" />
                   )}
-                  Excel
                 </Button>
               </div>
               <Button
-                variant="outline"
-                size="sm"
+                variant="default"
+                size="icon"
                 onClick={exportToPDF}
                 disabled={exportLoading === 'pdf'}
-                className="h-8 px-2.5 text-xs font-medium"
+                className="h-10 w-10 rounded-full shadow-sm"
+                title="Exportar como PDF"
               >
                 {exportLoading === 'pdf' ? (
-                  <div className="w-3 h-3 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin mr-1.5" />
+                  <div className="w-4 h-4 border-2 border-white/60 border-t-transparent rounded-full animate-spin" />
                 ) : (
-                  <Download className="w-3 h-3 mr-1.5" />
+                  <Download className="w-4 h-4" />
                 )}
-                PDF
               </Button>
             </div>
           </div>
 
           {/* Desktop Layout */}
-          <div className="hidden lg:flex lg:items-center lg:justify-between gap-6">
-            <div className="flex-1 min-w-0 flex items-center gap-6">
-              <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-primary/70 shadow-lg">
-                <BarChart3 className="w-8 h-8 text-primary-foreground" />
+          <div className="hidden lg:flex lg:items-center lg:justify-between py-2">
+            <div className="flex-1 min-w-0 flex items-center gap-5">
+              <div className="flex items-center justify-center w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/20">
+                <BarChart3 className="w-6 h-6 text-blue-600 dark:text-blue-400" strokeWidth={2} />
               </div>
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-4 mb-2">
-                  <h1 className="text-3xl lg:text-4xl font-extrabold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent leading-tight">
+                <div className="flex items-center gap-3 mb-1">
+                  <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight whitespace-normal break-words">
                     Dashboard Executivo
                   </h1>
-                  <div className="flex items-center gap-3">
-                    <Badge className="bg-primary/10 text-primary border-primary/20 px-3 py-1.5 font-semibold text-sm">
-                      Admin
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400 font-medium px-2 py-0 text-[10px] rounded-full hidden xl:inline-flex">
+                      ADMINISTRADOR
                     </Badge>
-                    <Badge className="bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400 px-3 py-1.5 text-sm">
-                      <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse" />
-                      Sistema Online
+                    <Badge variant="outline" className="border-slate-200 bg-slate-50 text-slate-600 dark:border-slate-700/50 dark:bg-slate-800/50 dark:text-slate-400 font-medium px-2 py-0 text-[10px] rounded-full">
+                      <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full mr-1.5 animate-pulse" />
+                      SISTEMA ONLINE
                     </Badge>
                   </div>
                 </div>
-                <p className="text-muted-foreground leading-normal text-base font-medium max-w-2xl">
-                  Painel de controle executivo com métricas em tempo real, análise de performance e gestão estratégica do portal municipal
+                <p className="text-slate-500 dark:text-slate-400 text-sm max-w-2xl leading-relaxed">
+                  Visão global e controlo de performance do portal municipal em tempo real. Acompanhe os principais indicadores de actividade e tome decisões informadas.
                 </p>
               </div>
             </div>
 
             <div className="flex flex-col items-end gap-4 flex-shrink-0">
               {/* Desktop System Status */}
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
-                  <span className="text-sm font-medium text-green-700 dark:text-green-400">Sistema Operacional</span>
+              <div className="flex items-center gap-4 px-3 py-1.5 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 rounded-full shadow-sm backdrop-blur-sm">
+                <div className="flex items-center gap-1.5">
+                  <div className="relative">
+                    <div className="w-2 h-2 bg-emerald-500 rounded-full" />
+                    <div className="absolute inset-0 bg-emerald-500 rounded-full animate-ping opacity-75" />
+                  </div>
+                  <span className="text-xs font-medium text-slate-700 dark:text-slate-300">Operacional</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Server className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground">{responseTime}s</span>
+                <div className="w-px h-3 bg-slate-300 dark:bg-slate-700" />
+                <div className="flex items-center gap-1.5">
+                  <Server className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
+                  <span className="text-xs font-medium text-slate-600 dark:text-slate-400">{responseTime}s</span>
                 </div>
               </div>
 
-              {/* Desktop Export Buttons */}
-              <div className="flex items-center gap-3">
+              {/* Desktop Export Buttons - Elegant style */}
+              <div className="flex items-center gap-2">
                 <Button
                   variant="outline"
-                  size="sm"
+                  size="icon"
                   onClick={exportToCSV}
                   disabled={exportLoading === 'csv'}
-                  className="h-10 px-4 hover:bg-muted/60 text-sm font-medium"
+                  className="h-10 w-10 rounded-full bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-all shadow-sm"
+                  title="Exportar CSV"
                 >
                   {exportLoading === 'csv' ? (
-                    <div className="w-4 h-4 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin mr-2" />
+                    <div className="w-4 h-4 border-2 border-slate-400 border-t-transparent rounded-full animate-spin" />
                   ) : (
-                    <FileSpreadsheet className="w-4 h-4 mr-2" />
+                    <FileSpreadsheet className="w-4 h-4 text-slate-500" />
                   )}
-                  Exportar CSV
+                  <span className="sr-only">Exportar CSV</span>
                 </Button>
                 <Button
                   variant="outline"
-                  size="sm"
+                  size="icon"
                   onClick={exportToExcel}
                   disabled={exportLoading === 'excel'}
-                  className="h-10 px-4 hover:bg-muted/60 text-sm font-medium"
+                  className="h-10 w-10 rounded-full bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-all shadow-sm"
+                  title="Exportar Expressão"
                 >
                   {exportLoading === 'excel' ? (
-                    <div className="w-4 h-4 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin mr-2" />
+                    <div className="w-4 h-4 border-2 border-slate-400 border-t-transparent rounded-full animate-spin" />
                   ) : (
-                    <FileDown className="w-4 h-4 mr-2" />
+                    <FileDown className="w-4 h-4 text-slate-500" />
                   )}
-                  Exportar Excel
+                  <span className="sr-only">Exportar Excel</span>
                 </Button>
                 <Button
-                  variant="outline"
-                  size="sm"
+                  variant="default"
+                  size="icon"
                   onClick={exportToPDF}
                   disabled={exportLoading === 'pdf'}
-                  className="h-10 px-4 hover:bg-muted/60 text-sm font-medium"
+                  className="h-10 w-10 rounded-full shadow-md hover:shadow-lg transition-all"
+                  title="Exportar PDF"
                 >
                   {exportLoading === 'pdf' ? (
-                    <div className="w-4 h-4 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin mr-2" />
+                    <div className="w-4 h-4 border-2 border-white/60 border-t-transparent rounded-full animate-spin" />
                   ) : (
-                    <Download className="w-4 h-4 mr-2" />
+                    <Download className="w-4 h-4" />
                   )}
-                  Exportar PDF
+                  <span className="sr-only">Exportar PDF</span>
                 </Button>
               </div>
             </div>
@@ -621,45 +637,45 @@ export const ModernDashboardStats = () => {
         </div>
       </div>
 
-      {/* Enhanced Quick Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* Elegant Symmetrical Stats Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-in slide-in-from-bottom-4 duration-700">
         <StatCard
           icon={Activity}
           label="Status Geral"
           value="Excelente"
-          description="Sistema funcionando perfeitamente"
+          description="Sistema operacional"
           variant="glass"
           trend={{ value: 12, isPositive: true }}
-          className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 border-green-200 dark:border-green-800 shadow-lg hover:shadow-xl transition-all duration-300"
+          className="bg-white/90 dark:bg-slate-900/90 shadow-sm"
         />
 
         <StatCard
           icon={Users}
-          label="Usuários Activos"
+          label="Usuários"
           value={stats.totalUsers}
-          description="Total de administradores"
+          description="Administradores ativos"
           variant="glass"
-          className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/20 dark:to-cyan-950/20 border-blue-200 dark:border-blue-800 shadow-lg hover:shadow-xl transition-all duration-300"
+          className="bg-white/90 dark:bg-slate-900/90 shadow-sm"
         />
 
         <StatCard
           icon={Globe}
           label="Taxa de Transparência"
           value={`${transparencyRate}%`}
-          description="Documentos públicos"
+          description="Documentos ao público"
           variant="glass"
           trend={{ value: transparencyRate >= 80 ? 5 : -2, isPositive: transparencyRate >= 80 }}
-          className="bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-950/20 dark:to-violet-950/20 border-purple-200 dark:border-purple-800 shadow-lg hover:shadow-xl transition-all duration-300"
+          className="bg-white/90 dark:bg-slate-900/90 shadow-sm"
         />
 
         <StatCard
           icon={Eye}
-          label="Total de Acessos"
+          label="Acessos Totais"
           value={stats.totalVisits}
-          description="Acessos à página inicial"
-          variant="glass"
+          description="Visitas globais agrnadas."
+          variant="elevated"
           trend={{ value: 10, isPositive: true }}
-          className="bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-orange-950/20 dark:to-yellow-950/20 border-orange-200 dark:border-orange-800 shadow-lg hover:shadow-xl transition-all duration-300"
+          className="bg-blue-50/50 dark:bg-blue-900/10 border-blue-100 dark:border-blue-900/30"
         />
       </div>
 
@@ -670,70 +686,85 @@ export const ModernDashboardStats = () => {
         ))}
       </div>
 
-      {/* Enhanced Main Stats Grid with Tabs - Responsive */}
-      <Tabs value={activeView} onValueChange={setActiveView} className="space-y-5">
+      {/* Enhanced Main Stats Grid with Tabs - Brutalist Approach */}
+      <Tabs value={activeView} onValueChange={setActiveView} className="space-y-6">
         {/* Mobile Tabs Layout */}
-        <div className="block lg:hidden space-y-3">
-          <TabsList className="grid w-full grid-cols-3 h-12">
-            <TabsTrigger value="overview" className="flex items-center gap-1.5 text-xs font-medium">
-              <PieChart className="w-3.5 h-3.5" />
-              <span className="hidden xs:inline">Visão Geral</span>
-              <span className="xs:hidden">Geral</span>
+        <div className="block lg:hidden space-y-4">
+          <TabsList className="flex w-full overflow-x-auto snap-x snap-mandatory rounded-none bg-transparent h-14 p-0 space-x-2 hide-scrollbar">
+            <TabsTrigger
+              value="overview"
+              className="snap-start shrink-0 flex items-center gap-2 text-sm font-bold uppercase rounded-sm border-2 border-transparent data-[state=active]:border-slate-900 data-[state=active]:bg-slate-900 data-[state=active]:text-white dark:data-[state=active]:bg-white dark:data-[state=active]:text-slate-900 dark:data-[state=active]:border-white bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-4 py-3 transition-all"
+            >
+              <PieChart className="w-4 h-4" strokeWidth={2.5} />
+              <span>Visão Geral</span>
             </TabsTrigger>
-            <TabsTrigger value="content" className="flex items-center gap-1.5 text-xs font-medium">
-              <FileText className="w-3.5 h-3.5" />
-              <span className="hidden xs:inline">Conteúdo</span>
-              <span className="xs:hidden">Cont.</span>
+            <TabsTrigger
+              value="content"
+              className="snap-start shrink-0 flex items-center gap-2 text-sm font-bold uppercase rounded-sm border-2 border-transparent data-[state=active]:border-slate-900 data-[state=active]:bg-slate-900 data-[state=active]:text-white dark:data-[state=active]:bg-white dark:data-[state=active]:text-slate-900 dark:data-[state=active]:border-white bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-4 py-3 transition-all"
+            >
+              <FileText className="w-4 h-4" strokeWidth={2.5} />
+              <span>Conteúdo</span>
             </TabsTrigger>
-            <TabsTrigger value="engagement" className="flex items-center gap-1.5 text-xs font-medium">
-              <Heart className="w-3.5 h-3.5" />
-              <span className="hidden xs:inline">Engajamento</span>
-              <span className="xs:hidden">Eng.</span>
+            <TabsTrigger
+              value="engagement"
+              className="snap-start shrink-0 flex items-center gap-2 text-sm font-bold uppercase rounded-sm border-2 border-transparent data-[state=active]:border-slate-900 data-[state=active]:bg-slate-900 data-[state=active]:text-white dark:data-[state=active]:bg-white dark:data-[state=active]:text-slate-900 dark:data-[state=active]:border-white bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-4 py-3 transition-all"
+            >
+              <Heart className="w-4 h-4" strokeWidth={2.5} />
+              <span>Engajamento</span>
             </TabsTrigger>
           </TabsList>
 
           {/* Mobile Time Range Selector */}
-          <div className="flex items-center">
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground font-medium">Período:</span>
+          <div className="flex items-center w-full">
+            <div className="flex w-full flex-col gap-1.5">
+              <span className="text-xs text-slate-900 dark:text-slate-50 font-bold uppercase tracking-wider">Período:</span>
               <select
                 value={timeRange}
                 onChange={(e) => setTimeRange(e.target.value)}
-                className="text-xs border border-border rounded-md px-2 py-1.5 bg-background font-medium"
+                className="w-full text-sm border-2 border-slate-900 dark:border-slate-50 rounded-sm px-3 py-2.5 bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-bold outline-none focus:ring-0 shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] transition-all"
               >
-                <option value="1d">1 dia</option>
-                <option value="7d">1 semana</option>
-                <option value="30d">1 mês</option>
-                <option value="90d">3 meses</option>
+                <option value="1d">Último dia</option>
+                <option value="7d">Última semana</option>
+                <option value="30d">Último mês</option>
+                <option value="90d">Último trimestre</option>
               </select>
             </div>
           </div>
         </div>
 
         {/* Desktop Tabs Layout */}
-        <div className="hidden lg:flex lg:items-center lg:justify-between gap-6">
-          <TabsList className="grid grid-cols-3 h-12">
-            <TabsTrigger value="overview" className="flex items-center gap-3 text-sm font-medium px-6">
-              <PieChart className="w-4 h-4" />
+        <div className="hidden lg:flex lg:items-center lg:justify-between gap-6 border-b-2 border-slate-900 dark:border-slate-50/20 pb-4">
+          <TabsList className="flex bg-transparent rounded-none p-0 h-auto gap-2">
+            <TabsTrigger
+              value="overview"
+              className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider px-4 py-2 rounded-sm border-2 border-transparent data-[state=active]:border-slate-900 data-[state=active]:bg-slate-900 data-[state=active]:text-white dark:data-[state=active]:bg-white dark:data-[state=active]:text-slate-900 dark:data-[state=active]:border-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
+            >
+              <PieChart className="w-3.5 h-3.5" strokeWidth={2.5} />
               Visão Geral
             </TabsTrigger>
-            <TabsTrigger value="content" className="flex items-center gap-3 text-sm font-medium px-6">
-              <FileText className="w-4 h-4" />
+            <TabsTrigger
+              value="content"
+              className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider px-4 py-2 rounded-sm border-2 border-transparent data-[state=active]:border-slate-900 data-[state=active]:bg-slate-900 data-[state=active]:text-white dark:data-[state=active]:bg-white dark:data-[state=active]:text-slate-900 dark:data-[state=active]:border-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
+            >
+              <FileText className="w-3.5 h-3.5" strokeWidth={2.5} />
               Conteúdo
             </TabsTrigger>
-            <TabsTrigger value="engagement" className="flex items-center gap-3 text-sm font-medium px-6">
-              <Heart className="w-4 h-4" />
+            <TabsTrigger
+              value="engagement"
+              className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider px-4 py-2 rounded-sm border-2 border-transparent data-[state=active]:border-slate-900 data-[state=active]:bg-slate-900 data-[state=active]:text-white dark:data-[state=active]:bg-white dark:data-[state=active]:text-slate-900 dark:data-[state=active]:border-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
+            >
+              <Heart className="w-3.5 h-3.5" strokeWidth={2.5} />
               Engajamento
             </TabsTrigger>
           </TabsList>
 
           {/* Desktop Time Range Selector */}
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-muted-foreground font-medium">Período de Análise:</span>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">Período:</span>
             <select
               value={timeRange}
               onChange={(e) => setTimeRange(e.target.value)}
-              className="text-sm border border-border rounded-lg px-4 py-2 bg-background font-medium hover:border-primary/50 transition-colors"
+              className="text-xs border border-slate-200 dark:border-slate-700 rounded-sm px-3 py-1.5 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 font-semibold hover:-translate-y-0.5 outline-none focus:ring-0 transition-all cursor-pointer shadow-sm"
             >
               <option value="1d">Último dia</option>
               <option value="7d">Última semana</option>
@@ -743,130 +774,122 @@ export const ModernDashboardStats = () => {
           </div>
         </div>
 
-        <TabsContent value="overview" className="space-y-5">
-          {/* Enhanced Stats Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <TabsContent value="overview" className="space-y-4">
+          {/* Elegant Overview Stats Grid */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-4 animate-in slide-in-from-bottom-6 duration-700 delay-150 fill-mode-both">
             <StatCard
               icon={FileText}
-              label="Total de Notícias"
+              label="Notícias"
               value={stats.totalNews}
-              description={`${stats.publishedNews} publicadas`}
+              description={`${stats.publishedNews} ativas`}
               trend={{ value: 15, isPositive: true }}
-              size="md"
-              className="shadow-lg hover:shadow-xl transition-all duration-300"
+              size="sm"
             />
 
             <StatCard
               icon={Trophy}
               label="Concursos"
               value={stats.totalConcursos}
-              description={`${stats.activeConcursos} ativos`}
+              description={`${stats.activeConcursos} visíveis`}
               trend={{ value: activeRate >= 50 ? 8 : -5, isPositive: activeRate >= 50 }}
-              size="md"
-              className="shadow-lg hover:shadow-xl transition-all duration-300"
+              size="sm"
             />
 
             <StatCard
               icon={Building2}
-              label="Direcções"
+              label="Direções"
               value={stats.totalDirecoes}
-              description="Áreas de atuação"
-              size="md"
-              className="shadow-lg hover:shadow-xl transition-all duration-300"
+              description="Sectores"
+              size="sm"
             />
 
             <StatCard
               icon={Users}
-              label="Organigrama"
+              label="Equipas"
               value={stats.totalOrganigramaMembers}
-              description="Membros activos"
-              size="md"
-              className="shadow-lg hover:shadow-xl transition-all duration-300"
+              description="Gabinete atv."
+              size="sm"
             />
 
             <StatCard
               icon={FolderOpen}
-              label="Acervo Digital"
+              label="Biblioteca"
               value={stats.totalAcervoItems}
-              description={`${stats.publicAcervoItems} públicos`}
+              description={`${stats.publicAcervoItems} doc.`}
               trend={{ value: 22, isPositive: true }}
-              size="md"
-              className="shadow-lg hover:shadow-xl transition-all duration-300"
+              size="sm"
             />
 
             <StatCard
               icon={Eye}
-              label="Taxa de Publicação"
+              label="Leituras"
               value={`${publicationRate}%`}
-              description="Notícias publicadas"
+              description="Artigos lidos"
               trend={{ value: publicationRate >= 80 ? 10 : -5, isPositive: publicationRate >= 80 }}
-              size="md"
-              className="shadow-lg hover:shadow-xl transition-all duration-300"
+              size="sm"
             />
 
             <StatCard
               icon={Shield}
-              label="Transparência"
+              label="Transp."
               value={`${transparencyRate}%`}
-              description="Documentos públicos"
+              description="Acesso livre"
               trend={{ value: transparencyRate >= 75 ? 7 : -3, isPositive: transparencyRate >= 75 }}
-              size="md"
-              className="shadow-lg hover:shadow-xl transition-all duration-300"
+              size="sm"
             />
 
             <StatCard
               icon={Target}
-              label="Objectivos"
+              label="Eficácia"
               value="95%"
-              description="Meta de transparência"
+              description="Métrica ideal"
               trend={{ value: 4, isPositive: true }}
-              size="md"
-              className="shadow-lg hover:shadow-xl transition-all duration-300"
+              size="sm"
             />
           </div>
 
           {/* Charts and Analytics Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-in slide-in-from-bottom-8 duration-700 delay-300 fill-mode-both">
             {/* Performance Chart */}
-            <Card className="border-0 shadow-lg bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5" />
-                  Performance Mensal
+            <Card className="lg:col-span-2 border border-slate-100 dark:border-slate-800 shadow-sm bg-white dark:bg-slate-900 rounded-2xl overflow-hidden hover:shadow-md transition-shadow duration-500">
+              <CardHeader className="border-b border-slate-100 dark:border-slate-800/60 bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-sm">
+                <CardTitle className="flex items-center gap-2 font-semibold text-lg text-slate-900 dark:text-white">
+                  <TrendingUp className="w-5 h-5 text-blue-500" />
+                  Performance
                 </CardTitle>
-                <CardDescription>
-                  Evolução das métricas principais nos últimos 6 meses
+                <CardDescription className="text-slate-500 font-medium">
+                  Evolução das métricas mensais
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-6">
                 <SimpleBarChart data={chartData} />
               </CardContent>
             </Card>
 
             {/* System Health Dashboard */}
-            <Card className="border-0 shadow-lg bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Cpu className="w-5 h-5" />
-                  Saúde do Sistema
+            <Card className="border border-slate-100 dark:border-slate-800 shadow-sm bg-white dark:bg-slate-900 rounded-2xl overflow-hidden hover:shadow-md transition-shadow duration-500">
+              <CardHeader className="border-b border-slate-100 dark:border-slate-800/60 bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-sm">
+                <CardTitle className="flex items-center gap-2 font-semibold text-lg text-slate-900 dark:text-white">
+                  <Cpu className="w-5 h-5 text-emerald-500" />
+                  Sistema
                 </CardTitle>
-                <CardDescription>
-                  Status em tempo real dos serviços
+                <CardDescription className="text-slate-500 font-medium">
+                  Saúde em tempo real
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="flex items-center justify-center">
-                  <CircularProgress value={systemHealth} size={120} color="#10b981" />
+              <CardContent className="space-y-6 pt-6">
+                <div className="flex items-center justify-center p-4">
+                  <CircularProgress value={systemHealth} size={140} color="#10b981" strokeWidth={10} />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-3 bg-white dark:bg-slate-800 rounded-lg">
-                    <div className="text-lg font-bold text-green-600">{responseTime}s</div>
-                    <div className="text-xs text-muted-foreground">Tempo de Resposta</div>
+                  <div className="text-center p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50">
+                    <div className="text-xl font-bold text-emerald-600 dark:text-emerald-400">{responseTime}s</div>
+                    <div className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold mt-1">Ping</div>
                   </div>
-                  <div className="text-center p-3 bg-white dark:bg-slate-800 rounded-lg">
-                    <div className="text-lg font-bold text-blue-600">99.9%</div>
-                    <div className="text-xs text-muted-foreground">Uptime</div>
+                  <div className="text-center p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50">
+                    <div className="text-xl font-bold text-blue-600 dark:text-blue-400">99.9%</div>
+                    <div className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold mt-1">Uptime</div>
                   </div>
                 </div>
               </CardContent>

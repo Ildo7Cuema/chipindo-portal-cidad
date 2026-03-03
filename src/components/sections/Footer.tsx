@@ -37,7 +37,7 @@ export const Footer = () => {
     { label: "Concursos", href: "/concursos" },
     { label: "Acervo Digital", href: "/acervo" },
     { label: "Transparência", href: "/transparencia" },
-    { label: "Ouvidoria", href: "/ouvidoria" },
+    { label: "Participação do Cidadão", href: "/ouvidoria" },
     { label: "Serviços", href: "/servicos" },
     { label: "Área Administrativa", href: "/auth", icon: UserIcon }
   ];

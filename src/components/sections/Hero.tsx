@@ -272,7 +272,7 @@ export const Hero = () => {
                   label="População"
                   value={heroStatsLoading ? '...' : populationFormatted}
                   description={heroStatsLoading ? 'Carregando...' : 'Habitantes registados'}
-                  variant="glass"
+                  variant="hero"
                   size="lg"
                   className="hover:scale-105 transition-all duration-500 hover:shadow-2xl hover:shadow-yellow-500/10"
                   trend={{
@@ -287,7 +287,7 @@ export const Hero = () => {
                   label="Sectores"
                   value={heroStatsLoading ? '...' : `${sectors}+`}
                   description="Áreas de potencial"
-                  variant="glass"
+                  variant="hero"
                   size="lg"
                   className="hover:scale-105 transition-all duration-500 hover:shadow-2xl hover:shadow-emerald-500/10"
                   loading={heroStatsLoading}
@@ -300,7 +300,7 @@ export const Hero = () => {
                   label="Projectos"
                   value={heroStatsLoading ? '...' : `${projects}+`}
                   description="Iniciativas activas"
-                  variant="glass"
+                  variant="hero"
                   size="lg"
                   className="hover:scale-105 transition-all duration-500 hover:shadow-2xl hover:shadow-blue-500/10"
                   loading={heroStatsLoading}
@@ -315,7 +315,7 @@ export const Hero = () => {
                   label="Oportunidades"
                   value={heroStatsLoading ? '...' : `${opportunities}+`}
                   description="Potencial ilimitado"
-                  variant="glass"
+                  variant="hero"
                   size="lg"
                   className="hover:scale-105 transition-all duration-500 hover:shadow-2xl hover:shadow-purple-500/10"
                   loading={heroStatsLoading}

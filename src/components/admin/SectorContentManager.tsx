@@ -282,8 +282,8 @@ export function SectorContentManager({ currentUserRole }: SectorContentManagerPr
     return (
         <div className="space-y-6 p-4 md:p-6">
             {/* ─── Cabeçalho ──────────────────────────────────────────────────────── */}
-            <Card>
-                <CardHeader>
+            <Card className="border-0 shadow-sm rounded-2xl bg-white dark:bg-slate-900 overflow-hidden">
+                <CardHeader className="p-6">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <div className="flex items-center gap-3">
                             <div
@@ -296,12 +296,12 @@ export function SectorContentManager({ currentUserRole }: SectorContentManagerPr
                                 />
                             </div>
                             <div>
-                                <CardTitle className="text-xl">
+                                <CardTitle className="text-xl font-bold tracking-tight">
                                     {isSector
                                         ? `Conteúdo — ${getSectorName(currentUserRole)}`
                                         : "Gestão de Conteúdo Sectorial"}
                                 </CardTitle>
-                                <p className="text-sm text-muted-foreground mt-0.5">
+                                <p className="text-sm text-muted-foreground mt-1">
                                     {isSector
                                         ? "Gira as informações exibidas na página pública do seu sector"
                                         : "Seleccione um sector para editar o seu conteúdo público"}
@@ -342,57 +342,57 @@ export function SectorContentManager({ currentUserRole }: SectorContentManagerPr
 
             {/* ─── Aviso se nenhum sector seleccionado ────────────────────────────── */}
             {!selectedSetorId && (
-                <Card>
-                    <CardContent className="p-10 text-center">
-                        <Building2 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                        <p className="text-muted-foreground">Seleccione um sector para começar a editar.</p>
+                <Card className="border-0 shadow-sm rounded-2xl bg-white dark:bg-slate-900 border-dashed border-2 border-slate-200 dark:border-slate-800">
+                    <CardContent className="p-12 text-center">
+                        <Building2 className="h-10 w-10 text-muted-foreground/50 mx-auto mb-4" />
+                        <p className="text-muted-foreground font-medium text-sm">Seleccione um sector para começar a editar.</p>
                     </CardContent>
                 </Card>
             )}
 
             {/* ─── Tabs de conteúdo ────────────────────────────────────────────────── */}
             {selectedSetorId && (
-                <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as ActiveTab)}>
-                    <div className="overflow-x-auto">
-                        <TabsList className="inline-flex gap-1 p-1.5 bg-muted/50 rounded-xl min-w-max">
-                            <TabsTrigger value="estatisticas" className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm">
-                                <BarChart3 className="h-4 w-4" /> Estatísticas
+                <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as ActiveTab)} className="space-y-6">
+                    <div className="overflow-x-auto pb-2">
+                        <TabsList className="inline-flex h-auto gap-2 bg-transparent p-0 min-w-max">
+                            <TabsTrigger value="estatisticas" className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md border border-transparent data-[state=inactive]:border-border/50 data-[state=inactive]:bg-background transition-all">
+                                <BarChart3 className="h-3.5 w-3.5" /> Estatísticas
                             </TabsTrigger>
-                            <TabsTrigger value="programas" className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm">
-                                <BookOpen className="h-4 w-4" /> Programas
+                            <TabsTrigger value="programas" className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md border border-transparent data-[state=inactive]:border-border/50 data-[state=inactive]:bg-background transition-all">
+                                <BookOpen className="h-3.5 w-3.5" /> Programas
                             </TabsTrigger>
-                            <TabsTrigger value="oportunidades" className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm">
-                                <Target className="h-4 w-4" /> Oportunidades
+                            <TabsTrigger value="oportunidades" className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md border border-transparent data-[state=inactive]:border-border/50 data-[state=inactive]:bg-background transition-all">
+                                <Target className="h-3.5 w-3.5" /> Oportunidades
                             </TabsTrigger>
-                            <TabsTrigger value="infraestruturas" className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm">
-                                <Factory className="h-4 w-4" /> Infraestruturas
+                            <TabsTrigger value="infraestruturas" className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md border border-transparent data-[state=inactive]:border-border/50 data-[state=inactive]:bg-background transition-all">
+                                <Factory className="h-3.5 w-3.5" /> Infraestruturas
                             </TabsTrigger>
-                            <TabsTrigger value="contactos" className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm">
-                                <Phone className="h-4 w-4" /> Contactos
+                            <TabsTrigger value="contactos" className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md border border-transparent data-[state=inactive]:border-border/50 data-[state=inactive]:bg-background transition-all">
+                                <Phone className="h-3.5 w-3.5" /> Contactos
                             </TabsTrigger>
                         </TabsList>
                     </div>
 
                     {/* ── ESTATÍSTICAS ─────────────────────────────────────────────────── */}
-                    <TabsContent value="estatisticas" className="mt-4">
+                    <TabsContent value="estatisticas" className="mt-0">
                         <SectionHeader title="Estatísticas" count={estatisticas.length} onAdd={handleCreate} loading={loading} />
                         {loading ? <LoadingSpinner /> : (
-                            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                                 {estatisticas.map((est) => (
-                                    <Card key={est.id} className="border-l-4" style={{ borderLeftColor: selectedSetor?.cor_primaria || "#3b82f6" }}>
-                                        <CardContent className="p-4">
+                                    <Card key={est.id} className="border-0 shadow-sm rounded-xl transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 border-l-4" style={{ borderLeftColor: selectedSetor?.cor_primaria || "#3b82f6" }}>
+                                        <CardContent className="p-5">
                                             <div className="flex items-start justify-between gap-2">
                                                 <div className="flex-1 min-w-0">
-                                                    <p className="font-bold text-2xl text-primary truncate">{est.valor}</p>
-                                                    <p className="text-sm font-medium mt-1 truncate">{est.nome}</p>
-                                                    <p className="text-xs text-muted-foreground">Ordem: {est.ordem}</p>
+                                                    <p className="font-bold text-2xl text-foreground truncate tracking-tight">{est.valor}</p>
+                                                    <p className="text-sm font-medium mt-1 truncate text-muted-foreground">{est.nome}</p>
+                                                    <p className="text-xs text-muted-foreground/60 mt-2 font-mono">Ordem: {est.ordem}</p>
                                                 </div>
-                                                <div className="flex gap-1 shrink-0">
-                                                    <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => handleEdit(est)}>
-                                                        <Edit className="h-3.5 w-3.5" />
+                                                <div className="flex gap-1 shrink-0 bg-muted/30 rounded-full p-1 border border-border/50">
+                                                    <Button size="icon" variant="ghost" className="h-7 w-7 rounded-full" onClick={() => handleEdit(est)}>
+                                                        <Edit className="h-3 w-3" />
                                                     </Button>
-                                                    <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => handleDeleteConfirm(est, "setores_estatisticas", est.nome)}>
-                                                        <Trash2 className="h-3.5 w-3.5" />
+                                                    <Button size="icon" variant="ghost" className="h-7 w-7 rounded-full text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => handleDeleteConfirm(est, "setores_estatisticas", est.nome)}>
+                                                        <Trash2 className="h-3 w-3" />
                                                     </Button>
                                                 </div>
                                             </div>
@@ -405,39 +405,41 @@ export function SectorContentManager({ currentUserRole }: SectorContentManagerPr
                     </TabsContent>
 
                     {/* ── PROGRAMAS ────────────────────────────────────────────────────── */}
-                    <TabsContent value="programas" className="mt-4">
+                    <TabsContent value="programas" className="mt-0">
                         <SectionHeader title="Programas" count={programas.length} onAdd={handleCreate} loading={loading} />
                         {loading ? <LoadingSpinner /> : (
                             <div className="grid gap-4 md:grid-cols-2">
                                 {programas.map((prog) => (
-                                    <Card key={prog.id} className={prog.ativo ? "" : "opacity-60"}>
-                                        <CardContent className="p-4">
-                                            <div className="flex items-start justify-between gap-2 mb-3">
-                                                <div className="flex-1 min-w-0">
+                                    <Card key={prog.id} className={cn("border-0 shadow-sm rounded-xl transition-all duration-300 hover:shadow-md", prog.ativo ? "" : "opacity-60 bg-muted/40")}>
+                                        <CardContent className="p-5">
+                                            <div className="flex items-start justify-between gap-3 mb-3">
+                                                <div className="flex-1 min-w-0 space-y-1.5">
                                                     <div className="flex items-center gap-2 flex-wrap">
-                                                        <h4 className="font-semibold truncate">{prog.titulo}</h4>
-                                                        <Badge variant={prog.ativo ? "default" : "secondary"} className="text-xs">
+                                                        <h4 className="font-semibold text-sm tracking-tight truncate">{prog.titulo}</h4>
+                                                        <Badge variant={prog.ativo ? "default" : "secondary"} className="text-[10px] uppercase font-bold tracking-wider py-0 rounded-full">
                                                             {prog.ativo ? "Activo" : "Inactivo"}
                                                         </Badge>
                                                     </div>
-                                                    <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{prog.descricao}</p>
+                                                    <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">{prog.descricao}</p>
                                                 </div>
-                                                <div className="flex gap-1 shrink-0">
-                                                    <Button size="icon" variant="ghost" className="h-8 w-8" title={prog.ativo ? "Desactivar" : "Activar"} onClick={() => handleToggleAtivo(prog, "setores_programas")}>
-                                                        {prog.ativo ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                                                <div className="flex gap-1 shrink-0 bg-muted/30 rounded-full p-1 border border-border/50">
+                                                    <Button size="icon" variant="ghost" className="h-7 w-7 rounded-full" title={prog.ativo ? "Desactivar" : "Activar"} onClick={() => handleToggleAtivo(prog, "setores_programas")}>
+                                                        {prog.ativo ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
                                                     </Button>
-                                                    <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => handleEdit(prog)}>
-                                                        <Edit className="h-3.5 w-3.5" />
+                                                    <Button size="icon" variant="ghost" className="h-7 w-7 rounded-full" onClick={() => handleEdit(prog)}>
+                                                        <Edit className="h-3 w-3" />
                                                     </Button>
-                                                    <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => handleDeleteConfirm(prog, "setores_programas", prog.titulo)}>
-                                                        <Trash2 className="h-3.5 w-3.5" />
+                                                    <Button size="icon" variant="ghost" className="h-7 w-7 rounded-full text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => handleDeleteConfirm(prog, "setores_programas", prog.titulo)}>
+                                                        <Trash2 className="h-3 w-3" />
                                                     </Button>
                                                 </div>
                                             </div>
                                             {prog.contacto && (
-                                                <p className="text-xs text-muted-foreground flex items-center gap-1">
-                                                    <Phone className="h-3 w-3" /> {prog.contacto}
-                                                </p>
+                                                <div className="mt-4 pt-4 border-t border-border/50">
+                                                    <p className="text-xs font-medium text-muted-foreground flex items-center gap-1.5 bg-muted/20 w-max px-2.5 py-1 rounded-md">
+                                                        <Phone className="h-3 w-3" /> {prog.contacto}
+                                                    </p>
+                                                </div>
                                             )}
                                         </CardContent>
                                     </Card>
@@ -448,42 +450,42 @@ export function SectorContentManager({ currentUserRole }: SectorContentManagerPr
                     </TabsContent>
 
                     {/* ── OPORTUNIDADES ────────────────────────────────────────────────── */}
-                    <TabsContent value="oportunidades" className="mt-4">
+                    <TabsContent value="oportunidades" className="mt-0">
                         <SectionHeader title="Oportunidades" count={oportunidades.length} onAdd={handleCreate} loading={loading} />
                         {loading ? <LoadingSpinner /> : (
                             <div className="grid gap-4 md:grid-cols-2">
                                 {oportunidades.map((opor) => (
-                                    <Card key={opor.id} className={opor.ativo ? "" : "opacity-60"}>
-                                        <CardContent className="p-4">
-                                            <div className="flex items-start justify-between gap-2 mb-3">
-                                                <div className="flex-1 min-w-0">
+                                    <Card key={opor.id} className={cn("border-0 shadow-sm rounded-xl transition-all duration-300 hover:shadow-md", opor.ativo ? "" : "opacity-60 bg-muted/40")}>
+                                        <CardContent className="p-5">
+                                            <div className="flex items-start justify-between gap-3 mb-3">
+                                                <div className="flex-1 min-w-0 space-y-1.5">
                                                     <div className="flex items-center gap-2 flex-wrap">
-                                                        <h4 className="font-semibold truncate">{opor.titulo}</h4>
-                                                        <Badge variant={opor.ativo ? "default" : "secondary"} className="text-xs">
+                                                        <h4 className="font-semibold text-sm tracking-tight truncate">{opor.titulo}</h4>
+                                                        <Badge variant={opor.ativo ? "default" : "secondary"} className="text-[10px] uppercase font-bold tracking-wider py-0 rounded-full">
                                                             {opor.ativo ? "Activo" : "Inactivo"}
                                                         </Badge>
                                                     </div>
-                                                    <div className="flex gap-2 mt-1 flex-wrap">
-                                                        <Badge variant="outline" className="text-xs">{opor.vagas} vagas</Badge>
-                                                        {opor.prazo && (
-                                                            <Badge variant="outline" className="text-xs">
-                                                                Prazo: {new Date(opor.prazo).toLocaleDateString("pt-AO")}
-                                                            </Badge>
-                                                        )}
-                                                    </div>
-                                                    <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{opor.descricao}</p>
+                                                    <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2 pt-1">{opor.descricao}</p>
                                                 </div>
-                                                <div className="flex gap-1 shrink-0">
-                                                    <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => handleToggleAtivo(opor, "setores_oportunidades")}>
-                                                        {opor.ativo ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                                                <div className="flex gap-1 shrink-0 bg-muted/30 rounded-full p-1 border border-border/50">
+                                                    <Button size="icon" variant="ghost" className="h-7 w-7 rounded-full" onClick={() => handleToggleAtivo(opor, "setores_oportunidades")}>
+                                                        {opor.ativo ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
                                                     </Button>
-                                                    <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => handleEdit(opor)}>
-                                                        <Edit className="h-3.5 w-3.5" />
+                                                    <Button size="icon" variant="ghost" className="h-7 w-7 rounded-full" onClick={() => handleEdit(opor)}>
+                                                        <Edit className="h-3 w-3" />
                                                     </Button>
-                                                    <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => handleDeleteConfirm(opor, "setores_oportunidades", opor.titulo)}>
-                                                        <Trash2 className="h-3.5 w-3.5" />
+                                                    <Button size="icon" variant="ghost" className="h-7 w-7 rounded-full text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => handleDeleteConfirm(opor, "setores_oportunidades", opor.titulo)}>
+                                                        <Trash2 className="h-3 w-3" />
                                                     </Button>
                                                 </div>
+                                            </div>
+                                            <div className="mt-4 pt-4 border-t border-border/50 flex gap-2 flex-wrap">
+                                                <Badge variant="outline" className="text-[10px] text-muted-foreground font-medium rounded-md py-0.5">{opor.vagas} vagas</Badge>
+                                                {opor.prazo && (
+                                                    <Badge variant="outline" className="text-[10px] text-muted-foreground font-medium rounded-md py-0.5">
+                                                        Prazo: {new Date(opor.prazo).toLocaleDateString("pt-AO")}
+                                                    </Badge>
+                                                )}
                                             </div>
                                         </CardContent>
                                     </Card>
@@ -494,37 +496,38 @@ export function SectorContentManager({ currentUserRole }: SectorContentManagerPr
                     </TabsContent>
 
                     {/* ── INFRAESTRUTURAS ──────────────────────────────────────────────── */}
-                    <TabsContent value="infraestruturas" className="mt-4">
+                    <TabsContent value="infraestruturas" className="mt-0">
                         <SectionHeader title="Infraestruturas" count={infraestruturas.length} onAdd={handleCreate} loading={loading} />
                         {loading ? <LoadingSpinner /> : (
                             <div className="grid gap-4 md:grid-cols-2">
                                 {infraestruturas.map((infra) => (
-                                    <Card key={infra.id} className={infra.ativo ? "" : "opacity-60"}>
-                                        <CardContent className="p-4">
-                                            <div className="flex items-start justify-between gap-2 mb-2">
-                                                <div className="flex-1 min-w-0">
-                                                    <div className="flex items-center gap-2 flex-wrap">
-                                                        <h4 className="font-semibold truncate">{infra.nome}</h4>
+                                    <Card key={infra.id} className={cn("border-0 shadow-sm rounded-xl transition-all duration-300 hover:shadow-md", infra.ativo ? "" : "opacity-60 bg-muted/40")}>
+                                        <CardContent className="p-5">
+                                            <div className="flex items-start justify-between gap-3 mb-2">
+                                                <div className="flex-1 min-w-0 space-y-1">
+                                                    <div className="flex items-center gap-2 flex-wrap mb-1">
+                                                        <h4 className="font-semibold text-sm tracking-tight truncate">{infra.nome}</h4>
                                                         <Badge
-                                                            className={`text-xs ${infra.estado === "Operacional" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}`}
+                                                            className={cn("text-[10px] uppercase font-bold tracking-wider py-0 rounded-full", infra.estado === "Operacional" ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400" : "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400")}
+                                                            variant="secondary"
                                                         >
                                                             {infra.estado}
                                                         </Badge>
                                                     </div>
-                                                    <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                                                    <p className="text-xs text-muted-foreground flex items-center gap-1.5">
                                                         <MapPin className="h-3 w-3" /> {infra.localizacao}
                                                     </p>
-                                                    <p className="text-xs text-muted-foreground">Capacidade: {infra.capacidade}</p>
+                                                    <p className="text-xs text-muted-foreground font-mono mt-1">Capacidade: {infra.capacidade}</p>
                                                 </div>
-                                                <div className="flex gap-1 shrink-0">
-                                                    <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => handleToggleAtivo(infra, "setores_infraestruturas")}>
-                                                        {infra.ativo ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                                                <div className="flex gap-1 shrink-0 bg-muted/30 rounded-full p-1 border border-border/50">
+                                                    <Button size="icon" variant="ghost" className="h-7 w-7 rounded-full" onClick={() => handleToggleAtivo(infra, "setores_infraestruturas")}>
+                                                        {infra.ativo ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
                                                     </Button>
-                                                    <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => handleEdit(infra)}>
-                                                        <Edit className="h-3.5 w-3.5" />
+                                                    <Button size="icon" variant="ghost" className="h-7 w-7 rounded-full" onClick={() => handleEdit(infra)}>
+                                                        <Edit className="h-3 w-3" />
                                                     </Button>
-                                                    <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => handleDeleteConfirm(infra, "setores_infraestruturas", infra.nome)}>
-                                                        <Trash2 className="h-3.5 w-3.5" />
+                                                    <Button size="icon" variant="ghost" className="h-7 w-7 rounded-full text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => handleDeleteConfirm(infra, "setores_infraestruturas", infra.nome)}>
+                                                        <Trash2 className="h-3 w-3" />
                                                     </Button>
                                                 </div>
                                             </div>
@@ -537,29 +540,29 @@ export function SectorContentManager({ currentUserRole }: SectorContentManagerPr
                     </TabsContent>
 
                     {/* ── CONTACTOS ────────────────────────────────────────────────────── */}
-                    <TabsContent value="contactos" className="mt-4">
+                    <TabsContent value="contactos" className="mt-0">
                         <SectionHeader title="Contactos" count={contactos.length} onAdd={handleCreate} loading={loading} />
                         {loading ? <LoadingSpinner /> : (
                             <div className="grid gap-4 md:grid-cols-2">
                                 {contactos.map((cont) => (
-                                    <Card key={cont.id}>
-                                        <CardContent className="p-4 space-y-2">
-                                            <div className="flex items-start justify-between gap-2">
-                                                <h4 className="font-semibold">{cont.responsavel}</h4>
-                                                <div className="flex gap-1 shrink-0">
-                                                    <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => handleEdit(cont)}>
-                                                        <Edit className="h-3.5 w-3.5" />
+                                    <Card key={cont.id} className="border-0 shadow-sm rounded-xl transition-all duration-300 hover:shadow-md">
+                                        <CardContent className="p-5 space-y-4">
+                                            <div className="flex items-start justify-between gap-3 border-b border-border/40 pb-3">
+                                                <h4 className="font-semibold text-sm tracking-tight">{cont.responsavel}</h4>
+                                                <div className="flex gap-1 shrink-0 bg-muted/30 rounded-full p-1 border border-border/50">
+                                                    <Button size="icon" variant="ghost" className="h-7 w-7 rounded-full" onClick={() => handleEdit(cont)}>
+                                                        <Edit className="h-3 w-3" />
                                                     </Button>
-                                                    <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => handleDeleteConfirm(cont, "setores_contactos", cont.responsavel)}>
-                                                        <Trash2 className="h-3.5 w-3.5" />
+                                                    <Button size="icon" variant="ghost" className="h-7 w-7 rounded-full text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => handleDeleteConfirm(cont, "setores_contactos", cont.responsavel)}>
+                                                        <Trash2 className="h-3 w-3" />
                                                     </Button>
                                                 </div>
                                             </div>
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-muted-foreground">
-                                                <p className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5 shrink-0" /><span className="truncate">{cont.endereco}</span></p>
-                                                <p className="flex items-center gap-1.5"><Phone className="h-3.5 w-3.5 shrink-0" />{cont.telefone}</p>
-                                                <p className="flex items-center gap-1.5"><Mail className="h-3.5 w-3.5 shrink-0" /><span className="truncate">{cont.email}</span></p>
-                                                <p className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5 shrink-0" />{cont.horario}</p>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-muted-foreground">
+                                                <p className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5 shrink-0 text-primary/70" /><span className="truncate" title={cont.endereco}>{cont.endereco}</span></p>
+                                                <p className="flex items-center gap-1.5"><Phone className="h-3.5 w-3.5 shrink-0 text-primary/70" />{cont.telefone}</p>
+                                                <p className="flex items-center gap-1.5"><Mail className="h-3.5 w-3.5 shrink-0 text-primary/70" /><span className="truncate">{cont.email}</span></p>
+                                                <p className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5 shrink-0 text-primary/70" />{cont.horario}</p>
                                             </div>
                                         </CardContent>
                                     </Card>
@@ -725,12 +728,12 @@ function formToPayload(tab: ActiveTab, form: any, setorId: string): { table: str
 
 function SectionHeader({ title, count, onAdd, loading }: { title: string; count: number; onAdd: () => void; loading: boolean }) {
     return (
-        <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-                <h3 className="text-lg font-semibold">{title}</h3>
-                <Badge variant="secondary">{count}</Badge>
+        <div className="flex items-center justify-between mb-6 mt-4">
+            <div className="flex items-center gap-3">
+                <h3 className="text-xl font-semibold tracking-tight">{title}</h3>
+                <Badge variant="secondary" className="px-2 py-0.5 rounded-full text-xs font-mono">{count}</Badge>
             </div>
-            <Button onClick={onAdd} size="sm" disabled={loading}>
+            <Button onClick={onAdd} size="sm" disabled={loading} className="rounded-full shadow-sm">
                 <Plus className="h-4 w-4 mr-2" /> Adicionar
             </Button>
         </div>
