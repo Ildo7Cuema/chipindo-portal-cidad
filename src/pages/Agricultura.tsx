@@ -25,7 +25,8 @@ import {
   StarIcon,
   TrendingUpIcon,
   LeafIcon,
-  SparklesIcon
+  SparklesIcon,
+  Image as ImageIcon,
 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import React, { useState, useEffect } from "react";
@@ -86,6 +87,7 @@ const Agricultura = () => {
           data.oportunidades = Array.isArray(data.oportunidades) ? data.oportunidades : [];
           data.infraestruturas = Array.isArray(data.infraestruturas) ? data.infraestruturas : [];
           data.contactos = Array.isArray(data.contactos) ? data.contactos : [];
+          data.galeria = Array.isArray(data.galeria) ? data.galeria : [];
         }
         setSetor(data);
       } catch (err) {
@@ -176,29 +178,38 @@ const Agricultura = () => {
         <div data-tabs-container>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-8 md:mt-12">
             <TabsList className="flex w-full gap-1 md:gap-2 p-1.5 md:p-2 bg-muted/50 rounded-xl overflow-x-auto scrollbar-hide -mx-1 px-1 md:mx-0 md:px-2">
-              <TabsTrigger 
-                value="programas" 
+              <TabsTrigger
+                value="programas"
                 className="flex-shrink-0 min-w-[100px] md:flex-1 min-h-[44px] text-xs sm:text-sm px-3 md:px-4 py-2.5 rounded-lg transition-all duration-200 active:scale-[0.98]"
               >
                 <span className="truncate">Programas</span>
               </TabsTrigger>
-              <TabsTrigger 
-                value="oportunidades" 
+              <TabsTrigger
+                value="oportunidades"
                 className="flex-shrink-0 min-w-[110px] md:flex-1 min-h-[44px] text-xs sm:text-sm px-3 md:px-4 py-2.5 rounded-lg transition-all duration-200 active:scale-[0.98]"
               >
                 <span className="truncate">Oportunidades</span>
               </TabsTrigger>
-              <TabsTrigger 
-                value="infraestruturas" 
+              <TabsTrigger
+                value="infraestruturas"
                 className="flex-shrink-0 min-w-[120px] md:flex-1 min-h-[44px] text-xs sm:text-sm px-3 md:px-4 py-2.5 rounded-lg transition-all duration-200 active:scale-[0.98]"
               >
                 <span className="truncate">Infraestruturas</span>
               </TabsTrigger>
-              <TabsTrigger 
-                value="contactos" 
+              <TabsTrigger
+                value="contactos"
                 className="flex-shrink-0 min-w-[100px] md:flex-1 min-h-[44px] text-xs sm:text-sm px-3 md:px-4 py-2.5 rounded-lg transition-all duration-200 active:scale-[0.98]"
               >
                 <span className="truncate">Contactos</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="galeria"
+                className="flex-shrink-0 min-w-[120px] md:flex-1 min-h-[44px] text-xs sm:text-sm px-3 md:px-4 py-2.5 rounded-lg transition-all duration-200 active:scale-[0.98]"
+              >
+                <div className="flex items-center gap-2">
+                  <ImageIcon className="w-4 h-4 shrink-0" />
+                  <span className="truncate">Galeria</span>
+                </div>
               </TabsTrigger>
             </TabsList>
 
@@ -453,6 +464,43 @@ const Agricultura = () => {
                 ))}
               </div>
             </TabsContent>
+
+            {/* Galeria */}
+            <TabsContent value="galeria" className="mt-6 md:mt-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+                {setor.galeria?.filter(g => g.ativo).map((item, index) => (
+                  <Card key={index} className="overflow-hidden hover:shadow-xl transition-all duration-300 group rounded-xl border-0 bg-white dark:bg-gray-800">
+                    <div className="relative aspect-square w-full bg-muted overflow-hidden">
+                      <img
+                        src={item.imagem_url}
+                        alt={item.titulo}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+
+                      <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                        <h4 className="text-white font-semibold text-lg drop-shadow-md">
+                          {item.titulo}
+                        </h4>
+                        {item.descricao && (
+                          <p className="text-white/80 text-sm mt-1 line-clamp-2 drop-shadow-sm">
+                            {item.descricao}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+
+                {(!setor.galeria || setor.galeria.filter(g => g.ativo).length === 0) && (
+                  <div className="col-span-full py-12 text-center text-muted-foreground flex flex-col items-center justify-center bg-muted/20 rounded-xl border border-dashed">
+                    <ImageIcon className="w-12 h-12 mb-4 text-muted-foreground/50" />
+                    <p>Ainda não há imagens na galeria de produtos e terrenos.</p>
+                  </div>
+                )}
+              </div>
+            </TabsContent>
           </Tabs>
         </div>
       </main>
@@ -510,8 +558,8 @@ const Agricultura = () => {
           )}
 
           <DialogFooter className="p-4 md:p-6 pt-0">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => setOpenDetalhes(false)}
               className="w-full md:w-auto min-h-[44px] rounded-xl transition-all duration-200 active:scale-[0.98]"
             >

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -53,6 +54,8 @@ import {
     Mail,
     User,
     Lock,
+    Image as ImageIcon,
+    Upload,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -64,6 +67,7 @@ import {
     OportunidadeSetor,
     InfraestruturaSetor,
     ContactoSetor,
+    GaleriaSetor,
 } from "@/hooks/useSetoresEstrategicos";
 
 // ─── Ícones por sector ───────────────────────────────────────────────────────
@@ -79,7 +83,7 @@ const sectorIcons: Record<string, React.ComponentType<{ className?: string }>> =
 };
 
 // ─── Tipos internos ──────────────────────────────────────────────────────────
-type ActiveTab = "estatisticas" | "programas" | "oportunidades" | "infraestruturas" | "contactos";
+type ActiveTab = "estatisticas" | "programas" | "oportunidades" | "infraestruturas" | "contactos" | "galeria";
 
 interface SectorContentManagerProps {
     currentUserRole: UserRole;
@@ -113,6 +117,7 @@ export function SectorContentManager({ currentUserRole }: SectorContentManagerPr
     const [oportunidades, setOportunidades] = useState<OportunidadeSetor[]>([]);
     const [infraestruturas, setInfraestruturas] = useState<InfraestruturaSetor[]>([]);
     const [contactos, setContactos] = useState<ContactoSetor[]>([]);
+    const [galeria, setGaleria] = useState<GaleriaSetor[]>([]);
 
     // Modal de edição
     const [modalOpen, setModalOpen] = useState(false);
@@ -159,18 +164,20 @@ export function SectorContentManager({ currentUserRole }: SectorContentManagerPr
         if (!setorId) return;
         setLoading(true);
         try {
-            const [est, prog, opor, infra, cont] = await Promise.all([
+            const [est, prog, opor, infra, cont, gal] = await Promise.all([
                 supabase.from("setores_estatisticas").select("*").eq("setor_id", setorId).order("ordem"),
                 supabase.from("setores_programas").select("*").eq("setor_id", setorId).order("ordem"),
                 supabase.from("setores_oportunidades").select("*").eq("setor_id", setorId).order("ordem"),
                 supabase.from("setores_infraestruturas").select("*").eq("setor_id", setorId).order("ordem"),
                 supabase.from("setores_contactos").select("*").eq("setor_id", setorId),
+                supabase.from("setores_galeria").select("*").eq("setor_id", setorId).order("ordem"),
             ]);
             setEstatisticas(est.data || []);
             setProgramas((prog.data as unknown as ProgramaSetor[]) || []);
             setOportunidades((opor.data as unknown as OportunidadeSetor[]) || []);
             setInfraestruturas((infra.data as unknown as InfraestruturaSetor[]) || []);
             setContactos(cont.data || []);
+            setGaleria((gal.data as unknown as GaleriaSetor[]) || []);
         } catch (err) {
             console.error("Erro ao carregar dados do sector:", err);
             toast.error("Erro ao carregar dados do sector");
@@ -214,7 +221,28 @@ export function SectorContentManager({ currentUserRole }: SectorContentManagerPr
     const handleSave = async () => {
         setSaving(true);
         try {
-            const { table, payload } = formToPayload(activeTab, formData, selectedSetorId);
+            let finalImageUrl = formData.imagem_url;
+
+            // Upload de imagem para a galeria, se houver nova imagem
+            if (activeTab === "galeria" && formData.imageFile) {
+                const fileExt = formData.imageFile.name.split('.').pop();
+                const fileName = `${Math.random()}.${fileExt}`;
+                const filePath = `${selectedSetorId}/${fileName}`;
+
+                const { error: uploadError } = await supabase.storage
+                    .from('setor_gallery')
+                    .upload(filePath, formData.imageFile);
+
+                if (uploadError) throw uploadError;
+
+                const { data } = supabase.storage
+                    .from('setor_gallery')
+                    .getPublicUrl(filePath);
+
+                finalImageUrl = data.publicUrl;
+            }
+
+            const { table, payload } = formToPayload(activeTab, { ...formData, imagem_url: finalImageUrl }, selectedSetorId);
             if (editingItem) {
                 const { error } = await supabase.from(table as any).update(payload).eq("id", editingItem.id);
                 if (error) throw error;
@@ -369,6 +397,9 @@ export function SectorContentManager({ currentUserRole }: SectorContentManagerPr
                             </TabsTrigger>
                             <TabsTrigger value="contactos" className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md border border-transparent data-[state=inactive]:border-border/50 data-[state=inactive]:bg-background transition-all">
                                 <Phone className="h-3.5 w-3.5" /> Contactos
+                            </TabsTrigger>
+                            <TabsTrigger value="galeria" className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md border border-transparent data-[state=inactive]:border-border/50 data-[state=inactive]:bg-background transition-all">
+                                <ImageIcon className="h-3.5 w-3.5" /> Galeria
                             </TabsTrigger>
                         </TabsList>
                     </div>
@@ -571,6 +602,52 @@ export function SectorContentManager({ currentUserRole }: SectorContentManagerPr
                             </div>
                         )}
                     </TabsContent>
+
+                    {/* ── GALERIA ──────────────────────────────────────────────────────── */}
+                    <TabsContent value="galeria" className="mt-0">
+                        <SectionHeader title="Galeria" count={galeria.length} onAdd={handleCreate} loading={loading} />
+                        {loading ? <LoadingSpinner /> : (
+                            <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                                {galeria.map((gal) => (
+                                    <Card key={gal.id} className={cn("border-0 shadow-sm rounded-xl overflow-hidden transition-all duration-300 hover:shadow-md hover:-translate-y-1 group", gal.ativo ? "" : "opacity-60")}>
+                                        <div className="relative aspect-video w-full bg-muted">
+                                            <img
+                                                src={gal.imagem_url}
+                                                alt={gal.titulo}
+                                                className="w-full h-full object-cover"
+                                            />
+                                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                                                <Button size="icon" variant="secondary" className="h-8 w-8 rounded-full z-10" onClick={() => handleToggleAtivo(gal, "setores_galeria")}>
+                                                    {gal.ativo ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                                </Button>
+                                                <Button size="icon" variant="secondary" className="h-8 w-8 rounded-full z-10" onClick={() => handleEdit(gal)}>
+                                                    <Edit className="h-4 w-4" />
+                                                </Button>
+                                                <Button size="icon" variant="destructive" className="h-8 w-8 rounded-full z-10" onClick={() => handleDeleteConfirm(gal, "setores_galeria", gal.titulo)}>
+                                                    <Trash2 className="h-4 w-4" />
+                                                </Button>
+                                            </div>
+                                        </div>
+                                        <CardContent className="p-3">
+                                            <div className="flex items-start justify-between gap-2">
+                                                <div className="min-w-0">
+                                                    <h4 className="font-semibold text-sm truncate" title={gal.titulo}>{gal.titulo}</h4>
+                                                    {gal.descricao && (
+                                                        <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">{gal.descricao}</p>
+                                                    )}
+                                                </div>
+                                                {!gal.ativo && (
+                                                    <Badge variant="secondary" className="text-[10px] px-1 py-0">Inativo</Badge>
+                                                )}
+                                            </div>
+                                            <p className="text-[10px] text-muted-foreground mt-2 font-mono">Ordem: {gal.ordem}</p>
+                                        </CardContent>
+                                    </Card>
+                                ))}
+                                {galeria.length === 0 && <EmptyState message="Nenhuma imagem na galeria. Clique em '+ Adicionar' para enviar." />}
+                            </div>
+                        )}
+                    </TabsContent>
                 </Tabs>
             )}
 
@@ -632,6 +709,7 @@ function getTabLabel(tab: ActiveTab): string {
         oportunidades: "Oportunidade",
         infraestruturas: "Infraestrutura",
         contactos: "Contacto",
+        galeria: "Galeria",
     };
     return labels[tab];
 }
@@ -649,6 +727,8 @@ function getDefaultForm(tab: ActiveTab): any {
             return { nome: "", descricao: "", localizacao: "", capacidade: "", estado: "Operacional", equipamentos: "", observacoes: "", ativo: true, ordem: 1 };
         case "contactos":
             return { endereco: "", telefone: "", email: "", horario: "", responsavel: "" };
+        case "galeria":
+            return { titulo: "", descricao: "", imagem_url: "", imageFile: null, ativo: true, ordem: 1 };
     }
 }
 
@@ -681,6 +761,8 @@ function itemToForm(tab: ActiveTab, item: any): any {
             };
         case "contactos":
             return { endereco: item.endereco, telefone: item.telefone, email: item.email, horario: item.horario, responsavel: item.responsavel };
+        case "galeria":
+            return { titulo: item.titulo, descricao: item.descricao, imagem_url: item.imagem_url, imageFile: null, ativo: item.ativo, ordem: item.ordem };
     }
 }
 
@@ -721,6 +803,16 @@ function formToPayload(tab: ActiveTab, form: any, setorId: string): { table: str
             };
         case "contactos":
             return { table: "setores_contactos", payload: { setor_id: setorId, endereco: form.endereco, telefone: form.telefone, email: form.email, horario: form.horario, responsavel: form.responsavel } };
+        case "galeria":
+            // O upload da imagem já foi tratado em handleSave para forms novos. 
+            // imagem_url passado aqui já é a final.
+            return {
+                table: "setores_galeria",
+                payload: {
+                    setor_id: setorId, titulo: form.titulo, descricao: form.descricao,
+                    imagem_url: form.imagem_url, ativo: form.ativo, ordem: Number(form.ordem)
+                }
+            };
     }
 }
 
@@ -898,6 +990,50 @@ function FormFields({ tab, formData, setFormData }: { tab: ActiveTab; formData: 
                     </FieldGroup>
                     <FieldGroup label="Horário de Atendimento">
                         <Input value={formData.horario || ""} onChange={(e) => set("horario", e.target.value)} placeholder="Seg–Sex: 08h–16h" />
+                    </FieldGroup>
+                </>
+            );
+        case "galeria":
+            return (
+                <>
+                    <FieldGroup label="Título" required>
+                        <Input value={formData.titulo || ""} onChange={(e) => set("titulo", e.target.value)} placeholder="Ex: Produção de Milho" />
+                    </FieldGroup>
+                    <FieldGroup label="Descrição">
+                        <Textarea value={formData.descricao || ""} onChange={(e) => set("descricao", e.target.value)} rows={3} placeholder="Breve descrição da imagem..." />
+                    </FieldGroup>
+
+                    <FieldGroup label="Imagem" required={!formData.imagem_url}>
+                        {formData.imagem_url && !formData.imageFile ? (
+                            <div className="mb-2 relative rounded-lg overflow-hidden border border-border">
+                                <img src={formData.imagem_url} alt="Atual" className="w-full h-auto max-h-48 object-cover" />
+                                <div className="absolute top-2 right-2">
+                                    <Badge variant="secondary" className="bg-background/80 backdrop-blur-sm">Atual</Badge>
+                                </div>
+                            </div>
+                        ) : null}
+
+                        <div className="flex items-center gap-3">
+                            <Input
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => set("imageFile", e.target.files?.[0] || null)}
+                                className="cursor-pointer file:text-primary file:font-medium"
+                            />
+                        </div>
+                        {formData.imageFile && (
+                            <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                                <Upload className="h-3 w-3" /> Ficheiro selecionado: {formData.imageFile.name}
+                            </p>
+                        )}
+                    </FieldGroup>
+
+                    <div className="flex items-center gap-3 mt-4">
+                        <input type="checkbox" id="ativo-galeria" checked={formData.ativo ?? true} onChange={(e) => set("ativo", e.target.checked)} className="h-4 w-4" />
+                        <Label htmlFor="ativo-galeria">Activo (visível na galeria do público)</Label>
+                    </div>
+                    <FieldGroup label="Ordem">
+                        <Input type="number" value={formData.ordem || 1} onChange={(e) => set("ordem", e.target.value)} min={1} />
                     </FieldGroup>
                 </>
             );

@@ -2038,6 +2038,50 @@ export type Database = {
         }
         Relationships: []
       }
+      setores_galeria: {
+        Row: {
+          ativo: boolean | null
+          created_at: string
+          descricao: string | null
+          id: string
+          imagem_url: string
+          ordem: number | null
+          setor_id: string | null
+          titulo: string
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean | null
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          imagem_url: string
+          ordem?: number | null
+          setor_id?: string | null
+          titulo: string
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean | null
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          imagem_url?: string
+          ordem?: number | null
+          setor_id?: string | null
+          titulo?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "setores_galeria_setor_id_fkey"
+            columns: ["setor_id"]
+            isOneToOne: false
+            referencedRelation: "setores_estrategicos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       setores_infraestruturas: {
         Row: {
           ativo: boolean | null

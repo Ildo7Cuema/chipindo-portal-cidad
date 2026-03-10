@@ -86,12 +86,25 @@ export interface ContactoSetor {
   updated_at: string;
 }
 
+export interface GaleriaSetor {
+  id: string;
+  setor_id: string;
+  titulo: string;
+  descricao?: string;
+  imagem_url: string;
+  ativo: boolean;
+  ordem: number;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface SetorCompleto extends SetorEstrategico {
   estatisticas: EstatisticaSetor[];
   programas: ProgramaSetor[];
   oportunidades: OportunidadeSetor[];
   infraestruturas: InfraestruturaSetor[];
   contactos: ContactoSetor[];
+  galeria: GaleriaSetor[];
 }
 
 export const useSetoresEstrategicos = () => {
@@ -189,6 +202,18 @@ export const useSetoresEstrategicos = () => {
         console.error('Erro ao buscar infraestruturas:', infraestruturasError);
       }
 
+      // Buscar galeria
+      const { data: galeria, error: galeriaError } = await supabase
+        .from('setores_galeria')
+        .select('*')
+        .eq('setor_id', setor.id)
+        .eq('ativo', true)
+        .order('ordem');
+
+      if (galeriaError) {
+        console.error('Erro ao buscar galeria:', galeriaError);
+      }
+
       // Buscar contactos
       const { data: contactos, error: contactosError } = await supabase
         .from('setores_contactos')
@@ -205,7 +230,8 @@ export const useSetoresEstrategicos = () => {
         programas: (programas as unknown as ProgramaSetor[]) || [],
         oportunidades: (oportunidades as unknown as OportunidadeSetor[]) || [],
         infraestruturas: (infraestruturas as unknown as InfraestruturaSetor[]) || [],
-        contactos: contactos || []
+        contactos: contactos || [],
+        galeria: (galeria as unknown as GaleriaSetor[]) || []
       };
     } catch (err) {
       console.error('Erro ao buscar setor completo:', err);
