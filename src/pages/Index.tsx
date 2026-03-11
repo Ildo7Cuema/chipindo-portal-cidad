@@ -1,5 +1,6 @@
 import { Header } from "@/components/layout/Header";
 import { Hero } from "@/components/sections/Hero";
+import { AdministratorMessage } from "@/components/sections/AdministratorMessage";
 import { NewsSection } from "@/components/sections/NewsSection";
 import { ConcursosSection } from "@/components/sections/ConcursosSection";
 import { Footer } from "@/components/sections/Footer";
@@ -84,6 +85,9 @@ const Index = () => {
 
       <main>
         <Hero />
+
+        {/* Administrator Message Section */}
+        <AdministratorMessage />
 
         {/* Municipality Statistics Section - Organized */}
         <Section variant="secondary" size="lg" className="relative">
