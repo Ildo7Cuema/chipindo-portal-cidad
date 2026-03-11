@@ -75,7 +75,7 @@ export const AdministratorMessage = () => {
                                 {/* Message text */}
                                 <div className="space-y-4 text-sm md:text-base text-muted-foreground leading-relaxed">
                                     <p>
-                                        É com elevado sentido de responsabilidade institucional e profundo compromisso com o desenvolvimento local que dirijo esta mensagem a todos os munícipes de Chipindo, homens, mulheres e jovens que, com dedicação e espírito de trabalho, contribuem diariamente para o progresso da nossa terra. Chipindo é um município de história, de cultura e de gente resiliente, cuja força colectiva tem permitido enfrentar desafios e transformar oportunidades em caminhos concretos de desenvolvimento.
+                                        É com elevado sentido de responsabilidade institucional e profundo compromisso com o desenvolvimento local que dirijo esta mensagem a todos os munícipes de Chipindo, Mulheres, Homens e Jovens que, com dedicação e espírito de trabalho, contribuem diariamente para o progresso da nossa terra. Chipindo é um município de história, de cultura e de gente resiliente, cuja força colectiva tem permitido enfrentar desafios e transformar oportunidades em caminhos concretos de desenvolvimento.
                                     </p>
 
                                     <p>
@@ -88,8 +88,9 @@ export const AdministratorMessage = () => {
                                     </p>
 
                                     <p>
-                                        Reiteramos, por isso, o nosso compromisso de continuar a trabalhar com dedicação, responsabilidade e espírito de serviço público, reforçar a cooperação entre as instituições do Estado, as organizações sociais, as autoridades tradicionais e toda a comunidade. Juntos, continuaremos a construir um município cada vez mais organizado, próspero e inclusivo.
-                                    </p>
+                                        Reiteramos, por isso, o nosso firme compromisso de continuar a trabalhar com dedicação, responsabilidade e elevado sentido de serviço público, reforçando permanentemente a cooperação e a articulação entre as instituições do Estado, as organizações sociais, as autoridades tradicionais, as entidades eclesiásticas, bem como com as forças de ordem e segurança pública e toda a comunidade.
+
+                                        Somente com esta união de esforços será possível consolidar um ambiente de estabilidade, participação e desenvolvimento sustentável. Juntos, continuaremos a edificar um município cada vez mais organizado, próspero, seguro e inclusivo, capaz de responder com eficácia às aspirações legítimas da população</p>
 
                                     <p className="italic text-muted-foreground/80">
                                         Que o espírito de união, trabalho e esperança continue a guiar os destinos do nosso município.
