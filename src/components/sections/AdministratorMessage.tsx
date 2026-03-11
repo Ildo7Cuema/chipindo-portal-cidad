@@ -79,7 +79,7 @@ export const AdministratorMessage = () => {
                                     </p>
 
                                     <p>
-                                        A Administração Municipal de Chipindo tem vindo a trabalhar de forma contínua para melhorar as condições de vida da população, apostar na promoção da educação, da saúde, da agricultura, energia e água, da juventude, do empreendedorismo e na melhoria progressiva das infraestruturas sociais e económicas. Estes esforços reflectem o compromisso permanente de servir o cidadão com responsabilidade, transparência e proximidade, fortalecendo a governação local e de forma a incentivar a participação activa da comunidade no processo de desenvolvimento do município.
+                                        A Administração Municipal de Chipindo tem vindo a trabalhar de forma contínua para melhorar as condições de vida da população, apostar na promoção da educação, da saúde, da agricultura, da energia e água, da juventude, do empreendedorismo e na melhoria progressiva das infraestruturas sociais e económicas. Estes esforços reflectem o compromisso permanente de servir o cidadão com responsabilidade, transparência e proximidade, fortalecendo a governação local e de forma a incentivar a participação activa da comunidade no processo de desenvolvimento do município.
                                     </p>
 
                                     <p>
