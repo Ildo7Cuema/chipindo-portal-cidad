@@ -7,7 +7,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { ResponsiveContainer, ResponsiveGrid, ResponsiveCard, ResponsiveSection, ResponsiveText } from "@/components/layout/ResponsiveLayout";
-import { LogOut, Home, Bell, FileText, Trophy, FolderOpen, Network, Building2, Brush, ImageIcon, MapPin, Phone, Users, Settings, ChevronLeft, ChevronRight, Activity, BarChart3, Calendar, Search, Filter, MoreVertical, RefreshCw, Download, Archive, Trash2, HelpCircle, ImageUp, AlertTriangle, EyeIcon, MessageSquare, MenuIcon } from "lucide-react";
+import { LogOut, Home, Bell, FileText, Trophy, FolderOpen, Network, Building2, Brush, ImageIcon, MapPin, Phone, Users, Settings, ChevronLeft, ChevronRight, Activity, BarChart3, Calendar, Search, Filter, MoreVertical, RefreshCw, Download, Archive, Trash2, HelpCircle, ImageUp, AlertTriangle, EyeIcon, MessageSquare, MenuIcon, Radio as RadioLucideIcon } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AdminLoading } from "@/components/ui/loading";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -49,6 +49,7 @@ import { AccessDenied } from "@/components/ui/access-denied";
 import { SectorContentManager } from "@/components/admin/SectorContentManager";
 import { SiteVisitsReport } from "@/components/admin/SiteVisitsReport";
 import { HospitalInfrastructureManager } from "@/components/admin/HospitalInfrastructureManager";
+import { RadioManager } from "@/components/admin/RadioManager";
 interface NavigationItem {
   id: string;
   label: string;
@@ -230,6 +231,12 @@ const Admin = () => {
     label: "Carrossel Turismo",
     icon: ImageIcon,
     description: "Gerir carrossel turístico e ambiental",
+    category: "Conteúdo"
+  }, {
+    id: "radio",
+    label: "Rádio Chipindo",
+    icon: RadioLucideIcon,
+    description: "Gerir stream e grelha da rádio online",
     category: "Conteúdo"
   }, {
     id: "sector-content",
@@ -559,6 +566,7 @@ const Admin = () => {
               {activeTab === "events" && <EventsManager />}
               {activeTab === "event-registrations" && <EventRegistrationsManager />}
               {activeTab === "turismo-carousel" && <TurismoAmbienteCarouselManager />}
+              {activeTab === "radio" && <RadioManager />}
               {activeTab === "sector-content" && <SectorContentManager currentUserRole={role} />}
               {activeTab === "hospital-infrastructures" && <HospitalInfrastructureManager />}
               {activeTab === "users" && (canManageUsers ? <UserManager currentUserRole={role} /> : <AccessDenied title="Gestão de Utilizadores" message="Apenas administradores podem gerir utilizadores do sistema." />)}

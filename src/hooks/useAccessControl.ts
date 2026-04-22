@@ -34,7 +34,8 @@ export const defaultAccessConfig: AccessControlConfig = {
     'emergency-contacts',
     'transparency',
     'population',
-    'characterization'
+    'characterization',
+    'radio'
   ],
   editorItems: [
     // Editor tem acesso exclusivo a Notícias e Acervo Digital

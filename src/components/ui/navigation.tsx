@@ -27,7 +27,8 @@ import {
   LeafIcon,
   Building2Icon,
   SearchIcon,
-  ShieldIcon
+  ShieldIcon,
+  RadioIcon
 } from "lucide-react";
 import { useState, useEffect } from "react";
 
@@ -56,6 +57,7 @@ export const Navigation = ({ className }: NavigationProps) => {
     { label: "Notícias", href: "/noticias", icon: FileTextIcon },
     { label: "Concursos", href: "/concursos", icon: CalendarIcon },
     { label: "Acervo", href: "/acervo", icon: ImageIcon },
+    { label: "Rádio Chipindo", href: "/radio", icon: RadioIcon },
   ];
 
   const setoresItems = [

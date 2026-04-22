@@ -46,7 +46,10 @@ import Ambiente from "./pages/Ambiente";
 import Urbanismo from "./pages/Urbanismo";
 import Fiscalizacao from "./pages/Fiscalizacao";
 import Aniesa from "./pages/Aniesa";
+import Radio from "./pages/Radio";
 import { usePageTracking } from "./hooks/usePageTracking";
+import { RadioPlayerProvider } from "@/components/radio/RadioPlayerProvider";
+import { MiniPlayer } from "@/components/radio/MiniPlayer";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -76,8 +79,9 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <PageTracker />
-            <MaintenanceMode>
-              <Routes>
+            <RadioPlayerProvider>
+              <MaintenanceMode>
+                <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/noticias" element={<Noticias />} />
                 <Route path="/all-news" element={<AllNews />} />
@@ -118,9 +122,12 @@ const App = () => (
                 <Route path="/urbanismo" element={<Urbanismo />} />
                 <Route path="/fiscalizacao" element={<Fiscalizacao />} />
                 <Route path="/aniesa" element={<Aniesa />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </MaintenanceMode>
+                  <Route path="/radio" element={<Radio />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </MaintenanceMode>
+              <MiniPlayer />
+            </RadioPlayerProvider>
           </BrowserRouter>
         </TooltipProvider>
       </QueryClientProvider>

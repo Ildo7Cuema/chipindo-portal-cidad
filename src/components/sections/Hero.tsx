@@ -10,6 +10,7 @@ import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useRealTimeStats } from "@/hooks/useRealTimeStats";
 import { useHeroCarousel } from "@/hooks/useHeroCarousel";
 import { useHeroStats } from "@/hooks/useHeroStats";
+import { RadioLiveBadge } from "@/components/radio/RadioLiveBadge";
 import { cn } from "@/lib/utils";
 
 export const Hero = () => {
@@ -165,7 +166,7 @@ export const Hero = () => {
           {/* Left Column - Enhanced Hero Content */}
           <div className={cn("space-y-10", isVisible && "animate-fade-in-up")}>
             {/* Premium Location Badges */}
-            <div className="flex items-center gap-3 animate-fade-in-up">
+            <div className="flex flex-wrap items-center gap-3 animate-fade-in-up">
               <Badge
                 variant="secondary"
                 className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 text-primary-foreground border-yellow-400/40 backdrop-blur-xl px-4 py-2 shadow-lg hover:shadow-yellow-500/25 transition-all duration-300"
@@ -180,6 +181,7 @@ export const Hero = () => {
                 <TrendingUpIcon className="w-4 h-4 mr-2 text-emerald-400 animate-pulse" />
                 Rica em Potencialidades
               </Badge>
+              <RadioLiveBadge />
             </div>
 
             {/* Golden Title with Professional Typography */}

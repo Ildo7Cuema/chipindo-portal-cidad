@@ -13,6 +13,7 @@ import {
   PhoneIcon,
   WrenchIcon,
   ChevronDownIcon,
+  RadioIcon,
   GraduationCapIcon,
   HeartIcon,
   SproutIcon,
@@ -73,6 +74,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({ className })
     { label: "Notícias", href: "/noticias", icon: FileTextIcon },
     { label: "Concursos", href: "/concursos", icon: CalendarIcon },
     { label: "Acervo", href: "/acervo", icon: ImageIcon },
+    { label: "Rádio", href: "/radio", icon: RadioIcon },
   ];
 
   const secondaryNavItems = [
