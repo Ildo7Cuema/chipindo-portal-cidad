@@ -247,7 +247,7 @@ const Radio = () => {
                   </div>
                 )}
                 {hasError && (
-                  <div className="mt-2 text-sm text-red-200 bg-red-500/15 border border-red-400/40 rounded-xl px-4 py-3 animate-fade-in">
+                  <div className="mt-2 text-sm text-red-200 bg-red-500/15 border border-red-400/40 rounded-xl px-4 py-3 animate-fade-in whitespace-pre-line">
                     {error || 'Não foi possível iniciar a transmissão. Tente novamente.'}
                   </div>
                 )}

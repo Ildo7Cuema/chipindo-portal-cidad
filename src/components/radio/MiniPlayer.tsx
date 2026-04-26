@@ -79,7 +79,7 @@ export const MiniPlayer = () => {
           </div>
           <p className="text-xs text-muted-foreground truncate">
             {hasError
-              ? error || 'Falha de ligação'
+              ? (error?.split('\n')[0] || 'Falha de ligação')
               : currentProgram
               ? `${currentProgram.title}${
                   currentProgram.presenter ? ' · ' + currentProgram.presenter : ''
