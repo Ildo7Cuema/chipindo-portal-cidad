@@ -265,23 +265,18 @@ const diagnoseStreamError = async (
       bodySnippet.toLowerCase().includes('no stream available');
 
     // ---- 503 ----
+    // Mensagem unificada e amigável para o utilizador final:
+    // não revelamos o provedor (Zeno/Icecast/etc.) nem termos técnicos.
     if (res.status === 503 || looksLikeNoSource) {
-      if (provider === 'zeno') {
-        return {
-          kind: 'no-source',
-          retriable: true,
-          message:
-            'A Rádio não está a transmitir neste momento.\n\n' +
-            'O servidor Zeno.fm está activo, mas nenhuma fonte (DJ, AutoDJ ou software de transmissão) está ligada.\n\n' +
-            'Será automaticamente verificado de novo dentro de instantes.',
-        };
-      }
+      // `provider` é detectado mas intencionalmente não usado na mensagem
+      // ao utilizador final (mantido apenas para logs/diagnóstico futuro).
+      void provider;
       return {
         kind: 'no-source',
         retriable: true,
         message:
-          'O servidor está activo, mas a transmissão não está em curso.\n\n' +
-          'Ligue um software de transmissão (BUTT, SAM Broadcaster, AutoDJ) ao servidor.',
+          'De momento não estamos a emitir o sinal da rádio online, devido a um corte de energia na estação.\n\n' +
+          'Voltaremos o mais rápido possível. Caso o sinal não seja restabelecido dentro de 5 minutos, contacte-nos: 921 923 232.',
       };
     }
 
