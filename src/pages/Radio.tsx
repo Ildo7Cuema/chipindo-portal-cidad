@@ -19,6 +19,8 @@ import {
   YoutubeIcon,
   CalendarDaysIcon,
   HeadphonesIcon,
+  RefreshCwIcon,
+  AlertTriangleIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useRadioPlayer } from '@/components/radio/RadioPlayerProvider';
@@ -66,10 +68,13 @@ const Radio = () => {
     loading,
     status,
     error,
+    errorKind,
+    nextRetryInSec,
     volume,
     muted,
     currentProgram,
     toggle,
+    retry,
     setVolume,
     setMuted,
   } = useRadioPlayer();
@@ -247,8 +252,58 @@ const Radio = () => {
                   </div>
                 )}
                 {hasError && (
-                  <div className="mt-2 text-sm text-red-200 bg-red-500/15 border border-red-400/40 rounded-xl px-4 py-3 animate-fade-in whitespace-pre-line">
-                    {error || 'Não foi possível iniciar a transmissão. Tente novamente.'}
+                  <div
+                    className={cn(
+                      'mt-2 rounded-xl px-4 py-3 animate-fade-in border',
+                      errorKind === 'no-source' || errorKind === 'forbidden'
+                        ? 'bg-amber-500/15 border-amber-400/40 text-amber-100'
+                        : 'bg-red-500/15 border-red-400/40 text-red-100'
+                    )}
+                  >
+                    <div className="flex items-start gap-3">
+                      <AlertTriangleIcon
+                        className={cn(
+                          'w-5 h-5 shrink-0 mt-0.5',
+                          errorKind === 'no-source' || errorKind === 'forbidden'
+                            ? 'text-amber-300'
+                            : 'text-red-300'
+                        )}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm whitespace-pre-line leading-relaxed">
+                          {error || 'Não foi possível iniciar a transmissão.'}
+                        </p>
+                        {nextRetryInSec !== null && nextRetryInSec > 0 && (
+                          <p className="text-xs mt-2 opacity-80">
+                            A tentar de novo em {nextRetryInSec}s…
+                          </p>
+                        )}
+                        <div className="mt-3">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={retry}
+                            disabled={isLoading}
+                            className={cn(
+                              'border-white/20 bg-white/5 hover:bg-white/10 text-white',
+                              'h-8 text-xs'
+                            )}
+                          >
+                            {isLoading ? (
+                              <>
+                                <Loader2Icon className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+                                A tentar…
+                              </>
+                            ) : (
+                              <>
+                                <RefreshCwIcon className="w-3.5 h-3.5 mr-1.5" />
+                                Tentar agora
+                              </>
+                            )}
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>

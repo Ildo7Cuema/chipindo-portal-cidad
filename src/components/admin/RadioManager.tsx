@@ -34,6 +34,9 @@ import {
   MusicIcon,
   RefreshCwIcon,
   XCircleIcon,
+  ActivityIcon,
+  WifiIcon,
+  WifiOffIcon,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -47,6 +50,10 @@ import {
   useMusicRequestsAdmin,
   type MusicRequestStatus,
 } from '@/hooks/useMusicRequests';
+import {
+  checkRadioStream,
+  type StreamCheckResult,
+} from '@/lib/radioStreamCheck';
 
 const STREAM_TYPES: { value: RadioStreamType; label: string }[] = [
   { value: 'icecast', label: 'Icecast (MP3/AAC stream)' },
@@ -87,10 +94,37 @@ export const RadioManager = () => {
   const [editingProgramId, setEditingProgramId] = useState<string | null>(null);
   const [programDialogOpen, setProgramDialogOpen] = useState(false);
   const [programSaving, setProgramSaving] = useState(false);
+  const [testing, setTesting] = useState(false);
+  const [testResult, setTestResult] = useState<StreamCheckResult | null>(null);
 
   useEffect(() => {
     setForm(settings);
   }, [settings]);
+
+  const handleTestStream = async () => {
+    if (!form.stream_url?.trim()) {
+      toast.error('Insira primeiro o URL do stream.');
+      return;
+    }
+    setTesting(true);
+    setTestResult(null);
+    try {
+      const result = await checkRadioStream(form.stream_url);
+      setTestResult(result);
+      if (result.status === 'online') {
+        toast.success('Stream activo e a transmitir!');
+      } else if (result.status === 'no-source') {
+        toast.warning('Servidor activo mas sem transmissão.');
+      } else {
+        toast.error('O stream apresenta um problema. Veja os detalhes abaixo.');
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('Não foi possível testar o stream.');
+    } finally {
+      setTesting(false);
+    }
+  };
 
   const handleChange = <K extends keyof RadioSettings>(key: K, value: RadioSettings[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -299,15 +333,47 @@ export const RadioManager = () => {
             <CardContent className="space-y-4">
               <div>
                 <Label htmlFor="stream_url">URL do stream (HTTPS)</Label>
-                <Input
-                  id="stream_url"
-                  placeholder="https://stream.exemplo.com/radio"
-                  value={form.stream_url}
-                  onChange={(e) => handleChange('stream_url', e.target.value)}
-                />
+                <div className="flex gap-2 mt-1">
+                  <Input
+                    id="stream_url"
+                    placeholder="https://stream.zeno.fm/abc123 ou https://stream.exemplo.com/radio"
+                    value={form.stream_url}
+                    onChange={(e) => {
+                      handleChange('stream_url', e.target.value);
+                      setTestResult(null);
+                    }}
+                    className="flex-1"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleTestStream}
+                    disabled={testing || !form.stream_url?.trim()}
+                    className="shrink-0"
+                  >
+                    {testing ? (
+                      <>
+                        <Loader2Icon className="w-4 h-4 mr-2 animate-spin" />
+                        A testar…
+                      </>
+                    ) : (
+                      <>
+                        <ActivityIcon className="w-4 h-4 mr-2" />
+                        Testar
+                      </>
+                    )}
+                  </Button>
+                </div>
                 <p className="text-xs text-muted-foreground mt-1">
                   Use sempre um URL HTTPS para que funcione em todos os browsers modernos.
+                  Para Zeno.fm use o formato{' '}
+                  <code className="px-1 bg-muted rounded">
+                    https://stream.zeno.fm/&lt;id&gt;
+                  </code>
+                  .
                 </p>
+
+                {testResult && <StreamTestResultCard result={testResult} />}
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -792,6 +858,94 @@ const MusicRequestsTable = () => {
           })}
         </div>
       )}
+    </div>
+  );
+};
+
+// ---------------------------------------------------------------------------
+// Cartão que mostra o resultado do teste do stream
+// ---------------------------------------------------------------------------
+const StreamTestResultCard = ({ result }: { result: StreamCheckResult }) => {
+  const variants: Record<
+    StreamCheckResult['status'],
+    { icon: typeof WifiIcon; className: string; title: string }
+  > = {
+    online: {
+      icon: WifiIcon,
+      className:
+        'bg-green-500/10 border-green-500/40 text-green-700 dark:text-green-300',
+      title: 'Stream activo',
+    },
+    'no-source': {
+      icon: AlertTriangleIcon,
+      className:
+        'bg-amber-500/10 border-amber-500/40 text-amber-700 dark:text-amber-300',
+      title: 'Sem transmissão a decorrer',
+    },
+    forbidden: {
+      icon: XCircleIcon,
+      className:
+        'bg-red-500/10 border-red-500/40 text-red-700 dark:text-red-300',
+      title: 'Acesso negado (403)',
+    },
+    'not-found': {
+      icon: XCircleIcon,
+      className:
+        'bg-red-500/10 border-red-500/40 text-red-700 dark:text-red-300',
+      title: 'Stream não encontrado (404)',
+    },
+    'server-error': {
+      icon: XCircleIcon,
+      className:
+        'bg-red-500/10 border-red-500/40 text-red-700 dark:text-red-300',
+      title: 'Erro do servidor',
+    },
+    'invalid-url': {
+      icon: XCircleIcon,
+      className:
+        'bg-red-500/10 border-red-500/40 text-red-700 dark:text-red-300',
+      title: 'URL inválido',
+    },
+    'mixed-content': {
+      icon: XCircleIcon,
+      className:
+        'bg-red-500/10 border-red-500/40 text-red-700 dark:text-red-300',
+      title: 'Mistura HTTP/HTTPS',
+    },
+    network: {
+      icon: WifiOffIcon,
+      className:
+        'bg-red-500/10 border-red-500/40 text-red-700 dark:text-red-300',
+      title: 'Falha de ligação',
+    },
+    unknown: {
+      icon: AlertTriangleIcon,
+      className:
+        'bg-muted border-border text-foreground',
+      title: 'Resultado indeterminado',
+    },
+  };
+
+  const v = variants[result.status];
+  const Icon = v.icon;
+
+  return (
+    <div
+      className={`mt-3 rounded-lg border p-3 flex items-start gap-3 ${v.className}`}
+      role="status"
+    >
+      <Icon className="w-5 h-5 shrink-0 mt-0.5" />
+      <div className="flex-1 min-w-0 text-sm">
+        <p className="font-semibold">{v.title}</p>
+        <p className="mt-0.5 opacity-90">{result.message}</p>
+        {(result.provider || result.httpStatus || result.contentType) && (
+          <p className="mt-1.5 text-xs opacity-75 font-mono">
+            {result.provider && <>Provedor: {result.provider}</>}
+            {result.httpStatus && <> · HTTP {result.httpStatus}</>}
+            {result.contentType && <> · {result.contentType.split(';')[0]}</>}
+          </p>
+        )}
+      </div>
     </div>
   );
 };

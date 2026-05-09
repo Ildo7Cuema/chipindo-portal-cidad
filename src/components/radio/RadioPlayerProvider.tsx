@@ -13,6 +13,26 @@ import { useRadioSettings, type RadioSettings, type RadioProgram } from '@/hooks
 
 export type RadioPlayerStatus = 'idle' | 'loading' | 'playing' | 'paused' | 'error';
 
+/** Categoria estável do erro — facilita decidir UX (auto-retry, mensagens). */
+export type RadioErrorKind =
+  | 'no-url'
+  | 'invalid-url'
+  | 'no-source' // Servidor responde mas não há DJ/AutoDJ a emitir (ex.: Zeno 503)
+  | 'forbidden' // 403 — geralmente Shoutcast/Icecast sem source
+  | 'not-found' // 404
+  | 'server-error' // 5xx genérico
+  | 'mixed-content' // HTTPS site → HTTP stream
+  | 'network' // Falha de ligação / timeout
+  | 'unsupported' // Browser não suporta o formato
+  | 'autoplay-blocked' // Política do browser
+  | 'unknown';
+
+interface RadioErrorInfo {
+  kind: RadioErrorKind;
+  message: string; // Mensagem amigável (pode ter \n)
+  retriable: boolean; // Se faz sentido auto-retry
+}
+
 interface RadioPlayerContextValue {
   settings: RadioSettings;
   schedule: RadioProgram[];
@@ -20,12 +40,18 @@ interface RadioPlayerContextValue {
   loading: boolean;
   status: RadioPlayerStatus;
   error: string | null;
+  errorKind: RadioErrorKind | null;
+  /** Próximo retry em segundos (null se não houver). */
+  nextRetryInSec: number | null;
+  /** Número de tentativas falhadas seguidas. */
+  attempts: number;
   volume: number; // 0..1
   muted: boolean;
   showMiniPlayer: boolean;
   play: () => Promise<void>;
   pause: () => void;
   toggle: () => Promise<void>;
+  retry: () => Promise<void>;
   setVolume: (v: number) => void;
   setMuted: (m: boolean) => void;
   hideMiniPlayer: () => void;
@@ -35,7 +61,6 @@ interface RadioPlayerContextValue {
 const RadioPlayerContext = createContext<RadioPlayerContextValue | null>(null);
 
 const STORAGE_KEY = 'chipindo.radio.prefs';
-const RESOLVED_URL_KEY = 'chipindo.radio.resolvedUrl';
 
 interface StoredPrefs {
   volume?: number;
@@ -67,165 +92,300 @@ interface RadioPlayerProviderProps {
 const isHlsStream = (url: string, streamType?: string) =>
   streamType === 'hls' || /\.m3u8(\?|$)/i.test(url);
 
-// ---------------------------------------------------------------------------
-// Utilitários de resolução de stream
-// ---------------------------------------------------------------------------
+/** Reconhece provedores de streaming conhecidos para evitar gerar variantes inúteis. */
+const detectProvider = (
+  url: string
+): 'zeno' | 'radioco' | 'shoutcast' | 'icecast-generic' | 'unknown' => {
+  try {
+    const host = new URL(url).hostname.toLowerCase();
+    if (host.endsWith('zeno.fm')) return 'zeno';
+    if (host.endsWith('radio.co') || host.endsWith('streaming.radio.co')) return 'radioco';
+    if (host.includes('shoutcast') || host.includes('streamingv2')) return 'shoutcast';
+    return 'icecast-generic';
+  } catch {
+    return 'unknown';
+  }
+};
 
-/**
- * Gera variações do URL do stream para tentar reproduzir.
- * Cobre as idiossincrasias mais comuns de Icecast, Shoutcast e outros servidores.
- */
+// ---------------------------------------------------------------------------
+// Reset limpo do <audio> — aborta loads pendentes e liberta a conexão
+// anterior antes de configurar uma nova source. Sem isto o browser pode ficar
+// a alimentar o decoder com bytes de duas streams diferentes ao mesmo tempo,
+// produzindo "chiar"/eco audível.
+// ---------------------------------------------------------------------------
+const resetAudio = (audio: HTMLAudioElement) => {
+  try {
+    audio.pause();
+    // Limpar src dispara abort no browser; load() finaliza qualquer pedido pendente.
+    audio.removeAttribute('src');
+    audio.load();
+  } catch {
+    // ignore
+  }
+};
+
+// ---------------------------------------------------------------------------
+// Tenta reproduzir um URL. Faz reset limpo antes para evitar sobreposição.
+// ---------------------------------------------------------------------------
+const attemptPlay = async (
+  audio: HTMLAudioElement,
+  url: string
+): Promise<{ ok: boolean; errorDetail?: string }> => {
+  resetAudio(audio);
+  try {
+    // Definir src já dispara o algoritmo de selecção de recurso —
+    // não chamar audio.load() de novo para não fazer abort+restart
+    // (que pode criar artefactos audíveis).
+    audio.src = url;
+    await audio.play();
+    return { ok: true };
+  } catch (err: unknown) {
+    const errName = err instanceof DOMException ? err.name : '';
+    const errMsg = err instanceof Error ? err.message : String(err);
+    const mediaCode = audio.error?.code;
+    const mediaMsg = audio.error?.message;
+
+    const detail = [
+      errName && `DOMException: ${errName}`,
+      errMsg,
+      mediaCode !== undefined && `MediaError code: ${mediaCode}`,
+      mediaMsg && `MediaError: ${mediaMsg}`,
+    ]
+      .filter(Boolean)
+      .join(' | ');
+
+    return { ok: false, errorDetail: detail };
+  }
+};
+
+// ---------------------------------------------------------------------------
+// Gera variações do URL para tentar reproduzir (apenas para servidores
+// genéricos Icecast/Shoutcast onde mount-points alternativos fazem sentido).
+// ---------------------------------------------------------------------------
 const generateStreamVariants = (baseUrl: string): string[] => {
-  const variants: string[] = [];
+  const variants: string[] = [baseUrl];
 
   try {
     const u = new URL(baseUrl);
 
-    // 1. URL original
-    variants.push(baseUrl);
-
-    // 2. Se termina em .pls ou .m3u (ficheiro de playlist, não áudio directo)
     if (/\.pls(\?|$)/i.test(u.pathname)) {
       const stem = u.origin + u.pathname.replace(/\.pls$/i, '');
-      variants.push(stem, stem + '.mp3', stem + '/;stream.mp3', stem + '/;');
+      variants.push(stem, stem + '.mp3', stem + '/;stream.mp3');
     } else if (/\.m3u(\?|$)/i.test(u.pathname) && !/\.m3u8/i.test(u.pathname)) {
       const stem = u.origin + u.pathname.replace(/\.m3u$/i, '');
-      variants.push(stem, stem + '.mp3', stem + '/;stream.mp3', stem + '/;');
+      variants.push(stem, stem + '.mp3', stem + '/;stream.mp3');
     }
 
-    // 3. Truque Icecast: sufixo "/;" força raw HTTP em vez do protocolo ICY
     if (!u.pathname.includes(';')) {
       const sep = baseUrl.endsWith('/') ? '' : '/';
-      variants.push(baseUrl + sep + ';stream.mp3');
       variants.push(baseUrl + sep + ';');
+      variants.push(baseUrl + sep + ';stream.mp3');
     }
 
-    // 4. Forçar tipo HTTP no Shoutcast
     if (!u.searchParams.has('type')) {
       const withType = new URL(baseUrl);
       withType.searchParams.set('type', 'http');
       variants.push(withType.toString());
     }
 
-    // 5. Acrescentar /stream, /live, /radio como mount points comuns
-    const commonMounts = ['/stream', '/live', '/radio', '/listen'];
+    if (u.pathname.endsWith('/;') || u.pathname.endsWith(';')) {
+      const clean = u.origin + u.pathname.replace(/\/?;$/, '') + u.search;
+      variants.push(clean);
+      variants.push(clean + '/stream');
+      variants.push(clean + '/live');
+    }
+
     if (u.pathname === '/' || u.pathname === '') {
-      for (const mount of commonMounts) {
+      for (const mount of ['/stream', '/live', '/radio', '/listen']) {
         variants.push(u.origin + mount);
       }
     }
-
-    // 6. Sem barra final (se existe)
-    if (baseUrl.endsWith('/') && baseUrl.length > u.origin.length + 1) {
-      variants.push(baseUrl.slice(0, -1));
-    }
   } catch {
-    variants.push(baseUrl);
+    // URL inválido, manter só o original
   }
 
-  // Remover duplicados mantendo a ordem
   return [...new Set(variants)];
 };
 
-/**
- * Tenta extrair URL real de um ficheiro de playlist (.pls ou .m3u).
- * Usa fetch com CORS — se o servidor não suportar, retorna null silenciosamente.
- */
-const tryParsePlaylist = async (url: string): Promise<string | null> => {
+// ---------------------------------------------------------------------------
+// Diagnóstico via fetch — devolve um RadioErrorInfo estruturado.
+// ---------------------------------------------------------------------------
+const diagnoseStreamError = async (
+  url: string,
+  pageProtocol: string
+): Promise<RadioErrorInfo> => {
+  // Mixed content: site HTTPS a tentar tocar HTTP — o browser bloqueia
+  // antes mesmo de chegarmos aqui, mas garantimos a mensagem.
+  try {
+    const target = new URL(url);
+    if (pageProtocol === 'https:' && target.protocol === 'http:') {
+      return {
+        kind: 'mixed-content',
+        retriable: false,
+        message:
+          'O site está em HTTPS mas o stream é HTTP — o browser bloqueia este pedido.\n\n' +
+          'Solução: configure o stream com URL HTTPS, ou use um relay com HTTPS.',
+      };
+    }
+  } catch {
+    // ignore
+  }
+
+  const provider = detectProvider(url);
+
   try {
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 5000);
+    const timer = setTimeout(() => controller.abort(), 6000);
 
     const res = await fetch(url, {
       signal: controller.signal,
-      headers: { Accept: 'audio/x-scpls, audio/mpegurl, audio/x-mpegurl, */*' },
+      headers: {
+        Accept: 'audio/mpeg, audio/aac, audio/ogg, audio/*;q=0.9, */*;q=0.1',
+      },
     });
     clearTimeout(timer);
 
-    if (!res.ok) return null;
+    // Ler corpo curto para detectar mensagens de servidores conhecidos
+    let bodySnippet = '';
+    try {
+      const reader = res.body?.getReader();
+      if (reader) {
+        const { value } = await reader.read();
+        if (value) {
+          bodySnippet = new TextDecoder().decode(value.slice(0, 256));
+        }
+        try { reader.cancel(); } catch { /* ignore */ }
+      }
+    } catch { /* ignore */ }
 
-    const contentType = res.headers.get('content-type') || '';
-    const text = await res.text();
+    const ct = res.headers.get('content-type') || '';
+    const looksLikeNoSource =
+      bodySnippet.toLowerCase().includes('mount point not active') ||
+      bodySnippet.toLowerCase().includes('source not connected') ||
+      bodySnippet.toLowerCase().includes('no stream available');
 
-    // .pls format: File1=http://...
-    if (
-      contentType.includes('audio/x-scpls') ||
-      contentType.includes('audio/x-pls') ||
-      url.toLowerCase().endsWith('.pls') ||
-      text.trimStart().startsWith('[playlist]')
-    ) {
-      const match = text.match(/^File\d+=(.+)$/im);
-      if (match) return match[1].trim();
+    // ---- 503 ----
+    if (res.status === 503 || looksLikeNoSource) {
+      if (provider === 'zeno') {
+        return {
+          kind: 'no-source',
+          retriable: true,
+          message:
+            'A Rádio não está a transmitir neste momento.\n\n' +
+            'O servidor Zeno.fm está activo, mas nenhuma fonte (DJ, AutoDJ ou software de transmissão) está ligada.\n\n' +
+            'Será automaticamente verificado de novo dentro de instantes.',
+        };
+      }
+      return {
+        kind: 'no-source',
+        retriable: true,
+        message:
+          'O servidor está activo, mas a transmissão não está em curso.\n\n' +
+          'Ligue um software de transmissão (BUTT, SAM Broadcaster, AutoDJ) ao servidor.',
+      };
     }
 
-    // .m3u format: linhas que começam com http
-    if (
-      contentType.includes('mpegurl') ||
-      url.toLowerCase().endsWith('.m3u') ||
-      text.trimStart().startsWith('#EXTM3U')
-    ) {
-      const lines = text.split('\n').map((l) => l.trim());
-      const streamLine = lines.find((l) => l.startsWith('http'));
-      if (streamLine) return streamLine;
+    // ---- 403 ----
+    if (res.status === 403) {
+      const isShoutcast =
+        bodySnippet.includes('ICY') ||
+        bodySnippet.includes('SHOUTcast') ||
+        bodySnippet.includes('Icecast');
+      if (isShoutcast) {
+        return {
+          kind: 'forbidden',
+          retriable: true,
+          message:
+            'O servidor recusou a ligação (403).\n\n' +
+            'Pode ser por: nenhuma fonte a transmitir, limite de ouvintes atingido ou a conta de streaming estar suspensa.',
+        };
+      }
+      return {
+        kind: 'forbidden',
+        retriable: false,
+        message: 'O servidor recusou a ligação (403 Forbidden).',
+      };
     }
 
-    // Verificar se o próprio conteúdo é HTML (provavelmente uma página web, não áudio)
-    if (contentType.includes('text/html') || text.trimStart().startsWith('<!DOCTYPE') || text.trimStart().startsWith('<html')) {
-      console.warn('[RadioPlayer] O URL retorna HTML, não áudio:', url);
-      return null;
+    // ---- 404 ----
+    if (res.status === 404) {
+      return {
+        kind: 'not-found',
+        retriable: false,
+        message: 'O URL do stream não foi encontrado (404). Verifique o endereço.',
+      };
     }
 
-    return null;
-  } catch {
-    return null;
+    // ---- 5xx genérico ----
+    if (res.status >= 500) {
+      return {
+        kind: 'server-error',
+        retriable: true,
+        message: `Erro interno do servidor (${res.status}). Tente mais tarde.`,
+      };
+    }
+
+    // ---- HTML em vez de áudio ----
+    if (ct.includes('text/html')) {
+      return {
+        kind: 'unsupported',
+        retriable: false,
+        message:
+          'O URL devolveu uma página web (HTML) em vez de áudio.\n' +
+          'Verifique se o URL aponta para o stream correcto.',
+      };
+    }
+
+    // ---- Resposta OK mas o browser não toca ----
+    if (res.ok && (ct.includes('audio') || ct.includes('octet-stream') || ct.includes('mpeg'))) {
+      return {
+        kind: 'unsupported',
+        retriable: false,
+        message:
+          'O servidor está a transmitir, mas o browser não consegue reproduzir o formato.\n\n' +
+          'Pode ser um problema de codec ou de mistura HTTP/HTTPS.',
+      };
+    }
+
+    return {
+      kind: 'unknown',
+      retriable: true,
+      message: `O servidor respondeu (${res.status}) mas o áudio não pôde ser reproduzido.`,
+    };
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+
+    if (msg.includes('abort') || msg.includes('AbortError')) {
+      return {
+        kind: 'network',
+        retriable: true,
+        message:
+          'O servidor de stream não respondeu a tempo.\n\n' +
+          '• O servidor pode estar offline\n' +
+          '• A porta pode estar bloqueada por firewall',
+      };
+    }
+
+    if (msg.includes('Failed to fetch') || msg.includes('NetworkError')) {
+      return {
+        kind: 'network',
+        retriable: true,
+        message:
+          'Não foi possível ligar ao servidor de stream.\n\n' +
+          'Verifique a sua ligação à internet ou tente novamente mais tarde.',
+      };
+    }
+
+    return {
+      kind: 'unknown',
+      retriable: true,
+      message: 'Não foi possível diagnosticar o problema. Tente novamente mais tarde.',
+    };
   }
 };
 
-/**
- * Tenta reproduzir um URL num elemento <audio>, com timeout.
- * Retorna true se conseguiu carregar e iniciar a reprodução.
- */
-const testStreamUrl = (
-  audio: HTMLAudioElement,
-  url: string,
-  timeoutMs = 10000
-): Promise<boolean> => {
-  return new Promise((resolve) => {
-    const timeout = setTimeout(() => {
-      cleanup();
-      resolve(false);
-    }, timeoutMs);
-
-    const onCanPlay = () => {
-      cleanup();
-      resolve(true);
-    };
-    const onError = () => {
-      cleanup();
-      resolve(false);
-    };
-
-    const cleanup = () => {
-      clearTimeout(timeout);
-      audio.removeEventListener('canplay', onCanPlay);
-      audio.removeEventListener('canplaythrough', onCanPlay);
-      audio.removeEventListener('error', onError);
-    };
-
-    audio.src = url;
-    audio.load();
-
-    if (audio.readyState >= HTMLMediaElement.HAVE_ENOUGH_DATA) {
-      cleanup();
-      resolve(true);
-      return;
-    }
-
-    audio.addEventListener('canplay', onCanPlay, { once: true });
-    audio.addEventListener('canplaythrough', onCanPlay, { once: true });
-    audio.addEventListener('error', onError, { once: true });
-  });
-};
+// Auto-retry com back-off para erros recuperáveis ("no source", 503, etc.)
+const RETRY_DELAYS_SEC = [10, 20, 30, 60, 120];
 
 // ---------------------------------------------------------------------------
 // Provider
@@ -238,6 +398,9 @@ export const RadioPlayerProvider = ({ children }: RadioPlayerProviderProps) => {
 
   const [status, setStatus] = useState<RadioPlayerStatus>('idle');
   const [error, setError] = useState<string | null>(null);
+  const [errorKind, setErrorKind] = useState<RadioErrorKind | null>(null);
+  const [attempts, setAttempts] = useState(0);
+  const [nextRetryInSec, setNextRetryInSec] = useState<number | null>(null);
   const [volume, setVolumeState] = useState<number>(() => {
     const p = readPrefs();
     return typeof p.volume === 'number' ? p.volume : 0.8;
@@ -246,8 +409,11 @@ export const RadioPlayerProvider = ({ children }: RadioPlayerProviderProps) => {
   const [showMiniPlayer, setShowMiniPlayer] = useState(false);
   const [currentProgram, setCurrentProgram] = useState<RadioProgram | null>(null);
 
-  // URL resolvido que realmente funciona (pode diferir do settings.stream_url)
-  const resolvedUrlRef = useRef<string | null>(null);
+  // Refs para gerir tentativas
+  const playAttemptRef = useRef(false);
+  const userPausedRef = useRef(false);
+  const retryTimerRef = useRef<number | null>(null);
+  const retryCountdownRef = useRef<number | null>(null);
 
   // Actualiza volume/mute no elemento <audio>
   useEffect(() => {
@@ -258,7 +424,7 @@ export const RadioPlayerProvider = ({ children }: RadioPlayerProviderProps) => {
     writePrefs({ volume, muted });
   }, [volume, muted]);
 
-  // Refresca programa atual a cada minuto
+  // Refresca programa actual a cada minuto
   useEffect(() => {
     const update = () => setCurrentProgram(getCurrentProgram());
     update();
@@ -266,232 +432,276 @@ export const RadioPlayerProvider = ({ children }: RadioPlayerProviderProps) => {
     return () => window.clearInterval(id);
   }, [getCurrentProgram]);
 
-  // Limpa instância HLS se existir
+  // Limpa instância HLS
   const teardownHls = useCallback(() => {
     if (hlsRef.current) {
-      try {
-        hlsRef.current.destroy();
-      } catch {
-        // ignore
-      }
+      try { hlsRef.current.destroy(); } catch { /* ignore */ }
       hlsRef.current = null;
     }
   }, []);
 
-  // Liga o stream ao elemento <audio> (com suporte HLS via hls.js quando necessário)
-  const attachStream = useCallback(
-    (url: string) => {
-      const audio = audioRef.current;
-      if (!audio || !url) return;
+  // Limpa timers de retry
+  const clearRetryTimers = useCallback(() => {
+    if (retryTimerRef.current !== null) {
+      window.clearTimeout(retryTimerRef.current);
+      retryTimerRef.current = null;
+    }
+    if (retryCountdownRef.current !== null) {
+      window.clearInterval(retryCountdownRef.current);
+      retryCountdownRef.current = null;
+    }
+    setNextRetryInSec(null);
+  }, []);
 
-      const useHls = isHlsStream(url, settings.stream_type);
+  // Cleanup ao desmontar
+  useEffect(() => {
+    return () => {
+      teardownHls();
+      clearRetryTimers();
+    };
+  }, [teardownHls, clearRetryTimers]);
 
-      // Safari/iOS suportam HLS nativamente; outros browsers precisam de hls.js
+  // Liga stream HLS ao elemento <audio>
+  const attachHls = useCallback(
+    (audio: HTMLAudioElement, url: string) => {
       const nativeHls = audio.canPlayType('application/vnd.apple.mpegurl') !== '';
-
-      if (useHls && !nativeHls && Hls.isSupported()) {
+      if (!nativeHls && Hls.isSupported()) {
         teardownHls();
         const hls = new Hls({ lowLatencyMode: true });
         hls.on(Hls.Events.ERROR, (_evt, data) => {
           if (data.fatal) {
             setStatus('error');
+            setErrorKind('unknown');
             setError('Falha ao carregar o stream HLS.');
           }
         });
         hls.loadSource(url);
         hls.attachMedia(audio);
         hlsRef.current = hls;
-      } else {
-        teardownHls();
-        if (audio.src !== url) {
-          audio.src = url;
-          audio.load();
-        }
+        return true;
       }
+      return false;
     },
-    [settings.stream_type, teardownHls]
+    [teardownHls]
   );
 
-  // Reset do URL resolvido quando muda o settings
-  useEffect(() => {
-    resolvedUrlRef.current = null;
-  }, [settings.stream_url]);
-
-  // Reagir a mudança de URL do stream
-  useEffect(() => {
-    if (!settings.stream_url) return;
-    const wasPlaying = status === 'playing' || status === 'loading';
-    attachStream(resolvedUrlRef.current || settings.stream_url);
-    if (wasPlaying) {
-      audioRef.current?.play().catch(() => {
-        setStatus('error');
-        setError('Não foi possível reiniciar o stream.');
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [settings.stream_url, settings.stream_type]);
-
-  // Cleanup HLS ao desmontar
-  useEffect(() => {
-    return () => teardownHls();
-  }, [teardownHls]);
-
   // -----------------------------------------------------------------------
-  // PLAY — tenta reproduzir com múltiplas estratégias de fallback
+  // Função interna que faz o ciclo de tentativas + diagnóstico.
+  // Não mexe em `attempts` nem em retry timers — quem chama trata disso.
   // -----------------------------------------------------------------------
-  const play = useCallback(async () => {
+  const runPlay = useCallback(async (): Promise<RadioErrorInfo | null> => {
     const audio = audioRef.current;
-    if (!audio) return;
+    if (!audio) {
+      return { kind: 'unknown', retriable: false, message: 'Áudio indisponível.' };
+    }
+
+    // Guard: evitar tentativas concorrentes. Se já estamos a tentar,
+    // ignoramos cliques rápidos para não criarmos várias conexões paralelas
+    // ao stream (que produzem "chiar" e desfasamento de áudio).
+    if (playAttemptRef.current) {
+      return null;
+    }
 
     const url = settings.stream_url?.trim();
 
-    // Validação 1: URL vazia
     if (!url) {
-      setStatus('error');
-      setError('URL de transmissão não configurado. Aceda ao painel de administração → Rádio → Stream.');
-      setShowMiniPlayer(true);
-      return;
+      return {
+        kind: 'no-url',
+        retriable: false,
+        message:
+          'URL de transmissão não configurado. Aceda ao painel de administração → Rádio → Stream.',
+      };
     }
 
-    // Validação 2: URL mal-formada
     try {
       new URL(url);
     } catch {
-      setStatus('error');
-      setError(`URL inválido: "${url}". Verifique o formato (ex: https://stream.exemplo.com/radio).`);
-      setShowMiniPlayer(true);
-      return;
-    }
-
-    // Validação 3: Mixed content (HTTP em site HTTPS)
-    if (
-      typeof window !== 'undefined' &&
-      window.location.protocol === 'https:' &&
-      url.startsWith('http://')
-    ) {
-      setStatus('error');
-      setError(
-        'O URL do stream usa HTTP mas o site usa HTTPS. ' +
-        'Altere o URL para HTTPS no painel de administração ou contacte o fornecedor do stream.'
-      );
-      setShowMiniPlayer(true);
-      return;
+      return {
+        kind: 'invalid-url',
+        retriable: false,
+        message: `URL inválido: "${url}". Verifique o formato (ex: https://stream.exemplo.com/radio).`,
+      };
     }
 
     setStatus('loading');
     setError(null);
+    setErrorKind(null);
     setShowMiniPlayer(true);
+    playAttemptRef.current = true;
 
-    // Se já temos um URL resolvido que funcionou antes, usar directamente
-    if (resolvedUrlRef.current) {
-      try {
-        attachStream(resolvedUrlRef.current);
-        const ok = await testStreamUrl(audio, resolvedUrlRef.current, 10000);
-        if (ok) {
-          await audio.play();
-          console.info('[RadioPlayer] ▶ A reproduzir (URL cached):', resolvedUrlRef.current);
-          return;
-        }
-      } catch {
-        // Cache inválido, resolver de novo
-      }
-      resolvedUrlRef.current = null;
-    }
+    // Reset completo antes de qualquer tentativa: garante que não fica
+    // nenhum buffer/conexão da reprodução anterior a sobrepor-se.
+    teardownHls();
+    resetAudio(audio);
 
-    // ----- ESTRATÉGIA 1: Verificar se é um ficheiro de playlist (.pls/.m3u) -----
-    if (/\.(pls|m3u)(\?|$)/i.test(url) && !/\.m3u8/i.test(url)) {
-      console.info('[RadioPlayer] URL parece ser uma playlist, a tentar extrair stream real...');
-      const realUrl = await tryParsePlaylist(url);
-      if (realUrl) {
-        console.info('[RadioPlayer] URL extraído da playlist:', realUrl);
-        attachStream(realUrl);
-        const ok = await testStreamUrl(audio, realUrl, 10000);
-        if (ok) {
-          try {
-            await audio.play();
-            resolvedUrlRef.current = realUrl;
-            localStorage.setItem(RESOLVED_URL_KEY, realUrl);
-            console.info('[RadioPlayer] ▶ A reproduzir (via playlist):', realUrl);
-            return;
-          } catch {
-            // Continuar para outras estratégias
-          }
-        }
-      }
-    }
+    const provider = detectProvider(url);
+    const isHls = isHlsStream(url, settings.stream_type);
 
-    // ----- ESTRATÉGIA 2: Tentar todas as variações do URL -----
-    const variants = generateStreamVariants(url);
-    console.info('[RadioPlayer] A testar', variants.length, 'variações do URL...');
-
-    for (const variant of variants) {
-      console.info('[RadioPlayer] A tentar:', variant);
-
-      // Para streams HLS, usar hls.js
-      if (isHlsStream(variant, settings.stream_type)) {
-        attachStream(variant);
-        const ok = await testStreamUrl(audio, variant, 10000);
-        if (ok) {
-          try {
-            await audio.play();
-            resolvedUrlRef.current = variant;
-            localStorage.setItem(RESOLVED_URL_KEY, variant);
-            console.info('[RadioPlayer] ▶ A reproduzir (HLS):', variant);
-            return;
-          } catch {
-            continue;
-          }
-        }
-        continue;
-      }
-
-      // Tentar reprodução directa
-      const ok = await testStreamUrl(audio, variant, 8000);
-      if (ok) {
-        try {
-          await audio.play();
-          resolvedUrlRef.current = variant;
-          localStorage.setItem(RESOLVED_URL_KEY, variant);
-          console.info('[RadioPlayer] ▶ A reproduzir:', variant);
-          return;
-        } catch {
-          continue;
-        }
-      }
-    }
-
-    // ----- ESTRATÉGIA 3: Fetch como blob (gambiarra para streams incompatíveis) -----
-    console.info('[RadioPlayer] Tentativas directas falharam. A tentar via fetch+blob...');
     try {
-      const workingUrl = await tryFetchAsBlob(audio, url);
-      if (workingUrl) {
-        resolvedUrlRef.current = workingUrl;
-        console.info('[RadioPlayer] ▶ A reproduzir (via fetch blob)');
+      console.info('[RadioPlayer] A ligar:', url);
+
+      // === 1. Tentativa directa (sem preflight para evitar conexão paralela) ===
+      if (isHls) {
+        const attached = attachHls(audio, url);
+        if (attached) {
+          try {
+            await audio.play();
+            console.info('[RadioPlayer] ▶ A reproduzir (HLS):', url);
+            return null;
+          } catch (err) {
+            console.warn('[RadioPlayer] HLS play falhou:', err);
+            teardownHls();
+          }
+        }
+      }
+
+      let result = await attemptPlay(audio, url);
+      if (result.ok) {
+        console.info('[RadioPlayer] ▶ A reproduzir:', url);
+        return null;
+      }
+
+      const directError = result.errorDetail || '';
+
+      // === 2. Variações do URL — apenas para servidores Icecast/Shoutcast genéricos ===
+      // Para Zeno.fm, Radio.co e outros provedores conhecidos as variações são
+      // contraproducentes (rejeitam, devolvem 405, etc.).
+      const shouldTryVariants =
+        provider === 'icecast-generic' ||
+        provider === 'shoutcast' ||
+        provider === 'unknown';
+
+      if (shouldTryVariants) {
+        const variants = generateStreamVariants(url).filter((v) => v !== url);
+        if (variants.length > 0) {
+          for (const variant of variants) {
+            teardownHls();
+            if (isHlsStream(variant, settings.stream_type)) {
+              attachHls(audio, variant);
+            }
+            result = await attemptPlay(audio, variant);
+            if (result.ok) {
+              console.info('[RadioPlayer] ▶ A reproduzir (variante):', variant);
+              return null;
+            }
+          }
+        }
+      }
+
+      // === 3. Tudo falhou — diagnosticar via fetch ===
+      // Antes do diagnóstico, libertar o <audio> para que o fetch
+      // de diagnóstico não compita pela banda do servidor.
+      resetAudio(audio);
+
+      console.warn('[RadioPlayer] Reprodução falhou:', directError);
+
+      if (directError.includes('NotAllowedError')) {
+        return {
+          kind: 'autoplay-blocked',
+          retriable: false,
+          message: 'O browser bloqueou a reprodução automática. Toque no botão de play.',
+        };
+      }
+      if (directError.includes('AbortError')) {
+        return {
+          kind: 'unknown',
+          retriable: true,
+          message: 'A reprodução foi interrompida. Tente novamente.',
+        };
+      }
+
+      const diag = await diagnoseStreamError(url, window.location.protocol);
+      return diag;
+    } finally {
+      playAttemptRef.current = false;
+    }
+  }, [attachHls, teardownHls, settings.stream_url, settings.stream_type]);
+
+  // Aplica resultado do runPlay ao estado
+  const applyPlayResult = useCallback(
+    (errInfo: RadioErrorInfo | null) => {
+      if (errInfo === null) {
+        setAttempts(0);
+        setError(null);
+        setErrorKind(null);
+        clearRetryTimers();
         return;
       }
-    } catch {
-      // Última estratégia falhou
-    }
+      setStatus('error');
+      setError(errInfo.message);
+      setErrorKind(errInfo.kind);
+    },
+    [clearRetryTimers]
+  );
 
-    // ----- TUDO FALHOU -----
-    console.error('[RadioPlayer] Todas as estratégias de reprodução falharam para:', url);
-    setStatus('error');
-    setError(
-      'Não foi possível reproduzir o stream. Foram tentadas ' +
-      variants.length +
-      ' variações do URL sem sucesso.\n\n' +
-      'Possíveis causas:\n' +
-      '• O servidor de stream está offline\n' +
-      '• O URL não aponta para áudio (talvez uma página web)\n' +
-      '• O formato do stream não é compatível\n' +
-      '• O servidor bloqueia ligações do browser (CORS)\n\n' +
-      'Dica: Tente abrir o URL directamente no browser para verificar se reproduz áudio.'
-    );
-  }, [attachStream, settings.stream_url, settings.stream_type]);
+  // -----------------------------------------------------------------------
+  // PLAY — reset tentativas (é uma acção do utilizador)
+  // -----------------------------------------------------------------------
+  const play = useCallback(async () => {
+    userPausedRef.current = false;
+    clearRetryTimers();
+    setAttempts(0);
+    const errInfo = await runPlay();
+    applyPlayResult(errInfo);
+    if (errInfo) setAttempts(1);
+  }, [runPlay, applyPlayResult, clearRetryTimers]);
+
+  // RETRY explícito (botão) — incrementa contagem mas é manual
+  const retry = useCallback(async () => {
+    userPausedRef.current = false;
+    clearRetryTimers();
+    const errInfo = await runPlay();
+    applyPlayResult(errInfo);
+    if (errInfo) setAttempts((n) => n + 1);
+  }, [runPlay, applyPlayResult, clearRetryTimers]);
+
+  // Auto-retry agendado (interno)
+  const scheduleAutoRetry = useCallback(() => {
+    clearRetryTimers();
+    if (userPausedRef.current) return;
+    const delaySec =
+      RETRY_DELAYS_SEC[Math.min(attempts - 1, RETRY_DELAYS_SEC.length - 1)] ?? 60;
+
+    setNextRetryInSec(delaySec);
+    retryCountdownRef.current = window.setInterval(() => {
+      setNextRetryInSec((s) => (s !== null && s > 0 ? s - 1 : 0));
+    }, 1000);
+
+    retryTimerRef.current = window.setTimeout(async () => {
+      clearRetryTimers();
+      if (userPausedRef.current) return;
+      const errInfo = await runPlay();
+      applyPlayResult(errInfo);
+      if (errInfo) setAttempts((n) => n + 1);
+    }, delaySec * 1000);
+  }, [attempts, runPlay, applyPlayResult, clearRetryTimers]);
+
+  // Sempre que entrarmos em estado de erro retriable → agendar auto-retry
+  useEffect(() => {
+    if (status !== 'error' || !errorKind) return;
+    const retriableKinds: RadioErrorKind[] = [
+      'no-source',
+      'forbidden',
+      'server-error',
+      'network',
+    ];
+    if (!retriableKinds.includes(errorKind)) return;
+    if (attempts === 0 || attempts > 8) return; // Parar após 8 tentativas
+    scheduleAutoRetry();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status, errorKind, attempts]);
 
   const pause = useCallback(() => {
-    audioRef.current?.pause();
-  }, []);
+    userPausedRef.current = true;
+    clearRetryTimers();
+    const audio = audioRef.current;
+    if (!audio) return;
+    // Para streams ao vivo, "pausar" deve libertar a conexão e o buffer.
+    // Resumir de um buffer antigo causa atraso e/ou glitches audíveis.
+    teardownHls();
+    resetAudio(audio);
+    setStatus('paused');
+  }, [clearRetryTimers, teardownHls]);
 
   const toggle = useCallback(async () => {
     if (status === 'playing' || status === 'loading') {
@@ -501,13 +711,14 @@ export const RadioPlayerProvider = ({ children }: RadioPlayerProviderProps) => {
     }
   }, [pause, play, status]);
 
-  const setVolume = useCallback((v: number) => {
-    const clamped = Math.max(0, Math.min(1, v));
-    setVolumeState(clamped);
-    if (clamped > 0 && muted) {
-      setMutedState(false);
-    }
-  }, [muted]);
+  const setVolume = useCallback(
+    (v: number) => {
+      const clamped = Math.max(0, Math.min(1, v));
+      setVolumeState(clamped);
+      if (clamped > 0 && muted) setMutedState(false);
+    },
+    [muted]
+  );
 
   const setMuted = useCallback((m: boolean) => setMutedState(m), []);
 
@@ -518,7 +729,7 @@ export const RadioPlayerProvider = ({ children }: RadioPlayerProviderProps) => {
 
   const showMiniPlayerAgain = useCallback(() => setShowMiniPlayer(true), []);
 
-  // MediaSession API (controlos no ecrã bloqueado do telemóvel)
+  // MediaSession API (controlos no ecrã bloqueado)
   useEffect(() => {
     if (typeof navigator === 'undefined' || !('mediaSession' in navigator)) return;
     const ms = (navigator as Navigator & { mediaSession?: MediaSession }).mediaSession;
@@ -535,15 +746,9 @@ export const RadioPlayerProvider = ({ children }: RadioPlayerProviderProps) => {
         album: settings.name,
         artwork,
       });
-      ms.setActionHandler('play', () => {
-        play();
-      });
-      ms.setActionHandler('pause', () => {
-        pause();
-      });
-      ms.setActionHandler('stop', () => {
-        pause();
-      });
+      ms.setActionHandler('play', () => { play(); });
+      ms.setActionHandler('pause', () => { pause(); });
+      ms.setActionHandler('stop', () => { pause(); });
     } catch {
       // alguns browsers podem não suportar todas as acções
     }
@@ -557,12 +762,16 @@ export const RadioPlayerProvider = ({ children }: RadioPlayerProviderProps) => {
       loading,
       status,
       error,
+      errorKind,
+      nextRetryInSec,
+      attempts,
       volume,
       muted,
       showMiniPlayer,
       play,
       pause,
       toggle,
+      retry,
       setVolume,
       setMuted,
       hideMiniPlayer,
@@ -575,12 +784,16 @@ export const RadioPlayerProvider = ({ children }: RadioPlayerProviderProps) => {
       loading,
       status,
       error,
+      errorKind,
+      nextRetryInSec,
+      attempts,
       volume,
       muted,
       showMiniPlayer,
       play,
       pause,
       toggle,
+      retry,
       setVolume,
       setMuted,
       hideMiniPlayer,
@@ -594,144 +807,36 @@ export const RadioPlayerProvider = ({ children }: RadioPlayerProviderProps) => {
       <audio
         ref={audioRef}
         preload="none"
-        onPlaying={() => setStatus('playing')}
+        onPlaying={() => {
+          setStatus('playing');
+          setAttempts(0);
+          setError(null);
+          setErrorKind(null);
+          clearRetryTimers();
+        }}
         onPause={() => setStatus((prev) => (prev === 'error' ? prev : 'paused'))}
-        onWaiting={() => setStatus('loading')}
-        onCanPlay={() => setStatus((prev) => (prev === 'loading' ? 'playing' : prev))}
+        onWaiting={() => {
+          if (!playAttemptRef.current) setStatus('loading');
+        }}
+        onCanPlay={() =>
+          setStatus((prev) => (prev === 'loading' ? 'playing' : prev))
+        }
         onEnded={() => setStatus('paused')}
-        onError={(e) => {
-          const audio = e.currentTarget;
-          // Não sobrescrever erros já tratados no play()
-          if (status === 'error') return;
-          // Ignorar erros quando não há source (estado idle)
-          if (!audio.src || audio.src === window.location.href) return;
+        onError={() => {
+          if (playAttemptRef.current) return;
+          const audio = audioRef.current;
+          if (!audio?.src || audio.src === window.location.href) return;
+          // Se o stream cair durante a reprodução: marcar erro retriable
           setStatus('error');
-          const code = audio.error?.code;
-          if (code === MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED) {
-            setError('O formato do stream não é suportado. A tentar alternativas...');
-          } else if (code === MediaError.MEDIA_ERR_NETWORK) {
-            setError('Erro de rede ao carregar o stream. Verifique a ligação à internet.');
-          } else {
-            setError('Falha na ligação ao stream. Verifique a sua conexão.');
-          }
+          setErrorKind('network');
+          setError('A ligação ao stream foi perdida. A tentar novamente...');
+          setAttempts((n) => Math.max(n, 1));
         }}
       />
       {children}
     </RadioPlayerContext.Provider>
   );
 };
-
-// ---------------------------------------------------------------------------
-// Fetch-as-blob: última gambiarra — descarrega um pedaço do stream via fetch
-// e cria um objectURL. Funciona para streams que o <audio> não consegue
-// consumir directamente (ex.: protocolo ICY sem headers HTTP correctos).
-// ---------------------------------------------------------------------------
-async function tryFetchAsBlob(
-  audio: HTMLAudioElement,
-  url: string
-): Promise<string | null> {
-  try {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 12000);
-
-    const res = await fetch(url, {
-      signal: controller.signal,
-      headers: {
-        // Pedir explicitamente áudio para evitar respostas HTML
-        Accept: 'audio/mpeg, audio/aac, audio/ogg, audio/mp4, audio/*;q=0.9, */*;q=0.1',
-        // Icy-MetaData: 0 desactiva metadados ICY que podem confundir o fetch
-        'Icy-MetaData': '0',
-      },
-    });
-    clearTimeout(timer);
-
-    if (!res.ok || !res.body) return null;
-
-    const contentType = res.headers.get('content-type') || '';
-
-    // Se o servidor devolve HTML, não é um stream de áudio
-    if (contentType.includes('text/html') || contentType.includes('text/plain')) {
-      return null;
-    }
-
-    // Ler os primeiros ~512KB do stream para criar um blob reproduzível
-    const reader = res.body.getReader();
-    const chunks: Uint8Array[] = [];
-    let totalBytes = 0;
-    const MAX_BYTES = 512 * 1024; // 512 KB é suficiente para testar
-
-    while (totalBytes < MAX_BYTES) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      chunks.push(value);
-      totalBytes += value.length;
-    }
-
-    // Cancelar o resto do stream
-    try { reader.cancel(); } catch { /* ignore */ }
-
-    if (totalBytes === 0) return null;
-
-    // Detectar tipo MIME a partir dos bytes ou do content-type
-    const mimeType = detectMimeFromBytes(chunks[0]) || contentType.split(';')[0].trim() || 'audio/mpeg';
-
-    const blob = new Blob(chunks, { type: mimeType });
-    const blobUrl = URL.createObjectURL(blob);
-
-    audio.src = blobUrl;
-    audio.load();
-
-    const ok = await new Promise<boolean>((resolve) => {
-      const t = setTimeout(() => { c(); resolve(false); }, 5000);
-      const onOk = () => { c(); resolve(true); };
-      const onFail = () => { c(); resolve(false); };
-      const c = () => {
-        clearTimeout(t);
-        audio.removeEventListener('canplay', onOk);
-        audio.removeEventListener('error', onFail);
-      };
-      if (audio.readyState >= HTMLMediaElement.HAVE_ENOUGH_DATA) { c(); resolve(true); return; }
-      audio.addEventListener('canplay', onOk, { once: true });
-      audio.addEventListener('error', onFail, { once: true });
-    });
-
-    if (ok) {
-      await audio.play();
-      return blobUrl;
-    }
-
-    // Blob não funcionou, limpar
-    URL.revokeObjectURL(blobUrl);
-    return null;
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Detecta o MIME type a partir dos magic bytes do ficheiro.
- */
-function detectMimeFromBytes(bytes: Uint8Array): string | null {
-  if (!bytes || bytes.length < 4) return null;
-
-  // MP3: starts with ID3 or sync word 0xFF 0xFB/0xFF 0xF3/0xFF 0xF2
-  if (bytes[0] === 0x49 && bytes[1] === 0x44 && bytes[2] === 0x33) return 'audio/mpeg';
-  if (bytes[0] === 0xFF && (bytes[1] & 0xE0) === 0xE0) return 'audio/mpeg';
-
-  // Ogg: starts with "OggS"
-  if (bytes[0] === 0x4F && bytes[1] === 0x67 && bytes[2] === 0x67 && bytes[3] === 0x53) return 'audio/ogg';
-
-  // AAC: starts with 0xFF 0xF1 or 0xFF 0xF9
-  if (bytes[0] === 0xFF && (bytes[1] === 0xF1 || bytes[1] === 0xF9)) return 'audio/aac';
-
-  // FLAC: starts with "fLaC"
-  if (bytes[0] === 0x66 && bytes[1] === 0x4C && bytes[2] === 0x61 && bytes[3] === 0x43) return 'audio/flac';
-
-  // WAV: starts with "RIFF"
-  if (bytes[0] === 0x52 && bytes[1] === 0x49 && bytes[2] === 0x46 && bytes[3] === 0x46) return 'audio/wav';
-
-  return null;
-}
 
 export const useRadioPlayer = () => {
   const ctx = useContext(RadioPlayerContext);
